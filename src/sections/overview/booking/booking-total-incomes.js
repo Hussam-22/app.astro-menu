@@ -1,15 +1,17 @@
 import PropTypes from 'prop-types';
-// @mui
-import { useTheme, alpha } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-// utils
-import { fCurrency, fPercent } from 'src/utils/format-number';
+// @mui
+import { alpha, useTheme } from '@mui/material/styles';
+
 // theme
 import { bgGradient } from 'src/theme/css';
 // components
 import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
+// utils
+import { fPercent, fCurrency } from 'src/utils/format-number';
 
 // ----------------------------------------------------------------------
 

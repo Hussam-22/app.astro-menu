@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import keyBy from 'lodash/keyBy';
 import useSWR, { mutate } from 'swr';
+
 // utils
-import axios, { endpoints, fetcher } from 'src/utils/axios';
+import axios, { fetcher, endpoints } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 

@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 // rtl
 import { prefixer } from 'stylis';
-import rtlPlugin from 'stylis-plugin-rtl';
+import PropTypes from 'prop-types';
 // emotion
 import createCache from '@emotion/cache';
+import rtlPlugin from 'stylis-plugin-rtl';
 import { CacheProvider } from '@emotion/react';
 
 // ----------------------------------------------------------------------

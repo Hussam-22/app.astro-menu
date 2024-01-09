@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-// utils
-import { fToNow } from 'src/utils/format-time';
+
 // components
 import Image from 'src/components/image';
+// utils
+import { fToNow } from 'src/utils/format-time';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
 
 // ----------------------------------------------------------------------

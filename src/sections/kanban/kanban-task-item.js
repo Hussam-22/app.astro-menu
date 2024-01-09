@@ -1,19 +1,22 @@
 import PropTypes from 'prop-types';
 import { Draggable } from '@hello-pangea/dnd';
-// @mui
-import { useTheme } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import Avatar from '@mui/material/Avatar';
+// @mui
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+
 // theme
 import { bgBlur } from 'src/theme/css';
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+
 //
 import KanbanDetails from './kanban-details';
 

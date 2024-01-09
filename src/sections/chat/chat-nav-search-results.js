@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import ListItemButton from '@mui/material/ListItemButton';
+
 //
 import SearchNotFound from 'src/components/search-not-found';
 

@@ -1,19 +1,21 @@
 import PropTypes from 'prop-types';
 import { m, AnimatePresence } from 'framer-motion';
+
 // @mui
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Dialog from '@mui/material/Dialog';
-// assets
-import { OrderCompleteIllustration } from 'src/assets/illustrations';
+
 // components
 import Iconify from 'src/components/iconify';
 import { varFade } from 'src/components/animate';
+// assets
+import { OrderCompleteIllustration } from 'src/assets/illustrations';
 
 // ----------------------------------------------------------------------
 

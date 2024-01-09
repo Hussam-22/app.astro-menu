@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+
 // sections
 import SnackbarView from 'src/sections/_examples/extra/snackbar-view';
 

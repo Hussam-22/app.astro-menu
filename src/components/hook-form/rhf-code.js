@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import { Controller, useFormContext } from 'react-hook-form';
 import { MuiOtpInput } from 'mui-one-time-password-input';
+import { Controller, useFormContext } from 'react-hook-form';
+
 // @mui
 import FormHelperText from '@mui/material/FormHelperText';
 

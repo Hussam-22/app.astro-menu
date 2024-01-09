@@ -1,30 +1,33 @@
 // @mui
-import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
+import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Badge, { badgeClasses } from '@mui/material/Badge';
-// hooks
-import { useOffSetTop } from 'src/hooks/use-off-set-top';
-import { useResponsive } from 'src/hooks/use-responsive';
+
 // theme
 import { bgBlur } from 'src/theme/css';
-// routes
-import { paths } from 'src/routes/paths';
 // components
 import Logo from 'src/components/logo';
 import Label from 'src/components/label';
+// routes
+import { paths } from 'src/routes/paths';
+import { useResponsive } from 'src/hooks/use-responsive';
+// hooks
+import { useOffSetTop } from 'src/hooks/use-off-set-top';
+
 //
 import { HEADER } from '../config-layout';
-import { navConfig } from './config-navigation';
+//
+import { LoginButton, HeaderShadow, SettingsButton } from '../_common';
+
 import NavMobile from './nav/mobile';
 import NavDesktop from './nav/desktop';
-//
-import { SettingsButton, HeaderShadow, LoginButton } from '../_common';
+import { navConfig } from './config-navigation';
 
 // ----------------------------------------------------------------------
 

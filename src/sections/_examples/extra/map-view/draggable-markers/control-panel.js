@@ -1,7 +1,9 @@
-import PropTypes from 'prop-types';
 import { memo } from 'react';
+import PropTypes from 'prop-types';
+
 // @mui
 import Typography from '@mui/material/Typography';
+
 // components
 import { StyledControlPanel } from 'src/components/map';
 

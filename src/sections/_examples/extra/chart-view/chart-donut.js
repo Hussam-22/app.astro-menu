@@ -1,5 +1,6 @@
 // components
 import PropTypes from 'prop-types';
+
 import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------

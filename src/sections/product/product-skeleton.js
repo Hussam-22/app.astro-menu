@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Stack from '@mui/material/Stack';
-import Skeleton from '@mui/material/Skeleton';
 import Paper from '@mui/material/Paper';
+import Skeleton from '@mui/material/Skeleton';
 import Grid from '@mui/material/Unstable_Grid2';
 
 // ----------------------------------------------------------------------

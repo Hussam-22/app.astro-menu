@@ -1,11 +1,15 @@
-import PropTypes from 'prop-types';
 import { memo } from 'react';
+import PropTypes from 'prop-types';
+
 // @mui
 import Stack from '@mui/material/Stack';
+
 // theme
 import { hideScroll } from 'src/theme/css';
+
 //
 import { navHorizontalConfig } from '../config';
+
 import NavList from './nav-list';
 
 // ----------------------------------------------------------------------

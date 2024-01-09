@@ -1,15 +1,17 @@
-import PropTypes from 'prop-types';
 import { useEffect } from 'react';
-// @mui
-import { alpha, useTheme, styled } from '@mui/material/styles';
+import PropTypes from 'prop-types';
+
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
-// theme
-import { bgGradient } from 'src/theme/css';
+// @mui
+import { alpha, styled, useTheme } from '@mui/material/styles';
+
 // components
 import Image from 'src/components/image';
+// theme
+import { bgGradient } from 'src/theme/css';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
-import Carousel, { CarouselArrowIndex, useCarousel } from 'src/components/carousel';
+import Carousel, { useCarousel, CarouselArrowIndex } from 'src/components/carousel';
 
 // ----------------------------------------------------------------------
 

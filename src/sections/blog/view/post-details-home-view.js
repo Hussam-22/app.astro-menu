@@ -1,30 +1,32 @@
 // @mui
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Checkbox from '@mui/material/Checkbox';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+
 // routes
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
+// components
+import Iconify from 'src/components/iconify';
+import Markdown from 'src/components/markdown';
 import { RouterLink } from 'src/routes/components';
+import EmptyContent from 'src/components/empty-content';
 // utils
 import { fShortenNumber } from 'src/utils/format-number';
 // api
 import { useGetPost, useGetLatestPosts } from 'src/api/blog';
-// components
-import Iconify from 'src/components/iconify';
-import Markdown from 'src/components/markdown';
-import EmptyContent from 'src/components/empty-content';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
 import PostList from '../post-list';
-import PostCommentList from '../post-comment-list';
 import PostCommentForm from '../post-comment-form';
+import PostCommentList from '../post-comment-list';
 import PostDetailsHero from '../post-details-hero';
 import { PostDetailsSkeleton } from '../post-skeleton';
 

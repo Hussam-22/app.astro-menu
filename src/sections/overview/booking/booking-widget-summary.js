@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+
 // utils
 import { fShortenNumber } from 'src/utils/format-number';
 

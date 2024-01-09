@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
+
+import Card from '@mui/material/Card';
 // @mui
 import Stack from '@mui/material/Stack';
-import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
 import LinearProgress from '@mui/material/LinearProgress';
+
 // utils
 import { fPercent, fCurrency } from 'src/utils/format-number';
 

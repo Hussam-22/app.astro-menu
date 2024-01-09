@@ -1,15 +1,18 @@
 import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
 // @mui
 import TreeView from '@mui/lab/TreeView';
-import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
-import { alpha, styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import { alpha, styled } from '@mui/material/styles';
+import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
+
 // routes
 import { paths } from 'src/routes/paths';
 // components
 import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
 //
 import ComponentBlock from '../component-block';
 

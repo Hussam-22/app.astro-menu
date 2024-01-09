@@ -1,15 +1,18 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
+import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
 // @mui
 import Masonry from '@mui/lab/Masonry';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import Rating from '@mui/material/Rating';
+import Container from '@mui/material/Container';
+
 // routes
 import { paths } from 'src/routes/paths';
 // components
 import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
 //
 import ComponentBlock from '../component-block';
 

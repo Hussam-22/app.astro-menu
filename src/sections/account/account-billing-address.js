@@ -1,20 +1,22 @@
 import PropTypes from 'prop-types';
-import { useCallback, useState } from 'react';
+import { useState, useCallback } from 'react';
+
 // @mui
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
 import CardHeader from '@mui/material/CardHeader';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+import IconButton from '@mui/material/IconButton';
 
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+
 //
-import { AddressNewForm, AddressItem } from '../address';
+import { AddressItem, AddressNewForm } from '../address';
 
 // ----------------------------------------------------------------------
 

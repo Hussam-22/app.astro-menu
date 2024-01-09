@@ -1,16 +1,19 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import List from '@mui/material/List';
+import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import DialogTitle from '@mui/material/DialogTitle';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import InputAdornment from '@mui/material/InputAdornment';
-import Dialog from '@mui/material/Dialog';
+
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+
 //
 import FileManagerInvitedItem from './file-manager-invited-item';
 

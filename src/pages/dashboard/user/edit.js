@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+
 // sections
 import UserEditView from 'src/sections/user/view/user-edit-view';
 

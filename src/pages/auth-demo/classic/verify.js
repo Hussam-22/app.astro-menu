@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+
 // sections
 import { ClassicVerifyView } from 'src/sections/auth-demo/classic';
 

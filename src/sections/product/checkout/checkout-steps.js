@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
-// @mui
-import { styled } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Step from '@mui/material/Step';
 import Stack from '@mui/material/Stack';
 import Stepper from '@mui/material/Stepper';
+// @mui
+import { styled } from '@mui/material/styles';
 import StepLabel, { stepLabelClasses } from '@mui/material/StepLabel';
 import MuiStepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
+
 // components
 import Iconify from 'src/components/iconify';
 

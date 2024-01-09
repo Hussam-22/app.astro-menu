@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
-import { useState, useCallback, useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
+
 // @mui
 import Paper from '@mui/material/Paper';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import InputBase, { inputBaseClasses } from '@mui/material/InputBase';
+
 // _mock
 import { _mock } from 'src/_mock';
 // utils

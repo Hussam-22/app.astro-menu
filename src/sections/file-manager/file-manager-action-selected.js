@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
 import Portal from '@mui/material/Portal';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
+
 // components
 import Iconify from 'src/components/iconify';
 

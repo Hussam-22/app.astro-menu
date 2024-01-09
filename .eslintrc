@@ -2,17 +2,10 @@
   "root": true,
   "env": {
     "browser": true,
-    "es2021": true
+    "es2023": true
   },
-  "plugins": [
-    "unused-imports",
-    "prettier"
-  ],
-  "extends": [
-    "airbnb",
-    "airbnb/hooks",
-    "prettier"
-  ],
+  "plugins": ["unused-imports", "prettier", "perfectionist"],
+  "extends": ["airbnb", "airbnb/hooks", "prettier"],
   "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -23,25 +16,14 @@
       "impliedStrict": true
     },
     "babelOptions": {
-      "presets": [
-        "@babel/preset-react"
-      ]
+      "presets": ["@babel/preset-react"]
     }
   },
   "settings": {
     "import/resolver": {
       "alias": {
-        "map": [
-          [
-            "src",
-            "./src"
-          ]
-        ],
-        "extensions": [
-          ".js",
-          ".jsx",
-          ".json"
-        ]
+        "map": [["src", "./src"]],
+        "extensions": [".js", ".jsx", ".json"]
       }
     }
   },
@@ -106,6 +88,46 @@
         "varsIgnorePattern": "^_",
         "args": "after-used",
         "argsIgnorePattern": "^_"
+      }
+    ],
+    "perfectionist/sort-imports": [
+      2,
+      {
+        "type": "line-length",
+        "order": "asc",
+        "newlines-between": "always",
+        "groups": [
+          ["builtin", "external"],
+          "mui",
+          "internal",
+          "parent",
+          "sibling",
+          "object",
+          "unknown"
+        ],
+        "custom-groups": {
+          "value": {
+            "mui": "@mui/**",
+            "internal": "src/**",
+            "parent": "../**",
+            "sibling": "./**"
+          }
+        },
+        "read-tsconfig": false
+      }
+    ],
+    "perfectionist/sort-named-imports": [
+      2,
+      {
+        "type": "line-length",
+        "order": "asc"
+      }
+    ],
+    "perfectionist/sort-exports": [
+      2,
+      {
+        "type": "line-length",
+        "order": "asc"
       }
     ]
   }

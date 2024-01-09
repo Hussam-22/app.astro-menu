@@ -1,15 +1,17 @@
 import PropTypes from 'prop-types';
-// @mui
-import { useTheme } from '@mui/material/styles';
+
+import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
+// @mui
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
+
 // hooks
 import { fNumber } from 'src/utils/format-number';
-import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import Chart, { useChart } from 'src/components/chart';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -9,16 +10,17 @@ import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
-// hooks
-import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
+
 // routes
 import { paths } from 'src/routes/paths';
-// hooks
-import { useDoubleClick } from 'src/hooks/use-double-click';
 // components
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
+// hooks
+import { useDoubleClick } from 'src/hooks/use-double-click';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+// hooks
+import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
 
 // ----------------------------------------------------------------------
 

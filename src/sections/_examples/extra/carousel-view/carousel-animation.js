@@ -1,19 +1,21 @@
-import PropTypes from 'prop-types';
 import { m } from 'framer-motion';
-// @mui
-import { alpha, useTheme } from '@mui/material/styles';
+import PropTypes from 'prop-types';
+
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
-// theme
-import { bgGradient } from 'src/theme/css';
+// @mui
+import { alpha, useTheme } from '@mui/material/styles';
+
 // components
 import Image from 'src/components/image';
-import { MotionContainer, varFade } from 'src/components/animate';
-import Carousel, { CarouselArrowIndex, useCarousel } from 'src/components/carousel';
+// theme
+import { bgGradient } from 'src/theme/css';
+import { varFade, MotionContainer } from 'src/components/animate';
+import Carousel, { useCarousel, CarouselArrowIndex } from 'src/components/carousel';
 
 // ----------------------------------------------------------------------
 

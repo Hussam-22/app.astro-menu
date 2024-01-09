@@ -1,26 +1,29 @@
 import PropTypes from 'prop-types';
 import { useEffect, useCallback } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
+
 // @mui
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Rating from '@mui/material/Rating';
 import Button from '@mui/material/Button';
+import Rating from '@mui/material/Rating';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
+
 // routes
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hook';
-// utils
-import { fShortenNumber, fCurrency } from 'src/utils/format-number';
 // components
 import Label from 'src/components/label';
+import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { ColorPicker } from 'src/components/color-utils';
 import FormProvider, { RHFSelect } from 'src/components/hook-form';
+// utils
+import { fCurrency, fShortenNumber } from 'src/utils/format-number';
+
 //
 import IncrementerButton from './common/incrementer-button';
 

@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
 // @mui
 import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
+
 // components
 import Label from 'src/components/label';
 

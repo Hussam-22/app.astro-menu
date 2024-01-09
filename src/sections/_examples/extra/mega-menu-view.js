@@ -2,18 +2,19 @@
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
+import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-// routes
-import { paths } from 'src/routes/paths';
+
 // _mock
 import { _mock } from 'src/_mock';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+// routes
+import { paths } from 'src/routes/paths';
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   MegaMenuMobile,

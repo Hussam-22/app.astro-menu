@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+
 // sections
 import { AboutView } from 'src/sections/about/view';
 

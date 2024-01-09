@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+
 // sections
 import { TourDetailsView } from 'src/sections/tour/view';
 

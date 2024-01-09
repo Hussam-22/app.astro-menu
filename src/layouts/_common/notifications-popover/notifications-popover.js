@@ -1,28 +1,31 @@
 import { m } from 'framer-motion';
 import { useState, useCallback } from 'react';
+
+import Box from '@mui/material/Box';
 // @mui
 import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import Tabs from '@mui/material/Tabs';
 import List from '@mui/material/List';
-import Stack from '@mui/material/Stack';
+import Tabs from '@mui/material/Tabs';
 import Badge from '@mui/material/Badge';
-import Drawer from '@mui/material/Drawer';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
 import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
+import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useResponsive } from 'src/hooks/use-responsive';
-// _mock
-import { _notifications } from 'src/_mock';
+import IconButton from '@mui/material/IconButton';
+
 // components
 import Label from 'src/components/label';
+// _mock
+import { _notifications } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { varHover } from 'src/components/animate';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useResponsive } from 'src/hooks/use-responsive';
+
 //
 import NotificationItem from './notification-item';
 

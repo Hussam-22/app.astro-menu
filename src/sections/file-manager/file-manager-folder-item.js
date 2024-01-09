@@ -1,28 +1,30 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
-// utils
-import { fData } from 'src/utils/format-number';
 
 // components
 import Iconify from 'src/components/iconify';
+// utils
+import { fData } from 'src/utils/format-number';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+
 //
 import FileManagerShareDialog from './file-manager-share-dialog';
 import FileManagerFileDetails from './file-manager-file-details';

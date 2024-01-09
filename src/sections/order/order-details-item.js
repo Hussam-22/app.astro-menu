@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -6,10 +7,11 @@ import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import CardHeader from '@mui/material/CardHeader';
 import ListItemText from '@mui/material/ListItemText';
-// utils
-import { fCurrency } from 'src/utils/format-number';
+
 // components
 import Scrollbar from 'src/components/scrollbar';
+// utils
+import { fCurrency } from 'src/utils/format-number';
 
 // ----------------------------------------------------------------------
 

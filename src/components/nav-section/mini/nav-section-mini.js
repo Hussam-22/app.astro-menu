@@ -1,8 +1,11 @@
-import PropTypes from 'prop-types';
 import { memo } from 'react';
+import PropTypes from 'prop-types';
+
 import Stack from '@mui/material/Stack';
+
 //
 import { navMiniConfig } from '../config';
+
 import NavList from './nav-list';
 
 // ----------------------------------------------------------------------

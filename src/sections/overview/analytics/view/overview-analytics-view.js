@@ -2,6 +2,9 @@
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+
+// components
+import { useSettingsContext } from 'src/components/settings';
 // _mock
 import {
   _analyticTasks,
@@ -9,14 +12,13 @@ import {
   _analyticTraffic,
   _analyticOrderTimeline,
 } from 'src/_mock';
-// components
-import { useSettingsContext } from 'src/components/settings';
+
 //
 import AnalyticsNews from '../analytics-news';
 import AnalyticsTasks from '../analytics-tasks';
+import AnalyticsWebsiteVisits from '../analytics-website-visits';
 import AnalyticsCurrentVisits from '../analytics-current-visits';
 import AnalyticsOrderTimeline from '../analytics-order-timeline';
-import AnalyticsWebsiteVisits from '../analytics-website-visits';
 import AnalyticsWidgetSummary from '../analytics-widget-summary';
 import AnalyticsTrafficBySite from '../analytics-traffic-by-site';
 import AnalyticsCurrentSubject from '../analytics-current-subject';

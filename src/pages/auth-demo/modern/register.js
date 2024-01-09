@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+
 // sections
 import { ModernRegisterView } from 'src/sections/auth-demo/modern';
 

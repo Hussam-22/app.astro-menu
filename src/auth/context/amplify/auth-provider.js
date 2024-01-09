@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
-import { useEffect, useReducer, useCallback, useMemo } from 'react';
 import { Auth } from '@aws-amplify/auth';
+import { useMemo, useEffect, useReducer, useCallback } from 'react';
+
 // config
 import { AMPLIFY_API } from 'src/config-global';
+
 //
 import { AuthContext } from './auth-context';
 

@@ -1,19 +1,22 @@
 import { useState } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Accordion from '@mui/material/Accordion';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-// routes
-import { paths } from 'src/routes/paths';
+import AccordionSummary from '@mui/material/AccordionSummary';
+
 // _mock
 import { _mock } from 'src/_mock';
+// routes
+import { paths } from 'src/routes/paths';
 // components
 import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
 //
 import ComponentBlock from '../component-block';
 

@@ -1,10 +1,12 @@
-import PropTypes from 'prop-types';
 import { memo } from 'react';
+import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
+import Switch from '@mui/material/Switch';
 // @mui
 import Slider from '@mui/material/Slider';
-import Switch from '@mui/material/Switch';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+
 // utils
 import { fDate } from 'src/utils/format-time';
 // components

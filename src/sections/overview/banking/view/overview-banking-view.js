@@ -1,17 +1,19 @@
 // @mui
-import { useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
-import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
-// _mock
-import { _bankingContacts, _bankingCreditCard, _bankingRecentTransitions } from 'src/_mock';
+import { useTheme } from '@mui/material/styles';
+import Container from '@mui/material/Container';
+
 // components
 import { useSettingsContext } from 'src/components/settings';
+// _mock
+import { _bankingContacts, _bankingCreditCard, _bankingRecentTransitions } from 'src/_mock';
+
 //
 import BankingContacts from '../banking-contacts';
+import BankingWidgetSummary from '../banking-widget-summary';
 import BankingQuickTransfer from '../banking-quick-transfer';
 import BankingInviteFriends from '../banking-invite-friends';
-import BankingWidgetSummary from '../banking-widget-summary';
 import BankingCurrentBalance from '../banking-current-balance';
 import BankingBalanceStatistics from '../banking-balance-statistics';
 import BankingRecentTransitions from '../banking-recent-transitions';

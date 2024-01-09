@@ -1,8 +1,10 @@
-import PropTypes from 'prop-types';
-import { useState, useCallback, memo } from 'react';
 import Map from 'react-map-gl';
+import PropTypes from 'prop-types';
+import { memo, useState, useCallback } from 'react';
+
 // components
 import { MapControl } from 'src/components/map';
+
 //
 import ControlPanel from './control-panel';
 

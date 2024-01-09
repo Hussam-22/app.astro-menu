@@ -1,19 +1,22 @@
 import { useState, useCallback } from 'react';
+
 // @mui
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
+
 // routes
 import { paths } from 'src/routes/paths';
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-// _mock
-import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useMockedUser } from 'src/hooks/use-mocked-user';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+// _mock
+import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
+
 //
 import ProfileHome from '../profile-home';
 import ProfileCover from '../profile-cover';

@@ -1,14 +1,17 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Collapse from '@mui/material/Collapse';
 import { listClasses } from '@mui/material/List';
 import { listItemTextClasses } from '@mui/material/ListItemText';
 import { listItemButtonClasses } from '@mui/material/ListItemButton';
+
+import { usePathname } from 'src/routes/hook';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
 import { NavSectionVertical } from 'src/components/nav-section';
-import { usePathname } from 'src/routes/hook';
+
 //
 import NavItem from './nav-item';
 

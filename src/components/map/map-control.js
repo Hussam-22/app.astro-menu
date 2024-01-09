@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import { NavigationControl, FullscreenControl, ScaleControl, GeolocateControl } from 'react-map-gl';
+import { ScaleControl, GeolocateControl, FullscreenControl, NavigationControl } from 'react-map-gl';
+
 //
 import { StyledMapControls } from './styles';
 

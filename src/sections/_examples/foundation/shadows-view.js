@@ -1,15 +1,18 @@
 import PropTypes from 'prop-types';
-// @mui
-import { useTheme } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
+// @mui
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
+
 // routes
 import { paths } from 'src/routes/paths';
 // components
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
 //
 import ComponentBlock from '../component-block';
 

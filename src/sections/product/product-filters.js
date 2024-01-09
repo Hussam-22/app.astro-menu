@@ -1,21 +1,23 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
-// @mui
-import { alpha } from '@mui/material/styles';
-import Radio from '@mui/material/Radio';
+
 import Stack from '@mui/material/Stack';
+import Radio from '@mui/material/Radio';
 import Badge from '@mui/material/Badge';
+import Button from '@mui/material/Button';
 import Drawer from '@mui/material/Drawer';
 import Rating from '@mui/material/Rating';
-import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
+// @mui
+import { alpha } from '@mui/material/styles';
 import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import InputBase, { inputBaseClasses } from '@mui/material/InputBase';
+
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';

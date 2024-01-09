@@ -1,9 +1,10 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 // @mui
 import { styled } from '@mui/material/styles';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
 
 // ----------------------------------------------------------------------
 

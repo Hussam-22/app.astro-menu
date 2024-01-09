@@ -1,20 +1,23 @@
 // @mui
-import { useTheme } from '@mui/material/styles';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
+import { useTheme } from '@mui/material/styles';
+
 // theme
 import { bgBlur } from 'src/theme/css';
-// routes
-import { paths } from 'src/routes/paths';
-// hooks
-import { useOffSetTop } from 'src/hooks/use-off-set-top';
 // components
 import Logo from 'src/components/logo';
+// routes
+import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+// hooks
+import { useOffSetTop } from 'src/hooks/use-off-set-top';
+
 //
 import { HEADER } from '../config-layout';
+
 import HeaderShadow from './header-shadow';
 import SettingsButton from './settings-button';
 

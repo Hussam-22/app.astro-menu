@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+
 // sections
 import UploadView from 'src/sections/_examples/extra/upload-view';
 

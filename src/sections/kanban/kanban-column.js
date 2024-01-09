@@ -1,25 +1,28 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
-// @mui
-import { alpha } from '@mui/material/styles';
+
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-// api
-import {
-  updateColumn,
-  clearColumn,
-  deleteColumn,
-  createTask,
-  updateTask,
-  deleteTask,
-} from 'src/api/kanban';
+// @mui
+import { alpha } from '@mui/material/styles';
+
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useSnackbar } from 'src/components/snackbar';
+// api
+import {
+  deleteTask,
+  updateTask,
+  createTask,
+  clearColumn,
+  deleteColumn,
+  updateColumn,
+} from 'src/api/kanban';
+
 //
 import KanbanTaskAdd from './kanban-task-add';
 import KanbanTaskItem from './kanban-task-item';

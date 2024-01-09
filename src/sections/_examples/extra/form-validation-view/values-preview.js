@@ -1,16 +1,18 @@
 import { useFormContext } from 'react-hook-form';
-// @mui
-import { useTheme } from '@mui/material/styles';
+
 import Stack from '@mui/material/Stack';
 import Portal from '@mui/material/Portal';
 import Divider from '@mui/material/Divider';
+// @mui
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+
 // theme
 import { bgBlur } from 'src/theme/css';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import { fileData } from 'src/components/file-thumbnail';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 

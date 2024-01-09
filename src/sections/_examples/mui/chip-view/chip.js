@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Chip from '@mui/material/Chip';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+
 // _mock
 import { _mock } from 'src/_mock';
 // components

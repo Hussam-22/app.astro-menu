@@ -4,23 +4,25 @@ import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
+
 // routes
 import { paths } from 'src/routes/paths';
 // components
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import ChartBar from './chart-bar';
 //
 import ChartPie from './chart-pie';
-import ChartBar from './chart-bar';
-import ChartLine from './chart-line';
 import ChartArea from './chart-area';
-import ChartMixed from './chart-mixed';
+import ChartLine from './chart-line';
 import ChartDonut from './chart-donut';
+import ChartMixed from './chart-mixed';
 import ChartsRadarBar from './chart-radar-bar';
 import ChartRadialBar from './chart-radial-bar';
 import ChartColumnSingle from './chart-column-single';
 import ChartColumnStacked from './chart-column-stacked';
-import ChartColumnNegative from './chart-column-negative';
 import ChartColumnMultiple from './chart-column-multiple';
+import ChartColumnNegative from './chart-column-negative';
 
 // ----------------------------------------------------------------------
 

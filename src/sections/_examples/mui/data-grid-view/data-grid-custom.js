@@ -1,19 +1,21 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Rating from '@mui/material/Rating';
 import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
+import Rating from '@mui/material/Rating';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 import LinearProgress from '@mui/material/LinearProgress';
 import { DataGrid, GridToolbar, getGridNumericOperators } from '@mui/x-data-grid';
-// utils
-import { fPercent } from 'src/utils/format-number';
+
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+// utils
+import { fPercent } from 'src/utils/format-number';
 
 // ----------------------------------------------------------------------
 

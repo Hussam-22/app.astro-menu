@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
+
 // @mui
 import Stack from '@mui/material/Stack';
+
 // components
-import { MultiFilePreview, UploadBox } from 'src/components/upload';
+import { UploadBox, MultiFilePreview } from 'src/components/upload';
 
 // ----------------------------------------------------------------------
 

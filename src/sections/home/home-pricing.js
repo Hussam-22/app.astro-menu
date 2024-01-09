@@ -1,24 +1,26 @@
+import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
-import { m } from 'framer-motion';
-// @mui
-import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
+
 import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+// @mui
+import { alpha } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
-// routes
-import { paths } from 'src/routes/paths';
+
 // _mock
 import { _homePlans } from 'src/_mock';
+// routes
+import { paths } from 'src/routes/paths';
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
 import { varFade, MotionViewport } from 'src/components/animate';
 
 // ----------------------------------------------------------------------

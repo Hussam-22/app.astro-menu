@@ -1,18 +1,20 @@
 import { m } from 'framer-motion';
+
 // @mui
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Unstable_Grid2';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
-// routes
-import { paths } from 'src/routes/paths';
+
 // components
 import Image from 'src/components/image';
+// routes
+import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
-import { MotionViewport, varFade } from 'src/components/animate';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
+import { varFade, MotionViewport } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 

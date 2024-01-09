@@ -1,8 +1,10 @@
 import { useEffect, useCallback } from 'react';
+
 // @mui
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+
 // redux
 import { useDispatch } from 'src/redux/store';
 import { getCart } from 'src/redux/slices/checkout';
@@ -10,6 +12,7 @@ import { getCart } from 'src/redux/slices/checkout';
 import { PRODUCT_CHECKOUT_STEPS } from 'src/_mock/_product';
 // components
 import { useSettingsContext } from 'src/components/settings';
+
 //
 import { useCheckout } from '../../hooks';
 import CheckoutCart from '../checkout-cart';

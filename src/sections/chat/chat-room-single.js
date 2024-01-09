@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -6,10 +7,11 @@ import Avatar from '@mui/material/Avatar';
 import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import ListItemButton from '@mui/material/ListItemButton';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
 

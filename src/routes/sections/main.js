@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
+
 // layouts
 import MainLayout from 'src/layouts/main';
 import SimpleLayout from 'src/layouts/simple';

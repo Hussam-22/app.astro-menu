@@ -1,15 +1,18 @@
 import PropTypes from 'prop-types';
 import { formatDistanceToNowStrict } from 'date-fns';
+
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+import IconButton from '@mui/material/IconButton';
+
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useMockedUser } from 'src/hooks/use-mocked-user';
+
 //
 import { useGetMessage } from './hooks';
 

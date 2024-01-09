@@ -1,22 +1,24 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
+
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
+import Portal from '@mui/material/Portal';
+import Button from '@mui/material/Button';
 // @mui
 import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Portal from '@mui/material/Portal';
 import Backdrop from '@mui/material/Backdrop';
 import InputBase from '@mui/material/InputBase';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+
+import Editor from 'src/components/editor';
+// components
+import Iconify from 'src/components/iconify';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
-// components
-import Iconify from 'src/components/iconify';
-import Editor from 'src/components/editor';
 
 // ----------------------------------------------------------------------
 

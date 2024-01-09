@@ -1,14 +1,16 @@
 import PropTypes from 'prop-types';
-// @mui
-import { useTheme } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import Tooltip from '@mui/material/Tooltip';
 import TableBody from '@mui/material/TableBody';
+// @mui
+import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { tableCellClasses } from '@mui/material/TableCell';
 import { tablePaginationClasses } from '@mui/material/TablePagination';
+
 // components
 import Iconify from 'src/components/iconify';
 import {
@@ -19,6 +21,7 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+
 //
 import FileManagerTableRow from './file-manager-table-row';
 

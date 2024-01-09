@@ -1,23 +1,25 @@
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-// @mui
-import LoadingButton from '@mui/lab/LoadingButton';
+
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+// @mui
+import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
+
 // routes
 import { paths } from 'src/routes/paths';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+// assets
+import { SentIcon } from 'src/assets/icons';
 // components
 import Iconify from 'src/components/iconify';
 import { RouterLink } from 'src/routes/components';
-import FormProvider, { RHFTextField, RHFCode } from 'src/components/hook-form';
-// assets
-import { SentIcon } from 'src/assets/icons';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+import FormProvider, { RHFCode, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 

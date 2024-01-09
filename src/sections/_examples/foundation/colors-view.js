@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types';
-// @mui
-import { useTheme, hexToRgb, alpha } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-// hooks
-import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
+// @mui
+import { alpha, hexToRgb, useTheme } from '@mui/material/styles';
+
 // routes
 import { paths } from 'src/routes/paths';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+// hooks
+import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
 
 // ----------------------------------------------------------------------
 

@@ -1,11 +1,14 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
+
 // routes
 import { usePathname } from 'src/routes/hook';
+
+import Header from './header';
 //
 import Footer from './footer';
-import Header from './header';
 
 // ----------------------------------------------------------------------
 

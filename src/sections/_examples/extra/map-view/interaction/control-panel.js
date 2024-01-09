@@ -1,10 +1,12 @@
-import PropTypes from 'prop-types';
 import { memo } from 'react';
-// @mui
-import { styled, alpha } from '@mui/material/styles';
+import PropTypes from 'prop-types';
+
 import Switch from '@mui/material/Switch';
 import InputBase from '@mui/material/InputBase';
 import Typography from '@mui/material/Typography';
+// @mui
+import { alpha, styled } from '@mui/material/styles';
+
 // components
 import { StyledControlPanel } from 'src/components/map';
 

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import { useEffect, useReducer, useCallback, useMemo } from 'react';
 import { initializeApp } from 'firebase/app';
+import { useMemo, useEffect, useReducer, useCallback } from 'react';
+import { doc, setDoc, getDoc, collection, getFirestore } from 'firebase/firestore';
 import {
   getAuth,
   signOut,
@@ -14,9 +15,10 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
-import { getFirestore, collection, doc, getDoc, setDoc } from 'firebase/firestore';
+
 // config
 import { FIREBASE_API } from 'src/config-global';
+
 //
 import { AuthContext } from './auth-context';
 

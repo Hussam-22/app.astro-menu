@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
+
+import Stack from '@mui/material/Stack';
 // @mui
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
 
 // ----------------------------------------------------------------------
 

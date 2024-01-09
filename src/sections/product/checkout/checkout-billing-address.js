@@ -1,16 +1,20 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
+
 // _mock
 import { _addressBooks } from 'src/_mock';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+
 //
-import { AddressNewForm, AddressItem } from '../../address';
+import { AddressItem, AddressNewForm } from '../../address';
+
 import CheckoutSummary from './checkout-summary';
 
 // ----------------------------------------------------------------------

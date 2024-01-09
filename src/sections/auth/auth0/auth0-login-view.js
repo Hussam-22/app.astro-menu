@@ -1,13 +1,15 @@
 import { useCallback } from 'react';
+
 // @mui
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-// routes
-import { useSearchParams } from 'src/routes/hook';
+
 // auth
 import { useAuthContext } from 'src/auth/hooks';
+// routes
+import { useSearchParams } from 'src/routes/hook';
 // config
 import { PATH_AFTER_LOGIN } from 'src/config-global';
 

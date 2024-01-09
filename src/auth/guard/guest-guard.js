@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
-import { useCallback, useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
+
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
+
 //
 import { useAuthContext } from '../hooks';
 

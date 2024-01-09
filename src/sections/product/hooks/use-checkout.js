@@ -1,6 +1,12 @@
 import { useCallback } from 'react';
+
+// routes
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
+// _mock
+import { PRODUCT_CHECKOUT_STEPS } from 'src/_mock/_product';
 import {
   gotoStep,
   nextStep,
@@ -14,11 +20,6 @@ import {
   increaseQuantity,
   decreaseQuantity,
 } from 'src/redux/slices/checkout';
-// _mock
-import { PRODUCT_CHECKOUT_STEPS } from 'src/_mock/_product';
-// routes
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hook';
 
 // ----------------------------------------------------------------------
 

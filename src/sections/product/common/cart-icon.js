@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
+
 // routes
 import { paths } from 'src/routes/paths';
 // components

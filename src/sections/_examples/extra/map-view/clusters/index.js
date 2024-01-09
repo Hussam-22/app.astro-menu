@@ -1,5 +1,6 @@
-import { useRef, memo } from 'react';
+import { memo, useRef } from 'react';
 import Map, { Layer, Source } from 'react-map-gl';
+
 //
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer } from './layers';
 

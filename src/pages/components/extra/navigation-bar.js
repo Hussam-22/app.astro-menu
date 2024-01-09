@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+
 // sections
 import NavigationBarView from 'src/sections/_examples/extra/navigation-bar-view';
 

@@ -1,22 +1,24 @@
 // @mui
-import Masonry from '@mui/lab/Masonry';
-import Timeline from '@mui/lab/Timeline';
-import TimelineDot from '@mui/lab/TimelineDot';
-import TimelineItem from '@mui/lab/TimelineItem';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import Masonry from '@mui/lab/Masonry';
 import Paper from '@mui/material/Paper';
+import Timeline from '@mui/lab/Timeline';
+import { alpha } from '@mui/material/styles';
+import TimelineDot from '@mui/lab/TimelineDot';
 import Container from '@mui/material/Container';
+import TimelineItem from '@mui/lab/TimelineItem';
 import Typography from '@mui/material/Typography';
+import TimelineContent from '@mui/lab/TimelineContent';
+import TimelineConnector from '@mui/lab/TimelineConnector';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
+
 // routes
 import { paths } from 'src/routes/paths';
 // components
 import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
 //
 import ComponentBlock from '../component-block';
 

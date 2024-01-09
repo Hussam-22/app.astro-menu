@@ -1,21 +1,23 @@
-import PropTypes from 'prop-types';
 import { sub } from 'date-fns';
-import { useRef, useState, useCallback, useMemo } from 'react';
+import PropTypes from 'prop-types';
+import { useRef, useMemo, useState, useCallback } from 'react';
+
 // @mui
 import Stack from '@mui/material/Stack';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
+
+// utils
+import uuidv4 from 'src/utils/uuidv4';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-// utils
-import uuidv4 from 'src/utils/uuidv4';
-// api
-import { sendMessage, createConversation } from 'src/api/chat';
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useMockedUser } from 'src/hooks/use-mocked-user';
+// api
+import { sendMessage, createConversation } from 'src/api/chat';
 
 // ----------------------------------------------------------------------
 

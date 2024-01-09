@@ -1,22 +1,25 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
-// @mui
-import { useTheme } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
+// @mui
+import { useTheme } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
+
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
+
 //
 import { useCollapseNav } from './hooks';
 import ChatNavItem from './chat-nav-item';

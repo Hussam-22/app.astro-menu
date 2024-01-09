@@ -1,28 +1,30 @@
-import PropTypes from 'prop-types';
 import { m } from 'framer-motion';
+import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
 // @mui
 import Masonry from '@mui/lab/Masonry';
-import { alpha, useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Rating from '@mui/material/Rating';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import Rating from '@mui/material/Rating';
 import Avatar from '@mui/material/Avatar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
-import Stack from '@mui/material/Stack';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
-// utils
-import { fDate } from 'src/utils/format-time';
+import { alpha, useTheme } from '@mui/material/styles';
+
 // _mock
 import { _testimonials } from 'src/_mock';
-// theme
-import { bgBlur, bgGradient, hideScroll } from 'src/theme/css';
 // components
 import Iconify from 'src/components/iconify';
-import { MotionViewport, varFade } from 'src/components/animate';
+// utils
+import { fDate } from 'src/utils/format-time';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
+// theme
+import { bgBlur, bgGradient, hideScroll } from 'src/theme/css';
+import { varFade, MotionViewport } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 

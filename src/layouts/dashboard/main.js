@@ -1,12 +1,15 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
+
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import { useSettingsContext } from 'src/components/settings';
+
 //
-import { HEADER, NAV } from '../config-layout';
+import { NAV, HEADER } from '../config-layout';
 
 // ----------------------------------------------------------------------
 

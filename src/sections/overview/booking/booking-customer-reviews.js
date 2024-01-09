@@ -1,19 +1,21 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Chip from '@mui/material/Chip';
+import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Rating from '@mui/material/Rating';
 import Button from '@mui/material/Button';
+import Rating from '@mui/material/Rating';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
-import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
 import ListItemText from '@mui/material/ListItemText';
+
 // utils
 import { fDateTime } from 'src/utils/format-time';
 // components
-import Carousel, { CarouselArrows, useCarousel } from 'src/components/carousel';
+import Carousel, { useCarousel, CarouselArrows } from 'src/components/carousel';
 
 // ----------------------------------------------------------------------
 

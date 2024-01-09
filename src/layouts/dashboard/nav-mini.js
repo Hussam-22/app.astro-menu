@@ -1,17 +1,20 @@
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+
+// components
+import Logo from 'src/components/logo';
 // theme
 import { hideScroll } from 'src/theme/css';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
-// components
-import Logo from 'src/components/logo';
 import { NavSectionMini } from 'src/components/nav-section';
+
 //
 import { NAV } from '../config-layout';
-import { useNavData } from './config-navigation';
 import { NavToggleButton } from '../_common';
+
+import { useNavData } from './config-navigation';
 
 // ----------------------------------------------------------------------
 

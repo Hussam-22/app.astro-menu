@@ -1,27 +1,29 @@
+import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
-import * as Yup from 'yup';
-import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-// @mui
-import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { useForm, Controller } from 'react-hook-form';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
+import LoadingButton from '@mui/lab/LoadingButton';
 import DialogActions from '@mui/material/DialogActions';
+// @mui
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
+
 // utils
 import uuidv4 from 'src/utils/uuidv4';
-import { fTimestamp } from 'src/utils/format-time';
-// api
-import { createEvent, updateEvent, deleteEvent } from 'src/api/calendar';
 // components
 import Iconify from 'src/components/iconify';
+import { fTimestamp } from 'src/utils/format-time';
 import { useSnackbar } from 'src/components/snackbar';
 import { ColorPicker } from 'src/components/color-utils';
-import FormProvider, { RHFTextField, RHFSwitch } from 'src/components/hook-form';
+// api
+import { createEvent, updateEvent, deleteEvent } from 'src/api/calendar';
+import FormProvider, { RHFSwitch, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 

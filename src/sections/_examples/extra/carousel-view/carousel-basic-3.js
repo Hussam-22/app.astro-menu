@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
+
 // components
 import Image from 'src/components/image';
-import Carousel, { CarouselDots, CarouselArrows, useCarousel } from 'src/components/carousel';
+import Carousel, { useCarousel, CarouselDots, CarouselArrows } from 'src/components/carousel';
 
 // ----------------------------------------------------------------------
 

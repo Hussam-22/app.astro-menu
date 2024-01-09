@@ -1,14 +1,17 @@
 import PropTypes from 'prop-types';
-// @mui
-import { useTheme } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
+// @mui
+import { useTheme } from '@mui/material/styles';
+
 // routes
 import { RouterLink } from 'src/routes/components';
+
 //
 import Image from '../../image';
 import TextMaxLine from '../../text-max-line';
-import Carousel, { CarouselDots, CarouselArrows, useCarousel } from '../../carousel';
+import Carousel, { useCarousel, CarouselDots, CarouselArrows } from '../../carousel';
 
 // ----------------------------------------------------------------------
 

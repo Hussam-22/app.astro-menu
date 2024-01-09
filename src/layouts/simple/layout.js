@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+
 import { HeaderSimple as Header } from '../_common';
 
 // ----------------------------------------------------------------------

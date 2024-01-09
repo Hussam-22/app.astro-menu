@@ -1,13 +1,16 @@
-import PropTypes from 'prop-types';
-import { m } from 'framer-motion';
 import { useRef } from 'react';
+import { m } from 'framer-motion';
+import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+
 // components
 import Scrollbar from 'src/components/scrollbar';
-import { MotionViewport, varContainer } from 'src/components/animate';
+import { varContainer, MotionViewport } from 'src/components/animate';
+
 //
 import getVariant from '../get-variant';
 

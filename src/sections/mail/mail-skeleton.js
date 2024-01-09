@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
+
+import Stack from '@mui/material/Stack';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
-import Stack from '@mui/material/Stack';
 
 // ----------------------------------------------------------------------
 

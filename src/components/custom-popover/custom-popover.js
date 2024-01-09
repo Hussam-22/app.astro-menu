@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
+
+import Popover from '@mui/material/Popover';
 // @mui
 import { menuItemClasses } from '@mui/material/MenuItem';
-import Popover from '@mui/material/Popover';
+
 //
 import { getPosition } from './utils';
 import { StyledArrow } from './styles';

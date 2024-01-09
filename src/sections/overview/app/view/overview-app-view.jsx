@@ -1,24 +1,28 @@
-// @mui
-import { useTheme } from '@mui/material/styles';
+import axios from 'axios';
+import { useEffect } from 'react';
+
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
+import { useTheme } from '@mui/material/styles';
+
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
-// _mock
-import { _appFeatured, _appAuthors, _appInstalled, _appRelated, _appInvoices } from 'src/_mock';
-// components
-import { useSettingsContext } from 'src/components/settings';
 // assets
 import { SeoIllustration } from 'src/assets/illustrations';
+// components
+import { useSettingsContext } from 'src/components/settings';
+// _mock
+import { _appRelated, _appAuthors, _appInvoices, _appFeatured, _appInstalled } from 'src/_mock';
+
 //
 import AppWidget from '../app-widget';
 import AppWelcome from '../app-welcome';
 import AppFeatured from '../app-featured';
-import AppNewInvoice from '../app-new-invoice';
 import AppTopAuthors from '../app-top-authors';
 import AppTopRelated from '../app-top-related';
+import AppNewInvoice from '../app-new-invoice';
 import AppAreaInstalled from '../app-area-installed';
 import AppWidgetSummary from '../app-widget-summary';
 import AppCurrentDownload from '../app-current-download';
@@ -28,10 +32,51 @@ import AppTopInstalledCountries from '../app-top-installed-countries';
 
 export default function OverviewAppView() {
   const { user } = useMockedUser();
-
   const theme = useTheme();
-
   const settings = useSettingsContext();
+  const name = true;
+  const water = name === true ? name : false;
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const apiUrl = 'https://library.sharjah.ac.ae:443/iii/sierra-api/v6/patrons/?limit=10';
+
+  //     const secretKey = 'hjpu6Jw1btAxfJSa+J7trKBttLVv';
+  //     const password = 'Hussam@22';
+
+  //     const headers = {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Basic ${btoa(`${secretKey}:${password}`)}`,
+  //     };
+
+  //     axios.get(apiUrl, { headers });
+  //   })();
+  // }, []);
+
+  useEffect(() => {
+    const apiUrl = 'https://library.sharjah.ac.ae:443/iii/sierra-api/v6/patrons/?limit=10';
+    const secretKey = 'hjpu6Jw1btAxfJSa+J7trKBttLVv';
+    const password = 'Hussam@22';
+
+    const credentials = `${secretKey}:${password}`;
+    const encodedCredentials = btoa(credentials);
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Basic ${encodedCredentials}`,
+    };
+
+    axios
+      .get(apiUrl, { headers })
+      .then((response) => {
+        console.log('Response:', response.data);
+        // Handle the response data as needed
+      })
+      .catch((error) => {
+        console.error('Error:', error.response ? error.response.data : error.message);
+        // Handle errors
+      });
+  }, []);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>

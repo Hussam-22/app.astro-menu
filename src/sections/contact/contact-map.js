@@ -1,15 +1,17 @@
-import PropTypes from 'prop-types';
 import Map from 'react-map-gl';
 import { useState } from 'react';
-// @mui
-import { useTheme, styled } from '@mui/material/styles';
+import PropTypes from 'prop-types';
+
 import NoSsr from '@mui/material/NoSsr';
 import Typography from '@mui/material/Typography';
-// config
-import { MAPBOX_API } from 'src/config-global';
+// @mui
+import { styled, useTheme } from '@mui/material/styles';
+
 // components
 import Iconify from 'src/components/iconify';
-import { MapControl, MapMarker, MapPopup } from 'src/components/map';
+// config
+import { MAPBOX_API } from 'src/config-global';
+import { MapPopup, MapMarker, MapControl } from 'src/components/map';
 
 // ----------------------------------------------------------------------
 

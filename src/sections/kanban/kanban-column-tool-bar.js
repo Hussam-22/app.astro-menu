@@ -1,17 +1,20 @@
 import PropTypes from 'prop-types';
 import { useRef, useState, useEffect, useCallback } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+
 //
 import KanbanInputName from './kanban-input-name';
 

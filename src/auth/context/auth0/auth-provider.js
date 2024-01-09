@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { useAuth0, Auth0Provider } from '@auth0/auth0-react';
+
 // config
 import { AUTH0_API } from 'src/config-global';
+
 //
 import { AuthContext } from './auth-context';
 

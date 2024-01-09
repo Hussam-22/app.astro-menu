@@ -1,27 +1,29 @@
 import * as Yup from 'yup';
-import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-// @mui
-import LoadingButton from '@mui/lab/LoadingButton';
+
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+// @mui
+import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
+
 // routes
 import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
-import { useSearchParams, useRouter } from 'src/routes/hook';
-// config
-import { PATH_AFTER_LOGIN } from 'src/config-global';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-// auth
-import { useAuthContext } from 'src/auth/hooks';
 // components
 import Iconify from 'src/components/iconify';
+// auth
+import { useAuthContext } from 'src/auth/hooks';
+import { RouterLink } from 'src/routes/components';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+// config
+import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { useRouter, useSearchParams } from 'src/routes/hook';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------

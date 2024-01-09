@@ -1,11 +1,15 @@
 // @mui
-import Masonry from '@mui/lab/Masonry';
 import Box from '@mui/material/Box';
+import Masonry from '@mui/lab/Masonry';
 import Container from '@mui/material/Container';
+
 // routes
 import { paths } from 'src/routes/paths';
 // components
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import ComponentBlock from '../../component-block';
+
 //
 import FormDialog from './form-dialog';
 import AlertDialog from './alert-dialog';
@@ -14,7 +18,6 @@ import SimpleDialogs from './simple-dialog';
 import MaxWidthDialog from './max-width-dialog';
 import FullScreenDialog from './full-screen-dialog';
 import TransitionsDialog from './transitions-dialog';
-import ComponentBlock from '../../component-block';
 
 // ----------------------------------------------------------------------
 

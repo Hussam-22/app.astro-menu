@@ -1,9 +1,11 @@
-import PropTypes from 'prop-types';
-import { useState, memo } from 'react';
 import Map from 'react-map-gl';
+import PropTypes from 'prop-types';
+import { memo, useState } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+
 // components
 import Image from 'src/components/image';
 import { MapPopup, MapMarker, MapControl } from 'src/components/map';

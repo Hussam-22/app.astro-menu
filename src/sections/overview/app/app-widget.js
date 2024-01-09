@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
+
+import Stack from '@mui/material/Stack';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import ListItemText from '@mui/material/ListItemText';
-import Stack from '@mui/material/Stack';
-// utils
-import { fNumber } from 'src/utils/format-number';
+
 // components
 import Iconify from 'src/components/iconify';
+// utils
+import { fNumber } from 'src/utils/format-number';
 import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------

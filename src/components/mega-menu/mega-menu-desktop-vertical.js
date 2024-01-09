@@ -1,22 +1,26 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
-// @mui
-import Masonry from '@mui/lab/Masonry';
-import { alpha } from '@mui/material/styles';
+
 import List from '@mui/material/List';
 import Link from '@mui/material/Link';
+// @mui
+import Masonry from '@mui/lab/Masonry';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
+import { alpha } from '@mui/material/styles';
 import ListItem from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
+
 // routes
 import { RouterLink } from 'src/routes/components';
+
 //
 import Iconify from '../iconify';
+
+import MenuCarousel from './_common/menu-carousel';
 //
 import MenuHotProducts from './_common/menu-hot-products';
-import MenuCarousel from './_common/menu-carousel';
 
 // ----------------------------------------------------------------------
 

@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
-// @mui
-import { useTheme, styled, alpha } from '@mui/material/styles';
+
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
+// @mui
+import { alpha, styled, useTheme } from '@mui/material/styles';
 //
 //
 import { LeftIcon, RightIcon } from './arrow-icons';

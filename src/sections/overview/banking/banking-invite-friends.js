@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
-// @mui
-import { useTheme } from '@mui/material/styles';
+
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+// @mui
+import { useTheme } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
-import Box from '@mui/material/Box';
+
 // theme
 import { bgGradient } from 'src/theme/css';
 

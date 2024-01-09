@@ -1,8 +1,9 @@
-import { useState, useCallback, useRef } from 'react';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
+import { useRef, useState, useCallback } from 'react';
+
 // utils
 import { fTimestamp } from 'src/utils/format-time';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 

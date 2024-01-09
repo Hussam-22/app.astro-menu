@@ -1,5 +1,5 @@
-import { useState, useCallback, useMemo, memo } from 'react';
 import Map from 'react-map-gl';
+import { memo, useMemo, useState, useCallback } from 'react';
 // components
 //
 import ControlPanel from './control-panel';

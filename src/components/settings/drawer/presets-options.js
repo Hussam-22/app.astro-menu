@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
 // @mui
 import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
+
 // theme
 import { primaryPresets } from 'src/theme/options/presets';
 

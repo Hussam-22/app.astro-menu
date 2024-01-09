@@ -3,14 +3,15 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+
 // routes
 import { paths } from 'src/routes/paths';
-import { useSearchParams } from 'src/routes/hook';
-import { RouterLink } from 'src/routes/components';
-// assets
-import { EmailInboxIcon } from 'src/assets/icons';
 // components
 import Iconify from 'src/components/iconify';
+import { useSearchParams } from 'src/routes/hook';
+// assets
+import { EmailInboxIcon } from 'src/assets/icons';
+import { RouterLink } from 'src/routes/components';
 
 // ----------------------------------------------------------------------
 

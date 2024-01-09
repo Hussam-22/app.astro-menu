@@ -1,17 +1,20 @@
-import PropTypes from 'prop-types';
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
+
 // @mui
 import Fade from '@mui/material/Fade';
 import Stack from '@mui/material/Stack';
 import Portal from '@mui/material/Portal';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+
 // routes
 import { usePathname } from 'src/routes/hook';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useActiveLink } from 'src/routes/hook/use-active-link';
+
+import { StyledMenu, StyledSubheader } from './styles';
 //
 import { NavItem, NavItemDashboard } from './nav-item';
-import { StyledSubheader, StyledMenu } from './styles';
 
 // ----------------------------------------------------------------------
 

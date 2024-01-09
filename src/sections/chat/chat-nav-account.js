@@ -1,19 +1,21 @@
 import { useState, useCallback } from 'react';
+
 // @mui
 import Stack from '@mui/material/Stack';
+import Select from '@mui/material/Select';
 import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 import Badge, { badgeClasses } from '@mui/material/Badge';
-import Select from '@mui/material/Select';
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useMockedUser } from 'src/hooks/use-mocked-user';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------

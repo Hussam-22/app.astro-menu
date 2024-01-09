@@ -1,17 +1,18 @@
 import { m } from 'framer-motion';
-// @mui
-import { styled, alpha } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+// @mui
+import { alpha, styled } from '@mui/material/styles';
 
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
 // theme
 import { bgGradient } from 'src/theme/css';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
 // components
-import { MotionContainer, varFade } from 'src/components/animate';
+import { varFade, MotionContainer } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 

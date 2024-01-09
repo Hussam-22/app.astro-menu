@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
+
+import Card from '@mui/material/Card';
 // @mui
 import { alpha } from '@mui/material/styles';
-import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 
 // ----------------------------------------------------------------------

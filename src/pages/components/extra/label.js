@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+
 // sections
 import LabelView from 'src/sections/_examples/extra/label-view';
 

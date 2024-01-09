@@ -1,15 +1,17 @@
 import PropTypes from 'prop-types';
-import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
+
 // @mui
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Autocomplete from '@mui/material/Autocomplete';
 import InputAdornment from '@mui/material/InputAdornment';
+
+import { useRouter } from 'src/routes/hook';
 // components
 import Iconify from 'src/components/iconify';
-import { useRouter } from 'src/routes/hook';
 import SearchNotFound from 'src/components/search-not-found';
 
 // ----------------------------------------------------------------------

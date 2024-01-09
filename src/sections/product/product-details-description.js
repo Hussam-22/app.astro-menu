@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+
 // components
 import Markdown from 'src/components/markdown';
 

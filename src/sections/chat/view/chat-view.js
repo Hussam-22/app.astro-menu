@@ -1,18 +1,21 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+
 // @mui
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+
 // routes
 import { paths } from 'src/routes/paths';
-import { useRouter, useSearchParams } from 'src/routes/hook';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
-// api
-import { useGetContacts, useGetConversation, useGetConversations } from 'src/api/chat';
 // components
 import { useSettingsContext } from 'src/components/settings';
+import { useRouter, useSearchParams } from 'src/routes/hook';
+// api
+import { useGetContacts, useGetConversation, useGetConversations } from 'src/api/chat';
+
 //
 import ChatNav from '../chat-nav';
 import ChatRoom from '../chat-room';

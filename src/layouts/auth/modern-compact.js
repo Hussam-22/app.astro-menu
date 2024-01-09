@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+
 //
 import { HeaderSimple as Header } from '../_common';
 

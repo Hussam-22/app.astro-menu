@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
+
 // components
 import Scrollbar from 'src/components/scrollbar';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
+
 //
 import { useMessagesScroll } from './hooks';
 import ChatMessageItem from './chat-message-item';

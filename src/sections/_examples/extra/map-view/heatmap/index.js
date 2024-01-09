@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, memo } from 'react';
-import Map, { Source, Layer } from 'react-map-gl';
+import Map, { Layer, Source } from 'react-map-gl';
+import { memo, useMemo, useState, useEffect } from 'react';
 // components
 //
 import ControlPanel from './control-panel';

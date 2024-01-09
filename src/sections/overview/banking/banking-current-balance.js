@@ -1,22 +1,24 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
-// @mui
-import { useTheme, alpha } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+// @mui
+import { alpha, useTheme } from '@mui/material/styles';
+
 // theme
 import { bgGradient } from 'src/theme/css';
-// utils
-import { fCurrency } from 'src/utils/format-number';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+// utils
+import { fCurrency } from 'src/utils/format-number';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import Carousel, { CarouselDots, useCarousel } from 'src/components/carousel';
+import Carousel, { useCarousel, CarouselDots } from 'src/components/carousel';
 
 // ----------------------------------------------------------------------
 

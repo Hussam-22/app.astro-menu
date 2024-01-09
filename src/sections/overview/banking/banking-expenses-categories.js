@@ -1,15 +1,17 @@
 import PropTypes from 'prop-types';
-// @mui
-import { useTheme } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
+// @mui
+import { useTheme } from '@mui/material/styles';
 import CardHeader from '@mui/material/CardHeader';
-import Card from '@mui/material/Card';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
+
 // components
 import Chart, { useChart } from 'src/components/chart';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 

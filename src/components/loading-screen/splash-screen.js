@@ -1,8 +1,10 @@
-import PropTypes from 'prop-types';
 import { m } from 'framer-motion';
+import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
 // @mui
 import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
+
 //
 import Logo from '../logo';
 

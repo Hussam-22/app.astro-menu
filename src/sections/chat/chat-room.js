@@ -1,17 +1,20 @@
-import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
+import PropTypes from 'prop-types';
 import flatten from 'lodash/flatten';
 import { useEffect, useCallback } from 'react';
-// @mui
-import { useTheme } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
+// @mui
+import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
+
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
+
 //
 import { useCollapseNav } from './hooks';
 import ChatRoomGroup from './chat-room-group';

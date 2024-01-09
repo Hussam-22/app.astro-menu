@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
+
 //
 import UserCard from './user-card';
 

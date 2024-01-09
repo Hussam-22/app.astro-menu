@@ -1,21 +1,24 @@
 import PropTypes from 'prop-types';
-// @mui
-import { useTheme } from '@mui/material/styles';
+
 import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
+// @mui
+import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
+
+// components
+import Logo from 'src/components/logo';
 // theme
 import { bgBlur } from 'src/theme/css';
+import SvgColor from 'src/components/svg-color';
 // hooks
 import { useOffSetTop } from 'src/hooks/use-off-set-top';
 import { useResponsive } from 'src/hooks/use-responsive';
-// components
-import Logo from 'src/components/logo';
-import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
+
 //
-import { HEADER, NAV } from '../config-layout';
+import { NAV, HEADER } from '../config-layout';
 import {
   Searchbar,
   AccountPopover,

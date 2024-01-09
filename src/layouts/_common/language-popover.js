@@ -1,8 +1,10 @@
-import { useCallback } from 'react';
 import { m } from 'framer-motion';
+import { useCallback } from 'react';
+
 // @mui
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
+
 // locales
 import { useLocales } from 'src/locales';
 // components

@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 
 // components
 import Label from 'src/components/label';

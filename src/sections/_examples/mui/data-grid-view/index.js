@@ -1,17 +1,19 @@
 // @mui
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
-import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-// routes
-import { paths } from 'src/routes/paths';
+import CardHeader from '@mui/material/CardHeader';
+
 // _mock
 import { _mock } from 'src/_mock';
+// routes
+import { paths } from 'src/routes/paths';
 // components
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
 //
 import DataGridBasic from './data-grid-basic';
 import DataGridCustom from './data-grid-custom';

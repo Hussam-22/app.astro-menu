@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 import { formatDistanceToNowStrict } from 'date-fns';
+
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -10,14 +11,16 @@ import Typography from '@mui/material/Typography';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
+
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-import { useResponsive } from 'src/hooks/use-responsive';
 // api
 import { clickConversation } from 'src/api/chat';
+import { useResponsive } from 'src/hooks/use-responsive';
+// hooks
+import { useMockedUser } from 'src/hooks/use-mocked-user';
+
 //
 import { useGetNavItem } from './hooks';
 

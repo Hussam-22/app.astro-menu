@@ -1,15 +1,18 @@
 import { useCallback } from 'react';
-import { DragDropContext, Droppable } from '@hello-pangea/dnd';
+import { Droppable, DragDropContext } from '@hello-pangea/dnd';
+
 // @mui
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+
 // theme
 import { hideScroll } from 'src/theme/css';
-// api
-import { useGetBoard, moveColumn, moveTask } from 'src/api/kanban';
 // components
 import EmptyContent from 'src/components/empty-content';
+// api
+import { moveTask, moveColumn, useGetBoard } from 'src/api/kanban';
+
 //
 import KanbanColumn from '../kanban-column';
 import KanbanColumnAdd from '../kanban-column-add';

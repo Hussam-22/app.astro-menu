@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
-// @mui
-import { useTheme, alpha } from '@mui/material/styles';
+
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+// @mui
+import { alpha, useTheme } from '@mui/material/styles';
+
 // theme
 import { bgGradient } from 'src/theme/css';
 

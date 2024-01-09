@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
-// utils
-import { fToNow } from 'src/utils/format-time';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+
 // components
 import Label from 'src/components/label';
+// utils
+import { fToNow } from 'src/utils/format-time';
 import FileThumbnail from 'src/components/file-thumbnail';
 
 // ----------------------------------------------------------------------

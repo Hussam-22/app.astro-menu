@@ -1,18 +1,20 @@
-import PropTypes from 'prop-types';
 import { m } from 'framer-motion';
-// @mui
-import { alpha, useTheme } from '@mui/material/styles';
+import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
+// @mui
+import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
 import { outlinedInputClasses } from '@mui/material/OutlinedInput';
+
 // theme
 import { bgGradient } from 'src/theme/css';
 // components
 import Iconify from 'src/components/iconify';
-import { MotionContainer, varFade } from 'src/components/animate';
+import { varFade, MotionContainer } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
-import { typographyClasses } from '@mui/material/Typography';
 import { accordionClasses } from '@mui/material/Accordion';
+import { typographyClasses } from '@mui/material/Typography';
 import { accordionSummaryClasses } from '@mui/material/AccordionSummary';
 
 // ----------------------------------------------------------------------

@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+
 // sections
 import { JobDetailsView } from 'src/sections/job/view';
 

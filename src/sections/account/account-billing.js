@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Grid from '@mui/material/Unstable_Grid2';
 
 //
 import AccountBillingPlan from './account-billing-plan';
+import AccountBillingAddress from './account-billing-address';
 import AccountBillingPayment from './account-billing-payment';
 import AccountBillingHistory from './account-billing-history';
-import AccountBillingAddress from './account-billing-address';
 
 // ----------------------------------------------------------------------
 

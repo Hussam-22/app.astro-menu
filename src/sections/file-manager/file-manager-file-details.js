@@ -1,29 +1,32 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 import Autocomplete from '@mui/material/Autocomplete';
-import Drawer from '@mui/material/Drawer';
+
+// components
+import Iconify from 'src/components/iconify';
 // utils
 import { fData } from 'src/utils/format-number';
+import Scrollbar from 'src/components/scrollbar';
 import { fDateTime } from 'src/utils/format-time';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-// components
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import FileThumbnail, { fileFormat } from 'src/components/file-thumbnail';
+
+import FileManagerInvitedItem from './file-manager-invited-item';
 //
 import FileManagerShareDialog from './file-manager-share-dialog';
-import FileManagerInvitedItem from './file-manager-invited-item';
 
 // ----------------------------------------------------------------------
 

@@ -1,26 +1,29 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
-// @mui
-import { styled, alpha } from '@mui/material/styles';
+
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import Avatar from '@mui/material/Avatar';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+// @mui
+import { alpha, styled } from '@mui/material/styles';
+
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 import CustomDateRangePicker, { useDateRangePicker } from 'src/components/custom-date-range-picker';
+
 //
 import KanbanInputName from './kanban-input-name';
-import KanbanDetailsToolbar from './kanban-details-toolbar';
 import KanbanContactsDialog from './kanban-contacts-dialog';
+import KanbanDetailsToolbar from './kanban-details-toolbar';
 import KanbanDetailsPriority from './kanban-details-priority';
 import KanbanDetailsAttachments from './kanban-details-attachments';
 import KanbanDetailsCommentList from './kanban-details-comment-list';

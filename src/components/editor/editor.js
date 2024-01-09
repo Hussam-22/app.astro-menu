@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types';
-import 'src/utils/highlight';
 import ReactQuill from 'react-quill';
+
 // @mui
 import { alpha } from '@mui/material/styles';
+
+import 'src/utils/highlight';
+
 //
 import { StyledEditor } from './styles';
 import Toolbar, { formats } from './toolbar';

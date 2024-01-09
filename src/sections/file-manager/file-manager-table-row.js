@@ -1,10 +1,11 @@
-import PropTypes from 'prop-types';
 import { format } from 'date-fns';
+import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
+
 // @mui
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
@@ -15,21 +16,23 @@ import { alpha, useTheme } from '@mui/material/styles';
 import TableRow, { tableRowClasses } from '@mui/material/TableRow';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useDoubleClick } from 'src/hooks/use-double-click';
-import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
-// utils
-import { fData } from 'src/utils/format-number';
+
 // components
 import Iconify from 'src/components/iconify';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
+// utils
+import { fData } from 'src/utils/format-number';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useSnackbar } from 'src/components/snackbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import FileThumbnail from 'src/components/file-thumbnail';
+import { useDoubleClick } from 'src/hooks/use-double-click';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+
+import FileManagerFileDetails from './file-manager-file-details';
 //
 import FileManagerShareDialog from './file-manager-share-dialog';
-import FileManagerFileDetails from './file-manager-file-details';
 
 // ----------------------------------------------------------------------
 

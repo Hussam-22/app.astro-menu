@@ -1,32 +1,34 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
-import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
+import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-import Stack from '@mui/material/Stack';
 import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useResponsive } from 'src/hooks/use-responsive';
-import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
-// utils
-import { fData } from 'src/utils/format-number';
-import { fDateTime } from 'src/utils/format-time';
 
 // components
 import Iconify from 'src/components/iconify';
+// utils
+import { fData } from 'src/utils/format-number';
+import { fDateTime } from 'src/utils/format-time';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useSnackbar } from 'src/components/snackbar';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { useResponsive } from 'src/hooks/use-responsive';
 import FileThumbnail from 'src/components/file-thumbnail';
+import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+
+import FileManagerFileDetails from './file-manager-file-details';
 //
 import FileManagerShareDialog from './file-manager-share-dialog';
-import FileManagerFileDetails from './file-manager-file-details';
 
 // ----------------------------------------------------------------------
 

@@ -1,17 +1,19 @@
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-// @mui
-import LoadingButton from '@mui/lab/LoadingButton';
+
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+// @mui
+import LoadingButton from '@mui/lab/LoadingButton';
+
 // routes
 import { paths } from 'src/routes/paths';
-// assets
-import { EmailInboxIcon } from 'src/assets/icons';
 // components
 import Iconify from 'src/components/iconify';
+// assets
+import { EmailInboxIcon } from 'src/assets/icons';
 import { RouterLink } from 'src/routes/components';
 import FormProvider, { RHFCode, RHFTextField } from 'src/components/hook-form';
 

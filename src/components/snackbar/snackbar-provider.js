@@ -1,12 +1,15 @@
-import PropTypes from 'prop-types';
 import { useRef } from 'react';
-import { SnackbarProvider as NotistackProvider, closeSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
+import { closeSnackbar, SnackbarProvider as NotistackProvider } from 'notistack';
+
 // @mui
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
+
 //
 import Iconify from '../iconify';
 import { useSettingsContext } from '../settings';
+
 //
 import { StyledIcon, StyledNotistack } from './styles';
 

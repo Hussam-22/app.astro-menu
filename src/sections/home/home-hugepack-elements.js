@@ -1,47 +1,49 @@
-import { useState, useCallback } from 'react';
 import { m } from 'framer-motion';
-// @mui
-import { alpha } from '@mui/material/styles';
+import { useState, useCallback } from 'react';
+
+import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import Fab from '@mui/material/Fab';
-import Tab from '@mui/material/Tab';
-import Chip from '@mui/material/Chip';
 import Tabs from '@mui/material/Tabs';
-import Radio from '@mui/material/Radio';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
+import Chip from '@mui/material/Chip';
 import Badge from '@mui/material/Badge';
+import Paper from '@mui/material/Paper';
+import Radio from '@mui/material/Radio';
+import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
+import Switch from '@mui/material/Switch';
+import Avatar from '@mui/material/Avatar';
 import Rating from '@mui/material/Rating';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
 import Slider from '@mui/material/Slider';
-import Switch from '@mui/material/Switch';
-import MenuItem from '@mui/material/MenuItem';
+// @mui
+import { alpha } from '@mui/material/styles';
 import Checkbox from '@mui/material/Checkbox';
-import Container from '@mui/material/Container';
+import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import CardHeader from '@mui/material/CardHeader';
-import Typography from '@mui/material/Typography';
 import AlertTitle from '@mui/material/AlertTitle';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import ToggleButton from '@mui/material/ToggleButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from '@mui/material/CircularProgress';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
-// routes
-import { paths } from 'src/routes/paths';
+
 // _mock
 import { _mock } from 'src/_mock';
+import Image from 'src/components/image';
+// routes
+import { paths } from 'src/routes/paths';
 // components
 import Label from 'src/components/label';
-import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
-import { MotionViewport, varFade } from 'src/components/animate';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
+import { varFade, MotionViewport } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 

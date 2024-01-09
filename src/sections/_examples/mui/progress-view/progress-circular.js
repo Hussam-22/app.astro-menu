@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Masonry from '@mui/lab/Masonry';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
+
 //
 import ComponentBlock from '../../component-block';
 

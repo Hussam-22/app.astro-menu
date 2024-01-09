@@ -1,4 +1,4 @@
-import { varTranEnter, varTranExit } from './transition';
+import { varTranExit, varTranEnter } from './transition';
 
 // ----------------------------------------------------------------------
 

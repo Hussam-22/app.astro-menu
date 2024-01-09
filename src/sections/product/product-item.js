@@ -1,22 +1,24 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Fab from '@mui/material/Fab';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+
+import Image from 'src/components/image';
 // routes
 import { paths } from 'src/routes/paths';
+// components
+import Label from 'src/components/label';
+import Iconify from 'src/components/iconify';
+// redux
+import { useDispatch } from 'src/redux/store';
 import { RouterLink } from 'src/routes/components';
 // utils
 import { fCurrency } from 'src/utils/format-number';
-// redux
-import { useDispatch } from 'src/redux/store';
 import { addToCart } from 'src/redux/slices/checkout';
-// components
-import Label from 'src/components/label';
-import Image from 'src/components/image';
-import Iconify from 'src/components/iconify';
 import { ColorPreview } from 'src/components/color-utils';
 
 // ----------------------------------------------------------------------

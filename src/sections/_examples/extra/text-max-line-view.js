@@ -1,10 +1,11 @@
 // @mui
-import Masonry from '@mui/lab/Masonry';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Masonry from '@mui/lab/Masonry';
 import Container from '@mui/material/Container';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
+
 // routes
 import { paths } from 'src/routes/paths';
 // components

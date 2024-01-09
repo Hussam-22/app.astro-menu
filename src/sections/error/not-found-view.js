@@ -1,15 +1,17 @@
 import { m } from 'framer-motion';
+
 // @mui
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+
 // layouts
 import CompactLayout from 'src/layouts/compact';
 // routes
 import { RouterLink } from 'src/routes/components';
-// components
-import { MotionContainer, varBounce } from 'src/components/animate';
 // assets
 import { PageNotFoundIllustration } from 'src/assets/illustrations';
+// components
+import { varBounce, MotionContainer } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 

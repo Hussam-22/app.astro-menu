@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
+
+import { DataGrid } from '@mui/x-data-grid';
 // @mui
 import IconButton from '@mui/material/IconButton';
-import { DataGrid } from '@mui/x-data-grid';
+
 // components
 import Iconify from 'src/components/iconify';
 

@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
-// @mui
-import { alpha } from '@mui/material/styles';
+
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Dialog from '@mui/material/Dialog';
+// @mui
+import { alpha } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import DialogContent from '@mui/material/DialogContent';
+
 // components
 import Iconify from 'src/components/iconify';
 

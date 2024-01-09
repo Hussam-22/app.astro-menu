@@ -1,42 +1,45 @@
 import isEqual from 'lodash/isEqual';
 import { useState, useCallback } from 'react';
-// @mui
-import { alpha } from '@mui/material/styles';
+
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import Container from '@mui/material/Container';
+// @mui
+import { alpha } from '@mui/material/styles';
 import TableBody from '@mui/material/TableBody';
+import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
+
+// components
+import Label from 'src/components/label';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import { RouterLink } from 'src/routes/components';
-// _mock
-import { _userList, _roles, USER_STATUS_OPTIONS } from 'src/_mock';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-// components
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
+import { RouterLink } from 'src/routes/components';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useSettingsContext } from 'src/components/settings';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+// _mock
+import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import {
   useTable,
-  getComparator,
   emptyRows,
   TableNoData,
+  getComparator,
   TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+
 //
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';

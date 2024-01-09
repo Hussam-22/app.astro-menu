@@ -1,15 +1,17 @@
-import PropTypes from 'prop-types';
 import { m } from 'framer-motion';
+import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
 // @mui
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
+
 // theme
 import { bgGradient } from 'src/theme/css';
 //
-import { MotionContainer, varFade } from 'src/components/animate';
+import { varFade, MotionContainer } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 

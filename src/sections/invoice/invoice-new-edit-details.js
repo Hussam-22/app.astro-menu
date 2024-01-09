@@ -1,6 +1,7 @@
 import sum from 'lodash/sum';
-import { useCallback, useEffect } from 'react';
-import { useFormContext, useFieldArray } from 'react-hook-form';
+import { useEffect, useCallback } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -8,15 +9,15 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { inputBaseClasses } from '@mui/material/InputBase';
 import InputAdornment from '@mui/material/InputAdornment';
-// utils
-import { fCurrency } from 'src/utils/format-number';
-// _mock
-import { INVOICE_SERVICE_OPTIONS } from 'src/_mock';
+import { inputBaseClasses } from '@mui/material/InputBase';
 
 // components
 import Iconify from 'src/components/iconify';
+// _mock
+import { INVOICE_SERVICE_OPTIONS } from 'src/_mock';
+// utils
+import { fCurrency } from 'src/utils/format-number';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------

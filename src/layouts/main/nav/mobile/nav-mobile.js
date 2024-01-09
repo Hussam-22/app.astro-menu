@@ -1,17 +1,20 @@
-import PropTypes from 'prop-types';
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
+
 // @mui
 import List from '@mui/material/List';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-// routes
-import { usePathname } from 'src/routes/hook';
+
 // components
 import Logo from 'src/components/logo';
+// routes
+import { usePathname } from 'src/routes/hook';
 import SvgColor from 'src/components/svg-color';
 import Scrollbar from 'src/components/scrollbar';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+
 //
 import NavList from './nav-list';
 

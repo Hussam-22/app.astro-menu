@@ -1,7 +1,9 @@
-import { useState, useEffect, memo } from 'react';
 import Map, { Layer, Source } from 'react-map-gl';
+import { memo, useState, useEffect } from 'react';
+
 // @mui
 import { useTheme } from '@mui/material/styles';
+
 // components
 import { MapControl } from 'src/components/map';
 

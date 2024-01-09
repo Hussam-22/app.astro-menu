@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types';
-// @mui
-import { alpha, useTheme } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import CardContent from '@mui/material/CardContent';
-// theme
-import { bgGradient } from 'src/theme/css';
+// @mui
+import { alpha, useTheme } from '@mui/material/styles';
+
 // components
 import Image from 'src/components/image';
+// theme
+import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 import TextMaxLine from 'src/components/text-max-line';
-import Carousel, { CarouselArrows, useCarousel } from 'src/components/carousel';
+import Carousel, { useCarousel, CarouselArrows } from 'src/components/carousel';
 
 // ----------------------------------------------------------------------
 

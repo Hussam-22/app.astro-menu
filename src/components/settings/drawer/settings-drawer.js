@@ -1,19 +1,22 @@
 // @mui
-import { useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
 import Badge from '@mui/material/Badge';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
+import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Drawer, { drawerClasses } from '@mui/material/Drawer';
+
 // theme
 import { paper } from 'src/theme/css';
+
 //
 import Iconify from '../../iconify';
 import Scrollbar from '../../scrollbar';
 //
 import { useSettingsContext } from '../context';
+
 import BaseOptions from './base-option';
 import LayoutOptions from './layout-options';
 import PresetsOptions from './presets-options';

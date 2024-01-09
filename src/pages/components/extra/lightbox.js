@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+
 // sections
 import LightboxView from 'src/sections/_examples/extra/lightbox-view';
 

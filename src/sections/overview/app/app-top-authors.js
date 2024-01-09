@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types';
 import orderBy from 'lodash/orderBy';
-// @mui
-import { alpha } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
+// @mui
+import { alpha } from '@mui/material/styles';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-// utils
-import { fShortenNumber } from 'src/utils/format-number';
+
 // components
 import Iconify from 'src/components/iconify';
+// utils
+import { fShortenNumber } from 'src/utils/format-number';
 
 // ----------------------------------------------------------------------
 

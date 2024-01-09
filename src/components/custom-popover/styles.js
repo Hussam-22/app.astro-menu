@@ -1,5 +1,6 @@
 // @mui
-import { styled, alpha } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
+
 // theme
 import { bgBlur } from 'src/theme/css';
 

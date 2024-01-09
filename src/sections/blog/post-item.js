@@ -1,27 +1,29 @@
 import PropTypes from 'prop-types';
-// @mui
-import { alpha, useTheme } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
-// routes
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
-// utils
-import { fDate } from 'src/utils/format-time';
-import { fShortenNumber } from 'src/utils/format-number';
-// assets
-import { AvatarShape } from 'src/assets/illustrations';
+// @mui
+import { alpha, useTheme } from '@mui/material/styles';
+
 // components
 import Image from 'src/components/image';
+// routes
+import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
+// utils
+import { fDate } from 'src/utils/format-time';
+import { RouterLink } from 'src/routes/components';
 import TextMaxLine from 'src/components/text-max-line';
+// assets
+import { AvatarShape } from 'src/assets/illustrations';
+import { fShortenNumber } from 'src/utils/format-number';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 

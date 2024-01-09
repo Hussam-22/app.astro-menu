@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
+
+import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
 // @mui
 import { alpha } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
 import CardHeader from '@mui/material/CardHeader';
-import Stack from '@mui/material/Stack';
 
 // ----------------------------------------------------------------------
 

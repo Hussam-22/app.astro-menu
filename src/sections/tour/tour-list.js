@@ -1,12 +1,15 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
+
 // routes
 import { paths } from 'src/routes/paths';
 // components
 import { useRouter } from 'src/routes/hook';
+
 //
 import TourItem from './tour-item';
 

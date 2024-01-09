@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import { useDropzone } from 'react-dropzone';
+
+import Box from '@mui/material/Box';
 // @mui
 import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
+
 //
 import Iconify from '../iconify';
 

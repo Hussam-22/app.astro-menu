@@ -1,9 +1,11 @@
-import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
-// utils
-import { localStorageGetItem } from 'src/utils/storage-available';
+import { useTranslation } from 'react-i18next';
+
 // components
 import { useSettingsContext } from 'src/components/settings';
+// utils
+import { localStorageGetItem } from 'src/utils/storage-available';
+
 //
 import { allLangs, defaultLang } from './config-lang';
 

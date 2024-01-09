@@ -1,8 +1,9 @@
 // @mui
 import Accordion from '@mui/material/Accordion';
 import Typography from '@mui/material/Typography';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+
 // _mock
 import { _faqs } from 'src/_mock';
 // components

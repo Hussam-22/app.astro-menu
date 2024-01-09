@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Stack from '@mui/material/Stack';
 // @mui
 import { alpha } from '@mui/material/styles';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
 import CardHeader from '@mui/material/CardHeader';
-import Card from '@mui/material/Card';
 import LinearProgress from '@mui/material/LinearProgress';
+
 // utils
 import { fShortenNumber } from 'src/utils/format-number';
 

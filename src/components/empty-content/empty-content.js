@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 // @mui
 import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
 
 // ----------------------------------------------------------------------
 

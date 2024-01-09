@@ -1,14 +1,16 @@
 import PropTypes from 'prop-types';
-// @mui
-import Typography from '@mui/material/Typography';
-import CardHeader from '@mui/material/CardHeader';
+
 import Card from '@mui/material/Card';
 import Timeline from '@mui/lab/Timeline';
 import TimelineDot from '@mui/lab/TimelineDot';
+// @mui
+import Typography from '@mui/material/Typography';
+import CardHeader from '@mui/material/CardHeader';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
+
 // utils
 import { fDateTime } from 'src/utils/format-time';
 

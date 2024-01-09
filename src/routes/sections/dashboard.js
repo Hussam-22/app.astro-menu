@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
+
 // auth
 import { AuthGuard } from 'src/auth/guard';
 // layouts

@@ -1,29 +1,31 @@
 import PropTypes from 'prop-types';
-// @mui
-import { darken, lighten, alpha } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import Collapse from '@mui/material/Collapse';
+import Divider from '@mui/material/Divider';
 import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
+import Collapse from '@mui/material/Collapse';
 import ButtonBase from '@mui/material/ButtonBase';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
-// utils
-import { fDateTime } from 'src/utils/format-time';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+// @mui
+import { alpha, darken, lighten } from '@mui/material/styles';
+
 // components
 import Label from 'src/components/label';
 import Editor from 'src/components/editor';
 import Iconify from 'src/components/iconify';
 import Markdown from 'src/components/markdown';
 import Scrollbar from 'src/components/scrollbar';
+// utils
+import { fDateTime } from 'src/utils/format-time';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 import TextMaxLine from 'src/components/text-max-line';
 import EmptyContent from 'src/components/empty-content';
 import FileThumbnail from 'src/components/file-thumbnail';

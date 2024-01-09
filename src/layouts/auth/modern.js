@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
+
 // components
 import Logo from 'src/components/logo';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 

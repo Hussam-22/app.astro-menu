@@ -1,23 +1,26 @@
-import PropTypes from 'prop-types';
-import merge from 'lodash/merge';
 import { useMemo } from 'react';
+import merge from 'lodash/merge';
+import PropTypes from 'prop-types';
+
 // @mui
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+
 // locales
 import { useLocales } from 'src/locales';
 // components
 import { useSettingsContext } from 'src/components/settings';
+
 // system
 import { palette } from './palette';
 import { shadows } from './shadows';
 import { typography } from './typography';
-import { customShadows } from './custom-shadows';
-import { componentsOverrides } from './overrides';
 // options
 import { presets } from './options/presets';
-import { darkMode } from './options/dark-mode';
 import { contrast } from './options/contrast';
+import { darkMode } from './options/dark-mode';
+import { customShadows } from './custom-shadows';
+import { componentsOverrides } from './overrides';
 import RTL, { direction } from './options/right-to-left';
 
 // ----------------------------------------------------------------------

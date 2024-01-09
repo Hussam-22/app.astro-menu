@@ -1,23 +1,26 @@
-import PropTypes from 'prop-types';
 import { useRef } from 'react';
-// @mui
-import { alpha } from '@mui/material/styles';
-import Fab from '@mui/material/Fab';
+import PropTypes from 'prop-types';
+
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
+import Fab from '@mui/material/Fab';
 import Card from '@mui/material/Card';
+import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+// @mui
+import { alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
+
 // _mock
 import { _socials } from 'src/_mock';
-// utils
-import { fNumber } from 'src/utils/format-number';
 // components
 import Iconify from 'src/components/iconify';
+// utils
+import { fNumber } from 'src/utils/format-number';
+
 //
 import ProfilePostItem from './profile-post-item';
 

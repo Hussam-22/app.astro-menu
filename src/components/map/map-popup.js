@@ -1,6 +1,7 @@
 // @mui
 //
 import PropTypes from 'prop-types';
+
 import { StyledPopup } from './styles';
 
 // ----------------------------------------------------------------------

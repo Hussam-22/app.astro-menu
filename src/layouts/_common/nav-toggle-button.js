@@ -1,14 +1,17 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
+
 // theme
 import { bgBlur } from 'src/theme/css';
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
 import { useSettingsContext } from 'src/components/settings';
+
 //
 import { NAV } from '../config-layout';
 

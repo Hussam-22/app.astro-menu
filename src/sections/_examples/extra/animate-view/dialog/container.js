@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
 import { m, AnimatePresence } from 'framer-motion';
+
+import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
 // @mui
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import Paper from '@mui/material/Paper';
 import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+
 //
 import getVariant from '../get-variant';
 

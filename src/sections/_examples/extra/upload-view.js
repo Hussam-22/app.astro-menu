@@ -1,24 +1,26 @@
 import { useState, useCallback } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Container from '@mui/material/Container';
-import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
+import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
+
 // routes
 import { paths } from 'src/routes/paths';
+// components
+import Iconify from 'src/components/iconify';
 // utils
 import { fData } from 'src/utils/format-number';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-// components
-import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import { UploadAvatar, Upload, UploadBox } from 'src/components/upload';
+import { Upload, UploadBox, UploadAvatar } from 'src/components/upload';
 
 // ----------------------------------------------------------------------
 

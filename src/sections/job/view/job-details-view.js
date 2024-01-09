@@ -1,16 +1,19 @@
 import { useState, useCallback } from 'react';
+
 // @mui
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Container from '@mui/material/Container';
+
 // routes
 import { paths } from 'src/routes/paths';
-import { useParams } from 'src/routes/hook';
-// _mock
-import { _jobs, JOB_PUBLISH_OPTIONS, JOB_DETAILS_TABS } from 'src/_mock';
 // components
 import Label from 'src/components/label';
+import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
+// _mock
+import { _jobs, JOB_DETAILS_TABS, JOB_PUBLISH_OPTIONS } from 'src/_mock';
+
 //
 import JobDetailsToolbar from '../job-details-toolbar';
 import JobDetailsContent from '../job-details-content';

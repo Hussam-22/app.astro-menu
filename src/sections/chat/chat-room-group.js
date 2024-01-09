@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
@@ -7,11 +8,13 @@ import Avatar from '@mui/material/Avatar';
 import Collapse from '@mui/material/Collapse';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+
 //
 import ChatRoomParticipantDialog from './chat-room-participant-dialog';
 

@@ -1,21 +1,23 @@
 import { m } from 'framer-motion';
-// @mui
-import { alpha, useTheme } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
+import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+// @mui
+import { alpha, useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
-// utils
-import { fPercent } from 'src/utils/format-number';
+
 // components
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
-import { MotionViewport, varFade } from 'src/components/animate';
+// utils
+import { fPercent } from 'src/utils/format-number';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
+import { varFade, MotionViewport } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 

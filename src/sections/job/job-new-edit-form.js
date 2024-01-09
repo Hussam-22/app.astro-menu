@@ -1,11 +1,9 @@
-import PropTypes from 'prop-types';
 import * as Yup from 'yup';
+import PropTypes from 'prop-types';
 import { useMemo, useEffect } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
-// @mui
-import LoadingButton from '@mui/lab/LoadingButton';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { yupResolver } from '@hookform/resolvers/yup';
+
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
@@ -13,16 +11,33 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardHeader from '@mui/material/CardHeader';
-import Typography from '@mui/material/Typography';
+// @mui
+import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FormControlLabel from '@mui/material/FormControlLabel';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
+
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
+// assets
+import { countries } from 'src/assets/data';
+// components
+import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
+import FormProvider, {
+  RHFEditor,
+  RHFSwitch,
+  RHFTextField,
+  RHFRadioGroup,
+  RHFAutocomplete,
+  RHFMultiCheckbox,
+} from 'src/components/hook-form';
 // _mock
 import {
   _roles,
@@ -32,19 +47,6 @@ import {
   JOB_EMPLOYMENT_TYPE_OPTIONS,
   JOB_WORKING_SCHEDULE_OPTIONS,
 } from 'src/_mock';
-// assets
-import { countries } from 'src/assets/data';
-// components
-import Iconify from 'src/components/iconify';
-import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFEditor,
-  RHFSwitch,
-  RHFTextField,
-  RHFRadioGroup,
-  RHFAutocomplete,
-  RHFMultiCheckbox,
-} from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 

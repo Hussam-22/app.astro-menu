@@ -1,23 +1,28 @@
-import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useCallback, useMemo, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-// @mui
-import LoadingButton from '@mui/lab/LoadingButton';
+import { useMemo, useState, useEffect, useCallback } from 'react';
+
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Unstable_Grid2';
-import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
+import CardHeader from '@mui/material/CardHeader';
+// @mui
+import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
+
 // routes
 import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
+// components
+import { useSnackbar } from 'src/components/snackbar';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // _mock
@@ -28,9 +33,6 @@ import {
   PRODUCT_COLOR_NAME_OPTIONS,
   PRODUCT_CATEGORY_GROUP_OPTIONS,
 } from 'src/_mock';
-// components
-import { useSnackbar } from 'src/components/snackbar';
-import { useRouter } from 'src/routes/hook';
 import FormProvider, {
   RHFSelect,
   RHFEditor,

@@ -1,26 +1,29 @@
 import { useEffect, useCallback } from 'react';
+
 // @mui
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useResponsive } from 'src/hooks/use-responsive';
+
 // routes
 import { paths } from 'src/routes/paths';
-import { useRouter, useSearchParams } from 'src/routes/hook';
-// api
-import { useGetLabels, useGetMails, useGetMail } from 'src/api/mail';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 // components
 import EmptyContent from 'src/components/empty-content';
-import { LoadingScreen } from 'src/components/loading-screen';
+import { useResponsive } from 'src/hooks/use-responsive';
 import { useSettingsContext } from 'src/components/settings';
+import { useRouter, useSearchParams } from 'src/routes/hook';
+import { LoadingScreen } from 'src/components/loading-screen';
+// api
+import { useGetMail, useGetMails, useGetLabels } from 'src/api/mail';
+
 //
 import MailNav from '../mail-nav';
 import MailList from '../mail-list';
 import MailHeader from '../mail-header';
-import MailCompose from '../mail-compose';
 import MailDetails from '../mail-details';
+import MailCompose from '../mail-compose';
 
 // ----------------------------------------------------------------------
 

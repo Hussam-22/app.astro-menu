@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
 import { Tree, TreeNode } from 'react-organizational-chart';
+
 // @mui
 import { useTheme } from '@mui/material/styles';
+
 // utils
 import { flattenArray } from 'src/utils/flatten-array';
+
 //
 import GroupNode from './_common/group-node';
 import SimpleNode from './_common/simple-node';

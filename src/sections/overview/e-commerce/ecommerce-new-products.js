@@ -1,14 +1,16 @@
 import PropTypes from 'prop-types';
-// @mui
-import { alpha, useTheme } from '@mui/material/styles';
+
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
-import Card from '@mui/material/Card';
+// @mui
+import { alpha, useTheme } from '@mui/material/styles';
+
 // components
 import Image from 'src/components/image';
-import Carousel, { CarouselDots, useCarousel } from 'src/components/carousel';
+import Carousel, { useCarousel, CarouselDots } from 'src/components/carousel';
 
 // ----------------------------------------------------------------------
 

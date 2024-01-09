@@ -1,35 +1,38 @@
-import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useCallback, useMemo, useEffect } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
+import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-// @mui
-import LoadingButton from '@mui/lab/LoadingButton';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useMemo, useEffect, useCallback } from 'react';
+
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
+import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
+// @mui
+import LoadingButton from '@mui/lab/LoadingButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useResponsive } from 'src/hooks/use-responsive';
+
+// _mock
+import { _tags } from 'src/_mock';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-// _mock
-import { _tags } from 'src/_mock';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 // components
 import { useSnackbar } from 'src/components/snackbar';
+import { useResponsive } from 'src/hooks/use-responsive';
 import FormProvider, {
   RHFEditor,
   RHFUpload,
   RHFTextField,
   RHFAutocomplete,
 } from 'src/components/hook-form';
+
 //
 import PostDetailsPreview from './post-details-preview';
 

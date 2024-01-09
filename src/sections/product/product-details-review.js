@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types';
 import sumBy from 'lodash/sumBy';
+import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -8,12 +9,14 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
-// utils
-import { fShortenNumber } from 'src/utils/format-number';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+
 // components
 import Iconify from 'src/components/iconify';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+// utils
+import { fShortenNumber } from 'src/utils/format-number';
+
 //
 import ProductReviewList from './product-review-list';
 import ProductReviewNewForm from './product-review-new-form';

@@ -1,15 +1,18 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
+
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
+
 //
 import MailItem from './mail-item';
 import { MailItemSkeleton } from './mail-skeleton';

@@ -1,32 +1,34 @@
-import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useCallback, useMemo, useEffect } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
+import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
-// @mui
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useMemo, useEffect, useCallback } from 'react';
+
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
 import Switch from '@mui/material/Switch';
+import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
+import LoadingButton from '@mui/lab/LoadingButton';
+// @mui
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FormControlLabel from '@mui/material/FormControlLabel';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
+
 // routes
 import { paths } from 'src/routes/paths';
 // assets
 import { countries } from 'src/assets/data';
-// _mock
-import { _tourGuides, TOUR_SERVICE_OPTIONS, _tags } from 'src/_mock';
+import { useRouter } from 'src/routes/hook';
 // components
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import { useRouter } from 'src/routes/hook';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
+// _mock
+import { _tags, _tourGuides, TOUR_SERVICE_OPTIONS } from 'src/_mock';
 import FormProvider, {
   RHFEditor,
   RHFUpload,

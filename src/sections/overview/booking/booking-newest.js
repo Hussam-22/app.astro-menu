@@ -1,19 +1,21 @@
 import PropTypes from 'prop-types';
+
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
+import Avatar from '@mui/material/Avatar';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
 import CardHeader from '@mui/material/CardHeader';
 import ListItemText from '@mui/material/ListItemText';
-// utils
-import { fDateTime } from 'src/utils/format-time';
+
+import Image from 'src/components/image';
 // components
 import Label from 'src/components/label';
-import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
-import Carousel, { CarouselArrows, useCarousel } from 'src/components/carousel';
+// utils
+import { fDateTime } from 'src/utils/format-time';
+import Carousel, { useCarousel, CarouselArrows } from 'src/components/carousel';
 
 // ----------------------------------------------------------------------
 

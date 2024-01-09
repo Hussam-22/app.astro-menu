@@ -1,22 +1,23 @@
 // @mui
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
-import Container from '@mui/material/Container';
+import { alpha } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
-import IconButton from '@mui/material/IconButton';
+import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-// routes
-import { paths } from 'src/routes/paths';
-import { usePathname } from 'src/routes/hook';
-import { RouterLink } from 'src/routes/components';
+import IconButton from '@mui/material/IconButton';
+
 // _mock
 import { _socials } from 'src/_mock';
 // components
 import Logo from 'src/components/logo';
+// routes
+import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
+import { usePathname } from 'src/routes/hook';
+import { RouterLink } from 'src/routes/components';
 
 // ----------------------------------------------------------------------
 

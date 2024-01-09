@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
+
 // @mui
 import Box from '@mui/material/Box';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
+
 //
 import { PostItemSkeleton } from './post-skeleton';
 import PostItemHorizontal from './post-item-horizontal';
