@@ -53,31 +53,6 @@ export default function OverviewAppView() {
   //   })();
   // }, []);
 
-  useEffect(() => {
-    const apiUrl = 'https://library.sharjah.ac.ae:443/iii/sierra-api/v6/patrons/?limit=10';
-    const secretKey = 'hjpu6Jw1btAxfJSa+J7trKBttLVv';
-    const password = 'Hussam@22';
-
-    const credentials = `${secretKey}:${password}`;
-    const encodedCredentials = btoa(credentials);
-
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Basic ${encodedCredentials}`,
-    };
-
-    axios
-      .get(apiUrl, { headers })
-      .then((response) => {
-        console.log('Response:', response.data);
-        // Handle the response data as needed
-      })
-      .catch((error) => {
-        console.error('Error:', error.response ? error.response.data : error.message);
-        // Handle errors
-      });
-  }, []);
-
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Grid container spacing={3}>
