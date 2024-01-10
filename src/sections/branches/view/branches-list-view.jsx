@@ -1,6 +1,5 @@
-import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
 // @mui
 import {
@@ -27,7 +26,7 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import TableToolbar from 'src/sections/branches/list/TableToolbar';
 import TableDataRows from 'src/sections/branches/list/TableDataRows';
 // sections
-import { rdxSetBranch, rdxSetBranchByID, rdxGetBranchesList } from 'src/redux/slices/branch';
+import { rdxSetBranchByID, rdxGetBranchesList } from 'src/redux/slices/branch';
 // components
 import {
   useTable,
@@ -36,6 +35,7 @@ import {
   TableSkeleton,
   getComparator,
   TableEmptyRows,
+  TableHeadCustom,
 } from 'src/components/table';
 
 // ----------------------------------------------------------------------
@@ -73,10 +73,11 @@ export default function BranchesListView() {
   useEffect(() => {
     (async () => {
       const branchesData = await fsGetAllBranches();
-      dispatch(rdxGetBranchesList(branchesData));
       setTableData(branchesData);
+      dispatch(rdxGetBranchesList(branchesData));
     })();
-  }, [dispatch, fsGetAllBranches]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
@@ -124,15 +125,15 @@ export default function BranchesListView() {
         <Scrollbar>
           <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
             <Table size={dense ? 'small' : 'medium'}>
-              {/* <TableHeadNoSelect
-                  disableSelectAllRows
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  numSelected={selected.length}
-                  onSort={onSort}
-                /> */}
+              <TableHeadCustom
+                disableSelectAllRows
+                order={order}
+                orderBy={orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={tableData.length}
+                // numSelected={selected.length}
+                // onSort={onSort}
+              />
 
               <TableBody>
                 {dataFiltered

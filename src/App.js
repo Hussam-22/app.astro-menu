@@ -35,12 +35,13 @@ import MotionLazy from 'src/components/animate/motion-lazy';
 // hooks
 import { useScrollToTop } from 'src/hooks/use-scroll-to-top';
 // auth
-import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
+import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';
 import SnackbarProvider from 'src/components/snackbar/snackbar-provider';
 import { SettingsDrawer, SettingsProvider } from 'src/components/settings';
+
+// import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
-// import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';
 
 // ----------------------------------------------------------------------
 

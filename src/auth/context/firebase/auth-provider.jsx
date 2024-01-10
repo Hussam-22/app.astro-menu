@@ -3,16 +3,15 @@
 import PropTypes from 'prop-types';
 import { initializeApp } from 'firebase/app';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { ref, getStorage, deleteObject, getDownloadURL } from 'firebase/storage';
-import { useMemo, useState, useEffect, useReducer, useCallback, createContext } from 'react';
+import { ref, getStorage, deleteObject } from 'firebase/storage';
+import { useMemo, useState, useEffect, useReducer, useCallback } from 'react';
 import {
   getAuth,
   signOut,
-  signInWithPopup,
+  updateProfile,
   onAuthStateChanged,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  TwitterAuthProvider,
+  sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
@@ -31,7 +30,6 @@ import {
   writeBatch,
   arrayUnion,
   collection,
-  deleteField,
   arrayRemove,
   getFirestore,
   collectionGroup,
@@ -40,6 +38,8 @@ import {
 
 // config
 import { FIREBASE_API } from 'src/config-global';
+
+import { AuthContext } from './auth-context';
 
 // ----------------------------------------------------------------------
 
@@ -53,37 +53,25 @@ const THIS_MONTH = new Date().getMonth();
 const THIS_YEAR = new Date().getFullYear();
 
 const initialState = {
-  isInitialized: false,
-  isAuthenticated: false,
   user: null,
+  loading: true,
 };
 
 const reducer = (state, action) => {
   if (action.type === 'INITIAL') {
     return {
-      isInitialized: true,
-      isAuthenticated: action.payload.isAuthenticated,
+      loading: false,
       user: action.payload.user,
     };
   }
-
   return state;
 };
-
-// ----------------------------------------------------------------------
-
-export const AuthContext = createContext(null);
-
-// ----------------------------------------------------------------------
 
 const firebaseApp = initializeApp(FIREBASE_API);
 const AUTH = getAuth(firebaseApp);
 const DB = getFirestore(firebaseApp);
 const STORAGE = getStorage(firebaseApp);
 const FUNCTIONS = getFunctions(firebaseApp);
-const GOOGLE_PROVIDER = new GoogleAuthProvider();
-const GITHUB_PROVIDER = new GithubAuthProvider();
-const TWITTER_PROVIDER = new TwitterAuthProvider();
 
 AuthProvider.propTypes = {
   children: PropTypes.node,
@@ -98,28 +86,39 @@ export function AuthProvider({ children }) {
     try {
       onAuthStateChanged(AUTH, async (user) => {
         if (user) {
-          const userRef = doc(DB, 'users', user.uid);
+          if (user.emailVerified) {
+            const userProfile = doc(DB, 'users', user.uid);
+            const docSnap = await getDoc(userProfile);
+            const profile = docSnap.data();
 
-          const docSnap = await getDoc(userRef);
+            if (!profile) {
+              await setDoc(userProfile, { uid: user.uid, email: user.email, role: 'user' });
+            }
 
-          const profile = docSnap.data();
+            await updateDoc(userProfile, { lastLogin: new Date() });
 
-          dispatch({
-            type: 'INITIAL',
-            payload: {
-              isAuthenticated: true,
-              user: {
-                ...user,
-                ...profile,
-                role: 'admin',
+            dispatch({
+              type: 'INITIAL',
+              payload: {
+                user: {
+                  ...user,
+                  ...profile,
+                  id: user.uid,
+                },
               },
-            },
-          });
+            });
+          } else {
+            dispatch({
+              type: 'INITIAL',
+              payload: {
+                user: null,
+              },
+            });
+          }
         } else {
           dispatch({
             type: 'INITIAL',
             payload: {
-              isAuthenticated: false,
               user: null,
             },
           });
@@ -127,6 +126,12 @@ export function AuthProvider({ children }) {
       });
     } catch (error) {
       console.error(error);
+      dispatch({
+        type: 'INITIAL',
+        payload: {
+          user: null,
+        },
+      });
     }
   }, []);
 
@@ -139,35 +144,68 @@ export function AuthProvider({ children }) {
     await signInWithEmailAndPassword(AUTH, email, password);
   }, []);
 
-  const loginWithGoogle = useCallback(() => {
-    signInWithPopup(AUTH, GOOGLE_PROVIDER);
-  }, []);
-
-  const loginWithGithub = useCallback(() => {
-    signInWithPopup(AUTH, GITHUB_PROVIDER);
-  }, []);
-
-  const loginWithTwitter = useCallback(() => {
-    signInWithPopup(AUTH, TWITTER_PROVIDER);
+  // UPDATE USER PROFILE
+  const updateUserProfile = useCallback(async (displayName) => {
+    const userProfile = await updateProfile(AUTH.currentUser, { displayName });
+    return userProfile;
   }, []);
 
   // REGISTER
-  const register = useCallback(async (email, password, firstName, lastName) => {
-    await createUserWithEmailAndPassword(AUTH, email, password).then(async (res) => {
-      const userRef = doc(collection(DB, 'users'), res.user?.uid);
+  const register = useCallback(async (email, password, displayName) => {
+    // ONLY ALLOW KOJAK DOMAIN TO REGISTER
+    const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
+    await sendEmailVerification(newUser.user);
 
-      await setDoc(userRef, {
-        uid: res.user?.uid,
-        email,
-        displayName: `${firstName} ${lastName}`,
-      });
+    const userProfile = doc(collection(DB, 'users'), newUser.user?.uid);
+
+    await setDoc(userProfile, {
+      uid: newUser.user?.uid,
+      displayName,
+      email,
+      allowedPaths: ['/dashboard/analytics'],
+      role: 'user',
+      password,
     });
   }, []);
 
   // LOGOUT
-  const logout = useCallback(() => {
-    signOut(AUTH);
+  const logout = useCallback(async () => {
+    await signOut(AUTH);
   }, []);
+
+  // FORGOT PASSWORD
+  const forgotPassword = useCallback(async (email) => {
+    if (!email.endsWith('@kojak-group.com')) throw new Error('Email Domain Not Allowed !!');
+    await sendPasswordResetEmail(AUTH, email);
+  }, []);
+
+  const updateUserAccessPaths = useCallback(async (userID, allowedPaths) => {
+    const docRef = doc(DB, `/users/${userID}`);
+    await updateDoc(docRef, { allowedPaths });
+  }, []);
+
+  const fsGetUser = useCallback(async (userID) => {
+    const docRef = doc(DB, `/users/${userID}`);
+    const docSnapshot = await getDoc(docRef);
+    return docSnapshot.data();
+  }, []);
+
+  const fsGetUsers = useCallback(async () => {
+    const docRef = collection(DB, '/users');
+    const queryRef = query(docRef);
+    const querySnapshot = await getDocs(queryRef);
+    const documents = [];
+    querySnapshot.forEach((element) => {
+      documents.push(element.data());
+    });
+
+    return documents.filter((user) => user.email !== 'hussam@hotmail.co.uk');
+  }, []);
+
+  // ----------------------------------------------------------------------
+  const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
+
+  const status = state.loading ? 'loading' : checkAuthenticated;
 
   // ?----------------------------------- Firebase Functions --------------------------------------
   const fbTranslate = httpsCallable(FUNCTIONS, 'fbTranslateSectionTitle');
@@ -303,10 +341,11 @@ export function AuthProvider({ children }) {
   // Get All "Non-Deleted" Branches --------------------------------------------
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
-      collectionGroup(DB, 'branches'),
-      where('userID', '==', state.user.id),
-      where('isDeleted', '==', false)
+      collectionGroup(DB, 'branches')
+      // where('userID', '==', state.user.id),
+      // where('isDeleted', '==', false)
     );
+    console.log('Query');
     const querySnapshot = await getDocs(docRef);
     const dataArr = [];
     querySnapshot.forEach((doc) => dataArr.push(doc.data()));
@@ -1136,14 +1175,12 @@ export function AuthProvider({ children }) {
 
   const memoizedValue = useMemo(
     () => ({
-      isInitialized: state.isInitialized,
-      isAuthenticated: state.isAuthenticated,
       user: state.user,
       method: 'firebase',
+      loading: status === 'loading',
+      authenticated: status === 'authenticated',
+      unauthenticated: status === 'unauthenticated',
       login,
-      loginWithGoogle,
-      loginWithGithub,
-      loginWithTwitter,
       register,
       logout,
       // ---- GENERIC ----
@@ -1239,9 +1276,6 @@ export function AuthProvider({ children }) {
       state.isInitialized,
       state.user,
       login,
-      loginWithGithub,
-      loginWithGoogle,
-      loginWithTwitter,
       register,
       logout,
       // ---- GENERIC ----
