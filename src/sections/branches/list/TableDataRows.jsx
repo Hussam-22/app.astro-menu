@@ -31,8 +31,6 @@ export default function TableDataRows({ row, onEditRow }) {
   const thisMonthScans =
     user?.statisticsSummary?.branches[id]?.scans?.[THIS_YEAR]?.[THIS_MONTH] || 0;
 
-  const borderColor =
-    theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.grey[700];
   const textColor =
     theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.primary.light;
 
@@ -45,7 +43,7 @@ export default function TableDataRows({ row, onEditRow }) {
   }, [fsGetBranchTablesCount, row.id]);
 
   return (
-    <TableRow hover sx={{ borderBottom: `dotted 1px ${borderColor}` }}>
+    <TableRow hover>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Image
           disabledEffect

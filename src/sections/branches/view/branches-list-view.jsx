@@ -119,7 +119,7 @@ export default function BranchesListView() {
         }
       />
 
-      <Card>
+      <Card sx={{ mt: 4 }}>
         <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
         <Scrollbar>
