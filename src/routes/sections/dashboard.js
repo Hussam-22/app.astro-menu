@@ -64,6 +64,9 @@ const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission')
 // BLANK PAGE
 const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
 
+// BRANCH
+const BranchesListPage = lazy(() => import('src/pages/dashboard/branch/branch-list-page'));
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -85,6 +88,17 @@ export const dashboardRoutes = [
       { path: 'banking', element: <OverviewBankingPage /> },
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
+
+      {
+        path: 'branch',
+        children: [
+          { element: <BranchesListPage />, index: true },
+          { path: 'list', element: <BranchesListPage /> },
+          // { path: 'new', element: <UserCreatePage /> },
+          // { path: ':id/edit', element: <UserEditPage /> },
+        ],
+      },
+
       {
         path: 'user',
         children: [

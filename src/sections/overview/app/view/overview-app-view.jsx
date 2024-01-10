@@ -1,12 +1,13 @@
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
-import { useTheme } from '@mui/material/styles';
 
+import { SIERRA_SECRET } from 'src/config-global';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 // assets
@@ -20,38 +21,65 @@ import { _appRelated, _appAuthors, _appInvoices, _appFeatured, _appInstalled } f
 import AppWidget from '../app-widget';
 import AppWelcome from '../app-welcome';
 import AppFeatured from '../app-featured';
+import AppNewInvoice from '../app-new-invoice';
 import AppTopAuthors from '../app-top-authors';
 import AppTopRelated from '../app-top-related';
-import AppNewInvoice from '../app-new-invoice';
-import AppAreaInstalled from '../app-area-installed';
 import AppWidgetSummary from '../app-widget-summary';
+import AppAreaInstalled from '../app-area-installed';
 import AppCurrentDownload from '../app-current-download';
 import AppTopInstalledCountries from '../app-top-installed-countries';
 
 // ----------------------------------------------------------------------
+const secret = SIERRA_SECRET;
 
 export default function OverviewAppView() {
   const { user } = useMockedUser();
   const theme = useTheme();
   const settings = useSettingsContext();
-  const name = true;
-  const water = name === true ? name : false;
+  // const [token, setToken] = useState('');
 
   // useEffect(() => {
   //   (async () => {
-  //     const apiUrl = 'https://library.sharjah.ac.ae:443/iii/sierra-api/v6/patrons/?limit=10';
-
-  //     const secretKey = 'hjpu6Jw1btAxfJSa+J7trKBttLVv';
-  //     const password = 'Hussam@22';
-
-  //     const headers = {
-  //       'Content-Type': 'application/json',
-  //       Authorization: `Basic ${btoa(`${secretKey}:${password}`)}`,
-  //     };
-
-  //     axios.get(apiUrl, { headers });
+  //     const url = `https://corsproxy.io/?${encodeURIComponent(
+  //       'https://library.sharjah.ac.ae:443/iii/sierra-api/token'
+  //     )}`;
+  //     try {
+  //       const response = await axios.post(
+  //         url,
+  //         {},
+  //         {
+  //           headers: {
+  //             Authorization: `Basic ${secret}`,
+  //           },
+  //         }
+  //       );
+  //       // Handle the response or set state as needed
+  //       setToken(response.data.access_token);
+  //     } catch (error) {
+  //       // Handle errors
+  //       console.error(error);
+  //     }
   //   })();
   // }, []);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     if (token !== '') {
+  //       const url = `https://corsproxy.io/?${encodeURIComponent(
+  //         'https://library.sharjah.ac.ae:443/iii/sierra-api/v6/patrons/?limit=10'
+  //       )}`;
+  //       const response = await axios.get(url, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           'Content-Type': 'application/json', // You may adjust the content type based on your API requirements
+  //         },
+  //       });
+
+  //       // Handle the response data as needed
+  //       console.log('Response data:', response.data);
+  //     }
+  //   })();
+  // }, [token]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
