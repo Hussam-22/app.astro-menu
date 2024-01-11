@@ -13,7 +13,7 @@ const GREY = {
   500: '#A1A1A1',
   600: '#888888',
   700: '#666666',
-  800: '#333333',
+  800: '#222222',
   900: '#111111',
 };
 
@@ -126,7 +126,7 @@ export function palette(mode) {
     background: {
       paper: GREY[800],
       default: GREY[900],
-      neutral: alpha(GREY[500], 0.12),
+      neutral: alpha(GREY[800], 0.12),
     },
     action: {
       ...COMMON.action,

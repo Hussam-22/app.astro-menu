@@ -66,6 +66,8 @@ const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
 
 // BRANCH
 const BranchesListPage = lazy(() => import('src/pages/dashboard/branch/branch-list-page'));
+const BranchManagePage = lazy(() => import('src/pages/dashboard/branch/branch-manage-page'));
+const BranchNewPage = lazy(() => import('src/pages/dashboard/branch/branch-new-page'));
 
 // ----------------------------------------------------------------------
 
@@ -94,8 +96,8 @@ export const dashboardRoutes = [
         children: [
           { element: <BranchesListPage />, index: true },
           { path: 'list', element: <BranchesListPage /> },
-          // { path: 'new', element: <UserCreatePage /> },
-          // { path: ':id/edit', element: <UserEditPage /> },
+          { path: 'new', element: <BranchNewPage /> },
+          { path: ':id/manage', element: <BranchManagePage /> },
         ],
       },
 

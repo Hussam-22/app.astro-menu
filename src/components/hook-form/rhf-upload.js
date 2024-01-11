@@ -3,6 +3,9 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 // @mui
 import FormHelperText from '@mui/material/FormHelperText';
+import { Box, useTheme, IconButton } from '@mui/material';
+
+import Iconify from 'src/components/iconify';
 
 //
 import { Upload, UploadBox, UploadAvatar } from '../upload';
@@ -57,8 +60,9 @@ RHFUploadBox.propTypes = {
 
 // ----------------------------------------------------------------------
 
-export function RHFUpload({ name, multiple, helperText, ...other }) {
+export function RHFUpload({ name, multiple, helperText, onRemove, ...other }) {
   const { control } = useFormContext();
+  const theme = useTheme();
 
   return (
     <Controller
@@ -81,19 +85,37 @@ export function RHFUpload({ name, multiple, helperText, ...other }) {
             {...other}
           />
         ) : (
-          <Upload
-            accept={{ 'image/*': [] }}
-            file={field.value}
-            error={!!error}
-            helperText={
-              (!!error || helperText) && (
-                <FormHelperText error={!!error} sx={{ px: 2 }}>
-                  {error ? error?.message : helperText}
-                </FormHelperText>
-              )
-            }
-            {...other}
-          />
+          <Box sx={{ position: 'relative' }}>
+            <Upload
+              accept={{ 'image/*': [] }}
+              file={field.value}
+              error={!!error}
+              helperText={
+                (!!error || helperText) && (
+                  <FormHelperText error={!!error} sx={{ px: 2 }}>
+                    {error ? error?.message : helperText}
+                  </FormHelperText>
+                )
+              }
+              {...other}
+            />
+            {onRemove !== undefined && (
+              <IconButton
+                size="small"
+                onClick={onRemove}
+                sx={{
+                  position: 'absolute',
+                  top: 20,
+                  right: 20,
+                  zIndex: 99,
+                  backgroundColor: theme.palette.grey[200],
+                  color: theme.palette.common.black,
+                }}
+              >
+                <Iconify icon="radix-icons:cross-2" width={12} height={12} />
+              </IconButton>
+            )}
+          </Box>
         )
       }
     />
@@ -104,4 +126,5 @@ RHFUpload.propTypes = {
   helperText: PropTypes.string,
   multiple: PropTypes.bool,
   name: PropTypes.string,
+  onRemove: PropTypes.func,
 };

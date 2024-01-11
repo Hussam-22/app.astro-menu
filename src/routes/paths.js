@@ -111,7 +111,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/branch`,
       list: `${ROOTS.DASHBOARD}/branch/list`,
       new: `${ROOTS.DASHBOARD}/branch/new`,
-      details: (id) => `${ROOTS.DASHBOARD}/branch/${id}`,
+      manage: (id) => `${ROOTS.DASHBOARD}/branch/${id}/manage`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
