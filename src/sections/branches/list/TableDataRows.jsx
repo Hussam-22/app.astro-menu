@@ -1,12 +1,12 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Button, TableRow, TableCell, Typography } from '@mui/material';
 
-import Image from 'src/components/image';
 import Label from 'src/components/label';
+import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
 import { fCurrency } from 'src/utils/format-number';
 
@@ -22,7 +22,7 @@ const THIS_MONTH = new Date().getMonth();
 export default function TableDataRows({ row, onEditRow }) {
   const theme = useTheme();
   const { user, fsGetBranchTablesCount } = useAuthContext();
-  const { title, cover, isActive, id } = row;
+  const { title, imgUrl, isActive, id } = row;
   const [tablesCount, setTablesCount] = useState(0);
 
   const ordersCount = user.statisticsSummary?.branches[id]?.orders?.[THIS_YEAR]?.[THIS_MONTH] || 0;
@@ -34,13 +34,13 @@ export default function TableDataRows({ row, onEditRow }) {
   const textColor =
     theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.primary.light;
 
-  useEffect(() => {
-    const getTablesCount = async () => {
-      const count = await fsGetBranchTablesCount(row.id);
-      return setTablesCount(count);
-    };
-    getTablesCount();
-  }, [fsGetBranchTablesCount, row.id]);
+  // useEffect(() => {
+  //   const getTablesCount = async () => {
+  //     const count = await fsGetBranchTablesCount(row.id);
+  //     return setTablesCount(count);
+  //   };
+  //   getTablesCount();
+  // }, [fsGetBranchTablesCount, row.docId]);
 
   return (
     <TableRow hover>
@@ -48,7 +48,7 @@ export default function TableDataRows({ row, onEditRow }) {
         <Image
           disabledEffect
           alt={title}
-          src={cover.url}
+          src={imgUrl}
           sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}
         />
 

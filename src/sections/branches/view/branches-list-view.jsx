@@ -20,13 +20,13 @@ import Iconify from 'src/components/iconify';
 import { useDispatch } from 'src/redux/store';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
+// sections
+import { rdxSetBranchByID } from 'src/redux/slices/branch';
 // hooks
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import TableToolbar from 'src/sections/branches/list/TableToolbar';
 import TableDataRows from 'src/sections/branches/list/TableDataRows';
-// sections
-import { rdxSetBranchByID, rdxGetBranchesList } from 'src/redux/slices/branch';
 // components
 import {
   useTable,
@@ -74,7 +74,7 @@ export default function BranchesListView() {
     (async () => {
       const branchesData = await fsGetAllBranches();
       setTableData(branchesData);
-      dispatch(rdxGetBranchesList(branchesData));
+      // dispatch(rdxGetBranchesList(branchesData));
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -141,9 +141,9 @@ export default function BranchesListView() {
                   .map((row, index) =>
                     row ? (
                       <TableDataRows
-                        key={row.id}
+                        key={row.docID}
                         row={row}
-                        onEditRow={() => handleEditRow(row.id)}
+                        onEditRow={() => handleEditRow(row.docID)}
                       />
                     ) : (
                       !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />

@@ -3,8 +3,15 @@
 import PropTypes from 'prop-types';
 import { initializeApp } from 'firebase/app';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { ref, getStorage, deleteObject } from 'firebase/storage';
 import { useMemo, useState, useEffect, useReducer, useCallback } from 'react';
+import {
+  ref,
+  listAll,
+  getStorage,
+  deleteObject,
+  getDownloadURL,
+  uploadBytesResumable,
+} from 'firebase/storage';
 import {
   getAuth,
   signOut,
@@ -206,7 +213,73 @@ export function AuthProvider({ children }) {
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
 
   const status = state.loading ? 'loading' : checkAuthenticated;
+  // ?--------------------------------- IMAGES ----------------------------------
 
+  // ?-------------------- IMAGES --------------------------------------------------
+  const fsGetImgDownloadUrl = useCallback(async (bucketPath, imgID) => {
+    let url = '';
+    try {
+      url = await getDownloadURL(ref(STORAGE, `gs://${bucketPath}${imgID}`));
+    } catch (error) {
+      url = undefined;
+    }
+
+    return url;
+  }, []);
+
+  const fsGetFolderImages = useCallback(async (bucket, folderID) => {
+    const listRef = ref(STORAGE, `gs://${bucket}/${folderID}`);
+    const imagesList = await listAll(listRef);
+    const imagesUrl = await Promise.all(
+      imagesList.items.map(async (imageRef) => getDownloadURL(ref(STORAGE, imageRef)))
+    );
+    const thumbnail = imagesUrl.filter((url) => url.includes('200x200'));
+    const largeImage = imagesUrl.filter((url) => url.includes('1920x1080'));
+    return [thumbnail, largeImage];
+  }, []);
+
+  const fsDeleteImage = useCallback(async (bucketPath, imgID) => {
+    const storageRef = ref(STORAGE, `gs://${bucketPath}${imgID}`);
+    deleteObject(storageRef)
+      .then(() => {
+        console.log('Image deleted successfully');
+      })
+      .catch((error) => {
+        console.error('Error deleting image:', error);
+      });
+  }, []);
+
+  const fsUploadMultipleImages = useCallback(async (bucketPath, image) => {
+    const storageRef = ref(STORAGE, `gs://${bucketPath}`);
+
+    const uploadPromises = new Promise((resolve, reject) => {
+      const imageRef = ref(storageRef, image.path);
+      const uploadTask = uploadBytesResumable(imageRef, image);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          // console.log(`${percent}% done`);
+        },
+        (error) => {
+          reject(error);
+        },
+        () => {
+          resolve();
+        }
+      );
+    });
+
+    try {
+      // await Promise.all(uploadPromises);
+      return uploadPromises;
+    } catch (error) {
+      // Handle errors during uploads
+      console.error('Upload error:', error);
+      throw error;
+    }
+  }, []);
   // ?----------------------------------- Firebase Functions --------------------------------------
   const fbTranslate = httpsCallable(FUNCTIONS, 'fbTranslateSectionTitle');
   const fbTranslateMeal = httpsCallable(FUNCTIONS, 'fbTranslateMeal');
@@ -312,7 +385,6 @@ export function AuthProvider({ children }) {
     [state]
   );
 
-  // Get all Branch Tables -----------------------------------------------------
   const fsGetBranchTables = useCallback(
     async (branchID, userID = state.user.id) => {
       const docRef = query(
@@ -328,7 +400,6 @@ export function AuthProvider({ children }) {
     [state]
   );
 
-  // Get Single Branch ---------------------------------------------------------
   const fsGetBranch = useCallback(
     async (branchID, userID = state.user.id) => {
       const docRef = doc(DB, `/users/${userID}/branches/${branchID}/`);
@@ -338,40 +409,65 @@ export function AuthProvider({ children }) {
     [state]
   );
 
-  // Get All "Non-Deleted" Branches --------------------------------------------
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
-      collectionGroup(DB, 'branches')
-      // where('userID', '==', state.user.id),
+      collectionGroup(DB, 'branches'),
+      where('userID', '==', state.user.id)
       // where('isDeleted', '==', false)
     );
-    console.log('Query');
     const querySnapshot = await getDocs(docRef);
     const dataArr = [];
-    querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+    const asyncOperations = [];
+
+    querySnapshot.forEach((element) => {
+      const asyncOperation = async () => {
+        const bucket = `menu-app-b268b/${state.user.id}/branches/${element.data().docID}/`;
+        const imgUrl = await fsGetImgDownloadUrl(bucket, `cover.jpg`);
+
+        dataArr.push({ ...element.data(), imgUrl });
+      };
+      asyncOperations.push(asyncOperation());
+    });
+
+    await Promise.all(asyncOperations);
+
     return dataArr;
   }, [state]);
 
-  // Add New Branch -----------------------------------------------------------
   const fsAddNewBranch = useCallback(
-    async (payload) => {
-      const newDocRef = doc(collection(DB, `/users/${state.user.id}/branches/`));
-      const date = new Date();
-      const dateTime = date.toDateString();
-      setDoc(newDocRef, {
-        ...payload,
-        id: newDocRef.id,
-        createdAt: dateTime,
+    async (branchData, imageFile) => {
+      const newDocRef = doc(collection(DB, `users/${state.user.id}/branches/`));
+      const { cover, ...documentData } = branchData;
+      await setDoc(newDocRef, {
+        ...documentData,
+        docID: newDocRef.id,
         userID: state.user.id,
-        // scanLimits: profile.planeInfo.scansLimit,
-        cover: {
-          id: payload.cover.id,
-          url: `https://firebasestorage.googleapis.com/v0/b/menu-app-b268b.appspot.com/o/${state.user.id}%2Fbranches%2F${payload.cover.id}_800x800?alt=media&token=1f5f8bad-4baf-4d37-b6ef-779fbf79a770`,
-        },
-        menuVisual: { wifiPassword: true, cart: true, homePage: true },
-        mealVisual: { fullMeal: true, price: true, keywords: true, description: true },
+        lastUpdatedBy: state.user.id,
+        lastUpdatedAt: new Date(),
       });
-      return newDocRef.id;
+
+      const storageRef = ref(
+        STORAGE,
+        `gs://menu-app-b268b/${state.user.id}/branches/${newDocRef.id}/`
+      );
+
+      if (imageFile) {
+        console.log(imageFile);
+        const imageRef = ref(storageRef, 'cover.jpg');
+        const uploadTask = uploadBytesResumable(imageRef, imageFile);
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            console.log(snapshot);
+          },
+          (error) => {
+            console.log(error);
+          },
+          () => {
+            console.log('UPLOADED');
+          }
+        );
+      }
     },
     [state]
   );
@@ -505,19 +601,6 @@ export function AuthProvider({ children }) {
     querySnapshot.forEach((doc) => dataArr.push(doc.data()));
     return dataArr;
   }, [state]);
-
-  // ------------------ | Get image Download URL | ------------------
-  const fsGetImgDownloadUrl = useCallback(
-    (imgID, type) => {
-      // // getDownloadURL(ref(STORAGE, `${state.user.id}/menusCover/${dataObj.cover.id}_800x800.webp`))
-      // const url = getDownloadURL(ref(STORAGE, `${state.user.id}/branches/${imgID}_800x800`))
-      //   .then((response) => response)
-      //   .catch((error) => console.log(error));
-      // console.log(url);
-      // return url;
-    },
-    [state]
-  );
 
   // ------------------ | Add New Menu | ------------------
   const fsAddNewMenu = useCallback(

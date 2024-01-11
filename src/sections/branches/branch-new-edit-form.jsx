@@ -10,7 +10,7 @@ import { ref, uploadBytesResumable } from 'firebase/storage';
 
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Card, Stack, useTheme, MenuItem, Typography } from '@mui/material';
+import { Card, Stack, MenuItem, Typography } from '@mui/material';
 
 import uuidv4 from 'src/utils/uuidv4';
 import { paths } from 'src/routes/paths';
@@ -28,11 +28,9 @@ import FormProvider, {
 
 BranchNewEditForm.propTypes = {
   branchData: PropTypes.object,
-  coverImage: PropTypes.object,
 };
 
-export default function BranchNewEditForm({ branchData, coverImage }) {
-  const theme = useTheme();
+export default function BranchNewEditForm({ branchData }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { fsUpdateTable, fsAddNewBranch, user, STORAGE, fsDeleteBranch, fbTranslateMeal } =
@@ -71,7 +69,8 @@ export default function BranchNewEditForm({ branchData, coverImage }) {
       isDeleted: branchData?.isDeleted || false,
       createdAt: branchData?.createdAt || '',
       scanLimits: branchData?.scanLimits || '',
-      cover: coverImage || ' ',
+      cover: branchData?.cover || '',
+      imgUrl: branchData?.cover || '',
 
       mealVisual: branchData?.mealVisual || '',
       menuVisual: branchData?.menuVisual || '',
@@ -90,7 +89,7 @@ export default function BranchNewEditForm({ branchData, coverImage }) {
       },
       // ...branchData,
     }),
-    [branchData, coverImage]
+    [branchData]
   );
 
   const methods = useForm({
@@ -107,16 +106,22 @@ export default function BranchNewEditForm({ branchData, coverImage }) {
   } = methods;
 
   const values = watch();
+  console.log(values.cover);
 
   // -------------------------------- Show Selected Image Handler --------------------------------------------
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];
+
+      setValue('cover', file.name, { isTouched: true, isFocused: true, shouldDirty: true });
+
+      const newFile = Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+
       if (file) {
-        setValue('cover', URL.createObjectURL(file), {
-          shouldTouch: true,
-          shouldDirty: true,
-        });
+        setValue('imgUrl', URL.createObjectURL(file));
+        setValue('cover', newFile, { shouldValidate: true });
       }
     },
     [setValue]
@@ -187,7 +192,7 @@ export default function BranchNewEditForm({ branchData, coverImage }) {
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     if (branchData?.docID) updateBranchOnSubmit(data);
-    if (!branchData?.docID) newBranchOnSubmit(data);
+    if (!branchData?.docID) fsAddNewBranch(data, data.cover);
   };
 
   const handleDeleteBranch = async () => {
@@ -231,7 +236,7 @@ export default function BranchNewEditForm({ branchData, coverImage }) {
             Cover Image
           </Typography>
           <RHFUpload
-            name="cover"
+            name="imgUrl"
             maxSize={3145728}
             onDrop={handleDrop}
             onRemove={handelRemove}

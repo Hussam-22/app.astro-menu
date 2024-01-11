@@ -77,7 +77,7 @@ export function useNavData() {
             title: t('branches'),
             path: paths.dashboard.branches.root,
             icon: ICONS.user,
-            children: [{ title: t('list'), path: paths.dashboard.branches.list }],
+            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
 
           // USER
