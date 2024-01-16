@@ -13,7 +13,7 @@ function BranchSocialLinks() {
       <Box
         sx={{
           display: 'grid',
-          gap: 1,
+          gap: 2,
           gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
           mt: 1,
         }}

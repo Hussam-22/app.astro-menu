@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import { useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 
@@ -22,9 +23,10 @@ export default function CustomBreadcrumbs({
   ...other
 }) {
   const lastLink = links[links.length - 1].name;
+  const theme = useTheme();
 
   return (
-    <Box sx={{ ...sx }}>
+    <Box sx={{ borderBottom: `dashed 1px ${theme.palette.divider}`, pb: 1, ...sx }}>
       <Stack direction="row" alignItems="center">
         <Box sx={{ flexGrow: 1 }}>
           {/* HEADING */}

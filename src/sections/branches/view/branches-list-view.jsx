@@ -45,7 +45,7 @@ const monthLong = new Date(`${new Date().getMonth() + 1}`).toLocaleDateString('e
 });
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Branch Name', align: 'left', width: '25%' },
+  { id: 'title', label: 'Branch Name', align: 'left', width: '40%' },
   { id: 'orders', label: `(${monthLong}) Orders`, align: 'center', width: '15%' },
   { id: 'income', label: `(${monthLong}) Income`, align: 'center', width: '15%' },
   { id: 'tables', label: 'tables', align: 'center', width: '15%' },
@@ -68,8 +68,6 @@ export default function BranchesListView() {
   const [tableData, setTableData] = useState([]);
   const [filterName, setFilterName] = useState('');
 
-  console.log(tableData);
-
   useEffect(() => {
     (async () => {
       const branchesData = await fsGetAllBranches();
@@ -86,7 +84,7 @@ export default function BranchesListView() {
 
   const handleEditRow = (id) => {
     dispatch(rdxSetBranchByID(id));
-    router.push(paths.dashboard.branches.details(id));
+    router.push(paths.dashboard.branches.manage(id));
   };
 
   const dataFiltered = applySortFilter({

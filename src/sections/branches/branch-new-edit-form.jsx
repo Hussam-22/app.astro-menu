@@ -12,7 +12,6 @@ import { ref, uploadBytesResumable } from 'firebase/storage';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, MenuItem, Typography } from '@mui/material';
 
-import uuidv4 from 'src/utils/uuidv4';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { fData } from 'src/utils/format-number';
@@ -106,7 +105,6 @@ export default function BranchNewEditForm({ branchData }) {
   } = methods;
 
   const values = watch();
-  console.log(values.cover);
 
   // -------------------------------- Show Selected Image Handler --------------------------------------------
   const handleDrop = useCallback(
@@ -129,39 +127,6 @@ export default function BranchNewEditForm({ branchData }) {
 
   const handelRemove = () => {
     setValue('cover', '');
-  };
-  // ------------------------------- Save new/Updates Form ---------------------------------------------
-  const newBranchOnSubmit = async (docID) => {
-    if (values.cover.preview !== '') {
-      const imgID = uuidv4();
-      setValue('cover.id', imgID);
-
-      const storageRef = ref(STORAGE, `${user.id}/branches/${docID}`);
-      const uploadTask = uploadBytesResumable(storageRef, values.cover);
-
-      // Start uploading the image to firebase
-      uploadTask.on('state_changed', null, null, async () => {
-        // On image upload complete, add new branch doc and get docID
-        const newBranchID = await fsAddNewBranch({
-          ...values,
-          cover: { id: values.cover.id, ...values.cover },
-        });
-
-        // translate the new branch 'Description' field
-        fbTranslateMeal({
-          mealRef: `/users/${user.id}/branches/${newBranchID}`,
-          text: { title: '', desc: values.description },
-          userID: user.id,
-        });
-
-        enqueueSnackbar('Create success!');
-        router.push(paths.dashboard.branches.list);
-      });
-    } else {
-      enqueueSnackbar('Please make sure to add branch cover image', {
-        variant: 'error',
-      });
-    }
   };
 
   const updateBranchOnSubmit = async () => {
@@ -192,7 +157,10 @@ export default function BranchNewEditForm({ branchData }) {
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     if (branchData?.docID) updateBranchOnSubmit(data);
-    if (!branchData?.docID) fsAddNewBranch(data, data.cover);
+    if (!branchData?.docID) {
+      fsAddNewBranch(data, data.cover);
+      router.push(paths.dashboard.branches.list);
+    }
   };
 
   const handleDeleteBranch = async () => {
@@ -244,15 +212,20 @@ export default function BranchNewEditForm({ branchData }) {
           />
         </Card>
         <Card sx={{ p: 3 }}>
-          <Stack spacing={1}>
+          <Stack spacing={2}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Typography variant="h3">Branch Info</Typography>
-              <RHFSwitch
-                name="isActive"
-                labelPlacement="start"
-                label="Branch Status"
-                sx={{ alignItems: 'center' }}
-              />
+              <Stack direction="column" alignItems="flex-end">
+                <RHFSwitch
+                  name="isActive"
+                  labelPlacement="start"
+                  label={values.isActive ? `Branch is Active` : `Branch is Inactive`}
+                  sx={{ alignItems: 'center' }}
+                />
+                <Typography variant="caption" sx={{ color: 'error.main' }}>
+                  When branch is inactive, customers cant view menu and waiters cant take orders
+                </Typography>
+              </Stack>
             </Stack>
             <RHFTextField name="title" label="Name" />
             <RHFTextField name="description" label="About" multiline rows={3} />

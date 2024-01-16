@@ -84,6 +84,8 @@ AuthProvider.propTypes = {
   children: PropTypes.node,
 };
 
+const BUCKET = 'menu-app-b268b';
+
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [dataSnapshotListener, setDataSnapshotListener] = useState([]);
@@ -303,7 +305,6 @@ export function AuthProvider({ children }) {
   }, [state]);
 
   // ?--------------------------------------------------------------------------------------------------------------------
-  // Add Tables to Branch ------------------------------------------------------
   const fsAddBatchTablesToBranch = useCallback(
     async (tablesCount, branchID, CurrentCount) => {
       const docRef = doc(DB, `/users/${state.user.id}/branches/${branchID}/`);
@@ -370,8 +371,6 @@ export function AuthProvider({ children }) {
     await batch.commit();
   }, []);
 
-  // ?-------------------------------------------------------------------------------------------------------------------
-  // Branch Tables Count
   const fsGetBranchTablesCount = useCallback(
     async (branchID) => {
       const query_ = query(
@@ -404,7 +403,17 @@ export function AuthProvider({ children }) {
     async (branchID, userID = state.user.id) => {
       const docRef = doc(DB, `/users/${userID}/branches/${branchID}/`);
       const docSnap = await getDoc(docRef);
-      return docSnap.data();
+
+      const bucketPath = `${BUCKET}/${userID}/branches/${branchID}/`;
+
+      const imgUrl = await fsGetImgDownloadUrl(bucketPath, 'cover_800x800.webp');
+      return {
+        data: {
+          ...docSnap.data(),
+          lastUpdatedAt: new Date(docSnap.data().lastUpdatedAt.seconds * 1000).toDateString(),
+        },
+        cover: imgUrl,
+      };
     },
     [state]
   );
@@ -422,7 +431,7 @@ export function AuthProvider({ children }) {
     querySnapshot.forEach((element) => {
       const asyncOperation = async () => {
         const bucket = `menu-app-b268b/${state.user.id}/branches/${element.data().docID}/`;
-        const imgUrl = await fsGetImgDownloadUrl(bucket, `cover.jpg`);
+        const imgUrl = await fsGetImgDownloadUrl(bucket, `cover_200x200.webp`);
 
         dataArr.push({ ...element.data(), imgUrl });
       };

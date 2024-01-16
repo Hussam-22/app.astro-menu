@@ -31,7 +31,9 @@ const slice = createSlice({
 
     rdxUpdateBranchesList(state, action) {
       // Drop target branch, then re-add it with new values
-      const existingBranches = state.branchesList.filter((branch) => branch.id !== action.payload.id);
+      const existingBranches = state.branchesList.filter(
+        (branch) => branch.id !== action.payload.id
+      );
       state.branchesList = [...existingBranches, action.payload];
       state.branch = { ...action.payload };
     },
@@ -41,7 +43,7 @@ const slice = createSlice({
     },
 
     rdxSetBranch(state, action) {
-      state.branch = { ...action.payload };
+      state.branch = { ...action.payload.data, cover: action.payload.cover };
     },
 
     rdxSetBranchByID(state, action) {
