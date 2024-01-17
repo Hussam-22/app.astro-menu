@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Box, Tab, Tabs, useTheme, Container, Typography } from '@mui/material';
+import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
@@ -98,6 +98,7 @@ function BranchManageView() {
             scrollButtons="auto"
             value={currentTab}
             onChange={(event, newValue) => setCurrentTab(newValue)}
+            sx={{ bgcolor: theme.palette.background.paper, mt: 2, px: 2, pb: 1, borderRadius: 1 }}
           >
             {TABS.map((tab) => (
               <Tab
@@ -109,7 +110,8 @@ function BranchManageView() {
               />
             ))}
           </Tabs>
-          <Box sx={{ mb: 5 }} />
+
+          <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
 
           {branchData?.docID &&
             TABS.map((tab) => {

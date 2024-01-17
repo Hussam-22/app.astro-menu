@@ -6,11 +6,10 @@ import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { useMemo, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ref, uploadBytesResumable } from 'firebase/storage';
 
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Card, Stack, MenuItem, Typography } from '@mui/material';
+import { Card, Stack, Divider, MenuItem, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -32,11 +31,8 @@ BranchNewEditForm.propTypes = {
 export default function BranchNewEditForm({ branchData }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const { fsUpdateTable, fsAddNewBranch, user, STORAGE, fsDeleteBranch, fbTranslateMeal } =
-    useAuthContext();
+  const { fsAddNewBranch, fsDeleteBranch, fsUpdateBranch } = useAuthContext();
   const menusList = useSelector((state) => state.menu.menus);
-
-  // -------------------------------- Form Validation and Handler --------------------------------------------
 
   const NewUserSchema = Yup.object().shape({
     title: Yup.string().required('Menu title is required'),
@@ -64,7 +60,7 @@ export default function BranchNewEditForm({ branchData }) {
       description: branchData?.description || '',
       wifiPassword: branchData?.wifiPassword || '',
       activeMenuID: branchData?.activeMenuID || '',
-      isActive: !!branchData?.isActive || true,
+      isActive: !!branchData?.isActive,
       isDeleted: branchData?.isDeleted || false,
       createdAt: branchData?.createdAt || '',
       scanLimits: branchData?.scanLimits || '',
@@ -86,7 +82,6 @@ export default function BranchNewEditForm({ branchData }) {
         other: branchData?.socialLinks?.other || '',
         // useMasterLinks: branchData?.socialLinks?.useMasterLinks || false,
       },
-      // ...branchData,
     }),
     [branchData]
   );
@@ -97,6 +92,7 @@ export default function BranchNewEditForm({ branchData }) {
   });
 
   const {
+    reset,
     watch,
     setValue,
     handleSubmit,
@@ -129,75 +125,32 @@ export default function BranchNewEditForm({ branchData }) {
     setValue('cover', '');
   };
 
-  const updateBranchOnSubmit = async () => {
-    // upload new image if it was changed
-    if (getFieldState('cover').isTouched && values.cover.preview !== '') {
-      const storageRef = ref(STORAGE, `${user.id}/branches/${values.cover.id}`);
-      const uploadTask = uploadBytesResumable(storageRef, values.cover);
-      uploadTask.on('state_changed', null, null, null);
+  const onSubmit = async (data) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const shouldUpdateDescription = getFieldState('description').isDirty;
+    const shouldUpdateCover = getFieldState('cover').isDirty;
+    if (branchData?.docID)
+      fsUpdateBranch(
+        { docID: branchData.docID, ...data },
+        shouldUpdateDescription,
+        shouldUpdateCover
+      );
+    if (!branchData?.docID) {
+      fsAddNewBranch(data);
+      router.push(paths.dashboard.branches.list);
     }
-
-    fsUpdateTable(`users/${user.id}/branches/${branchData.id}`, values);
-
-    // update translation if description was changed
-    if (getFieldState('description').isDirty) {
-      fbTranslateMeal({
-        mealRef: `/users/${user.id}/branches/${branchData.id}`,
-        text: { title: '', desc: values.description },
-        userID: user.id,
-      });
-    }
-
-    // update Redux
-    // dispatch(rdxSetBranch(values));
-
+    reset(data);
     enqueueSnackbar('Update success!');
   };
 
-  const onSubmit = async (data) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    if (branchData?.docID) updateBranchOnSubmit(data);
-    if (!branchData?.docID) {
-      fsAddNewBranch(data, data.cover);
-      router.push(paths.dashboard.branches.list);
-    }
-  };
-
   const handleDeleteBranch = async () => {
-    // TODO: Trigger loading
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    fsDeleteBranch(
-      branchData?.id,
-      branchData?.cover.preview !== '' ? branchData?.cover.id : undefined
-    );
+    fsDeleteBranch(branchData?.docID);
     router.push(paths.dashboard.branches.list);
   };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={2} direction="row" sx={{ justifyContent: 'flex-end', mb: 2 }}>
-        {branchData?.docID && (
-          <LoadingButton
-            variant="contained"
-            loading={isSubmitting}
-            color="error"
-            onClick={handleDeleteBranch}
-          >
-            Delete Branch
-          </LoadingButton>
-        )}
-
-        <LoadingButton
-          type="submit"
-          variant="contained"
-          color="success"
-          loading={isSubmitting}
-          disabled={!isDirty}
-        >
-          Save
-        </LoadingButton>
-      </Stack>
-
       <Stack direction="column" spacing={2}>
         <Card sx={{ p: 3 }}>
           <Typography variant="h3" sx={{ mb: 1 }}>
@@ -242,6 +195,31 @@ export default function BranchNewEditForm({ branchData }) {
         <Card sx={{ p: 3 }}>
           <BranchSocialLinks />
         </Card>
+
+        <Divider />
+
+        <Stack spacing={2} direction="row" sx={{ justifyContent: 'flex-end' }}>
+          {branchData?.docID && (
+            <LoadingButton
+              variant="contained"
+              loading={isSubmitting}
+              color="error"
+              onClick={handleDeleteBranch}
+            >
+              Delete Branch
+            </LoadingButton>
+          )}
+
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="success"
+            loading={isSubmitting}
+            disabled={!isDirty}
+          >
+            Save
+          </LoadingButton>
+        </Stack>
       </Stack>
     </FormProvider>
   );

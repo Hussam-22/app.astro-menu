@@ -399,25 +399,6 @@ export function AuthProvider({ children }) {
     [state]
   );
 
-  const fsGetBranch = useCallback(
-    async (branchID, userID = state.user.id) => {
-      const docRef = doc(DB, `/users/${userID}/branches/${branchID}/`);
-      const docSnap = await getDoc(docRef);
-
-      const bucketPath = `${BUCKET}/${userID}/branches/${branchID}/`;
-
-      const imgUrl = await fsGetImgDownloadUrl(bucketPath, 'cover_800x800.webp');
-      return {
-        data: {
-          ...docSnap.data(),
-          lastUpdatedAt: new Date(docSnap.data().lastUpdatedAt.seconds * 1000).toDateString(),
-        },
-        cover: imgUrl,
-      };
-    },
-    [state]
-  );
-
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
       collectionGroup(DB, 'branches'),
@@ -442,11 +423,28 @@ export function AuthProvider({ children }) {
 
     return dataArr;
   }, [state]);
+  const fsGetBranch = useCallback(
+    async (branchID, userID = state.user.id) => {
+      const docRef = doc(DB, `/users/${userID}/branches/${branchID}/`);
+      const docSnap = await getDoc(docRef);
 
+      const bucketPath = `${BUCKET}/${userID}/branches/${branchID}/`;
+
+      const imgUrl = await fsGetImgDownloadUrl(bucketPath, 'cover_800x800.webp');
+      return {
+        data: {
+          ...docSnap.data(),
+          lastUpdatedAt: new Date(docSnap.data().lastUpdatedAt.seconds * 1000).toDateString(),
+        },
+        cover: imgUrl,
+      };
+    },
+    [state]
+  );
   const fsAddNewBranch = useCallback(
-    async (branchData, imageFile) => {
+    async (branchData) => {
       const newDocRef = doc(collection(DB, `users/${state.user.id}/branches/`));
-      const { cover, ...documentData } = branchData;
+      const { cover: imageFile, ...documentData } = branchData;
       await setDoc(newDocRef, {
         ...documentData,
         docID: newDocRef.id,
@@ -486,34 +484,65 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsUpdateBranch = useCallback(
+    async (branchData, shouldUpdateDescription, shouldUpdateCover) => {
+      const docRef = doc(DB, `/users/${state.user.id}/branches/${branchData.docID}`);
+      const { cover: imageFile, ...documentData } = branchData;
+      await updateDoc(docRef, {
+        ...documentData,
+        lastUpdatedBy: state.user.id,
+        lastUpdatedAt: new Date(),
+      });
 
+      if (shouldUpdateDescription)
+        fbTranslateBranchDesc({
+          branchRef: docRef.path,
+          text: { description: documentData.description },
+          userID: state.user.id,
+        });
+
+      if (shouldUpdateCover) {
+        console.log(imageFile);
+        const storageRef = ref(
+          STORAGE,
+          `gs://menu-app-b268b/${state.user.id}/branches/${branchData.docID}/`
+        );
+
+        const imageRef = ref(storageRef, 'cover.jpg');
+        const uploadTask = uploadBytesResumable(imageRef, imageFile);
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            console.log(snapshot.totalBytes);
+          },
+          (error) => {
+            console.log(error);
+          },
+          () => {
+            console.log('IMAGE UPLOADED !!');
+          }
+        );
+      }
+    },
+    [state]
+  );
+  const fsDeleteBranch = useCallback(
+    async (branchID) => {
+      const docRef = doc(DB, `/users/${state.user.id}/branches/${branchID}`);
+      await deleteDoc(docRef);
+
+      const storageRef = ref(STORAGE, `gs://menu-app-b268b/${state.user.id}/branches/${branchID}/`);
+      const files = await listAll(storageRef);
+      files.items.forEach((file) => {
+        deleteObject(file);
+      });
+    },
+    [state]
+  );
   const fsUpdateBranchTable = useCallback(
     async (branchID, tableID, value) => {
       const docRef = doc(DB, `/users/${state.user.id}/branches/${branchID}/tables/${tableID}`);
       await updateDoc(docRef, value);
-    },
-    [state]
-  );
-
-  const fsDeleteBranch = useCallback(
-    async (branchID, imageID) => {
-      const docRef = doc(DB, `/users/${state.user.id}/branches/${branchID}`);
-      await deleteDoc(docRef);
-
-      // only attempt to delete branch image if there is one in the first place
-      if (imageID) {
-        // Create a reference to the file to delete
-        const desertRef = ref(STORAGE, `/${state.user.id}/branches/${imageID}_800x800`);
-
-        // Delete the file
-        deleteObject(desertRef)
-          .then(() => {
-            console.log('FILE DELETED');
-          })
-          .catch((error) => {
-            console.log('OH ERROR DELETING FILE');
-          });
-      }
     },
     [state]
   );
@@ -1299,6 +1328,7 @@ export function AuthProvider({ children }) {
       fsGetBranch,
       fsGetAllBranches,
       fsAddNewBranch,
+      fsUpdateBranch,
       fsDeleteBranch,
       // ---- TABLES ----
       // fsAddBatchTablesToBranch,
@@ -1392,6 +1422,7 @@ export function AuthProvider({ children }) {
       fsGetBranch,
       fsGetAllBranches,
       fsAddNewBranch,
+      fsUpdateBranch,
       fsDeleteBranch,
       // ---- TABLES ----
       // fsAddBatchTablesToBranch,
