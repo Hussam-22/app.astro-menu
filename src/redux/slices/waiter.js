@@ -1,4 +1,4 @@
-import { current, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 // ----------------------------------------------------------------------
 
@@ -36,7 +36,9 @@ const slice = createSlice({
     },
 
     rdxInitiateTable(state, action) {
-      const tableIndex = state.tables.findIndex((table) => table.tableID === action.payload.tableID);
+      const tableIndex = state.tables.findIndex(
+        (table) => table.tableID === action.payload.tableID
+      );
 
       if (tableIndex === -1)
         state.tables = [
@@ -51,12 +53,19 @@ const slice = createSlice({
 
     rdxAddMealToCart(state, action) {
       const { meal, selectedPortionSize } = action.payload;
-      const tableIndex = state.tables.findIndex((table) => table.tableID === state.selectedTable.id);
-      const existingMealIndex = state.tables[tableIndex].cartItems.findIndex((cartMeal) => cartMeal.id === meal.id);
+      const tableIndex = state.tables.findIndex(
+        (table) => table.tableID === state.selectedTable.id
+      );
+      const existingMealIndex = state.tables[tableIndex].cartItems.findIndex(
+        (cartMeal) => cartMeal.id === meal.id
+      );
 
       if (existingMealIndex === -1) {
         const cart = state.tables[tableIndex].cartItems;
-        state.tables[tableIndex].cartItems = [...cart, { ...meal, size: [{ ...selectedPortionSize, qty: 1 }] }];
+        state.tables[tableIndex].cartItems = [
+          ...cart,
+          { ...meal, size: [{ ...selectedPortionSize, qty: 1 }] },
+        ];
       }
 
       if (existingMealIndex !== -1) {
@@ -64,7 +73,8 @@ const slice = createSlice({
           (portion) => portion.portionSize === selectedPortionSize.portionSize
         );
         const portions = state.tables[tableIndex].cartItems[existingMealIndex].size;
-        if (portionIndex !== -1) state.tables[tableIndex].cartItems[existingMealIndex].size[portionIndex].qty += 1;
+        if (portionIndex !== -1)
+          state.tables[tableIndex].cartItems[existingMealIndex].size[portionIndex].qty += 1;
         if (portionIndex === -1)
           state.tables[tableIndex].cartItems[existingMealIndex].size = [
             ...portions,
@@ -79,8 +89,12 @@ const slice = createSlice({
       // TODO: add ID to portion size to identify the portion instead of using portionSize Name
       const { meal, selectedPortionSize } = action.payload;
 
-      const tableIndex = state.tables.findIndex((table) => table.tableID === state.selectedTable.id);
-      const mealIndex = state.tables[tableIndex].cartItems.findIndex((cartMeal) => cartMeal.id === meal.id);
+      const tableIndex = state.tables.findIndex(
+        (table) => table.tableID === state.selectedTable.id
+      );
+      const mealIndex = state.tables[tableIndex].cartItems.findIndex(
+        (cartMeal) => cartMeal.id === meal.id
+      );
 
       // if meal not in the cart, don't do anything and exit
       if (mealIndex === -1) return;
@@ -95,9 +109,9 @@ const slice = createSlice({
       if (portion.qty > 1) {
         state.tables[tableIndex].cartItems[mealIndex].size[portionIndex].qty -= 1;
       } else {
-        state.tables[tableIndex].cartItems[mealIndex].size = state.tables[tableIndex].cartItems[mealIndex].size.filter(
-          (size) => size.portionSize !== portion.portionSize
-        );
+        state.tables[tableIndex].cartItems[mealIndex].size = state.tables[tableIndex].cartItems[
+          mealIndex
+        ].size.filter((size) => size.portionSize !== portion.portionSize);
       }
 
       // check if meal has no added portions and remove it from cart
@@ -108,7 +122,9 @@ const slice = createSlice({
     },
 
     rdxEmptyCart(state) {
-      const tableIndex = state.tables.findIndex((table) => table.tableID === state.selectedTable.id);
+      const tableIndex = state.tables.findIndex(
+        (table) => table.tableID === state.selectedTable.id
+      );
       state.tables[tableIndex].cartItems = [];
     },
   },

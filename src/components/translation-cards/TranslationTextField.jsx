@@ -2,9 +2,9 @@ import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { useMemo, useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router';
+import { useMemo, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useParams, useLocation } from 'react-router';
 
 import { LoadingButton } from '@mui/lab';
 import { Stack, Divider, Tooltip, InputAdornment } from '@mui/material';
@@ -17,34 +17,29 @@ import { rdxResetTranslation_Branch, rdxUpdateTranslation_Branch } from 'src/red
 
 TranslationTextField.propTypes = {
   field: PropTypes.string,
-  reduxSlice: PropTypes.string,
   label: PropTypes.string,
   languageKey: PropTypes.string,
   direction: PropTypes.string,
+  data: PropTypes.object,
 };
 
 export default function TranslationTextField({
   field,
   label,
   languageKey,
-  reduxSlice,
   direction = 'row',
+  data,
 }) {
-  const param = useParams();
-  const docID = Object.values(param)[0];
+  const { id } = useParams();
   const location = useLocation();
   const dispatch = useDispatch();
-  const { user, fsUpdateTable, docSnapshot } = useAuthContext();
+  const { user, fsUpdateTable } = useAuthContext();
+  const { translated, editedTranslation } = data;
 
   const tableToUpdate = location.pathname.includes('meal') ? 'meals' : 'branches';
 
-  // const translationOriginal = useSelector((state) => state[reduxSlice][reduxSlice].translation[languageKey]);
-  // const translationInfo = useSelector((state) => state[reduxSlice][reduxSlice].translationEdited[languageKey]);
-  const translationOriginal = docSnapshot.translation[languageKey];
-  const translationInfo = docSnapshot.translationEdited[languageKey];
-
   const [isRestTranslationDirty, setIsRestTranslationDirty] = useState(
-    translationOriginal[field] === translationInfo[field]
+    translated === editedTranslation
   );
 
   const NewUserSchema = Yup.object().shape({
@@ -52,8 +47,8 @@ export default function TranslationTextField({
   });
 
   const defaultValues = useMemo(
-    () => ({ [field]: docSnapshot.translationEdited[languageKey][field] || '' }),
-    [field, languageKey, docSnapshot.translationEdited]
+    () => ({ [field]: editedTranslation || translated }),
+    [field, editedTranslation, translated]
   );
 
   const methods = useForm({
@@ -62,48 +57,44 @@ export default function TranslationTextField({
   });
 
   const {
-    setValue,
     reset,
     watch,
     handleSubmit,
     formState: { isSubmitting, isDirty },
   } = methods;
 
-  useEffect(() => {
-    setValue(field, docSnapshot.translationEdited[languageKey][field]);
-  }, [defaultValues, field, languageKey, docSnapshot, setValue]);
-
   const values = watch();
-  // const keyValue = values[field].trim();
-  const keyValue = [];
-  const docRef = `users/${user.id}/${tableToUpdate}/${docID}`;
 
   const resetTranslation = async () => {
+    const docRef = `users/${user.id}/${tableToUpdate}/${id}`;
+
     if (tableToUpdate === 'branches')
       dispatch(rdxResetTranslation_Branch({ key: field, languageKey }));
 
     if (tableToUpdate === 'meals') dispatch(rdxResetTranslation_Meal({ key: field, languageKey }));
 
     fsUpdateTable(docRef, {
-      [`translationEdited.${languageKey}.${field}`]: translationOriginal[field],
+      [`translationEdited.${languageKey}.${field}`]: translated,
     });
     await new Promise((resolve) =>
       setTimeout(() => {
         resolve();
-        reset({ [field]: translationOriginal[field] });
+        reset({ [field]: translated });
         setIsRestTranslationDirty(true);
       }, 1000)
     );
   };
 
   const onSubmit = async () => {
-    fsUpdateTable(docRef, { [`translationEdited.${languageKey}.${field}`]: keyValue });
+    const docRef = `users/${user.id}/${tableToUpdate}/${id}`;
+
+    fsUpdateTable(docRef, { [`translationEdited.${languageKey}.${field}`]: values[field] });
 
     if (tableToUpdate === 'branches')
-      dispatch(rdxUpdateTranslation_Branch({ key: field, keyValue, languageKey }));
+      dispatch(rdxUpdateTranslation_Branch({ key: field, keyValue: values[field], languageKey }));
 
     if (tableToUpdate === 'meals')
-      dispatch(rdxUpdateTranslation_Meal({ key: field, keyValue, languageKey }));
+      dispatch(rdxUpdateTranslation_Meal({ key: field, keyValue: values[field], languageKey }));
 
     await new Promise((resolve) =>
       setTimeout(() => {
@@ -119,7 +110,6 @@ export default function TranslationTextField({
         name={field}
         label={label}
         multiline
-        // rows={3}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -136,7 +126,7 @@ export default function TranslationTextField({
                       variant="text"
                       loading={isSubmitting}
                       onClick={() => reset()}
-                      color="inherit"
+                      color="warning"
                       disabled={!isDirty}
                     >
                       <Iconify icon="grommet-icons:power-reset" width={20} height={20} />

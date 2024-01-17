@@ -8,9 +8,7 @@ import { Box, Tab, Tabs, useTheme, Container, Typography } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import { rdxGetAllMenu } from 'src/redux/slices/menu';
 import { rdxSetBranch } from 'src/redux/slices/branch';
-import { rdxGetAllMeals } from 'src/redux/slices/meal';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import BranchTranslation from 'src/sections/branches/BranchTranslation';
@@ -22,26 +20,22 @@ function BranchManageView() {
   const dispatch = useDispatch();
   const theme = useTheme();
   const { themeStretch } = useSettingsContext();
-  const { fsGetBranch, fsGetAllMeals, fsGetBranchTables, fsGetAllMenus, user, fsGetAllBranches } =
-    useAuthContext();
+  const { fsGetBranch, fsGetBranchTables, fsGetAllBranches, user } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
   const branchData = useSelector((state) => state.branch.branch);
-
-  console.log(branchData);
 
   useEffect(() => {
     (async () => {
       if (branchData?.title === undefined) dispatch(rdxSetBranch(await fsGetBranch(branchID)));
-      dispatch(rdxGetAllMeals(await fsGetAllMeals()));
-      dispatch(rdxGetAllMenu(await fsGetAllMenus()));
+      // dispatch(rdxGetAllMeals(await fsGetAllMeals()));
+      // dispatch(rdxGetAllMenu(await fsGetAllMenus()));
     })();
   }, [
     branchID,
     dispatch,
     fsGetBranch,
     fsGetBranchTables,
-    fsGetAllMeals,
-    fsGetAllMenus,
+    // fsGetAllMenus,
     branchData?.title,
     fsGetAllBranches,
   ]);

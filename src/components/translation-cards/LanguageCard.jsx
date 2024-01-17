@@ -10,17 +10,26 @@ import TranslationTextField from './TranslationTextField';
 
 LanguageCard.propTypes = {
   languageKey: PropTypes.string,
-  reduxSlice: PropTypes.string,
   showTitleField: PropTypes.bool,
   showDescriptionField: PropTypes.bool,
+  data: PropTypes.object,
 };
 
 export default function LanguageCard({
   languageKey,
-  reduxSlice,
   showTitleField = true,
   showDescriptionField = true,
+  data,
 }) {
+  const titleData = {
+    translated: data?.translation[languageKey]?.title || '',
+    editedTranslation: data?.translationEdited[languageKey]?.title || '',
+  };
+
+  const descriptionData = {
+    translated: data?.translation[languageKey]?.desc || '',
+    editedTranslation: data?.translationEdited[languageKey]?.desc || '',
+  };
   return (
     <Card>
       <CardHeader title={LANGUAGE_CODES[languageKey]} />
@@ -30,16 +39,16 @@ export default function LanguageCard({
             field="title"
             label="Title"
             languageKey={languageKey}
-            reduxSlice={reduxSlice}
+            data={titleData}
           />
         )}
         {showDescriptionField && (
           <TranslationTextField
+            direction="row"
             field="desc"
             label="Description"
             languageKey={languageKey}
-            reduxSlice={reduxSlice}
-            direction="row"
+            data={descriptionData}
           />
         )}
       </Stack>
