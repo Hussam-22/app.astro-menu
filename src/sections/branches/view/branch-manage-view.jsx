@@ -10,6 +10,7 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { rdxSetBranch } from 'src/redux/slices/branch';
 import { useSettingsContext } from 'src/components/settings';
+import BranchTables from 'src/sections/branches/BranchTables';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import BranchTranslation from 'src/sections/branches/BranchTranslation';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
@@ -51,11 +52,11 @@ function BranchManageView() {
       icon: <Iconify icon="clarity:language-line" width={20} height={20} />,
       component: <BranchTranslation />,
     },
-    // {
-    //   value: 'Tables',
-    //   icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
-    //   component: <BranchTables />,
-    // },
+    {
+      value: 'Tables',
+      icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
+      component: <BranchTables />,
+    },
     // {
     //   value: 'Statistics',
     //   icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
