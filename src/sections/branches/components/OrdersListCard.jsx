@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import {
   Box,
-  Grid,
   Card,
   Table,
   Switch,
@@ -101,7 +101,7 @@ export default function OrdersListCard({ table }) {
   const denseHeight = 56;
 
   return (
-    <Grid item xs={12}>
+    <Grid xs={12}>
       <Card sx={{ p: 3 }}>
         <Scrollbar>
           <TableContainer sx={{ minWidth: 800, position: 'relative', pt: 1 }}>

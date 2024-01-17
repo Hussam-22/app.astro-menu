@@ -7,9 +7,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { LoadingButton } from '@mui/lab';
+import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import {
   Box,
-  Grid,
   Card,
   Stack,
   Button,
@@ -103,14 +103,22 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
 
   return (
     <>
-      <Grid item xs={12} md={8} lg={8}>
-        <Card sx={{ p: 3 }}>
+      <Grid xs={12} md={8} lg={8}>
+        <Card sx={{ p: 3, height: 1 }}>
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack direction="column" spacing={2}>
-              <Typography variant="h4">Table Number : {values.index}</Typography>
+              <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Typography variant="h4">Table# {values.index}</Typography>
+                <RHFSwitch
+                  name="isActive"
+                  label={`Table is ${values.isActive ? 'Active' : 'Disabled'}`}
+                  labelPlacement="end"
+                  sx={{ m: 0 }}
+                />
+              </Stack>
               <Stack direction="row" spacing={2}>
                 <RHFTextField name="title" label="Table Nickname" />
-                {menusList.length && (
+                {menusList.length !== 0 && (
                   <RHFSelect
                     name="activeMenuID"
                     label="Default Menu"
@@ -128,15 +136,7 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
               </Stack>
               <RHFTextField name="note" label="Note" multiline rows={3} />
               <Stack spacing={2} direction="row">
-                <Box sx={{ flexGrow: 1 }}>
-                  <RHFSwitch
-                    name="isActive"
-                    label={`Table is ${values.isActive ? 'Active' : 'Disabled'}`}
-                    labelPlacement="end"
-                    sx={{ m: 0 }}
-                  />
-                </Box>
-                <LoadingButton
+                {/* <LoadingButton
                   loading={isLoading}
                   variant="soft"
                   color="error"
@@ -144,21 +144,23 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
                   onClick={deleteTableHandler}
                 >
                   Delete
-                </LoadingButton>
+                </LoadingButton> */}
                 <LoadingButton
                   loading={isSubmitting}
                   type="submit"
-                  variant="outlined"
+                  variant="contained"
+                  color="success"
                   startIcon={<Iconify icon="ant-design:save-twotone" />}
                 >
-                  Update
+                  Save
                 </LoadingButton>
               </Stack>
             </Stack>
           </FormProvider>
         </Card>
       </Grid>
-      <Grid item xs={12} md={4} lg={4}>
+
+      <Grid xs={12} md={4} lg={4}>
         <Card sx={{ p: 3, height: '100%' }}>
           <Box
             sx={{

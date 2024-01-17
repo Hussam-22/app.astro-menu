@@ -27,7 +27,7 @@ function AddTablesDialog({ isOpen, onClose, onNewTableAdd }) {
   const countRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const { fsAddBatchTablesToBranch } = useAuthContext();
-  const { branchID } = useParams();
+  const { id: branchID } = useParams();
   const dispatch = useDispatch();
   const { tables } = useSelector((state) => state.branch);
 

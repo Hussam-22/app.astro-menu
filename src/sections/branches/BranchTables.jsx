@@ -2,17 +2,19 @@ import { useParams } from 'react-router';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Grid, Skeleton, useTheme } from '@mui/material';
+import { useTheme } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2/Grid2';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { rdxGetBranchTables } from 'src/redux/slices/branch';
 import TablesCard from 'src/sections/branches/components/TablesCard';
 import OrdersListCard from 'src/sections/branches/components/OrdersListCard';
 import SelectedTableInfoCard from 'src/sections/branches/components/SelectedTableInfoCard';
+import TableInfoSkeleton from 'src/sections/branches/components/sekelton/table-info-sekeleton';
 
 function BranchTables() {
   const theme = useTheme();
-  const { branchID } = useParams();
+  const { id: branchID } = useParams();
   const { tables } = useSelector((state) => state.branch);
   const [selectedTable, setSelectedTable] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +33,7 @@ function BranchTables() {
     setTimeout(() => {
       setSelectedTable(table);
       setIsLoading(false);
-    }, 200);
+    }, 500);
   };
 
   const updateTablesListHandler = (keepMounted = false) => {
@@ -41,19 +43,16 @@ function BranchTables() {
 
   return (
     <Grid container spacing={3}>
-      <TablesCard
-        theme={theme}
-        tables={tables}
-        onTableClick={handleOnTableClick}
-        onNewTableAdd={updateTablesListHandler}
-      />
+      <Grid xs={12}>
+        <TablesCard
+          theme={theme}
+          tables={tables}
+          onTableClick={handleOnTableClick}
+          onNewTableAdd={updateTablesListHandler}
+        />
+      </Grid>
 
-      {isLoading && (
-        <Grid item xs={12}>
-          {/* <SkeletonProductDetails /> */}
-          <Skeleton sx={{ width: 200, height: 200 }} />
-        </Grid>
-      )}
+      {isLoading && <TableInfoSkeleton />}
       {!isLoading && selectedTable && (
         <SelectedTableInfoCard table={selectedTable} updateTablesList={updateTablesListHandler} />
       )}

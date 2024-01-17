@@ -371,34 +371,6 @@ export function AuthProvider({ children }) {
     await batch.commit();
   }, []);
 
-  const fsGetBranchTablesCount = useCallback(
-    async (branchID) => {
-      const query_ = query(
-        collectionGroup(DB, 'tables'),
-        where('userID', '==', state.user.id),
-        where('branchID', '==', branchID)
-      );
-      const snapshot = await getCountFromServer(query_);
-      return snapshot.data().count;
-    },
-    [state]
-  );
-
-  const fsGetBranchTables = useCallback(
-    async (branchID, userID = state.user.id) => {
-      const docRef = query(
-        collectionGroup(DB, 'tables'),
-        where('userID', '==', userID),
-        where('branchID', '==', branchID)
-      );
-      const querySnapshot = await getDocs(docRef);
-      const dataArr = [];
-      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
-      return dataArr;
-    },
-    [state]
-  );
-
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
       collectionGroup(DB, 'branches'),
@@ -539,10 +511,37 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+
+  const fsGetBranchTables = useCallback(
+    async (branchID, userID = state.user.id) => {
+      const docRef = query(
+        collectionGroup(DB, 'tables'),
+        where('userID', '==', userID),
+        where('branchID', '==', branchID)
+      );
+      const querySnapshot = await getDocs(docRef);
+      const dataArr = [];
+      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+      return dataArr;
+    },
+    [state]
+  );
   const fsUpdateBranchTable = useCallback(
     async (branchID, tableID, value) => {
       const docRef = doc(DB, `/users/${state.user.id}/branches/${branchID}/tables/${tableID}`);
       await updateDoc(docRef, value);
+    },
+    [state]
+  );
+  const fsGetBranchTablesCount = useCallback(
+    async (branchID) => {
+      const query_ = query(
+        collectionGroup(DB, 'tables'),
+        where('userID', '==', state.user.id),
+        where('branchID', '==', branchID)
+      );
+      const snapshot = await getCountFromServer(query_);
+      return snapshot.data().count;
     },
     [state]
   );
@@ -1331,16 +1330,16 @@ export function AuthProvider({ children }) {
       fsUpdateBranch,
       fsDeleteBranch,
       // ---- TABLES ----
-      // fsAddBatchTablesToBranch,
+      fsAddBatchTablesToBranch,
       // fsDeleteTable,
-      // fsGetBranchTablesCount,
-      // fsGetBranchTables,
-      // fsUpdateBranchTable,
+      fsGetBranchTablesCount,
+      fsGetBranchTables,
+      fsUpdateBranchTable,
       // fsGetTableInfo,
       // fsChangeMenuForAllTables,
       // // ---- ORDERS ----
       // fsGetAllOrders,
-      // fsGetAllTableOrders,
+      fsGetAllTableOrders,
       // // ---- MENU SECTIONS ----
       // fsAddSection,
       // fsUpdateSection,
@@ -1425,16 +1424,16 @@ export function AuthProvider({ children }) {
       fsUpdateBranch,
       fsDeleteBranch,
       // ---- TABLES ----
-      // fsAddBatchTablesToBranch,
+      fsAddBatchTablesToBranch,
       // fsDeleteTable,
-      // fsGetBranchTablesCount,
-      // fsGetBranchTables,
-      // fsUpdateBranchTable,
+      fsGetBranchTablesCount,
+      fsGetBranchTables,
+      fsUpdateBranchTable,
       // fsGetTableInfo,
       // fsChangeMenuForAllTables,
       // // ---- ORDERS ----
       // fsGetAllOrders,
-      // fsGetAllTableOrders,
+      fsGetAllTableOrders,
       // // ---- MENU SECTIONS ----
       // fsAddSection,
       // fsUpdateSection,
