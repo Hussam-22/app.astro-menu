@@ -10,6 +10,9 @@ function TableInfoSkeleton() {
       <Grid sm={4}>
         <Skeleton variant="rounded" animation="wave" sx={{ height: 365 }} />
       </Grid>
+      <Grid sm={12}>
+        <Skeleton variant="rounded" animation="wave" sx={{ height: 665 }} />
+      </Grid>
     </>
   );
 }
