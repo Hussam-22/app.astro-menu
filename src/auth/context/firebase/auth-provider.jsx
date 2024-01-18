@@ -641,7 +641,12 @@ export function AuthProvider({ children }) {
     );
     const dataArr = [];
     const querySnapshot = await getDocs(docRef);
-    querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+    querySnapshot.forEach((doc) =>
+      dataArr.push({
+        ...doc.data(),
+        lastUpdatedBy: new Date(doc.data().lastUpdatedBy.seconds * 1000),
+      })
+    );
     return dataArr;
   }, [state]);
 
@@ -654,7 +659,7 @@ export function AuthProvider({ children }) {
         docID: newDocRef.id,
         userID: state.user.id,
         isActive: true,
-        isDeleted: true,
+        isDeleted: false,
         lastUpdatedAt: new Date(),
         lastUpdateBy: state.user.id,
       });
@@ -1362,7 +1367,7 @@ export function AuthProvider({ children }) {
       // fsUpdateSectionVisibilityDateTimeRange,
       // deleteMenu,
       // // ---- MENU ----
-      // fsGetAllMenus,
+      fsGetAllMenus,
       // fsGetMenu,
       fsAddNewMenu,
       fsUpdateMenu,
@@ -1456,7 +1461,7 @@ export function AuthProvider({ children }) {
       // fsUpdateSectionVisibilityDateTimeRange,
       // deleteMenu,
       // // ---- MENU ----
-      // fsGetAllMenus,
+      fsGetAllMenus,
       // fsGetMenu,
       fsAddNewMenu,
       fsUpdateMenu,
