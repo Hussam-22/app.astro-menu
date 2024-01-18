@@ -14,9 +14,6 @@ MenusTableRow.propTypes = {
 export default function MenusTableRow({ row, onEditRow }) {
   const { title, isActive, lastUpdatedAt } = row;
 
-  const lastUpdateDate = new Date(lastUpdatedAt.seconds * 1000).toDateString();
-  const lastUpdateTime = new Date(lastUpdatedAt.seconds * 1000).toLocaleTimeString();
-
   return (
     <TableRow hover>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
@@ -26,7 +23,7 @@ export default function MenusTableRow({ row, onEditRow }) {
       </TableCell>
 
       <TableCell align="center">{row?.meals?.length || 0}</TableCell>
-      <TableCell align="center">{`${lastUpdateDate} | ${lastUpdateTime}`}</TableCell>
+      <TableCell align="center">{lastUpdatedAt}</TableCell>
       <TableCell align="center">
         <Label
           variant="filled"

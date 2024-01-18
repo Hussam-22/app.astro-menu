@@ -17,9 +17,9 @@ import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
-import { RouterLink } from 'src/routes/components';
 import { rdxGetAllMenu } from 'src/redux/slices/menu';
 import { useSettingsContext } from 'src/components/settings';
+import MenuNewDialog from 'src/sections/menu/menu-new-dialog';
 import MenusTableRow from 'src/sections/menu/list/menu-table-row';
 import MenusTableToolbar from 'src/sections/menu/list/menu-table-toolbar';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
@@ -101,10 +101,6 @@ function MenuListView() {
     filterName,
   });
 
-  const newMenuHandler = () => {
-    setIsDialogOpen(true);
-  };
-
   const isNotFound = (!dataFiltered.length && !!filterName) || (!isLoading && !dataFiltered.length);
 
   return (
@@ -121,10 +117,9 @@ function MenuListView() {
           <Button
             variant="contained"
             startIcon={<Iconify icon="eva:plus-fill" />}
-            component={RouterLink}
-            to={paths.dashboard.menu.new}
+            onClick={() => setIsDialogOpen(true)}
           >
-            New Branch
+            New Menu
           </Button>
         }
       />
@@ -184,12 +179,9 @@ function MenuListView() {
           />
         </Box>
       </Card>
-      {/* {newMenuDialogIsOpen && (
-          <NewMenuDialog
-            isOpen={newMenuDialogIsOpen}
-            onClose={() => setNewMenuDialogIsOpen(false)}
-          />
-        )} */}
+      {isDialogOpen && (
+        <MenuNewDialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+      )}
     </Container>
   );
 }

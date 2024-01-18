@@ -639,12 +639,17 @@ export function AuthProvider({ children }) {
       where('userID', '==', state.user.id),
       where('isDeleted', '==', false)
     );
+
     const dataArr = [];
     const querySnapshot = await getDocs(docRef);
     querySnapshot.forEach((doc) =>
       dataArr.push({
         ...doc.data(),
-        lastUpdatedBy: new Date(doc.data().lastUpdatedBy.seconds * 1000),
+        lastUpdatedAt: `${new Date(
+          doc.data().lastUpdatedAt.seconds * 1000
+        ).toDateString()} | ${new Date(
+          doc.data().lastUpdatedAt.seconds * 1000
+        ).toLocaleTimeString()}`,
       })
     );
     return dataArr;

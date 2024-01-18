@@ -11,6 +11,7 @@ import { LoadingButton } from '@mui/lab';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
+import { rdxUpdateMenusList } from 'src/redux/slices/menu';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 // MenuNewEditForm.propTypes = {
@@ -72,7 +73,7 @@ export default function MenuNewEditForm() {
     }
     if (!menuInfo?.docID) {
       fsAddNewMenu(data);
-      // dispatch(rdxUpdateMenusList(data));
+      dispatch(rdxUpdateMenusList(data));
       router.push(paths.dashboard.menu.root);
     }
 
