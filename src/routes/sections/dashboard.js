@@ -69,6 +69,16 @@ const BranchesListPage = lazy(() => import('src/pages/dashboard/branch/branch-li
 const BranchManagePage = lazy(() => import('src/pages/dashboard/branch/branch-manage-page'));
 const BranchNewPage = lazy(() => import('src/pages/dashboard/branch/branch-new-page'));
 
+// MENU
+const MenuListPage = lazy(() => import('src/pages/dashboard/menu/menu-list-page'));
+const MenuManagePage = lazy(() => import('src/pages/dashboard/menu/menu-manage-page'));
+const MenuNewPage = lazy(() => import('src/pages/dashboard/menu/menu-new-page'));
+
+// MEAL
+const MealListPage = lazy(() => import('src/pages/dashboard/meal/meal-list-page'));
+const MealManagePage = lazy(() => import('src/pages/dashboard/meal/meal-manage-page'));
+const MealNewPage = lazy(() => import('src/pages/dashboard/meal/meal-new-page'));
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -98,6 +108,25 @@ export const dashboardRoutes = [
           { path: 'list', element: <BranchesListPage /> },
           { path: 'new', element: <BranchNewPage /> },
           { path: ':id/manage', element: <BranchManagePage /> },
+        ],
+      },
+      {
+        path: 'menu',
+        children: [
+          { element: <MenuListPage />, index: true },
+          { path: 'list', element: <MenuListPage /> },
+          { path: 'new', element: <MenuNewPage /> },
+          { path: ':id/manage', element: <MenuManagePage /> },
+        ],
+      },
+
+      {
+        path: 'meal',
+        children: [
+          { element: <MealListPage />, index: true },
+          { path: 'list', element: <MealListPage /> },
+          { path: 'new', element: <MealNewPage /> },
+          { path: ':id/manage', element: <MealManagePage /> },
         ],
       },
 

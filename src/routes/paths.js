@@ -113,6 +113,18 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/branch/new`,
       manage: (id) => `${ROOTS.DASHBOARD}/branch/${id}/manage`,
     },
+    menu: {
+      root: `${ROOTS.DASHBOARD}/menu`,
+      list: `${ROOTS.DASHBOARD}/menu/list`,
+      new: `${ROOTS.DASHBOARD}/menu/new`,
+      manage: (id) => `${ROOTS.DASHBOARD}/menu/${id}/manage`,
+    },
+    meal: {
+      root: `${ROOTS.DASHBOARD}/meal`,
+      list: `${ROOTS.DASHBOARD}/meal/list`,
+      new: `${ROOTS.DASHBOARD}/meal/new`,
+      manage: (id) => `${ROOTS.DASHBOARD}/meal/${id}/manage`,
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,

@@ -80,6 +80,22 @@ export function useNavData() {
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
 
+          // Menu
+          {
+            title: t('Menus'),
+            path: paths.dashboard.menu.root,
+            icon: ICONS.user,
+            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
+          },
+
+          // Meal
+          {
+            title: t('Meals'),
+            path: paths.dashboard.meal.root,
+            icon: ICONS.user,
+            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
+          },
+
           // USER
           {
             title: t('user'),

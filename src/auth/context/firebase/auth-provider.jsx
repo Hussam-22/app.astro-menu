@@ -647,13 +647,16 @@ export function AuthProvider({ children }) {
 
   // ------------------ | Add New Menu | ------------------
   const fsAddNewMenu = useCallback(
-    async (dataObj) => {
+    async (data) => {
       const newDocRef = doc(collection(DB, `/users/${state.user.id}/menus/`));
       setDoc(newDocRef, {
-        ...dataObj,
-        id: newDocRef.id,
+        ...data,
+        docID: newDocRef.id,
         userID: state.user.id,
-        meals: [],
+        isActive: true,
+        isDeleted: true,
+        lastUpdatedAt: new Date(),
+        lastUpdateBy: state.user.id,
       });
       return newDocRef.id;
     },
@@ -665,6 +668,8 @@ export function AuthProvider({ children }) {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}`);
       await updateDoc(docRef, {
         ...value,
+        lastUpdatedAt: new Date(),
+        lastUpdateBy: state.user.id,
       });
     },
     [state]
@@ -1359,8 +1364,8 @@ export function AuthProvider({ children }) {
       // // ---- MENU ----
       // fsGetAllMenus,
       // fsGetMenu,
-      // fsAddNewMenu,
-      // fsUpdateMenu,
+      fsAddNewMenu,
+      fsUpdateMenu,
       // fsEmptyMenuSelectedMeals,
       // // ---- MEALS ----
       // fsGetAllMeals,
@@ -1453,8 +1458,8 @@ export function AuthProvider({ children }) {
       // // ---- MENU ----
       // fsGetAllMenus,
       // fsGetMenu,
-      // fsAddNewMenu,
-      // fsUpdateMenu,
+      fsAddNewMenu,
+      fsUpdateMenu,
       // fsEmptyMenuSelectedMeals,
       // fsDocSnapshot,
       // // ---- MEALS ----
