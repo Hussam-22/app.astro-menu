@@ -4,7 +4,7 @@ import { Box, Stack, Button, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
-import MenuNewEditForm from 'src/sections/menu/MenuNewEditForm';
+import MenuNewEditForm from 'src/sections/menu/menu-new-edit-form';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 
 function MealNewView() {

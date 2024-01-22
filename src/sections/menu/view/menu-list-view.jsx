@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -13,11 +14,9 @@ import {
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
-import { rdxGetAllMenu } from 'src/redux/slices/menu';
 import { useSettingsContext } from 'src/components/settings';
 import MenuNewDialog from 'src/sections/menu/menu-new-dialog';
 import MenusTableRow from 'src/sections/menu/list/menu-table-row';
@@ -52,12 +51,8 @@ function MenuListView() {
     setPage,
     //
     selected,
-    setSelected,
-    onSelectRow,
-    onSelectAllRows,
     //
     onSort,
-    onChangeDense,
     onChangePage,
     onChangeRowsPerPage,
   } = useTable({
@@ -65,34 +60,39 @@ function MenuListView() {
     defaultRowsPerPage: 10,
   });
 
-  const router = useRouter();
   const dispatch = useDispatch();
   const { themeStretch } = useSettingsContext();
   const { fsGetAllMenus } = useAuthContext();
   const [tableData, setTableData] = useState([]);
   const [filterName, setFilterName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [menuData, setMenuData] = useState({});
   const { newMenuID, menus, isLoading } = useSelector((state) => state.menu);
 
-  useEffect(() => {
-    (async () => {
-      dispatch(rdxGetAllMenu(await fsGetAllMenus()));
-    })();
-  }, [dispatch, fsGetAllMenus]);
+  const { data } = useQuery({
+    queryKey: ['menus'],
+    queryFn: fsGetAllMenus,
+  });
 
   useEffect(() => {
-    if (menus.length) {
-      setTableData(menus);
+    if (data?.length !== 0) {
+      setTableData(data);
     }
-  }, [menus]);
+  }, [data]);
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
     setPage(0);
   };
 
-  const handleEditRow = (id) => {
-    router.push(paths.dashboard.menu.manage(id));
+  const handleEditRow = (rowData) => {
+    setMenuData(rowData);
+    setIsDialogOpen(true);
+  };
+
+  const onNewMenu = () => {
+    setMenuData({});
+    setIsDialogOpen(true);
   };
 
   const dataFiltered = applySortFilter({
@@ -117,7 +117,7 @@ function MenuListView() {
           <Button
             variant="contained"
             startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() => setIsDialogOpen(true)}
+            onClick={onNewMenu}
           >
             New Menu
           </Button>
@@ -135,7 +135,7 @@ function MenuListView() {
                 order={order}
                 orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={tableData.length}
+                rowCount={tableData?.length}
                 numSelected={selected.length}
                 onSort={onSort}
               />
@@ -149,7 +149,7 @@ function MenuListView() {
                         newMenuID={newMenuID}
                         key={row.docID}
                         row={row}
-                        onEditRow={() => handleEditRow(row.docID)}
+                        onEditRow={() => handleEditRow(row)}
                       />
                     ) : (
                       !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
@@ -158,7 +158,7 @@ function MenuListView() {
 
                 <TableEmptyRows
                   height={60}
-                  emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, tableData?.length)}
                 />
 
                 <TableNoData isNotFound={isNotFound} />
@@ -180,7 +180,11 @@ function MenuListView() {
         </Box>
       </Card>
       {isDialogOpen && (
-        <MenuNewDialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+        <MenuNewDialog
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          menuData={menuData}
+        />
       )}
     </Container>
   );
@@ -189,7 +193,7 @@ export default MenuListView;
 // MenuListView.propTypes = { tables: PropTypes.array };
 
 function applySortFilter({ tableData, comparator, filterName }) {
-  const stabilizedThis = tableData.map((el, index) => [el, index]);
+  const stabilizedThis = tableData?.map((el, index) => [el, index]) || [];
 
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);

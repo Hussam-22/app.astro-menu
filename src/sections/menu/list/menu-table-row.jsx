@@ -17,7 +17,7 @@ export default function MenusTableRow({ row, onEditRow }) {
   return (
     <TableRow hover>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Button variant="text" onClick={onEditRow}>
+        <Button variant="text" onClick={() => onEditRow(row)}>
           {title}
         </Button>
       </TableCell>

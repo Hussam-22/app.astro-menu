@@ -672,15 +672,22 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  // ------------------ | Update Menu | ------------------
   const fsUpdateMenu = useCallback(
-    async (menuID, value) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}`);
+    async (data) => {
+      const docRef = doc(DB, `/users/${state.user.id}/menus/${data.docID}`);
       await updateDoc(docRef, {
-        ...value,
+        ...data,
         lastUpdatedAt: new Date(),
         lastUpdateBy: state.user.id,
       });
+    },
+    [state]
+  );
+
+  const fsDeleteMenu = useCallback(
+    async (docID) => {
+      const docRef = doc(DB, `/users/${state.user.id}/menus/${docID}`);
+      await deleteDoc(docRef);
     },
     [state]
   );
@@ -1376,6 +1383,7 @@ export function AuthProvider({ children }) {
       // fsGetMenu,
       fsAddNewMenu,
       fsUpdateMenu,
+      fsDeleteMenu,
       // fsEmptyMenuSelectedMeals,
       // // ---- MEALS ----
       // fsGetAllMeals,
@@ -1470,6 +1478,7 @@ export function AuthProvider({ children }) {
       // fsGetMenu,
       fsAddNewMenu,
       fsUpdateMenu,
+      fsDeleteMenu,
       // fsEmptyMenuSelectedMeals,
       // fsDocSnapshot,
       // // ---- MEALS ----
