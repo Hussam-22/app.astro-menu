@@ -1,10 +1,11 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { QRCodeCanvas } from 'qrcode.react';
+import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useSelector, useDispatch } from 'react-redux';
 
 import { LoadingButton } from '@mui/lab';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
@@ -32,9 +33,10 @@ SelectedTableInfoCard.propTypes = {
 function SelectedTableInfoCard({ table, updateTablesList }) {
   const dispatch = useDispatch();
   const theme = useTheme();
-  const menusList = useSelector((state) => state.menu.menus);
   const [isLoading, setIsLoading] = useState(false);
-  const { fsUpdateBranchTable, fsDeleteTable, user } = useAuthContext();
+  const { fsUpdateBranchTable, fsDeleteTable, user, fsGetAllMenus } = useAuthContext();
+
+  const { data: menusList } = useQuery({ queryKey: ['menus'], queryFn: fsGetAllMenus });
 
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title cant be empty !!'),
@@ -118,14 +120,13 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
               </Stack>
               <Stack direction="row" spacing={2}>
                 <RHFTextField name="title" label="Table Nickname" />
-                {menusList.length !== 0 && (
+                {menusList?.length !== 0 && (
                   <RHFSelect
                     name="activeMenuID"
                     label="Default Menu"
                     placeholder="Default Menu"
                     defaultValue={table.activeMenuID}
                   >
-                    <MenuItem value="" />
                     {menusList.map((menu) => (
                       <MenuItem key={menu.id} value={menu.id}>
                         {menu.title}
