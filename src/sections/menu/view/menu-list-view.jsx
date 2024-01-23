@@ -69,7 +69,7 @@ function MenuListView() {
   const [menuData, setMenuData] = useState({});
   const { newMenuID, menus, isLoading } = useSelector((state) => state.menu);
 
-  const { data } = useQuery({
+  const { data = [] } = useQuery({
     queryKey: ['menus'],
     queryFn: fsGetAllMenus,
   });

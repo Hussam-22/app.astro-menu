@@ -14,11 +14,11 @@ import {
   Card,
   Stack,
   Button,
-  useTheme,
   MenuItem,
+  useTheme,
   TextField,
-  Typography,
   IconButton,
+  Typography,
 } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
@@ -36,7 +36,11 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
   const [isLoading, setIsLoading] = useState(false);
   const { fsUpdateBranchTable, fsDeleteTable, user, fsGetAllMenus } = useAuthContext();
 
-  const { data: menusList } = useQuery({ queryKey: ['menus'], queryFn: fsGetAllMenus });
+  const { data: menusList = [], isFetched } = useQuery({
+    queryKey: ['menus'],
+    queryFn: fsGetAllMenus,
+  });
+  console.log(menusList);
 
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title cant be empty !!'),
@@ -120,7 +124,7 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
               </Stack>
               <Stack direction="row" spacing={2}>
                 <RHFTextField name="title" label="Table Nickname" />
-                {menusList?.length !== 0 && (
+                {menusList?.length !== 0 && menusList !== undefined && (
                   <RHFSelect
                     name="activeMenuID"
                     label="Default Menu"
@@ -128,7 +132,7 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
                     defaultValue={table.activeMenuID}
                   >
                     {menusList.map((menu) => (
-                      <MenuItem key={menu.id} value={menu.id}>
+                      <MenuItem key={menu.docID} value={menu.docID}>
                         {menu.title}
                       </MenuItem>
                     ))}

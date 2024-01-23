@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { Button, TableRow, TableCell } from '@mui/material';
+import { Box, TableRow, TableCell, ListItemText } from '@mui/material';
 
 import Label from 'src/components/label';
 
@@ -12,14 +12,29 @@ MenusTableRow.propTypes = {
 };
 
 export default function MenusTableRow({ row, onEditRow }) {
-  const { title, isActive, lastUpdatedAt } = row;
+  const { title, isActive, lastUpdatedAt, docID } = row;
+
+  console.log('//TODO: enable/disable menu (If seems necessary)');
 
   return (
     <TableRow hover>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Button variant="text" onClick={() => onEditRow(row)}>
-          {title}
-        </Button>
+        <Box
+          onClick={() => onEditRow(docID)}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': {
+              textDecoration: 'underline',
+            },
+          }}
+        >
+          <ListItemText
+            primary={title}
+            secondary={docID}
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
+          />
+        </Box>
       </TableCell>
 
       <TableCell align="center">{row?.meals?.length || 0}</TableCell>
