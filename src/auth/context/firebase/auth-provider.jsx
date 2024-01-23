@@ -618,13 +618,6 @@ export function AuthProvider({ children }) {
   // ---------------------------------- Get All "Non-Deleted" Menus ------------------------------------------
   const fsGetMenu = useCallback(
     async (menuID) => {
-      // const docRef = query(
-      //   collectionGroup(DB, 'menus'),
-      //   where('userID', '==', state.user.id),
-      //   where('id', '==', menuID),
-      //   where('isDeleted', '==', false)
-      // );
-      // const querySnapshot = await getDocs(docRef);
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
       const docSnap = await getDoc(docRef);
       return docSnap.data();
@@ -1380,7 +1373,7 @@ export function AuthProvider({ children }) {
       // deleteMenu,
       // // ---- MENU ----
       fsGetAllMenus,
-      // fsGetMenu,
+      fsGetMenu,
       fsAddNewMenu,
       fsUpdateMenu,
       fsDeleteMenu,
@@ -1475,7 +1468,7 @@ export function AuthProvider({ children }) {
       // deleteMenu,
       // // ---- MENU ----
       fsGetAllMenus,
-      // fsGetMenu,
+      fsGetMenu,
       fsAddNewMenu,
       fsUpdateMenu,
       fsDeleteMenu,

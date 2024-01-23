@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
@@ -60,6 +61,7 @@ function MenuListView() {
     defaultRowsPerPage: 10,
   });
 
+  const router = useRouter();
   const dispatch = useDispatch();
   const { themeStretch } = useSettingsContext();
   const { fsGetAllMenus } = useAuthContext();
@@ -85,9 +87,8 @@ function MenuListView() {
     setPage(0);
   };
 
-  const handleEditRow = (rowData) => {
-    setMenuData(rowData);
-    setIsDialogOpen(true);
+  const handleEditRow = (id) => {
+    router.push(paths.dashboard.menu.manage(id));
   };
 
   const onNewMenu = () => {
@@ -149,7 +150,7 @@ function MenuListView() {
                         newMenuID={newMenuID}
                         key={row.docID}
                         row={row}
-                        onEditRow={() => handleEditRow(row)}
+                        onEditRow={() => handleEditRow(row.docID)}
                       />
                     ) : (
                       !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />

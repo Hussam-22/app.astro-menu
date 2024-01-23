@@ -4,8 +4,13 @@
     "browser": true,
     "es2023": true
   },
-  "plugins": ["unused-imports", "prettier", "perfectionist"],
-  "extends": ["airbnb", "airbnb/hooks", "prettier"],
+  "plugins": ["unused-imports", "prettier", "perfectionist", "@tanstack/query"],
+  "extends": [
+    "airbnb",
+    "airbnb/hooks",
+    "prettier",
+    "plugin:@tanstack/eslint-plugin-query/recommended"
+  ],
   "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -129,6 +134,10 @@
         "type": "line-length",
         "order": "asc"
       }
-    ]
+    ],
+    "@tanstack/query/exhaustive-deps": "error",
+    "@tanstack/query/no-deprecated-options": "error",
+    "@tanstack/query/prefer-query-object-syntax": "error",
+    "@tanstack/query/stable-query-client": "error"
   }
 }

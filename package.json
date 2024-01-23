@@ -106,6 +106,7 @@
     "@babel/core": "^7.22.5",
     "@babel/plugin-syntax-flow": "^7.22.5",
     "@babel/plugin-transform-react-jsx": "^7.22.5",
+    "@tanstack/eslint-plugin-query": "^5.17.20",
     "@types/react": "^18.2.12",
     "@vitejs/plugin-react": "^4.0.0",
     "csstype": "^3.1.2",

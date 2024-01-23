@@ -2998,6 +2998,13 @@
     legacy-swc-helpers "npm:@swc/helpers@=0.4.14"
     tslib "^2.4.0"
 
+"@tanstack/eslint-plugin-query@^5.17.20":
+  version "5.17.20"
+  resolved "https://registry.yarnpkg.com/@tanstack/eslint-plugin-query/-/eslint-plugin-query-5.17.20.tgz#c6060fe4e1d8efddf72d8e0893eaaf511a07f3b1"
+  integrity sha512-Jxu/GV7JqDgI6HMP8wQqc5a8efe0GaXoc0qCI+YjVBWEaWh8+T+wF5Ywha44gVraaEGlqkEhYmZrykg6dUG3OA==
+  dependencies:
+    "@typescript-eslint/utils" "^5.62.0"
+
 "@tanstack/query-core@5.17.19":
   version "5.17.19"
   resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.17.19.tgz#212515ccc7a6b913afee6b71ce3e7df2c4d85f7d"

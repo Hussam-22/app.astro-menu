@@ -2,14 +2,15 @@ import * as Yup from 'yup';
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
-import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Stack } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
+import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
@@ -50,16 +51,17 @@ export default function MenuNewEditForm({ menuData, onClose }) {
     formState: { isSubmitting },
   } = methods;
 
-  const { isPending, isSuccess, mutate } = useMutation({
+  const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['menus'] });
+      const queryKeys = menuData?.docID ? ['menus', `menu-${menuData.docID}`] : ['menus'];
+      queryClient.invalidateQueries(queryKeys);
     },
   });
 
   const deleteMenu = () => {
     mutate(() => fsDeleteMenu(menuData.docID));
-    onClose();
+    router.push(paths.dashboard.menu.list);
   };
 
   const onSubmit = async (data) => {
@@ -73,7 +75,6 @@ export default function MenuNewEditForm({ menuData, onClose }) {
     }
 
     enqueueSnackbar('Update success!');
-    onClose();
   };
 
   return (
