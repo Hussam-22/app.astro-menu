@@ -39,8 +39,6 @@ function MealNewEditForm({ mealInfo }) {
     queryFn: fsGetMealLabels,
   });
 
-  console.log(MealLabelsList);
-
   const handleOpenPreview = () => {
     setOpen(true);
   };
@@ -85,7 +83,6 @@ function MealNewEditForm({ mealInfo }) {
     formState: { isSubmitting, isDirty, errors },
   } = methods;
 
-  console.log(errors);
   const values = watch();
 
   const handleAddTag = (tag) => {
@@ -131,7 +128,7 @@ function MealNewEditForm({ mealInfo }) {
   const onSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log(data);
-    //    if(!mealInfo?.docID) fsAddNewMeal(data)
+    if (!mealInfo?.docID) fsAddNewMeal(data);
     enqueueSnackbar('Meal Saved successfully!', {
       anchorOrigin: { horizontal: 'center', vertical: 'bottom' },
     });

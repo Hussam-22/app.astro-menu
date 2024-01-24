@@ -36,7 +36,6 @@ const TABLE_HEAD = [
   { id: 'title', label: 'Meal', align: 'center', width: '40%' },
   { id: 'portions', label: 'Portions', align: 'center', width: '5%' },
   { id: 'tags', label: 'Tags', align: 'center', width: '25%' },
-  { id: 'scheduler', label: 'scheduler', align: 'center', width: '10%' },
   { id: 'isNew', label: 'New', align: 'center', width: '5%' },
   { id: 'status', label: 'Status', align: 'center', width: '15%' },
 ];

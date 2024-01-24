@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import { Button, TableRow, TableCell, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
+import Image from 'src/components/image';
 
 MealTableRow.propTypes = {
   row: PropTypes.object,
@@ -14,6 +14,8 @@ MealTableRow.propTypes = {
 
 export default function MealTableRow({ row, onEditRow, tagsList }) {
   const { title, cover, isActive, metaKeywords, portions, isNew } = row;
+
+  console.log(cover);
   const theme = useTheme();
 
   const borderColor =
@@ -32,12 +34,12 @@ export default function MealTableRow({ row, onEditRow, tagsList }) {
   return (
     <TableRow hover>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        {/* <Image
+        <Image
           disabledEffect
           alt={title}
-          src={cover.url}
+          src={cover}
           sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}
-        /> */}
+        />
 
         <Button variant="text" onClick={onEditRow} sx={{ color: textColor }}>
           {title}
@@ -47,13 +49,6 @@ export default function MealTableRow({ row, onEditRow, tagsList }) {
       <TableCell align="center">{portions.length}</TableCell>
       <TableCell align="center">
         <Typography variant="caption">{metaKeywordsText()}</Typography>
-      </TableCell>
-      <TableCell align="center">
-        {row.scheduler.alwaysAvailable ? (
-          ''
-        ) : (
-          <Iconify icon="ic:sharp-access-time" color="#1C9CEA" width={24} height={24} />
-        )}
       </TableCell>
       <TableCell align="center">
         {isNew && (

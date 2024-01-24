@@ -578,44 +578,6 @@ export function AuthProvider({ children }) {
     [state]
   );
 
-  // ?------------------------------------------------- MEALS ------------------------------------------------------------------
-
-  // -------------------------------- get all meals ----------------------------------------
-  const fsGetAllMeals = useCallback(async () => {
-    console.log('//TODO: add where clauses to the query');
-    const dataArr = [];
-    const docRef = query(
-      collectionGroup(DB, 'meals')
-      // where('userID', '==', state.user.id),
-      // where('isDeleted', '==', false)
-    );
-    const querySnapshot = await getDocs(docRef);
-    querySnapshot.forEach((doc) => {
-      dataArr.push({ id: doc.id, qty: 0, ...doc.data() });
-    });
-    return dataArr;
-  }, [state]);
-
-  const fsGetAllMealsOFF = useCallback(async (userID) => {
-    const dataArr = [];
-    const docRef = query(collectionGroup(DB, 'meals'), where('userID', '==', userID));
-    const querySnapshot = await getDocs(docRef);
-    querySnapshot.forEach((doc) => {
-      dataArr.push({ id: doc.id, qty: 0, ...doc.data() });
-    });
-    return dataArr;
-  }, []);
-
-  // ------------------ | GET MEAL | ------------------
-  const fsGetMeal = useCallback(
-    async (mealID) => {
-      const docRef = doc(DB, `/users/${state.user.id}/meals/${mealID}/`);
-      const docSnap = await getDoc(docRef);
-      return docSnap.data();
-    },
-    [state]
-  );
-
   // ---------------------------------- Get All "Non-Deleted" Menus ------------------------------------------
   const fsGetMenu = useCallback(
     async (menuID) => {
@@ -728,7 +690,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  // ----------------------------------------
   const fsGetSections = useCallback(
     async (menuID, userID = state.user.id) => {
       const dataArr = [];
@@ -745,7 +706,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsGetSection = useCallback(
     async (menuID, sectionID) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}`);
@@ -754,7 +714,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  // ----------------------------------------
   const fsUpdateSection = useCallback(
     async (menuID, sectionID, meals) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
@@ -762,7 +721,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsUpdateSectionVisibility = useCallback(
     async (menuID, sectionID, value) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
@@ -770,7 +728,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsUpdateSectionVisibilityDateTimeRange = useCallback(
     async (menuID, sectionID, value) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
@@ -785,7 +742,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsUpdateSectionTitle = useCallback(
     async (menuID, sectionID, title) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
@@ -793,7 +749,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsUpdateSectionOrder = useCallback(
     async (menuID, sectionID, order) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
@@ -801,7 +756,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsUpdateSectionTranslation = useCallback(
     async (menuID, sectionID, value) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
@@ -809,7 +763,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsAddMealToMenuSelectedMeals = useCallback(
     async (menuID, mealID) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
@@ -817,7 +770,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsRemoveMealFromMenuSelectedMeals = useCallback(
     async (menuID, mealID) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
@@ -825,7 +777,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsRemoveSectionMealsFromMenuSelectedMeals = useCallback(
     async (menuID, meals) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
@@ -833,7 +784,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsEmptyMenuSelectedMeals = useCallback(
     async (menuID) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
@@ -841,7 +791,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsDeleteSection = useCallback(
     async (menuID, sectionID, orderValue) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}`);
@@ -866,7 +815,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsDeleteAllSections = useCallback(
     async (menuID) => {
       const docRef = query(
@@ -885,8 +833,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  // ------------------------------------- Delete menu ---------------------------------------
-
   const deleteMenu = useCallback(
     async (menuID) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/`, menuID);
@@ -916,14 +862,14 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsAddNewMeal = useCallback(
     async (mealInfo) => {
       const newDocRef = doc(collection(DB, `/users/${state.user.id}/meals/`));
       const date = new Date();
       const dateTime = date.toDateString();
+      const { imageFile, cover, ...mealData } = mealInfo;
       setDoc(newDocRef, {
-        ...mealInfo,
+        ...mealData,
         docID: newDocRef.id,
         lastUpdatedAt: dateTime,
         userID: state.user.id,
@@ -935,10 +881,12 @@ export function AuthProvider({ children }) {
         `gs://menu-app-b268b/${state.user.id}/meals/${newDocRef.id}/`
       );
 
-      if (mealInfo.imageFile) {
-        console.log(mealInfo.imageFile);
-        const imageRef = ref(storageRef, `${newDocRef.id}.${mealInfo.imageFile}`);
-        const uploadTask = uploadBytesResumable(imageRef, mealInfo.imageFile);
+      const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
+
+      if (imageFile) {
+        console.log(fileExtension);
+        const imageRef = ref(storageRef, `${newDocRef.id}.${fileExtension}`);
+        const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
           'state_changed',
           (snapshot) => {
@@ -957,7 +905,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsUpdateMeal = useCallback(
     async (payload) => {
       const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.mealID}/`);
@@ -965,7 +912,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsDeleteMeal = useCallback(
     async (mealID, imageID) => {
       // delete meal
@@ -992,7 +938,50 @@ export function AuthProvider({ children }) {
     [state]
   );
 
-  // ?----------------------------------------------------------------------------
+  const fsGetAllMeals = useCallback(async () => {
+    const docRef = query(
+      collectionGroup(DB, 'meals'),
+      where('userID', '==', state.user.id)
+      // where('isDeleted', '==', false)
+    );
+    const querySnapshot = await getDocs(docRef);
+    const dataArr = [];
+    const asyncOperations = [];
+
+    querySnapshot.forEach((element) => {
+      const asyncOperation = async () => {
+        const bucket = `menu-app-b268b/${state.user.id}/meals/${element.data().docID}/`;
+        const cover = await fsGetImgDownloadUrl(bucket, `${element.data().docID}_200x200.webp`);
+
+        dataArr.push({ ...element.data(), cover });
+      };
+      asyncOperations.push(asyncOperation());
+    });
+
+    await Promise.all(asyncOperations);
+
+    return dataArr;
+  }, [state]);
+
+  const fsGetAllMealsOFF = useCallback(async (userID) => {
+    const dataArr = [];
+    const docRef = query(collectionGroup(DB, 'meals'), where('userID', '==', userID));
+    const querySnapshot = await getDocs(docRef);
+    querySnapshot.forEach((doc) => {
+      dataArr.push({ id: doc.id, qty: 0, ...doc.data() });
+    });
+    return dataArr;
+  }, []);
+
+  const fsGetMeal = useCallback(
+    async (mealID) => {
+      const docRef = doc(DB, `/users/${state.user.id}/meals/${mealID}/`);
+      const docSnap = await getDoc(docRef);
+      return docSnap.data();
+    },
+    [state]
+  );
+
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsConfirmCartOrder = useCallback(async (dataObj) => {
     const { userID, branchID, cart } = dataObj;
