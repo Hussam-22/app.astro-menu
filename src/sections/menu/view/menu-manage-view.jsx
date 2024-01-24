@@ -10,6 +10,7 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSettingsContext } from 'src/components/settings';
 import MenuNewEditForm from 'src/sections/menu/menu-new-edit-form';
+import MealsAndSections from 'src/sections/menu/meals-and-sections';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 
@@ -25,19 +26,17 @@ function MenuManageView() {
     queryFn: () => fsGetMenu(id),
   });
 
-  console.log(menuData);
-
   const TABS = [
     {
       value: 'Menu Info',
       icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
       component: <MenuNewEditForm menuData={menuData} />,
     },
-    // {
-    //   value: 'Meals and Sections',
-    //   icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
-    //   component: <MealsAndSections />,
-    // },
+    {
+      value: 'Meals and Sections',
+      icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
+      component: <MealsAndSections />,
+    },
     // {
     //   value: 'Statistics',
     //   icon: <Iconify icon="nimbus:stats" width={20} height={20} />,

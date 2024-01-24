@@ -582,11 +582,12 @@ export function AuthProvider({ children }) {
 
   // -------------------------------- get all meals ----------------------------------------
   const fsGetAllMeals = useCallback(async () => {
+    console.log('//TODO: add where clauses to the query');
     const dataArr = [];
     const docRef = query(
-      collectionGroup(DB, 'meals'),
-      where('userID', '==', state.user.id),
-      where('isDeleted', '==', false)
+      collectionGroup(DB, 'meals')
+      // where('userID', '==', state.user.id),
+      // where('isDeleted', '==', false)
     );
     const querySnapshot = await getDocs(docRef);
     querySnapshot.forEach((doc) => {
@@ -710,7 +711,7 @@ export function AuthProvider({ children }) {
       const userID = state.user.id;
       const newDocRef = doc(collection(DB, `/users/${userID}/menus/${menuID}/sections`));
       await setDoc(newDocRef, {
-        id: newDocRef.id,
+        docID: newDocRef.id,
         menuID,
         userID,
         title,
@@ -720,6 +721,8 @@ export function AuthProvider({ children }) {
         activeTimeRange: { isActive: false, from: '', to: '' },
         activeDateRange: { isActive: false, from: '', to: '' },
       });
+
+      fbTranslate({ newDocRef, text: title });
 
       return newDocRef.id;
     },
@@ -1356,9 +1359,9 @@ export function AuthProvider({ children }) {
       // fsGetAllOrders,
       fsGetAllTableOrders,
       // // ---- MENU SECTIONS ----
-      // fsAddSection,
+      fsAddSection,
       // fsUpdateSection,
-      // fsGetSections,
+      fsGetSections,
       // fsGetSection,
       // fsAddMealToMenuSelectedMeals,
       // fsRemoveMealFromMenuSelectedMeals,
@@ -1379,7 +1382,7 @@ export function AuthProvider({ children }) {
       fsDeleteMenu,
       // fsEmptyMenuSelectedMeals,
       // // ---- MEALS ----
-      // fsGetAllMeals,
+      fsGetAllMeals,
       // fsGetMeal,
       // fsDeleteMeal,
       // fsAddNewMeal,
@@ -1451,9 +1454,9 @@ export function AuthProvider({ children }) {
       // fsGetAllOrders,
       fsGetAllTableOrders,
       // // ---- MENU SECTIONS ----
-      // fsAddSection,
+      fsAddSection,
       // fsUpdateSection,
-      // fsGetSections,
+      fsGetSections,
       // fsGetSection,
       // fsAddMealToMenuSelectedMeals,
       // fsRemoveMealFromMenuSelectedMeals,
@@ -1475,7 +1478,7 @@ export function AuthProvider({ children }) {
       // fsEmptyMenuSelectedMeals,
       // fsDocSnapshot,
       // // ---- MEALS ----
-      // fsGetAllMeals,
+      fsGetAllMeals,
       // fsGetMeal,
       // fsDeleteMeal,
       // fsAddNewMeal,
