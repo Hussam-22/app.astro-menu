@@ -918,21 +918,41 @@ export function AuthProvider({ children }) {
   );
 
   const fsAddNewMeal = useCallback(
-    async (dataObj) => {
+    async (mealInfo) => {
       const newDocRef = doc(collection(DB, `/users/${state.user.id}/meals/`));
       const date = new Date();
       const dateTime = date.toDateString();
       setDoc(newDocRef, {
-        ...dataObj,
-        id: newDocRef.id,
-        createdAt: dateTime,
+        ...mealInfo,
+        docID: newDocRef.id,
+        lastUpdatedAt: dateTime,
         userID: state.user.id,
         isDeleted: false,
-        cover: {
-          id: dataObj.cover.id,
-          url: `https://firebasestorage.googleapis.com/v0/b/menu-app-b268b.appspot.com/o/${state.user.id}%2Fmeals%2F${dataObj.cover.id}_800x800?alt=media&token=1f5f8bad-4baf-4d37-b6ef-779fbf79a770`,
-        },
       });
+
+      const storageRef = ref(
+        STORAGE,
+        `gs://menu-app-b268b/${state.user.id}/meals/${newDocRef.id}/`
+      );
+
+      if (mealInfo.imageFile) {
+        console.log(mealInfo.imageFile);
+        const imageRef = ref(storageRef, `${newDocRef.id}.${mealInfo.imageFile}`);
+        const uploadTask = uploadBytesResumable(imageRef, mealInfo.imageFile);
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            console.log(snapshot);
+          },
+          (error) => {
+            console.log(error);
+          },
+          () => {
+            console.log('UPLOADED');
+          }
+        );
+      }
+
       return newDocRef.id;
     },
     [state]
@@ -1208,13 +1228,9 @@ export function AuthProvider({ children }) {
   // -----------------------------------------------------------------------------
   // ! -------------------------------------------- Meta Tags -------------------------------------------------------------
 
-  const fsGetAllMetaTags = useCallback(async () => {
+  const fsGetMealLabels = useCallback(async () => {
     const dataArr = [];
-    const docRef = query(
-      collectionGroup(DB, 'metaTags'),
-      where('userID', '==', state.user.id),
-      where('isDeleted', '==', false)
-    );
+    const docRef = query(collectionGroup(DB, 'meal-lables'), where('userID', '==', state.user.id));
     const querySnapshot = await getDocs(docRef);
     querySnapshot.forEach((doc) => {
       dataArr.push(doc.data());
@@ -1385,10 +1401,10 @@ export function AuthProvider({ children }) {
       fsGetAllMeals,
       // fsGetMeal,
       // fsDeleteMeal,
-      // fsAddNewMeal,
+      fsAddNewMeal,
       // fsUpdateMeal,
       // fsDocSnapshot,
-      // fsGetAllMetaTags,
+      fsGetMealLabels,
       // fsUpdateAllMetaTags,
       // fsUpdateMealMetaTags,
       // fsRemoveTagFromAllMeals,
@@ -1481,9 +1497,9 @@ export function AuthProvider({ children }) {
       fsGetAllMeals,
       // fsGetMeal,
       // fsDeleteMeal,
-      // fsAddNewMeal,
+      fsAddNewMeal,
       // fsUpdateMeal,
-      // fsGetAllMetaTags,
+      fsGetMealLabels,
       // fsUpdateAllMetaTags,
       // fsUpdateMealMetaTags,
       // fsRemoveTagFromAllMeals,
