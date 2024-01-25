@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useDispatch, useSelector } from 'react-redux';
 
 import {
   Box,
@@ -35,7 +34,7 @@ import {
 const TABLE_HEAD = [
   { id: 'title', label: 'Meal', align: 'center', width: '40%' },
   { id: 'portions', label: 'Portions', align: 'center', width: '5%' },
-  { id: 'tags', label: 'Tags', align: 'center', width: '25%' },
+  { id: 'meal-labels', label: 'Meal Labels', align: 'center', width: '25%' },
   { id: 'isNew', label: 'New', align: 'center', width: '5%' },
   { id: 'status', label: 'Status', align: 'center', width: '15%' },
 ];
@@ -48,23 +47,21 @@ function MealListView() {
     });
   const { themeStretch } = useSettingsContext();
   const router = useRouter();
-  const dispatch = useDispatch();
-  const { fsGetAllMeals, fsGetAllMetaTags } = useAuthContext();
+  const { fsGetAllMeals, fsGetMealLabels } = useAuthContext();
   const [filterName, setFilterName] = useState('');
-  const { metaTagsList } = useSelector((state) => state.metaTag);
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data: allMeals = [] } = useQuery({
+  const { data: allMeals = [], error } = useQuery({
     queryKey: [`meals`],
     queryFn: fsGetAllMeals,
   });
 
-  // useEffect(() => {
-  //   (async () => {
-  //     dispatch(rdxGetAllMeals(await fsGetAllMeals()));
-  //     dispatch(rdxSetMetaTagsList(await fsGetAllMetaTags()));
-  //   })();
-  // }, [dispatch, fsGetAllMeals, fsGetAllMetaTags]);
+  console.log(error);
+
+  const { data: mealLabelsList = [] } = useQuery({
+    queryKey: ['meal-labels'],
+    queryFn: fsGetMealLabels,
+  });
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
@@ -124,10 +121,10 @@ function MealListView() {
                   .map((row, index) =>
                     row ? (
                       <MealTableRow
-                        key={row.id}
+                        key={row.docID}
                         row={row}
-                        onEditRow={() => handleEditRow(row.id)}
-                        tagsList={metaTagsList}
+                        onEditRow={() => handleEditRow(row.docID)}
+                        mealLabelsList={mealLabelsList}
                       />
                     ) : (
                       !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />

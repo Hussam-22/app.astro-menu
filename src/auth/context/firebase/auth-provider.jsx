@@ -219,14 +219,12 @@ export function AuthProvider({ children }) {
 
   // ?-------------------- IMAGES --------------------------------------------------
   const fsGetImgDownloadUrl = useCallback(async (bucketPath, imgID) => {
-    let url = '';
+    // eslint-disable-next-line no-useless-catch
     try {
-      url = await getDownloadURL(ref(STORAGE, `gs://${bucketPath}${imgID}`));
+      return await getDownloadURL(ref(STORAGE, `gs://${bucketPath}${imgID}`));
     } catch (error) {
-      url = undefined;
+      throw error;
     }
-
-    return url;
   }, []);
 
   const fsGetFolderImages = useCallback(async (bucket, folderID) => {
@@ -884,20 +882,13 @@ export function AuthProvider({ children }) {
       const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
 
       if (imageFile) {
-        console.log(fileExtension);
         const imageRef = ref(storageRef, `${newDocRef.id}.${fileExtension}`);
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
           'state_changed',
-          (snapshot) => {
-            console.log(snapshot);
-          },
-          (error) => {
-            console.log(error);
-          },
-          () => {
-            console.log('UPLOADED');
-          }
+          (snapshot) => {},
+          (error) => {},
+          () => {}
         );
       }
 
@@ -907,8 +898,8 @@ export function AuthProvider({ children }) {
   );
   const fsUpdateMeal = useCallback(
     async (payload) => {
-      const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.mealID}/`);
-      await updateDoc(docRef, { ...payload.data });
+      const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.docID}/`);
+      await updateDoc(docRef, payload);
     },
     [state]
   );
@@ -981,6 +972,16 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+
+  const fsGetMealLabels = useCallback(async () => {
+    const dataArr = [];
+    const docRef = query(collectionGroup(DB, 'meal-lables'), where('userID', '==', state.user.id));
+    const querySnapshot = await getDocs(docRef);
+    querySnapshot.forEach((doc) => {
+      dataArr.push(doc.data());
+    });
+    return dataArr;
+  }, [state]);
 
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsConfirmCartOrder = useCallback(async (dataObj) => {
@@ -1217,16 +1218,6 @@ export function AuthProvider({ children }) {
   // -----------------------------------------------------------------------------
   // ! -------------------------------------------- Meta Tags -------------------------------------------------------------
 
-  const fsGetMealLabels = useCallback(async () => {
-    const dataArr = [];
-    const docRef = query(collectionGroup(DB, 'meal-lables'), where('userID', '==', state.user.id));
-    const querySnapshot = await getDocs(docRef);
-    querySnapshot.forEach((doc) => {
-      dataArr.push(doc.data());
-    });
-    return dataArr;
-  }, [state]);
-
   const fsUpdateAllMetaTags = useCallback(
     async (tagsIDs, mealID) => {
       console.log(tagsIDs);
@@ -1391,7 +1382,7 @@ export function AuthProvider({ children }) {
       // fsGetMeal,
       // fsDeleteMeal,
       fsAddNewMeal,
-      // fsUpdateMeal,
+      fsUpdateMeal,
       // fsDocSnapshot,
       fsGetMealLabels,
       // fsUpdateAllMetaTags,
@@ -1487,7 +1478,7 @@ export function AuthProvider({ children }) {
       // fsGetMeal,
       // fsDeleteMeal,
       fsAddNewMeal,
-      // fsUpdateMeal,
+      fsUpdateMeal,
       fsGetMealLabels,
       // fsUpdateAllMetaTags,
       // fsUpdateMealMetaTags,

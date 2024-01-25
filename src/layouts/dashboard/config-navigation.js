@@ -44,6 +44,10 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+  branch: icon('ic_branch'),
+  menu: icon('ic_menu'),
+  meal: icon('ic_meal'),
+  waiters: icon('ic_waiter'),
 };
 
 // ----------------------------------------------------------------------
@@ -76,7 +80,7 @@ export function useNavData() {
           {
             title: t('branches'),
             path: paths.dashboard.branches.root,
-            icon: ICONS.user,
+            icon: ICONS.branch,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
 
@@ -84,7 +88,7 @@ export function useNavData() {
           {
             title: t('Menus'),
             path: paths.dashboard.menu.root,
-            icon: ICONS.user,
+            icon: ICONS.menu,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
 
@@ -92,7 +96,7 @@ export function useNavData() {
           {
             title: t('Meals'),
             path: paths.dashboard.meal.root,
-            icon: ICONS.user,
+            icon: ICONS.meal,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
 

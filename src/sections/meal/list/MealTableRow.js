@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { useTheme } from '@mui/material/styles';
-import { Button, TableRow, TableCell, Typography } from '@mui/material';
+import { Box, TableRow, TableCell, Typography, ListItemText } from '@mui/material';
 
 import Label from 'src/components/label';
 import Image from 'src/components/image';
@@ -9,24 +8,18 @@ import Image from 'src/components/image';
 MealTableRow.propTypes = {
   row: PropTypes.object,
   onEditRow: PropTypes.func,
-  tagsList: PropTypes.array,
+  mealLabelsList: PropTypes.array,
 };
 
-export default function MealTableRow({ row, onEditRow, tagsList }) {
-  const { title, cover, isActive, metaKeywords, portions, isNew } = row;
-
-  console.log(cover);
-  const theme = useTheme();
-
-  const borderColor =
-    theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.grey[700];
-  const textColor =
-    theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.primary.light;
+export default function MealTableRow({ row, onEditRow, mealLabelsList }) {
+  const { docID, cover, title, isActive, mealLabels, portions, isNew } = row;
 
   const metaKeywordsText = () => {
-    if (tagsList.length !== 0)
-      return metaKeywords
-        .map((keywordID) => tagsList.find((tag) => tag.id === keywordID).metaTag)
+    if (mealLabelsList.length !== 0)
+      return mealLabels
+        .map((labelID) =>
+          mealLabelsList.find((label) => label.docID === labelID).title.toLowerCase()
+        )
         .join(', ');
     return null;
   };
@@ -40,10 +33,22 @@ export default function MealTableRow({ row, onEditRow, tagsList }) {
           src={cover}
           sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}
         />
-
-        <Button variant="text" onClick={onEditRow} sx={{ color: textColor }}>
-          {title}
-        </Button>
+        <Box
+          onClick={() => onEditRow(docID)}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': {
+              textDecoration: 'underline',
+            },
+          }}
+        >
+          <ListItemText
+            primary={title}
+            secondary={docID}
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
+          />
+        </Box>
       </TableCell>
 
       <TableCell align="center">{portions.length}</TableCell>

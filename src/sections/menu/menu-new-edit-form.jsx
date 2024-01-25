@@ -65,10 +65,8 @@ export default function MenuNewEditForm({ menuData, onClose }) {
   };
 
   const onSubmit = async (data) => {
-    // await new Promise((resolve) => setTimeout(resolve, 1000));
     if (menuData?.docID) {
       mutate(() => fsUpdateMenu(data));
-      // dispatch(rdxGetMenu(data));
     }
     if (!menuData?.docID) {
       mutate(() => fsAddNewMenu(data));

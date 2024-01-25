@@ -1,19 +1,18 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
-import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useState, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Box, Card, Stack, Button, Divider, useTheme, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
-import Label from 'src/components/label';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import { rdxRemoveMeal } from 'src/redux/slices/meal';
@@ -30,24 +29,15 @@ function MealNewEditForm({ mealInfo }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { fsAddNewMeal, fsDeleteMeal, fsGetMealLabels } = useAuthContext();
+  const { fsAddNewMeal, fsDeleteMeal, fsGetMealLabels, fsUpdateMeal } = useAuthContext();
   const dispatch = useDispatch();
   const [selectedMealLabels, setSelectedMealLabels] = useState(mealInfo?.mealLabels || []);
+  const queryClient = useQueryClient();
 
-  const { data: MealLabelsList = [], error } = useQuery({
+  const { data: mealLabelsList = [] } = useQuery({
     queryKey: ['meal-labels'],
     queryFn: fsGetMealLabels,
   });
-
-  const handleOpenPreview = () => {
-    setOpen(true);
-  };
-
-  const handleClosePreview = () => {
-    setOpen(false);
-  };
-
-  // TODO : Validate Image
 
   const NewMealSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -76,14 +66,10 @@ function MealNewEditForm({ mealInfo }) {
   });
 
   const {
-    watch,
     setValue,
     handleSubmit,
-    getFieldState,
-    formState: { isSubmitting, isDirty, errors },
+    formState: { isDirty },
   } = methods;
-
-  const values = watch();
 
   const handleAddTag = (tag) => {
     if (selectedMealLabels.includes(tag.docID))
@@ -125,13 +111,21 @@ function MealNewEditForm({ mealInfo }) {
     setValue('imageFile', null, { isTouched: true, isFocused: true, shouldDirty: true });
   }, [setValue]);
 
+  const { isPending, mutate } = useMutation({
+    mutationFn: (mutateFn) => mutateFn(),
+    onSuccess: () => {
+      const queryKeys = mealInfo?.docID ? ['menus', `menu-${mealInfo.docID}`] : ['menus'];
+      queryClient.invalidateQueries(queryKeys);
+    },
+  });
+
   const onSubmit = async (data) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(data);
-    if (!mealInfo?.docID) fsAddNewMeal(data);
-    enqueueSnackbar('Meal Saved successfully!', {
-      anchorOrigin: { horizontal: 'center', vertical: 'bottom' },
-    });
+    if (mealInfo?.docID) mutate(() => fsUpdateMeal(data));
+    if (!mealInfo?.docID) {
+      mutate(() => fsAddNewMeal(data));
+      router.push(paths.dashboard.meal.list);
+    }
+    enqueueSnackbar('Meal Saved successfully!');
   };
 
   const handleDeleteMeal = () => {
@@ -150,23 +144,6 @@ function MealNewEditForm({ mealInfo }) {
             onDrop={handleDrop}
             onDelete={handleRemoveFile}
           />
-          {values.isNew && (
-            <Label
-              variant="filled"
-              color="error"
-              sx={{
-                right: 35,
-                zIndex: 10,
-                bottom: 35,
-                position: 'absolute',
-                textTransform: 'capitalize',
-                fontSize: '2vh',
-                p: 1.5,
-              }}
-            >
-              New
-            </Label>
-          )}
         </Grid>
 
         <Grid xs={12}>
@@ -189,7 +166,7 @@ function MealNewEditForm({ mealInfo }) {
               </Typography>
               <Divider sx={{ mt: 1, border: `dashed 1px ${theme.palette.divider}` }} />
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 1, mt: 3 }}>
-                {MealLabelsList.map((tag) => (
+                {mealLabelsList.map((tag) => (
                   <Button
                     variant={selectedMealLabels.includes(tag.docID) ? 'contained' : 'outlined'}
                     key={tag.docID}
@@ -219,7 +196,7 @@ function MealNewEditForm({ mealInfo }) {
               type="submit"
               color="primary"
               variant="contained"
-              loading={isSubmitting}
+              loading={isPending}
               disabled={!isDirty}
             >
               {mealInfo?.docID ? 'Update Meal' : 'Add Meal'}

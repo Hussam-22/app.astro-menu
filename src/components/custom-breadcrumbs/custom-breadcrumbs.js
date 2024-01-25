@@ -26,7 +26,7 @@ export default function CustomBreadcrumbs({
   const theme = useTheme();
 
   return (
-    <Box sx={{ borderBottom: `dashed 1px ${theme.palette.divider}`, pb: 1, ...sx }}>
+    <Box sx={{ borderBottom: `dashed 1px ${theme.palette.divider}`, pb: 1, mb: 2, ...sx }}>
       <Stack direction="row" alignItems="center">
         <Box sx={{ flexGrow: 1 }}>
           {/* HEADING */}
