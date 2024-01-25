@@ -930,6 +930,7 @@ export function AuthProvider({ children }) {
   );
   const fsUpdateMeal = useCallback(
     async (payload) => {
+      console.log(payload);
       const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.docID}/`);
       await updateDoc(docRef, payload);
 

@@ -75,7 +75,8 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
   const onSubmit = async (formData) => {
     mutate(() => {
       if (tableToUpdate === 'meals')
-        fsUpdateMeal(docRef, {
+        fsUpdateMeal({
+          docID: data.docID,
           title: formData.title,
           description: formData.description,
           translationEdited: '',
