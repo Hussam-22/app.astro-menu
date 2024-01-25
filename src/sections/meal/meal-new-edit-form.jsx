@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -24,7 +23,7 @@ import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components
 MealNewEditForm.propTypes = { mealInfo: PropTypes.object };
 
 function MealNewEditForm({ mealInfo }) {
-  const { id: mealID } = useParams();
+  console.log(mealInfo);
   const theme = useTheme();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -137,7 +136,7 @@ function MealNewEditForm({ mealInfo }) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={2}>
-        <Grid xs={12} sx={{ position: 'relative' }}>
+        <Grid xs={12}>
           <RHFUpload
             name="imageFile"
             maxSize={3145728}

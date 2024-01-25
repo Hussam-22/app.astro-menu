@@ -51,12 +51,10 @@ function MealListView() {
   const [filterName, setFilterName] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data: allMeals = [], error } = useQuery({
+  const { data: allMeals = [] } = useQuery({
     queryKey: [`meals`],
     queryFn: fsGetAllMeals,
   });
-
-  console.log(error);
 
   const { data: mealLabelsList = [] } = useQuery({
     queryKey: ['meal-labels'],

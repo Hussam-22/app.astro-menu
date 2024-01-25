@@ -7,7 +7,6 @@ import { m, AnimatePresence } from 'framer-motion';
 import { Grid } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { rdxGetAllMeals } from 'src/redux/slices/meal';
 import EmptyContent from 'src/components/empty-content';
 import { MotionViewport } from 'src/components/animate';
 import { rdxGetMenuSections } from 'src/redux/slices/menu';

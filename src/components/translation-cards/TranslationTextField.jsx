@@ -1,10 +1,10 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 import { useMemo, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useParams, useLocation } from 'react-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import { Stack, Divider, Tooltip, InputAdornment } from '@mui/material';
@@ -12,8 +12,6 @@ import { Stack, Divider, Tooltip, InputAdornment } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { rdxResetTranslation_Meal, rdxUpdateTranslation_Meal } from 'src/redux/slices/meal';
-import { rdxResetTranslation_Branch, rdxUpdateTranslation_Branch } from 'src/redux/slices/branch';
 
 TranslationTextField.propTypes = {
   field: PropTypes.string,
@@ -32,11 +30,14 @@ export default function TranslationTextField({
 }) {
   const { id } = useParams();
   const location = useLocation();
-  const dispatch = useDispatch();
   const { user, fsUpdateTable } = useAuthContext();
   const { translated, editedTranslation } = data;
+  const queryClient = useQueryClient();
+
+  console.log('//TODO: Fix buttons status on save and reset');
 
   const tableToUpdate = location.pathname.includes('meal') ? 'meals' : 'branches';
+  const docRef = `users/${user.id}/${tableToUpdate}/${id}`;
 
   const [isRestTranslationDirty, setIsRestTranslationDirty] = useState(
     translated === editedTranslation
@@ -45,62 +46,48 @@ export default function TranslationTextField({
   const NewUserSchema = Yup.object().shape({
     [field]: Yup.string().required(`${label} cant be empty`),
   });
-
   const defaultValues = useMemo(
     () => ({ [field]: editedTranslation || translated }),
     [field, editedTranslation, translated]
   );
-
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
-
   const {
     reset,
-    watch,
     handleSubmit,
-    formState: { isSubmitting, isDirty },
+    formState: { isDirty },
   } = methods;
 
-  const values = watch();
+  const { isPending, mutate } = useMutation({
+    mutationFn: (mutateFn) => mutateFn(),
+    onSuccess: () => {
+      if (tableToUpdate === 'meals') {
+        const queryKeys = data?.docID ? ['meals', `meal-${data.docID}`] : ['meals'];
+        queryClient.invalidateQueries(queryKeys);
+      }
 
-  const resetTranslation = async () => {
-    const docRef = `users/${user.id}/${tableToUpdate}/${id}`;
+      if (tableToUpdate === 'branches') {
+        const queryKeys = data?.docID ? ['branches', `branch-${data.docID}`] : ['branches'];
+        queryClient.invalidateQueries(queryKeys);
+      }
+    },
+  });
 
-    if (tableToUpdate === 'branches')
-      dispatch(rdxResetTranslation_Branch({ key: field, languageKey }));
-
-    if (tableToUpdate === 'meals') dispatch(rdxResetTranslation_Meal({ key: field, languageKey }));
-
-    fsUpdateTable(docRef, {
-      [`translationEdited.${languageKey}.${field}`]: translated,
-    });
-    await new Promise((resolve) =>
-      setTimeout(() => {
-        resolve();
-        reset({ [field]: translated });
-        setIsRestTranslationDirty(true);
-      }, 1000)
+  const resetTranslation = () => {
+    mutate(() =>
+      fsUpdateTable(docRef, {
+        [`translationEdited.${languageKey}.${field}`]: translated,
+      })
     );
+    reset({ [field]: translated });
+    setIsRestTranslationDirty(true);
   };
 
-  const onSubmit = async () => {
-    const docRef = `users/${user.id}/${tableToUpdate}/${id}`;
-
-    fsUpdateTable(docRef, { [`translationEdited.${languageKey}.${field}`]: values[field] });
-
-    if (tableToUpdate === 'branches')
-      dispatch(rdxUpdateTranslation_Branch({ key: field, keyValue: values[field], languageKey }));
-
-    if (tableToUpdate === 'meals')
-      dispatch(rdxUpdateTranslation_Meal({ key: field, keyValue: values[field], languageKey }));
-
-    await new Promise((resolve) =>
-      setTimeout(() => {
-        reset(values);
-        resolve();
-      }, 1000)
+  const onSubmit = async (formData) => {
+    mutate(() =>
+      fsUpdateTable(docRef, { [`translationEdited.${languageKey}.${field}`]: formData[field] })
     );
   };
 
@@ -124,7 +111,7 @@ export default function TranslationTextField({
                     <LoadingButton
                       type="reset"
                       variant="text"
-                      loading={isSubmitting}
+                      loading={isPending}
                       onClick={() => reset()}
                       color="warning"
                       disabled={!isDirty}
@@ -139,7 +126,7 @@ export default function TranslationTextField({
                     <LoadingButton
                       type="button"
                       variant="text"
-                      loading={isSubmitting}
+                      loading={isPending}
                       color="info"
                       onClick={handleSubmit(resetTranslation)}
                       disabled={isRestTranslationDirty}
@@ -152,7 +139,7 @@ export default function TranslationTextField({
                 <LoadingButton
                   type="submit"
                   variant="text"
-                  loading={isSubmitting}
+                  loading={isPending}
                   disabled={!isDirty}
                   color="success"
                 >

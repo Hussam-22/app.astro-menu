@@ -226,7 +226,6 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-
   const fsGetFolderImages = useCallback(async (bucket, folderID) => {
     const listRef = ref(STORAGE, `gs://${bucket}/${folderID}`);
     const imagesList = await listAll(listRef);
@@ -237,7 +236,6 @@ export function AuthProvider({ children }) {
     const largeImage = imagesUrl.filter((url) => url.includes('1920x1080'));
     return [thumbnail, largeImage];
   }, []);
-
   const fsDeleteImage = useCallback(async (bucketPath, imgID) => {
     const storageRef = ref(STORAGE, `gs://${bucketPath}${imgID}`);
     deleteObject(storageRef)
@@ -248,7 +246,6 @@ export function AuthProvider({ children }) {
         console.error('Error deleting image:', error);
       });
   }, []);
-
   const fsUploadMultipleImages = useCallback(async (bucketPath, image) => {
     const storageRef = ref(STORAGE, `gs://${bucketPath}`);
 
@@ -285,9 +282,9 @@ export function AuthProvider({ children }) {
   const fbTranslateMeal = httpsCallable(FUNCTIONS, 'fbTranslateMeal');
   const fbTranslateBranchDesc = httpsCallable(FUNCTIONS, 'fbTranslateBranchDesc');
   // ---------------------------------------------------------
-  const fsUpdateTable = useCallback(async (docPath, value) => {
+  const fsUpdateTable = useCallback(async (docPath, payload) => {
     const docRef = doc(DB, docPath);
-    await updateDoc(docRef, value);
+    await updateDoc(docRef, payload);
   }, []);
 
   const fsQueryDoc = useCallback(async (docPath) => {
@@ -576,7 +573,6 @@ export function AuthProvider({ children }) {
     [state]
   );
 
-  // ---------------------------------- Get All "Non-Deleted" Menus ------------------------------------------
   const fsGetMenu = useCallback(
     async (menuID) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
@@ -586,7 +582,6 @@ export function AuthProvider({ children }) {
     [state]
   );
 
-  // ---------------------------------- Get All "Non-Deleted" Menus ------------------------------------------
   const fsGetAllMenus = useCallback(async () => {
     const docRef = query(
       collectionGroup(DB, 'menus'),
@@ -609,7 +604,6 @@ export function AuthProvider({ children }) {
     return dataArr;
   }, [state]);
 
-  // ------------------ | Add New Menu | ------------------
   const fsAddNewMenu = useCallback(
     async (data) => {
       const newDocRef = doc(collection(DB, `/users/${state.user.id}/menus/`));
@@ -645,7 +639,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  // ----------------------------------- add Doc to DB ----------------------------------
   const fsAddToDB = useCallback(
     async (table, dataObj) => {
       const newDocRef = doc(collection(DB, table));
@@ -860,49 +853,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsAddNewMeal = useCallback(
-    async (mealInfo) => {
-      const newDocRef = doc(collection(DB, `/users/${state.user.id}/meals/`));
-      const date = new Date();
-      const dateTime = date.toDateString();
-      const { imageFile, cover, ...mealData } = mealInfo;
-      setDoc(newDocRef, {
-        ...mealData,
-        docID: newDocRef.id,
-        lastUpdatedAt: dateTime,
-        userID: state.user.id,
-        isDeleted: false,
-      });
-
-      const storageRef = ref(
-        STORAGE,
-        `gs://menu-app-b268b/${state.user.id}/meals/${newDocRef.id}/`
-      );
-
-      const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
-
-      if (imageFile) {
-        const imageRef = ref(storageRef, `${newDocRef.id}.${fileExtension}`);
-        const uploadTask = uploadBytesResumable(imageRef, imageFile);
-        uploadTask.on(
-          'state_changed',
-          (snapshot) => {},
-          (error) => {},
-          () => {}
-        );
-      }
-
-      return newDocRef.id;
-    },
-    [state]
-  );
-  const fsUpdateMeal = useCallback(
-    async (payload) => {
-      const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.docID}/`);
-      await updateDoc(docRef, payload);
-    },
-    [state]
-  );
   const fsDeleteMeal = useCallback(
     async (mealID, imageID) => {
       // delete meal
@@ -928,7 +878,70 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsGetAllMealsOFF = useCallback(async (userID) => {
+    const dataArr = [];
+    const docRef = query(collectionGroup(DB, 'meals'), where('userID', '==', userID));
+    const querySnapshot = await getDocs(docRef);
+    querySnapshot.forEach((doc) => {
+      dataArr.push({ id: doc.id, qty: 0, ...doc.data() });
+    });
+    return dataArr;
+  }, []);
+  const fsAddNewMeal = useCallback(
+    async (mealInfo) => {
+      const newDocRef = doc(collection(DB, `/users/${state.user.id}/meals/`));
+      const date = new Date();
+      const dateTime = date.toDateString();
+      const { imageFile, cover, ...mealData } = mealInfo;
+      setDoc(newDocRef, {
+        ...mealData,
+        docID: newDocRef.id,
+        lastUpdatedAt: dateTime,
+        userID: state.user.id,
+        isDeleted: false,
+      });
 
+      fbTranslateMeal({
+        mealRef: `/users/${state.user.id}/meals/${newDocRef.id}`,
+        text: { title: mealInfo.title, desc: mealInfo.description },
+        userID: state.user.id,
+      });
+
+      const storageRef = ref(
+        STORAGE,
+        `gs://menu-app-b268b/${state.user.id}/meals/${newDocRef.id}/`
+      );
+
+      const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
+
+      if (imageFile) {
+        const imageRef = ref(storageRef, `${newDocRef.id}.${fileExtension}`);
+        const uploadTask = uploadBytesResumable(imageRef, imageFile);
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {},
+          (error) => {},
+          () => {}
+        );
+      }
+      return newDocRef.id;
+    },
+    [state]
+  );
+  const fsUpdateMeal = useCallback(
+    async (payload) => {
+      const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.docID}/`);
+      await updateDoc(docRef, payload);
+
+      if (payload.translation === '' && payload.translationEdited === '')
+        fbTranslateMeal({
+          mealRef: `/users/${state.user.id}/meals/${payload.docID}`,
+          text: { title: payload.title, desc: payload.description },
+          userID: state.user.id,
+        });
+    },
+    [state]
+  );
   const fsGetAllMeals = useCallback(async () => {
     const docRef = query(
       collectionGroup(DB, 'meals'),
@@ -954,21 +967,18 @@ export function AuthProvider({ children }) {
     return dataArr;
   }, [state]);
 
-  const fsGetAllMealsOFF = useCallback(async (userID) => {
-    const dataArr = [];
-    const docRef = query(collectionGroup(DB, 'meals'), where('userID', '==', userID));
-    const querySnapshot = await getDocs(docRef);
-    querySnapshot.forEach((doc) => {
-      dataArr.push({ id: doc.id, qty: 0, ...doc.data() });
-    });
-    return dataArr;
-  }, []);
-
   const fsGetMeal = useCallback(
     async (mealID) => {
       const docRef = doc(DB, `/users/${state.user.id}/meals/${mealID}/`);
       const docSnap = await getDoc(docRef);
-      return docSnap.data();
+
+      const bucketPath = `${BUCKET}/${state.user.id}/meals/${mealID}/`;
+
+      const imgUrl = await fsGetImgDownloadUrl(bucketPath, `${mealID}_800x800.webp`);
+      return {
+        ...docSnap.data(),
+        cover: imgUrl,
+      };
     },
     [state]
   );
@@ -1379,7 +1389,7 @@ export function AuthProvider({ children }) {
       // fsEmptyMenuSelectedMeals,
       // // ---- MEALS ----
       fsGetAllMeals,
-      // fsGetMeal,
+      fsGetMeal,
       // fsDeleteMeal,
       fsAddNewMeal,
       fsUpdateMeal,
@@ -1475,7 +1485,7 @@ export function AuthProvider({ children }) {
       // fsDocSnapshot,
       // // ---- MEALS ----
       fsGetAllMeals,
-      // fsGetMeal,
+      fsGetMeal,
       // fsDeleteMeal,
       fsAddNewMeal,
       fsUpdateMeal,
