@@ -2,33 +2,14 @@ import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
-import { useState, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
-import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import {
-  Box,
-  Card,
-  Stack,
-  Button,
-  Dialog,
-  Divider,
-  useTheme,
-  IconButton,
-  Typography,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from '@mui/material';
+import { Stack, Button } from '@mui/material';
 
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hook';
-import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import MealPortionAdd from 'src/sections/meal/meal-portion-add';
-import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 MealLabelNewEditForm.propTypes = { labelInfo: PropTypes.object, onClose: PropTypes.func };
 

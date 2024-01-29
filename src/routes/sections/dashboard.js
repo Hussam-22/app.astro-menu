@@ -78,6 +78,7 @@ const MenuNewPage = lazy(() => import('src/pages/dashboard/menu/menu-new-page'))
 const MealListPage = lazy(() => import('src/pages/dashboard/meal/meal-list-page'));
 const MealManagePage = lazy(() => import('src/pages/dashboard/meal/meal-manage-page'));
 const MealNewPage = lazy(() => import('src/pages/dashboard/meal/meal-new-page'));
+const MealLabelsPage = lazy(() => import('src/pages/dashboard/meal/meal-labels-page'));
 
 // ----------------------------------------------------------------------
 
@@ -127,6 +128,7 @@ export const dashboardRoutes = [
           { path: 'list', element: <MealListPage /> },
           { path: 'new', element: <MealNewPage /> },
           { path: ':id/manage', element: <MealManagePage /> },
+          { path: 'labels', element: <MealLabelsPage /> },
         ],
       },
 

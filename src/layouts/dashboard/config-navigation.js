@@ -97,7 +97,10 @@ export function useNavData() {
             title: t('Meals'),
             path: paths.dashboard.meal.root,
             icon: ICONS.meal,
-            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
+            children: [
+              { title: t('list'), path: paths.dashboard.meal.list },
+              { title: t('labels'), path: paths.dashboard.meal.labels },
+            ],
           },
 
           // USER
