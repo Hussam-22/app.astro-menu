@@ -55,7 +55,7 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
     formState: { isSubmitting, isDirty },
   } = methods;
 
-  const { isPending, mutate } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       if (tableToUpdate === 'meals') {

@@ -14,7 +14,6 @@ import { Box, Card, Stack, Button, Divider, useTheme, Typography } from '@mui/ma
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
-import { rdxRemoveMeal } from 'src/redux/slices/meal';
 import MealPortionAdd from 'src/sections/meal/meal-portion-add';
 import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components/hook-form';
 
@@ -23,7 +22,6 @@ import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components
 MealNewEditForm.propTypes = { mealInfo: PropTypes.object };
 
 function MealNewEditForm({ mealInfo }) {
-  console.log(mealInfo);
   const theme = useTheme();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -43,12 +41,12 @@ function MealNewEditForm({ mealInfo }) {
     description: Yup.string().required('Description is required'),
     imageFile: Yup.mixed().nullable().required('Cover is required'),
     cover: Yup.mixed().required('imgURL is required'),
-    mealLabels: Yup.array().min(1, 'At least one tag should be entered'),
+    mealLabels: Yup.array().min(1, 'At least one meal label should be selected'),
     portions: Yup.array().min(1, 'At least One portion should be entered'),
   });
 
   const defaultValues = {
-    id: mealInfo?.id || '',
+    docID: mealInfo?.docID || '',
     title: mealInfo?.title || '',
     description: mealInfo?.description || '',
     isNew: mealInfo?.isNew || false,
@@ -67,8 +65,13 @@ function MealNewEditForm({ mealInfo }) {
   const {
     setValue,
     handleSubmit,
-    formState: { isDirty },
+    reset,
+    watch,
+
+    formState: { isDirty, dirtyFields, errors },
   } = methods;
+
+  const values = watch();
 
   const handleAddTag = (tag) => {
     if (selectedMealLabels.includes(tag.docID))
@@ -110,7 +113,7 @@ function MealNewEditForm({ mealInfo }) {
     setValue('imageFile', null, { isTouched: true, isFocused: true, shouldDirty: true });
   }, [setValue]);
 
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutate, isSuccess } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       const queryKeys = mealInfo?.docID ? ['menus', `menu-${mealInfo.docID}`] : ['menus'];
@@ -119,18 +122,28 @@ function MealNewEditForm({ mealInfo }) {
   });
 
   const onSubmit = async (data) => {
-    if (mealInfo?.docID) mutate(() => fsUpdateMeal(data));
+    if (mealInfo?.docID)
+      mutate(() =>
+        fsUpdateMeal({
+          ...data,
+          translationEdited:
+            dirtyFields.title || dirtyFields.description ? '' : data.translationEdited,
+          translation: dirtyFields.title || dirtyFields.description ? '' : data.translation,
+        })
+      );
     if (!mealInfo?.docID) {
       mutate(() => fsAddNewMeal(data));
       router.push(paths.dashboard.meal.list);
     }
+    reset(data);
     enqueueSnackbar('Meal Saved successfully!');
   };
 
   const handleDeleteMeal = () => {
-    fsDeleteMeal(mealInfo?.id, mealInfo?.cover.preview !== '' ? mealInfo?.cover.id : undefined);
-    dispatch(rdxRemoveMeal(mealInfo?.id));
-    router.push(paths.dashboard.meal.list);
+    mutate(() => fsDeleteMeal(mealInfo.docID));
+    setTimeout(() => {
+      router.push(paths.dashboard.meal.list);
+    }, 1000);
   };
 
   return (
@@ -164,7 +177,15 @@ function MealNewEditForm({ mealInfo }) {
                 {`"Meal Labels" empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
               </Typography>
               <Divider sx={{ mt: 1, border: `dashed 1px ${theme.palette.divider}` }} />
-              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 1, mt: 3 }}>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(6,1fr)',
+                  gap: 1,
+                  mt: 3,
+                  mb: 1.5,
+                }}
+              >
                 {mealLabelsList.map((tag) => (
                   <Button
                     variant={selectedMealLabels.includes(tag.docID) ? 'contained' : 'outlined'}
@@ -176,9 +197,12 @@ function MealNewEditForm({ mealInfo }) {
                   </Button>
                 ))}
               </Box>
+              {errors.mealLabels !== '' && (
+                <Typography variant="caption" color="error">
+                  {errors?.mealLabels?.message}
+                </Typography>
+              )}
             </Card>
-
-            {/* <Card sx={{ p: 3 }}><Scheduler /></Card> */}
 
             <MealPortionAdd />
           </Stack>
@@ -187,9 +211,14 @@ function MealNewEditForm({ mealInfo }) {
         <Grid xs={12}>
           <Stack direction="row" spacing={2} sx={{ mt: 2, p: 1, justifyContent: 'flex-end' }}>
             {mealInfo?.docID && (
-              <Button color="error" variant="contained" onClick={handleDeleteMeal}>
+              <LoadingButton
+                loading={isPending}
+                color="error"
+                variant="contained"
+                onClick={handleDeleteMeal}
+              >
                 Delete Meal
-              </Button>
+              </LoadingButton>
             )}
             <LoadingButton
               type="submit"

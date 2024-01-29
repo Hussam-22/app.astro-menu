@@ -853,31 +853,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsDeleteMeal = useCallback(
-    async (mealID, imageID) => {
-      // delete meal
-      const docRef = doc(DB, `/users/${state.user.id}/meals/`, mealID);
-      await updateDoc(docRef, { isDeleted: true });
 
-      // TODO: KEEP IMAGES FOR 1 MONTH THEN DELETE
-      // only attempt to delete branch image if there is one in the first place
-      /* if (imageID) {
-        // Create a reference to the file to delete
-        const desertRef = ref(STORAGE, `/${state.user.id}/meals/${imageID}_800x800`);
-
-        // Delete the file
-        deleteObject(desertRef)
-          .then(() => {
-            console.log('FILE DELETED');
-          })
-          .catch((error) => {
-            console.log('OH ERROR DELETING FILE');
-          });
-      }
-      */
-    },
-    [state]
-  );
   const fsGetAllMealsOFF = useCallback(async (userID) => {
     const dataArr = [];
     const docRef = query(collectionGroup(DB, 'meals'), where('userID', '==', userID));
@@ -978,12 +954,30 @@ export function AuthProvider({ children }) {
 
         const imgUrl = await fsGetImgDownloadUrl(bucketPath, `${mealID}_800x800.webp`);
 
-        if (docSnap.data().translation === '') throw new Error('NO Translation Found!!');
+        if (docSnap.data().translation === '' || docSnap?.data()?.translation === undefined)
+          throw new Error('NO Translation Found!!');
 
         return {
           ...docSnap.data(),
           cover: imgUrl,
         };
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+    [state]
+  );
+
+  const fsDeleteMeal = useCallback(
+    async (mealID) => {
+      try {
+        const docRef = doc(DB, `/users/${state.user.id}/meals/`, mealID);
+        await deleteDoc(docRef);
+
+        const bucketPath = `${BUCKET}/${state.user.id}/meals/${mealID}/`;
+        await fsDeleteImage(bucketPath, `${mealID}_200x200.webp`);
+        await fsDeleteImage(bucketPath, `${mealID}_800x800.webp`);
       } catch (error) {
         throw error;
       }
@@ -1398,7 +1392,7 @@ export function AuthProvider({ children }) {
       // // ---- MEALS ----
       fsGetAllMeals,
       fsGetMeal,
-      // fsDeleteMeal,
+      fsDeleteMeal,
       fsAddNewMeal,
       fsUpdateMeal,
       // fsDocSnapshot,
@@ -1494,7 +1488,7 @@ export function AuthProvider({ children }) {
       // // ---- MEALS ----
       fsGetAllMeals,
       fsGetMeal,
-      // fsDeleteMeal,
+      fsDeleteMeal,
       fsAddNewMeal,
       fsUpdateMeal,
       fsGetMealLabels,

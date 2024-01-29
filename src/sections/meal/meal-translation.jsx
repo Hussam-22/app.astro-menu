@@ -23,7 +23,6 @@ MealTranslation.propTypes = { mealInfo: PropTypes.object, isFetching: PropTypes.
 export default function MealTranslation({ mealInfo, isFetching }) {
   const languageKeys = Object.keys(mealInfo?.translationEdited || {});
   const [isOpenModal, setIsOpenModal] = useState(false);
-  console.log(languageKeys);
 
   const closeModal = () => {
     setIsOpenModal(false);

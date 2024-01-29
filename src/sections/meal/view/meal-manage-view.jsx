@@ -21,12 +21,16 @@ function MealManageView() {
   const { fsGetMeal } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Menu Info');
 
-  const { data: mealInfo = {}, isFetching } = useQuery({
+  const {
+    data: mealInfo = {},
+    isFetching,
+    isSuccess,
+  } = useQuery({
     queryKey: [`meal-${mealID}`],
     queryFn: () => fsGetMeal(mealID),
   });
 
-  console.log(isFetching);
+  console.log(isSuccess);
 
   const TABS = [
     {
