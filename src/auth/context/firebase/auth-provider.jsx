@@ -906,15 +906,21 @@ export function AuthProvider({ children }) {
   );
   const fsUpdateMeal = useCallback(
     async (payload) => {
-      const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.docID}/`);
-      await updateDoc(docRef, payload);
+      try {
+        console.log(payload);
+        const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.docID}/`);
+        await updateDoc(docRef, payload);
 
-      if (payload.translation === '' && payload.translationEdited === '')
-        fbTranslateMeal({
-          mealRef: `/users/${state.user.id}/meals/${payload.docID}`,
-          text: { title: payload.title, desc: payload.description },
-          userID: state.user.id,
-        });
+        if (payload.translation === '' && payload.translationEdited === '')
+          fbTranslateMeal({
+            mealRef: `/users/${state.user.id}/meals/${payload.docID}`,
+            text: { title: payload.title, desc: payload.description },
+            userID: state.user.id,
+          });
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
     },
     [state]
   );

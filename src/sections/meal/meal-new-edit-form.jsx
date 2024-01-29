@@ -140,8 +140,8 @@ function MealNewEditForm({ mealInfo }) {
         fsUpdateMeal({
           ...data,
           translationEdited:
-            dirtyFields.title || dirtyFields.description ? '' : data.translationEdited,
-          translation: dirtyFields.title || dirtyFields.description ? '' : data.translation,
+            dirtyFields.title || dirtyFields.description ? '' : mealInfo.translationEdited,
+          translation: dirtyFields.title || dirtyFields.description ? '' : mealInfo.translation,
         })
       );
     if (!mealInfo?.docID) {
