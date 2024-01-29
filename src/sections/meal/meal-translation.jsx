@@ -1,22 +1,49 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Box, Grid, Card, Stack, Tooltip, Typography, IconButton, CardHeader } from '@mui/material';
+import {
+  Box,
+  Card,
+  Grid,
+  Stack,
+  Tooltip,
+  Skeleton,
+  CardHeader,
+  IconButton,
+  Typography,
+} from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import LanguageCard from 'src/components/translation-cards/LanguageCard';
 import DialogEditTitle from 'src/components/translation-cards/DialogEditTitle';
 
-MealTranslation.propTypes = { mealInfo: PropTypes.object };
+MealTranslation.propTypes = { mealInfo: PropTypes.object, isFetching: PropTypes.bool };
 
-export default function MealTranslation({ mealInfo }) {
-  const languageKeys = Object.keys(mealInfo.translationEdited || {});
+export default function MealTranslation({ mealInfo, isFetching }) {
+  const languageKeys = Object.keys(mealInfo?.translationEdited || {});
   const [isOpenModal, setIsOpenModal] = useState(false);
+  console.log(languageKeys);
 
   const closeModal = () => {
     setIsOpenModal(false);
   };
+
+  if (isFetching)
+    return (
+      <Grid container spacing={5}>
+        {[...Array(languageKeys.length + 1)].map((_, index) => (
+          <Grid item xs={12} md={12} key={index}>
+            <Card sx={{ p: 3 }}>
+              <Stack direction="column" spacing={3}>
+                <Skeleton variant="rounded" />
+                <Skeleton variant="rounded" />
+              </Stack>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    );
 
   return (
     <Grid container spacing={5}>

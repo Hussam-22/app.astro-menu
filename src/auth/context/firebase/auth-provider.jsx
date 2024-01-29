@@ -930,7 +930,6 @@ export function AuthProvider({ children }) {
   );
   const fsUpdateMeal = useCallback(
     async (payload) => {
-      console.log(payload);
       const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.docID}/`);
       await updateDoc(docRef, payload);
 
@@ -970,16 +969,24 @@ export function AuthProvider({ children }) {
 
   const fsGetMeal = useCallback(
     async (mealID) => {
-      const docRef = doc(DB, `/users/${state.user.id}/meals/${mealID}/`);
-      const docSnap = await getDoc(docRef);
+      // eslint-disable-next-line no-useless-catch
+      try {
+        const docRef = doc(DB, `/users/${state.user.id}/meals/${mealID}/`);
+        const docSnap = await getDoc(docRef);
 
-      const bucketPath = `${BUCKET}/${state.user.id}/meals/${mealID}/`;
+        const bucketPath = `${BUCKET}/${state.user.id}/meals/${mealID}/`;
 
-      const imgUrl = await fsGetImgDownloadUrl(bucketPath, `${mealID}_800x800.webp`);
-      return {
-        ...docSnap.data(),
-        cover: imgUrl,
-      };
+        const imgUrl = await fsGetImgDownloadUrl(bucketPath, `${mealID}_800x800.webp`);
+
+        if (docSnap.data().translation === '') throw new Error('NO Translation Found!!');
+
+        return {
+          ...docSnap.data(),
+          cover: imgUrl,
+        };
+      } catch (error) {
+        throw error;
+      }
     },
     [state]
   );

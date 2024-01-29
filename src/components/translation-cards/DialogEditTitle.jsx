@@ -55,8 +55,6 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
     formState: { isSubmitting, isDirty },
   } = methods;
 
-  const values = watch();
-
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {

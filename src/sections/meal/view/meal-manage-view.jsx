@@ -21,10 +21,12 @@ function MealManageView() {
   const { fsGetMeal } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Menu Info');
 
-  const { data: mealInfo = {} } = useQuery({
+  const { data: mealInfo = {}, isFetching } = useQuery({
     queryKey: [`meal-${mealID}`],
     queryFn: () => fsGetMeal(mealID),
   });
+
+  console.log(isFetching);
 
   const TABS = [
     {
@@ -35,7 +37,7 @@ function MealManageView() {
     {
       value: 'Meal Translation',
       icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
-      component: <MealTranslation mealInfo={mealInfo} />,
+      component: <MealTranslation mealInfo={mealInfo} isFetching={isFetching} />,
     },
   ];
 

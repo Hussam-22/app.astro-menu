@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useParams, useLocation } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -55,10 +55,16 @@ export default function TranslationTextField({
     defaultValues,
   });
   const {
+    setValue,
     reset,
     handleSubmit,
     formState: { isDirty },
   } = methods;
+
+  useEffect(() => {
+    setValue(field, editedTranslation || translated);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [translated]);
 
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
