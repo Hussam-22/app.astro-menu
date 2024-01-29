@@ -26,8 +26,8 @@ import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import MealPortionAdd from 'src/sections/meal/meal-portion-add';
+import MealLabelNewEditFormDialog from 'src/sections/meal/meal-label-new-edit-form';
 import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components/hook-form';
-import MealLabelNewEditFormDialog from 'src/sections/meal/view/meal-label-new-edit-dialog-form';
 
 // import MealPortionAdd from '../../add/MealPortionsAdd';
 
@@ -266,7 +266,7 @@ function MealNewEditForm({ mealInfo }) {
           <DialogTitle sx={{ pb: 2 }}>Add New Meal Label</DialogTitle>
 
           <DialogContent>
-            <MealLabelNewEditFormDialog onClose={onClose} />
+            <MealLabelNewEditFormDialog onClose={onClose} mealID={mealInfo.docID} />
           </DialogContent>
         </Dialog>
       )}

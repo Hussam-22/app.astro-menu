@@ -11,9 +11,13 @@ import { Stack, Button } from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
-MealLabelNewEditForm.propTypes = { labelInfo: PropTypes.object, onClose: PropTypes.func };
+MealLabelNewEditForm.propTypes = {
+  // labelInfo: PropTypes.object,
+  onClose: PropTypes.func,
+  mealID: PropTypes.string,
+};
 
-export default function MealLabelNewEditForm({ labelInfo, onClose }) {
+export default function MealLabelNewEditForm({ onClose, mealID }) {
   const { enqueueSnackbar } = useSnackbar();
   const { fsGetMealLabels, fsAddNewMealLabel } = useAuthContext();
   const queryClient = useQueryClient();
@@ -43,7 +47,8 @@ export default function MealLabelNewEditForm({ labelInfo, onClose }) {
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      queryClient.invalidateQueries('meal-labels');
+      const keysArray = ['meal-labels', 'meals', `meal-${mealID}`];
+      queryClient.invalidateQueries(keysArray);
       enqueueSnackbar('Meal Saved successfully!');
       onClose();
     },

@@ -18,8 +18,8 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
-import MealTableRow from 'src/sections/meal/list/MealTableRow';
 import MealTableToolbar from 'src/sections/meal/list/MealTableToolbar';
+import MealLabelTableRow from 'src/sections/meal/list/MealLabelTableRow';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import {
   useTable,
@@ -32,34 +32,35 @@ import {
 } from 'src/components/table';
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Meal', align: 'center', width: '40%' },
-  { id: 'portions', label: 'Portions', align: 'center', width: '5%' },
-  { id: 'meal-labels', label: 'Meal Labels', align: 'center', width: '25%' },
-  { id: 'isNew', label: 'New', align: 'center', width: '5%' },
-  { id: 'status', label: 'Status', align: 'center', width: '15%' },
+  { id: 'title', label: 'Meal', align: 'center', width: '60%' },
+  { id: 'isActive', label: 'Status', align: 'center', width: '15%' },
+  { id: 'actionButtons', label: '', align: 'center', width: '25%' },
 ];
 // ----------------------------------------------------------------------
 
 function MealLabelsView() {
+  const router = useRouter();
+  const { themeStretch } = useSettingsContext();
   const { page, order, orderBy, rowsPerPage, setPage, onSort, onChangePage, onChangeRowsPerPage } =
     useTable({
       defaultOrderBy: 'title',
     });
-  const { themeStretch } = useSettingsContext();
-  const router = useRouter();
-  const { fsGetAllMeals, fsGetMealLabels } = useAuthContext();
+
+  const { fsGetMealLabels } = useAuthContext();
   const [filterName, setFilterName] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data: allMeals = [] } = useQuery({
-    queryKey: [`meals`],
-    queryFn: fsGetAllMeals,
-  });
+  // const { data: allMeals = [] } = useQuery({
+  //   queryKey: [`meal-labels`],
+  //   queryFn: fsGetMealLabels,
+  // });
 
   const { data: mealLabelsList = [] } = useQuery({
     queryKey: ['meal-labels'],
     queryFn: fsGetMealLabels,
   });
+
+  console.log(mealLabelsList);
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
@@ -71,7 +72,7 @@ function MealLabelsView() {
   };
 
   const dataFiltered = applySortFilter({
-    allMeals,
+    mealLabelsList,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -109,17 +110,17 @@ function MealLabelsView() {
                 order={order}
                 orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={allMeals.length}
+                rowCount={mealLabelsList.length}
                 onSort={onSort}
               />
 
               <TableBody>
-                {(allMeals.length === 0 ? [...Array(rowsPerPage)] : dataFiltered)
+                {(mealLabelsList.length === 0 ? [...Array(rowsPerPage)] : dataFiltered)
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .sort((a, b) => a.title.localeCompare(b.title))
                   .map((row, index) =>
                     row ? (
-                      <MealTableRow
+                      <MealLabelTableRow
                         key={row.docID}
                         row={row}
                         onEditRow={() => handleEditRow(row.docID)}
@@ -132,7 +133,7 @@ function MealLabelsView() {
 
                 <TableEmptyRows
                   height={60}
-                  emptyRows={emptyRows(page, rowsPerPage, allMeals.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, mealLabelsList.length)}
                 />
 
                 <TableNoData isNotFound={isNotFound} />
@@ -159,8 +160,8 @@ function MealLabelsView() {
 export default MealLabelsView;
 // MealLabelsView.propTypes = { tables: PropTypes.array };
 
-function applySortFilter({ allMeals, comparator, filterName }) {
-  const stabilizedThis = allMeals?.map((el, index) => [el, index]) || [];
+function applySortFilter({ mealLabelsList, comparator, filterName }) {
+  const stabilizedThis = mealLabelsList?.map((el, index) => [el, index]) || [];
 
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -168,13 +169,13 @@ function applySortFilter({ allMeals, comparator, filterName }) {
     return a[1] - b[1];
   });
 
-  allMeals = stabilizedThis.map((el) => el[0]);
+  mealLabelsList = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    allMeals = allMeals.filter(
+    mealLabelsList = mealLabelsList.filter(
       (item) => item.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 
-  return allMeals;
+  return mealLabelsList;
 }

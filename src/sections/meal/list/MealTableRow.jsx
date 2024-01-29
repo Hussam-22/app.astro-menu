@@ -17,8 +17,9 @@ export default function MealTableRow({ row, onEditRow, mealLabelsList }) {
   const metaKeywordsText = () => {
     if (mealLabelsList.length !== 0)
       return mealLabels
-        .map((labelID) =>
-          mealLabelsList.find((label) => label.docID === labelID).title.toLowerCase()
+        .map(
+          (labelID) =>
+            mealLabelsList.find((label) => label.docID === labelID)?.title.toLowerCase() || ''
         )
         .join(', ');
     return null;

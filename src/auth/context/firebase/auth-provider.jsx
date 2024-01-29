@@ -1017,6 +1017,48 @@ export function AuthProvider({ children }) {
     [state]
   );
 
+  const fsUpdateMealLabel = useCallback(
+    async (payload) => {
+      const docRef = doc(DB, `/users/${state.user.id}/meal-labels/${payload.docID}/`);
+      await updateDoc(docRef, payload);
+    },
+    [state]
+  );
+
+  const fsDeleteMealLabel = useCallback(
+    async (mealLabelID) => {
+      try {
+        const labelRef = doc(DB, `/users/${state.user.id}/meal-labels/${mealLabelID}/`);
+        await deleteDoc(labelRef);
+
+        const mealRef = query(
+          collectionGroup(DB, 'meals'),
+          where('userID', '==', state.user.id),
+          where('mealLabels', 'array-contains', mealLabelID)
+        );
+        const querySnapshot = await getDocs(mealRef);
+        const asyncOperations = [];
+
+        querySnapshot.forEach((mealDoc) => {
+          const asyncOperation = async () => {
+            const { mealLabels } = mealDoc.data();
+            const updatedMealLabels = mealLabels.filter((mealID) => mealID !== mealLabelID);
+            await updateDoc(mealDoc.ref, { mealLabels: [...updatedMealLabels] });
+          };
+          asyncOperations.push(asyncOperation());
+        });
+
+        console.log(asyncOperations);
+
+        await Promise.all(asyncOperations);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+    [state]
+  );
+
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsConfirmCartOrder = useCallback(async (dataObj) => {
     const { userID, branchID, cart } = dataObj;
@@ -1420,6 +1462,8 @@ export function AuthProvider({ children }) {
       // fsDocSnapshot,
       fsGetMealLabels,
       fsAddNewMealLabel,
+      fsUpdateMealLabel,
+      fsDeleteMealLabel,
       // fsUpdateAllMetaTags,
       // fsUpdateMealMetaTags,
       // fsRemoveTagFromAllMeals,
@@ -1516,6 +1560,8 @@ export function AuthProvider({ children }) {
       fsUpdateMeal,
       fsGetMealLabels,
       fsAddNewMealLabel,
+      fsUpdateMealLabel,
+      fsDeleteMealLabel,
       // fsUpdateAllMetaTags,
       // fsUpdateMealMetaTags,
       // fsRemoveTagFromAllMeals,
