@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 
 // @mui
 import Box from '@mui/material/Box';
-import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
-import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
 import TableSortLabel from '@mui/material/TableSortLabel';
 
 // ----------------------------------------------------------------------
@@ -35,7 +35,7 @@ export default function TableHeadCustom({
   sx,
 }) {
   return (
-    <TableHead sx={sx}>
+    <TableHead sx={{ ...sx, bgcolor: 'background.default' }}>
       <TableRow>
         {onSelectAllRows && (
           <TableCell padding="checkbox">

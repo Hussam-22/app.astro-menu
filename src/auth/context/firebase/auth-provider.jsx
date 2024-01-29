@@ -986,14 +986,30 @@ export function AuthProvider({ children }) {
   );
 
   const fsGetMealLabels = useCallback(async () => {
-    const dataArr = [];
-    const docRef = query(collectionGroup(DB, 'meal-lables'), where('userID', '==', state.user.id));
-    const querySnapshot = await getDocs(docRef);
-    querySnapshot.forEach((doc) => {
-      dataArr.push(doc.data());
-    });
-    return dataArr;
+    try {
+      const dataArr = [];
+      const docRef = query(
+        collectionGroup(DB, 'meal-labels'),
+        where('userID', '==', state.user.id)
+      );
+      const querySnapshot = await getDocs(docRef);
+      querySnapshot.forEach((doc) => {
+        dataArr.push(doc.data());
+      });
+      return dataArr;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }, [state]);
+
+  const fsAddNewMealLabel = useCallback(
+    async (title) => {
+      const docRef = doc(collection(DB, `/users/${state.user.id}/meal-labels/`));
+      await setDoc(docRef, { title, isActive: true, userID: state.user.id, docID: docRef.id });
+    },
+    [state]
+  );
 
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsConfirmCartOrder = useCallback(async (dataObj) => {
@@ -1397,6 +1413,7 @@ export function AuthProvider({ children }) {
       fsUpdateMeal,
       // fsDocSnapshot,
       fsGetMealLabels,
+      fsAddNewMealLabel,
       // fsUpdateAllMetaTags,
       // fsUpdateMealMetaTags,
       // fsRemoveTagFromAllMeals,
@@ -1492,6 +1509,7 @@ export function AuthProvider({ children }) {
       fsAddNewMeal,
       fsUpdateMeal,
       fsGetMealLabels,
+      fsAddNewMealLabel,
       // fsUpdateAllMetaTags,
       // fsUpdateMealMetaTags,
       // fsRemoveTagFromAllMeals,

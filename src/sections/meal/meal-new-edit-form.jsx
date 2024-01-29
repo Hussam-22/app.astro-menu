@@ -2,20 +2,32 @@ import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 import { useState, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { Box, Card, Stack, Button, Divider, useTheme, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  Stack,
+  Dialog,
+  Button,
+  Divider,
+  useTheme,
+  Typography,
+  DialogTitle,
+  DialogContent,
+} from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
+import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import MealPortionAdd from 'src/sections/meal/meal-portion-add';
 import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components/hook-form';
+import MealLabelNewEditFormDialog from 'src/sections/meal/view/meal-label-new-edit-dialog-form';
 
 // import MealPortionAdd from '../../add/MealPortionsAdd';
 
@@ -24,12 +36,13 @@ MealNewEditForm.propTypes = { mealInfo: PropTypes.object };
 function MealNewEditForm({ mealInfo }) {
   const theme = useTheme();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { fsAddNewMeal, fsDeleteMeal, fsGetMealLabels, fsUpdateMeal } = useAuthContext();
-  const dispatch = useDispatch();
   const [selectedMealLabels, setSelectedMealLabels] = useState(mealInfo?.mealLabels || []);
   const queryClient = useQueryClient();
+
+  const onClose = () => setIsOpen(false);
 
   const { data: mealLabelsList = [] } = useQuery({
     queryKey: ['meal-labels'],
@@ -147,69 +160,10 @@ function MealNewEditForm({ mealInfo }) {
   };
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={2}>
+    <>
+      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid xs={12}>
-          <RHFUpload
-            name="imageFile"
-            maxSize={3145728}
-            onDrop={handleDrop}
-            onDelete={handleRemoveFile}
-          />
-        </Grid>
-
-        <Grid xs={12}>
-          <Stack spacing={3}>
-            <Card sx={{ p: 3 }}>
-              <Stack direction="column" spacing={3}>
-                <RHFTextField name="title" label="Meal Title" />
-                <RHFTextField name="description" label="Description" multiline rows={5} />
-                <Stack direction="row" alignItems="center" justifyContent="flex-end">
-                  <RHFSwitch name="isNew" label="New" labelPlacement="start" />
-                  <RHFSwitch name="isActive" label="Status" labelPlacement="start" />
-                </Stack>
-              </Stack>
-            </Card>
-
-            <Card sx={{ p: 3 }}>
-              <Typography variant="h4">Meal Labels</Typography>
-              <Typography variant="caption">
-                {`"Meal Labels" empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
-              </Typography>
-              <Divider sx={{ mt: 1, border: `dashed 1px ${theme.palette.divider}` }} />
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(6,1fr)',
-                  gap: 1,
-                  mt: 3,
-                  mb: 1.5,
-                }}
-              >
-                {mealLabelsList.map((tag) => (
-                  <Button
-                    variant={selectedMealLabels.includes(tag.docID) ? 'contained' : 'outlined'}
-                    key={tag.docID}
-                    onClick={() => handleAddTag(tag)}
-                    color="info"
-                  >
-                    #{tag.title.toLowerCase()}
-                  </Button>
-                ))}
-              </Box>
-              {errors.mealLabels !== '' && (
-                <Typography variant="caption" color="error">
-                  {errors?.mealLabels?.message}
-                </Typography>
-              )}
-            </Card>
-
-            <MealPortionAdd />
-          </Stack>
-        </Grid>
-
-        <Grid xs={12}>
-          <Stack direction="row" spacing={2} sx={{ mt: 2, p: 1, justifyContent: 'flex-end' }}>
+          <Stack direction="row" spacing={2} sx={{ mb: 2, p: 1, justifyContent: 'flex-end' }}>
             {mealInfo?.docID && (
               <LoadingButton
                 loading={isPending}
@@ -231,8 +185,92 @@ function MealNewEditForm({ mealInfo }) {
             </LoadingButton>
           </Stack>
         </Grid>
-      </Grid>
-    </FormProvider>
+        <Grid container spacing={2}>
+          <Grid xs={12}>
+            <RHFUpload
+              name="imageFile"
+              maxSize={3145728}
+              onDrop={handleDrop}
+              onDelete={handleRemoveFile}
+            />
+          </Grid>
+
+          <Grid xs={12}>
+            <Stack spacing={3}>
+              <Card sx={{ p: 3 }}>
+                <Stack direction="column" spacing={3}>
+                  <RHFTextField name="title" label="Meal Title" />
+                  <RHFTextField name="description" label="Description" multiline rows={5} />
+                  <Stack direction="row" alignItems="center" justifyContent="flex-end">
+                    <RHFSwitch name="isNew" label="New" labelPlacement="start" />
+                    <RHFSwitch name="isActive" label="Status" labelPlacement="start" />
+                  </Stack>
+                </Stack>
+              </Card>
+
+              <Card sx={{ p: 3 }}>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 2 }}
+                >
+                  <Typography variant="h4">Meal Labels</Typography>
+                  <Button
+                    onClick={() => setIsOpen(true)}
+                    variant="soft"
+                    color="info"
+                    startIcon={<Iconify icon="fluent:table-cell-edit-24-regular" />}
+                  >
+                    Update Meal Labels List
+                  </Button>
+                </Stack>
+                <Typography variant="caption">
+                  {`"Meal Labels" empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
+                </Typography>
+                <Divider sx={{ mt: 1, border: `dashed 1px ${theme.palette.divider}` }} />
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(6,1fr)',
+                    gap: 1,
+                    mt: 3,
+                    mb: 1.5,
+                  }}
+                >
+                  {mealLabelsList.map((tag) => (
+                    <Button
+                      variant={selectedMealLabels.includes(tag.docID) ? 'contained' : 'outlined'}
+                      key={tag.docID}
+                      onClick={() => handleAddTag(tag)}
+                      color="info"
+                    >
+                      #{tag.title.toLowerCase()}
+                    </Button>
+                  ))}
+                </Box>
+                {errors.mealLabels !== '' && (
+                  <Typography variant="caption" color="error">
+                    {errors?.mealLabels?.message}
+                  </Typography>
+                )}
+              </Card>
+
+              <MealPortionAdd />
+            </Stack>
+          </Grid>
+        </Grid>
+      </FormProvider>
+      {isOpen && (
+        <Dialog fullWidth maxWidth="md" open={isOpen} onClose={onClose}>
+          <DialogTitle sx={{ pb: 2 }}>Add New Meal Label</DialogTitle>
+
+          <DialogContent>
+            <MealLabelNewEditFormDialog onClose={onClose} />
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 }
 export default MealNewEditForm;

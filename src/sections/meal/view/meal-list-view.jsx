@@ -116,6 +116,7 @@ function MealListView() {
               <TableBody>
                 {(allMeals.length === 0 ? [...Array(rowsPerPage)] : dataFiltered)
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .sort((a, b) => a.title.localeCompare(b.title))
                   .map((row, index) =>
                     row ? (
                       <MealTableRow

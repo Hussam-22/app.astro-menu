@@ -35,7 +35,12 @@ export default function MealPortionAdd() {
     <Card sx={{ p: 3 }}>
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Typography variant="h4">Portions</Typography>
-        <Button size="small" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleAdd}>
+        <Button
+          variant="soft"
+          color="info"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+          onClick={handleAdd}
+        >
           Add new Portion
         </Button>
       </Stack>
