@@ -19,10 +19,11 @@ export default function MealLabelTableRow({ row }) {
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
-    onSuccess: () => {
-      const queryKeys = ['meal-labels', 'meals'];
+    onSuccess: (mealIDs) => {
+      const affectedMealsIDs = mealIDs.map((mealID) => `meal-${mealID}`);
+      const queryKeys = ['meal-labels', 'meals', ...affectedMealsIDs];
       queryClient.invalidateQueries(queryKeys);
       enqueueSnackbar('Label Updated Successfully!');
     },

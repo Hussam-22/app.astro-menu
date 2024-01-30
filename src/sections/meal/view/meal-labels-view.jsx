@@ -60,8 +60,6 @@ function MealLabelsView() {
     queryFn: fsGetMealLabels,
   });
 
-  console.log(mealLabelsList);
-
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
     setPage(0);

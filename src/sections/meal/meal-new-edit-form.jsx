@@ -2,8 +2,8 @@ import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
-import { useState, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
@@ -39,7 +39,7 @@ function MealNewEditForm({ mealInfo }) {
   const [isOpen, setIsOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { fsAddNewMeal, fsDeleteMeal, fsGetMealLabels, fsUpdateMeal } = useAuthContext();
-  const [selectedMealLabels, setSelectedMealLabels] = useState(mealInfo?.mealLabels || []);
+  const [selectedMealLabels, setSelectedMealLabels] = useState([]);
   const queryClient = useQueryClient();
 
   const onClose = () => setIsOpen(false);
@@ -58,17 +58,20 @@ function MealNewEditForm({ mealInfo }) {
     portions: Yup.array().min(1, 'At least One portion should be entered'),
   });
 
-  const defaultValues = {
-    docID: mealInfo?.docID || '',
-    title: mealInfo?.title || '',
-    description: mealInfo?.description || '',
-    isNew: mealInfo?.isNew || false,
-    mealLabels: mealInfo?.mealLabels || [],
-    portions: mealInfo?.portions || [],
-    isActive: !!mealInfo?.isActive,
-    imageFile: mealInfo?.cover || null,
-    cover: mealInfo?.cover,
-  };
+  const defaultValues = useMemo(
+    () => ({
+      docID: mealInfo?.docID || '',
+      title: mealInfo?.title || '',
+      description: mealInfo?.description || '',
+      isNew: mealInfo?.isNew || false,
+      mealLabels: mealInfo?.mealLabels || [],
+      portions: mealInfo?.portions || [],
+      isActive: !!mealInfo?.isActive,
+      imageFile: mealInfo?.cover || null,
+      cover: mealInfo?.cover,
+    }),
+    [mealInfo]
+  );
 
   const methods = useForm({
     resolver: yupResolver(NewMealSchema),
@@ -80,11 +83,19 @@ function MealNewEditForm({ mealInfo }) {
     handleSubmit,
     reset,
     watch,
-
     formState: { isDirty, dirtyFields, errors },
   } = methods;
 
+  useEffect(() => {
+    if (mealInfo) {
+      reset(defaultValues);
+      setSelectedMealLabels(mealInfo.mealLabels);
+    }
+  }, [mealInfo, defaultValues, reset]);
+
   const values = watch();
+
+  console.log(values.mealLabels);
 
   const handleAddTag = (tag) => {
     if (selectedMealLabels.includes(tag.docID))

@@ -26,6 +26,8 @@ function MealManageView() {
     queryFn: () => fsGetMeal(mealID),
   });
 
+  console.log(mealInfo);
+
   const TABS = [
     {
       value: 'Menu Info',

@@ -907,7 +907,6 @@ export function AuthProvider({ children }) {
   const fsUpdateMeal = useCallback(
     async (payload) => {
       try {
-        console.log(payload);
         const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.docID}/`);
         await updateDoc(docRef, payload);
 
@@ -1038,19 +1037,20 @@ export function AuthProvider({ children }) {
         );
         const querySnapshot = await getDocs(mealRef);
         const asyncOperations = [];
+        const affectedMealsIDs = [];
 
         querySnapshot.forEach((mealDoc) => {
           const asyncOperation = async () => {
             const { mealLabels } = mealDoc.data();
             const updatedMealLabels = mealLabels.filter((mealID) => mealID !== mealLabelID);
             await updateDoc(mealDoc.ref, { mealLabels: [...updatedMealLabels] });
+            affectedMealsIDs.push(mealDoc.data().docID);
           };
           asyncOperations.push(asyncOperation());
         });
 
-        console.log(asyncOperations);
-
         await Promise.all(asyncOperations);
+        return affectedMealsIDs;
       } catch (error) {
         console.log(error);
         throw error;
