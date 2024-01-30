@@ -2,8 +2,7 @@ import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { LoadingButton } from '@mui/lab';
-import { Stack, Switch, TableRow, TableCell, ListItemText } from '@mui/material';
+import { Stack, Button, Switch, TableRow, TableCell, ListItemText } from '@mui/material';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -19,7 +18,7 @@ export default function MealLabelTableRow({ row }) {
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { isPending, mutate, error } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: (mealIDs) => {
       const affectedMealsIDs = mealIDs.map((mealID) => `meal-${mealID}`);
@@ -57,13 +56,12 @@ export default function MealLabelTableRow({ row }) {
       <TableCell align="center">
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Switch checked={row.isActive} aria-label="Status" onClick={onStatusChangeHandler} />
-          <LoadingButton
+          <Button
             endIcon={<Iconify icon="tabler:trash" sx={{ color: 'error.main' }} />}
             onClick={onDeleteLabelHandler}
-            loading={isPending}
           >
             Delete
-          </LoadingButton>
+          </Button>
         </Stack>
       </TableCell>
     </TableRow>

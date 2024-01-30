@@ -1016,10 +1016,43 @@ export function AuthProvider({ children }) {
     [state]
   );
 
+  const updatedAffectedMeals = useCallback(
+    async (mealLabelID) => {
+      const mealRef = query(
+        collectionGroup(DB, 'meals'),
+        where('userID', '==', state.user.id),
+        where('mealLabels', 'array-contains', mealLabelID)
+      );
+      const querySnapshot = await getDocs(mealRef);
+      const asyncOperations = [];
+      const affectedMealsIDs = [];
+
+      querySnapshot.forEach((mealDoc) => {
+        const asyncOperation = async () => {
+          const { mealLabels } = mealDoc.data();
+          const updatedMealLabels = mealLabels.filter((mealID) => mealID !== mealLabelID);
+          await updateDoc(mealDoc.ref, { mealLabels: [...updatedMealLabels] });
+          affectedMealsIDs.push(mealDoc.data().docID);
+        };
+        asyncOperations.push(asyncOperation());
+      });
+
+      await Promise.all(asyncOperations);
+      return affectedMealsIDs;
+    },
+    [state]
+  );
+
   const fsUpdateMealLabel = useCallback(
     async (payload) => {
-      const docRef = doc(DB, `/users/${state.user.id}/meal-labels/${payload.docID}/`);
-      await updateDoc(docRef, payload);
+      try {
+        const docRef = doc(DB, `/users/${state.user.id}/meal-labels/${payload.docID}/`);
+        await updateDoc(docRef, payload);
+
+        return updatedAffectedMeals(payload.docID);
+      } catch (error) {
+        throw error;
+      }
     },
     [state]
   );
@@ -1030,27 +1063,7 @@ export function AuthProvider({ children }) {
         const labelRef = doc(DB, `/users/${state.user.id}/meal-labels/${mealLabelID}/`);
         await deleteDoc(labelRef);
 
-        const mealRef = query(
-          collectionGroup(DB, 'meals'),
-          where('userID', '==', state.user.id),
-          where('mealLabels', 'array-contains', mealLabelID)
-        );
-        const querySnapshot = await getDocs(mealRef);
-        const asyncOperations = [];
-        const affectedMealsIDs = [];
-
-        querySnapshot.forEach((mealDoc) => {
-          const asyncOperation = async () => {
-            const { mealLabels } = mealDoc.data();
-            const updatedMealLabels = mealLabels.filter((mealID) => mealID !== mealLabelID);
-            await updateDoc(mealDoc.ref, { mealLabels: [...updatedMealLabels] });
-            affectedMealsIDs.push(mealDoc.data().docID);
-          };
-          asyncOperations.push(asyncOperation());
-        });
-
-        await Promise.all(asyncOperations);
-        return affectedMealsIDs;
+        return updatedAffectedMeals(mealLabelID);
       } catch (error) {
         console.log(error);
         throw error;
