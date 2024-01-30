@@ -5,9 +5,12 @@ import {
   Box,
   Card,
   Table,
+  Dialog,
   Button,
-  TableBody,
   Container,
+  TableBody,
+  DialogTitle,
+  DialogContent,
   TableContainer,
   TablePagination,
 } from '@mui/material';
@@ -20,6 +23,7 @@ import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import MealTableToolbar from 'src/sections/meal/list/MealTableToolbar';
 import MealLabelTableRow from 'src/sections/meal/list/MealLabelTableRow';
+import MealLabelNewEditForm from 'src/sections/meal/meal-label-new-edit-form';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import {
   useTable,
@@ -41,19 +45,15 @@ const TABLE_HEAD = [
 function MealLabelsView() {
   const router = useRouter();
   const { themeStretch } = useSettingsContext();
+  const { fsGetMealLabels } = useAuthContext();
+  const [filterName, setFilterName] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
   const { page, order, orderBy, rowsPerPage, setPage, onSort, onChangePage, onChangeRowsPerPage } =
     useTable({
       defaultOrderBy: 'title',
     });
 
-  const { fsGetMealLabels } = useAuthContext();
-  const [filterName, setFilterName] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-
-  // const { data: allMeals = [] } = useQuery({
-  //   queryKey: [`meal-labels`],
-  //   queryFn: fsGetMealLabels,
-  // });
+  const onClose = () => setIsOpen(false);
 
   const { data: mealLabelsList = [] } = useQuery({
     queryKey: ['meal-labels'],
@@ -78,81 +78,94 @@ function MealLabelsView() {
   const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
 
   return (
-    <Container maxWidth={themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading="Meals List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          {
-            name: 'Meals List',
-          },
-        ]}
-        action={
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() => router.push(paths.dashboard.meal.new)}
-          >
-            New Meal
-          </Button>
-        }
-      />
+    <>
+      <Container maxWidth={themeStretch ? false : 'lg'}>
+        <CustomBreadcrumbs
+          heading="Meals List"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Meals', href: paths.dashboard.meal.list },
+            {
+              name: 'Meal Labels List',
+            },
+          ]}
+          action={
+            <Button
+              variant="contained"
+              startIcon={<Iconify icon="eva:plus-fill" />}
+              onClick={() => setIsOpen(true)}
+            >
+              New Meal Label
+            </Button>
+          }
+        />
 
-      <Card>
-        <MealTableToolbar filterName={filterName} onFilterName={handleFilterName} />
+        <Card>
+          <MealTableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
-        <Scrollbar>
-          <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
-            <Table size="small">
-              <TableHeadCustom
-                order={order}
-                orderBy={orderBy}
-                headLabel={TABLE_HEAD}
-                rowCount={mealLabelsList.length}
-                onSort={onSort}
-              />
-
-              <TableBody>
-                {(mealLabelsList.length === 0 ? [...Array(rowsPerPage)] : dataFiltered)
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .sort((a, b) => a.title.localeCompare(b.title))
-                  .map((row, index) =>
-                    row ? (
-                      <MealLabelTableRow
-                        key={row.docID}
-                        row={row}
-                        onEditRow={() => handleEditRow(row.docID)}
-                        mealLabelsList={mealLabelsList}
-                      />
-                    ) : (
-                      !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
-                    )
-                  )}
-
-                <TableEmptyRows
-                  height={60}
-                  emptyRows={emptyRows(page, rowsPerPage, mealLabelsList.length)}
+          <Scrollbar>
+            <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
+              <Table size="small">
+                <TableHeadCustom
+                  order={order}
+                  orderBy={orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={mealLabelsList.length}
+                  onSort={onSort}
                 />
 
-                <TableNoData isNotFound={isNotFound} />
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+                <TableBody>
+                  {(mealLabelsList.length === 0 ? [...Array(rowsPerPage)] : dataFiltered)
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .sort((a, b) => a.title.localeCompare(b.title))
+                    .map((row, index) =>
+                      row ? (
+                        <MealLabelTableRow
+                          key={row.docID}
+                          row={row}
+                          onEditRow={() => handleEditRow(row.docID)}
+                          mealLabelsList={mealLabelsList}
+                        />
+                      ) : (
+                        !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
+                      )
+                    )}
 
-        <Box sx={{ position: 'relative' }}>
-          <TablePagination
-            rowsPerPageOptions={[25, 50, 100]}
-            component="div"
-            count={dataFiltered.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
-          />
-        </Box>
-      </Card>
-    </Container>
+                  <TableEmptyRows
+                    height={60}
+                    emptyRows={emptyRows(page, rowsPerPage, mealLabelsList.length)}
+                  />
+
+                  <TableNoData isNotFound={isNotFound} />
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+
+          <Box sx={{ position: 'relative' }}>
+            <TablePagination
+              rowsPerPageOptions={[25, 50, 100]}
+              component="div"
+              count={dataFiltered.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={onChangePage}
+              onRowsPerPageChange={onChangeRowsPerPage}
+            />
+          </Box>
+        </Card>
+      </Container>
+
+      {isOpen && (
+        <Dialog fullWidth maxWidth="md" open={isOpen} onClose={onClose}>
+          <DialogTitle sx={{ pb: 2 }}>Add New Meal Label</DialogTitle>
+
+          <DialogContent>
+            <MealLabelNewEditForm onClose={onClose} />
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 }
 export default MealLabelsView;

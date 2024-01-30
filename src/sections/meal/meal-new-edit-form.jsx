@@ -26,7 +26,7 @@ import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import MealPortionAdd from 'src/sections/meal/meal-portion-add';
-import MealLabelNewEditFormDialog from 'src/sections/meal/meal-label-new-edit-form';
+import MealLabelNewEditForm from 'src/sections/meal/meal-label-new-edit-form';
 import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components/hook-form';
 
 // import MealPortionAdd from '../../add/MealPortionsAdd';
@@ -82,7 +82,6 @@ function MealNewEditForm({ mealInfo }) {
     setValue,
     handleSubmit,
     reset,
-    watch,
     formState: { isDirty, dirtyFields, errors },
   } = methods;
 
@@ -92,10 +91,6 @@ function MealNewEditForm({ mealInfo }) {
       setSelectedMealLabels(mealInfo.mealLabels);
     }
   }, [mealInfo, defaultValues, reset]);
-
-  const values = watch();
-
-  console.log(values.mealLabels);
 
   const handleAddTag = (tag) => {
     if (selectedMealLabels.includes(tag.docID))
@@ -233,7 +228,7 @@ function MealNewEditForm({ mealInfo }) {
                     color="info"
                     startIcon={<Iconify icon="fluent:table-cell-edit-24-regular" />}
                   >
-                    Update Meal Labels List
+                    Add New Meal Label
                   </Button>
                 </Stack>
                 <Typography variant="caption">
@@ -249,16 +244,20 @@ function MealNewEditForm({ mealInfo }) {
                     mb: 1.5,
                   }}
                 >
-                  {mealLabelsList.map((tag) => (
-                    <Button
-                      variant={selectedMealLabels.includes(tag.docID) ? 'contained' : 'outlined'}
-                      key={tag.docID}
-                      onClick={() => handleAddTag(tag)}
-                      color="info"
-                    >
-                      #{tag.title.toLowerCase()}
-                    </Button>
-                  ))}
+                  {mealLabelsList
+                    .filter((label) => label.isActive)
+                    .map((label) => (
+                      <Button
+                        variant={
+                          selectedMealLabels.includes(label.docID) ? 'contained' : 'outlined'
+                        }
+                        key={label.docID}
+                        onClick={() => handleAddTag(label)}
+                        color="info"
+                      >
+                        #{label.title.toLowerCase()}
+                      </Button>
+                    ))}
                 </Box>
                 {errors.mealLabels !== '' && (
                   <Typography variant="caption" color="error">
@@ -277,7 +276,7 @@ function MealNewEditForm({ mealInfo }) {
           <DialogTitle sx={{ pb: 2 }}>Add New Meal Label</DialogTitle>
 
           <DialogContent>
-            <MealLabelNewEditFormDialog onClose={onClose} mealID={mealInfo.docID} />
+            <MealLabelNewEditForm onClose={onClose} mealID={mealInfo.docID} />
           </DialogContent>
         </Dialog>
       )}

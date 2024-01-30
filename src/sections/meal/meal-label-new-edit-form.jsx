@@ -47,9 +47,9 @@ export default function MealLabelNewEditForm({ onClose, mealID }) {
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      const keysArray = ['meal-labels', 'meals', `meal-${mealID}`];
+      const keysArray = mealID ? ['meal-labels', 'meals', `meal-${mealID}`] : ['meal-labels'];
       queryClient.invalidateQueries(keysArray);
-      enqueueSnackbar('Meal Saved successfully!');
+      enqueueSnackbar('Meal Label Saved successfully!');
       onClose();
     },
   });
