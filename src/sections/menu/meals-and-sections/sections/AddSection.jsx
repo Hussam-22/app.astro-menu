@@ -1,29 +1,33 @@
 import * as Yup from 'yup';
 import { useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import { Card, InputAdornment } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { rdxAddSection } from 'src/redux/slices/menu';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
-function AddSection() {
-  const { id: menuID } = useParams();
+AddSection.propTypes = { sections: PropTypes.array };
+
+function AddSection({ sections }) {
   const dispatch = useDispatch();
+  const { id: menuID } = useParams();
   const { fsAddSection } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
   const menuSections = useSelector((state) => state.menu.menu.sections);
-
-  const SECTIONS_LENGTH = useMemo(() => menuSections.length, [menuSections]);
+  const queryClient = useQueryClient();
 
   const NewUserSchema = Yup.object().shape({
-    sectionName: Yup.string().required('Section Name Cant be Empty !!'),
+    sectionName: Yup.string()
+      .required('Section Name Cant be Empty !!')
+      .notOneOf(sections.map((section) => section.title)),
   });
 
   const defaultValues = useMemo(() => ({ sectionName: '' }), []);
@@ -39,27 +43,18 @@ function AddSection() {
     formState: { isSubmitting },
   } = methods;
 
+  const { isPending, mutate } = useMutation({
+    mutationFn: (mutateFn) => mutateFn(),
+    onSuccess: () => {
+      const queryKeys = [`sections-${menuID}`];
+      queryClient.invalidateQueries(queryKeys);
+      enqueueSnackbar('Section Add Successfully !!');
+      reset();
+    },
+  });
+
   const addSectionHandler = async (data) => {
-    // CHECK IF SECTION NAME EXISTS (IS DUPLICATE)
-    if (menuSections.find((section) => section.title === data.sectionName)) {
-      enqueueSnackbar('Section title already exists !!', {
-        variant: 'error',
-        anchorOrigin: { horizontal: 'center', vertical: 'top' },
-      });
-      return;
-    }
-
-    const sectionID = await fsAddSection(menuID, data.sectionName.trim(), SECTIONS_LENGTH + 1);
-
-    dispatch(
-      rdxAddSection({
-        menuID,
-        sectionID,
-        title: data.sectionName.trim(),
-        order: SECTIONS_LENGTH + 1,
-      })
-    );
-    reset();
+    mutate(() => fsAddSection(menuID, data.sectionName.trim(), sections.length + 1));
   };
 
   return (
@@ -71,7 +66,7 @@ function AddSection() {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <LoadingButton type="submit" variant="text" loading={isSubmitting} fullWidth>
+                <LoadingButton type="submit" variant="text" loading={isPending} fullWidth>
                   Add Section
                 </LoadingButton>
               </InputAdornment>

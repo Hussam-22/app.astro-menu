@@ -42,7 +42,7 @@ function MealsAndSections() {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <AddSection sectionsLength={sectionsLength} />
+        <AddSection sectionsLength={sectionsLength} sections={sections} />
       </Grid>
 
       <Grid item xs={12}>

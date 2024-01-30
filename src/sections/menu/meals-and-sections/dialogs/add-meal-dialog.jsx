@@ -34,8 +34,8 @@ AddMealDialog.propTypes = {
 };
 
 function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
-  const dispatch = useDispatch();
   const theme = useTheme();
+  const dispatch = useDispatch();
   const { id: menuID } = useParams();
   const { fsUpdateSection } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +48,8 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
     .filter((mealID) => !currentSectionMeals.includes(mealID));
   const sectionAvailableMeals = allMeals.filter((meal) => !otherSectionsMeals.includes(meal.id));
   // -----------------------------------------------------------------------
+
+  console.log(allMeals);
 
   const updateSectionMeals = (mealID) => {
     setIsLoading(true);
@@ -103,15 +105,18 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
             {sectionAvailableMeals
               .sort((a, b) => a.title.localeCompare(b.title))
               .map((meal) => (
-                <m.div key={meal.id} whileHover={{ scale: 1.02 }}>
+                <m.div key={meal.docID} whileHover={{ scale: 1.02 }}>
                   <Stack direction="row" alignItems="center" spacing={2}>
-                    <Avatar src={meal.cover.url} sx={{ width: 32, height: 32 }} />
+                    <Avatar src={meal.cover} sx={{ width: 32, height: 32 }} />
 
                     <Box sx={{ flexGrow: 1, ml: 2, minWidth: 100 }}>
                       <Typography variant="subtitle2">{meal.title}</Typography>
                     </Box>
-                    <LoadingButton onClick={() => updateSectionMeals(meal.id)} loading={isLoading}>
-                      {currentSectionMeals.includes(meal.id) ? (
+                    <LoadingButton
+                      onClick={() => updateSectionMeals(meal.docID)}
+                      loading={isLoading}
+                    >
+                      {currentSectionMeals.includes(meal.docID) ? (
                         <Iconify
                           icon="mdi:minus-circle"
                           width={24}

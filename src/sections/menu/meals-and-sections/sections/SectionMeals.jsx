@@ -20,7 +20,6 @@ import { useAuthContext } from 'src/auth/hooks';
 import { rdxMoveSectionUp, rdxMoveSectionDown } from 'src/redux/slices/menu';
 import AddMealDialog from 'src/sections/menu/meals-and-sections/dialogs/add-meal-dialog';
 import VisibilityDialog from 'src/sections/menu/meals-and-sections/dialogs/visibility-dialog';
-import RemoveSectionDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-section-dialog';
 import EditSectionTitleDialog from 'src/sections/menu/meals-and-sections/dialogs/edit-section-title-dialog';
 
 import TranslationDialog from '../dialogs/translation-dialog';
@@ -54,9 +53,6 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
   });
 
   const availableMealsForSelection = allMeals.filter((meal) => sectionInfo.meals.includes(meal));
-
-  console.log({ allMeals, sectionInfo });
-  console.log(availableMealsForSelection);
 
   const languagesLength = user?.languages?.length || 0;
 

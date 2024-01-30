@@ -541,7 +541,6 @@ export function AuthProvider({ children }) {
     [state]
   );
 
-  // ?------------------------------------------------ ORDERS -------------------------------------------------------------------
   const fsGetAllOrders = useCallback(async (year) => {
     const start = new Date(`01/01/${year}`);
     const end = new Date(`12/01/${year}`);
@@ -670,12 +669,13 @@ export function AuthProvider({ children }) {
         title,
         meals: [],
         order,
-        isVisible: true,
-        activeTimeRange: { isActive: false, from: '', to: '' },
-        activeDateRange: { isActive: false, from: '', to: '' },
+        isActive: true,
       });
 
-      fbTranslate({ newDocRef, text: title });
+      fbTranslate({
+        sectionRef: `/users/${userID}/menus/${menuID}/sections/${newDocRef.id}`,
+        text: title,
+      });
 
       return newDocRef.id;
     },
