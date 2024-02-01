@@ -17,6 +17,7 @@ import {
 
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { titleCase } from 'src/utils/change-case';
 import { rdxMoveSectionUp, rdxMoveSectionDown } from 'src/redux/slices/menu';
 import AddMealDialog from 'src/sections/menu/meals-and-sections/dialogs/add-meal-dialog';
 import VisibilityDialog from 'src/sections/menu/meals-and-sections/dialogs/visibility-dialog';
@@ -84,7 +85,7 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
     <>
       <Card sx={{ my: 2 }}>
         <CardHeader
-          title={sectionInfo.title}
+          title={titleCase(sectionInfo.title)}
           subheader={sectionInfo.isVisible ? '' : 'Section is Hidden'}
           action={
             <>

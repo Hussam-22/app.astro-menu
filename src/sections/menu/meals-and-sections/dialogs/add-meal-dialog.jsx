@@ -1,28 +1,25 @@
-import { useState } from 'react';
 import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
-import { useSelector, useDispatch } from 'react-redux';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { LoadingButton } from '@mui/lab';
+import { Stack } from '@mui/system';
 import {
   Box,
-  Stack,
-  Avatar,
   Dialog,
+  Avatar,
   Divider,
-  useTheme,
-  IconButton,
   Typography,
+  IconButton,
   DialogTitle,
   DialogContent,
+  CircularProgress,
 } from '@mui/material';
 
-// _mock
 import Iconify from 'src/components/iconify';
+// _mock
 import { useAuthContext } from 'src/auth/hooks';
 import { MotionViewport } from 'src/components/animate';
-import { rdxUpdateMenuSection } from 'src/redux/slices/menu';
 
 // ----------------------------------------------------------------------
 
@@ -34,54 +31,31 @@ AddMealDialog.propTypes = {
 };
 
 function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
-  const theme = useTheme();
-  const dispatch = useDispatch();
   const { id: menuID } = useParams();
-  const { fsUpdateSection } = useAuthContext();
-  const [isLoading, setIsLoading] = useState(false);
-  const menuSections = useSelector((state) => state.menu.menu.sections);
-  // -----------------------------------------------------------------------
-  const currentSectionInfo = menuSections.filter((section) => section.id === sectionID)[0];
-  const currentSectionMeals = currentSectionInfo.meals;
+  const { fsGetSections } = useAuthContext();
+
+  const { data: menuSections = [] } = useQuery({
+    queryKey: [`sections-${sectionID}`],
+    queryFn: () => fsGetSections(menuID),
+  });
+
+  const currentSectionInfo = menuSections.filter((section) => section.docID === sectionID)[0];
+  const currentSectionMeals = currentSectionInfo?.meals;
   const otherSectionsMeals = menuSections
+    .filter((section) => section.docID !== sectionID)
     .flatMap((section) => section.meals)
     .filter((mealID) => !currentSectionMeals.includes(mealID));
-  const sectionAvailableMeals = allMeals.filter((meal) => !otherSectionsMeals.includes(meal.id));
-  // -----------------------------------------------------------------------
 
-  console.log(allMeals);
-
-  const updateSectionMeals = (mealID) => {
-    setIsLoading(true);
-    if (currentSectionMeals.includes(mealID)) {
-      // if mealID DOES exists, Remove it
-      const updatedSection = {
-        ...currentSectionInfo,
-        meals: currentSectionMeals.filter((sectionMealID) => sectionMealID !== mealID),
-      };
-      dispatch(rdxUpdateMenuSection(updatedSection));
-      fsUpdateSection(
-        menuID,
-        sectionID,
-        currentSectionMeals.filter((sectionMealID) => sectionMealID !== mealID)
-      );
-    } else {
-      // if mealID DOES NOT exists, Add it
-      const updatedSection = { ...currentSectionInfo, meals: [...currentSectionMeals, mealID] };
-      dispatch(rdxUpdateMenuSection(updatedSection));
-      fsUpdateSection(menuID, sectionID, [...currentSectionMeals, mealID]);
-    }
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  };
+  const sectionAvailableMeals = allMeals.filter((meal) => !otherSectionsMeals.includes(meal.docID));
 
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose} scroll="paper">
       <IconButton sx={{ position: 'absolute', top: 15, right: 20 }} onClick={onClose}>
         <Iconify icon="material-symbols:close-rounded" />
       </IconButton>
-      <DialogTitle>{currentSectionInfo.title}</DialogTitle>
+
+      <DialogTitle>{currentSectionInfo?.title}</DialogTitle>
+
       <DialogContent>
         {sectionAvailableMeals.length === 0 && (
           <Typography variant="body1">
@@ -105,34 +79,18 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
             {sectionAvailableMeals
               .sort((a, b) => a.title.localeCompare(b.title))
               .map((meal) => (
-                <m.div key={meal.docID} whileHover={{ scale: 1.02 }}>
-                  <Stack direction="row" alignItems="center" spacing={2}>
-                    <Avatar src={meal.cover} sx={{ width: 32, height: 32 }} />
-
-                    <Box sx={{ flexGrow: 1, ml: 2, minWidth: 100 }}>
-                      <Typography variant="subtitle2">{meal.title}</Typography>
-                    </Box>
-                    <LoadingButton
-                      onClick={() => updateSectionMeals(meal.docID)}
-                      loading={isLoading}
-                    >
-                      {currentSectionMeals.includes(meal.docID) ? (
-                        <Iconify
-                          icon="mdi:minus-circle"
-                          width={24}
-                          height={24}
-                          sx={{ color: theme.palette.error.main }}
-                        />
-                      ) : (
-                        <Iconify
-                          icon="ic:sharp-add-circle"
-                          width={24}
-                          height={24}
-                          sx={{ color: theme.palette.success.main }}
-                        />
-                      )}
-                    </LoadingButton>
-                  </Stack>
+                <m.div
+                  key={meal.docID}
+                  whileHover={{
+                    paddingLeft: '15px',
+                  }}
+                >
+                  <MealRow
+                    mealInfo={meal}
+                    currentSectionMeals={currentSectionMeals}
+                    sectionID={sectionID}
+                    menuID={menuID}
+                  />
                 </m.div>
               ))}
           </Stack>
@@ -143,3 +101,65 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
 }
 
 export default AddMealDialog;
+
+// ----------------------------------------------------------------------------
+
+MealRow.propTypes = {
+  mealInfo: PropTypes.object,
+  currentSectionMeals: PropTypes.array,
+  menuID: PropTypes.string,
+  sectionID: PropTypes.string,
+};
+
+function MealRow({ mealInfo, currentSectionMeals, menuID, sectionID }) {
+  const { fsUpdateSection } = useAuthContext();
+  const queryClient = useQueryClient();
+
+  const { isPending, mutate } = useMutation({
+    mutationFn: (mutateFn) => mutateFn(),
+    onSuccess: () => {
+      const queryKeys = [`sections-${menuID}`, ''];
+      queryClient.invalidateQueries(queryKeys);
+    },
+  });
+
+  const handleAddMealToSection = (mealID) => {
+    // if mealID DOES exists, Remove it
+    if (currentSectionMeals.includes(mealID))
+      mutate(() =>
+        fsUpdateSection(menuID, sectionID, {
+          meals: currentSectionMeals.filter((sectionMealID) => sectionMealID !== mealID),
+        })
+      );
+
+    // if mealID DOES NOT exists, Add it
+    if (!currentSectionMeals.includes(mealID))
+      mutate(() => fsUpdateSection(menuID, sectionID, { meals: [...currentSectionMeals, mealID] }));
+  };
+
+  return (
+    <Stack direction="row" alignItems="center" spacing={2}>
+      <Avatar src={mealInfo.cover} sx={{ width: 32, height: 32 }} />
+
+      <Box sx={{ flexGrow: 1, ml: 2, minWidth: 100 }}>
+        <Typography variant="subtitle2">{mealInfo.title}</Typography>
+      </Box>
+
+      {isPending && <CircularProgress />}
+      {!isPending && (
+        <IconButton onClick={() => handleAddMealToSection(mealInfo.docID)}>
+          {currentSectionMeals?.includes(mealInfo.docID) ? (
+            <Iconify icon="mdi:minus-circle" width={24} height={24} sx={{ color: 'error.main' }} />
+          ) : (
+            <Iconify
+              icon="ic:sharp-add-circle"
+              width={24}
+              height={24}
+              sx={{ color: 'success.main' }}
+            />
+          )}
+        </IconButton>
+      )}
+    </Stack>
+  );
+}

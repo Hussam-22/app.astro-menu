@@ -11,3 +11,7 @@ export function snakeCase(str) {
     .replace(/\s+/g, '_')
     .replace(/[^a-z0-9_]/g, '');
 }
+
+export function titleCase(str) {
+  return str.toLowerCase().replace(/\b\w/g, (s) => s.toUpperCase());
+}

@@ -691,7 +691,7 @@ export function AuthProvider({ children }) {
       );
       const querySnapshot = await getDocs(docRef);
       querySnapshot.forEach((doc) => {
-        dataArr.push({ id: doc.id, ...doc.data() });
+        dataArr.push(doc.data());
       });
       return dataArr;
     },
@@ -706,9 +706,9 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateSection = useCallback(
-    async (menuID, sectionID, meals) => {
+    async (menuID, sectionID, payload) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
-      await updateDoc(docRef, { meals });
+      await updateDoc(docRef, payload);
     },
     [state]
   );
@@ -1445,7 +1445,7 @@ export function AuthProvider({ children }) {
       fsGetAllTableOrders,
       // // ---- MENU SECTIONS ----
       fsAddSection,
-      // fsUpdateSection,
+      fsUpdateSection,
       fsGetSections,
       // fsGetSection,
       // fsAddMealToMenuSelectedMeals,
@@ -1543,7 +1543,7 @@ export function AuthProvider({ children }) {
       fsGetAllTableOrders,
       // // ---- MENU SECTIONS ----
       fsAddSection,
-      // fsUpdateSection,
+      fsUpdateSection,
       fsGetSections,
       // fsGetSection,
       // fsAddMealToMenuSelectedMeals,
@@ -1606,7 +1606,3 @@ export function AuthProvider({ children }) {
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
 }
-
-AuthProvider.propTypes = {
-  children: PropTypes.node,
-};

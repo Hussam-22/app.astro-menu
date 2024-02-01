@@ -5,7 +5,6 @@ import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
@@ -17,17 +16,15 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 AddSection.propTypes = { sections: PropTypes.array };
 
 function AddSection({ sections }) {
-  const dispatch = useDispatch();
   const { id: menuID } = useParams();
   const { fsAddSection } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
-  const menuSections = useSelector((state) => state.menu.menu.sections);
   const queryClient = useQueryClient();
 
   const NewUserSchema = Yup.object().shape({
     sectionName: Yup.string()
       .required('Section Name Cant be Empty !!')
-      .notOneOf(sections.map((section) => section.title)),
+      .notOneOf(sections.map((section) => section.title.toLowerCase())),
   });
 
   const defaultValues = useMemo(() => ({ sectionName: '' }), []);
@@ -37,11 +34,7 @@ function AddSection({ sections }) {
     defaultValues,
   });
 
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { reset, handleSubmit } = methods;
 
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),

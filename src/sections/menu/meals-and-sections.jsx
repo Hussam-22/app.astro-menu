@@ -32,10 +32,6 @@ function MealsAndSections() {
     dispatch(rdxGetMenuSections(sections));
   }, [sections, dispatch]);
 
-  // useEffect(() => {
-  //   dispatch(rdxGetAllMeals(allMeals));
-  // }, [dispatch, allMeals]);
-
   const sectionsLength = sections.length;
   const noData = sectionsLength === 0;
 

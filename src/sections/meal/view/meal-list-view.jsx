@@ -49,7 +49,6 @@ function MealListView() {
   const router = useRouter();
   const { fsGetAllMeals, fsGetMealLabels } = useAuthContext();
   const [filterName, setFilterName] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
 
   const { data: allMeals = [] } = useQuery({
     queryKey: [`meals`],

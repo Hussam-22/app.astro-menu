@@ -29,8 +29,6 @@ import MealPortionAdd from 'src/sections/meal/meal-portion-add';
 import MealLabelNewEditForm from 'src/sections/meal/meal-label-new-edit-form';
 import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components/hook-form';
 
-// import MealPortionAdd from '../../add/MealPortionsAdd';
-
 MealNewEditForm.propTypes = { mealInfo: PropTypes.object };
 
 function MealNewEditForm({ mealInfo }) {
