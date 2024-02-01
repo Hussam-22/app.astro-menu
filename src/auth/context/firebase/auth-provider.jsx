@@ -728,11 +728,30 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsUpdateSectionTitle = useCallback(
+    async (menuID, sectionID, payload) => {
+      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
+      await updateDoc(docRef, payload);
+
+      fbTranslate({
+        sectionRef: `/users/${state.user.uid}/menus/${menuID}/sections/${docRef.id}`,
+        text: payload.title,
+      });
+    },
+    [state]
+  );
   const fsGetSection = useCallback(
     async (menuID, sectionID) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}`);
-      const docSnap = await getDoc(docRef);
-      return docSnap.data();
+      try {
+        const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}`);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.data().translation === '') throw Error('No Translation Available !!');
+
+        return docSnap.data();
+      } catch (error) {
+        throw error;
+      }
     },
     [state]
   );
@@ -758,13 +777,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsUpdateSectionTitle = useCallback(
-    async (menuID, sectionID, title) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
-      await updateDoc(docRef, { title });
-    },
-    [state]
-  );
+
   const fsUpdateSectionOrder = useCallback(
     async (menuID, sectionID, order) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
@@ -1449,13 +1462,13 @@ export function AuthProvider({ children }) {
       fsAddSection,
       fsUpdateSection,
       fsGetSections,
-      // fsGetSection,
+      fsGetSection,
       // fsAddMealToMenuSelectedMeals,
       // fsRemoveMealFromMenuSelectedMeals,
       // fsDeleteAllSections,
       fsDeleteSection,
       // fsRemoveSectionMealsFromMenuSelectedMeals,
-      // fsUpdateSectionTitle,
+      fsUpdateSectionTitle,
       // fsUpdateSectionOrder,
       // fsUpdateSectionTranslation,
       // fsUpdateSectionVisibility,
@@ -1547,13 +1560,13 @@ export function AuthProvider({ children }) {
       fsAddSection,
       fsUpdateSection,
       fsGetSections,
-      // fsGetSection,
+      fsGetSection,
       // fsAddMealToMenuSelectedMeals,
       // fsRemoveMealFromMenuSelectedMeals,
       // fsDeleteAllSections,
       fsDeleteSection,
       // fsRemoveSectionMealsFromMenuSelectedMeals,
-      // fsUpdateSectionTitle,
+      fsUpdateSectionTitle,
       // fsUpdateSectionOrder,
       // fsUpdateSectionTranslation,
       // fsUpdateSectionVisibility,

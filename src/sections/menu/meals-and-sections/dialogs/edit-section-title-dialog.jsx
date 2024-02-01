@@ -1,53 +1,76 @@
 import * as Yup from 'yup';
-import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
+import { useMemo, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch, useSelector } from 'react-redux';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import { useTheme } from '@mui/material/styles';
-import { Box, Stack, Button, Dialog, Divider, Typography, DialogTitle } from '@mui/material';
+import {
+  Card,
+  Dialog,
+  Button,
+  Typography,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  InputAdornment,
+} from '@mui/material';
 
-import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import { rdxUpdateMenuSectionTitle } from 'src/redux/slices/menu';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 EditSectionTitleDialog.propTypes = {
-  sectionID: PropTypes.string,
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
+  sectionID: PropTypes.string,
 };
 
-function EditSectionTitleDialog({ isOpen, sectionID, onClose }) {
-  const { menuID } = useParams();
-  const { fbTranslate, fsUpdateSectionTitle } = useAuthContext();
-  const dispatch = useDispatch();
+function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
+  const { id: menuID } = useParams();
+  const { fsUpdateSectionTitle, fsGetSections, fsGetSection } = useAuthContext();
   const theme = useTheme();
-  const { title: sectionTitle, userID } = useSelector(
-    (state) => state.menu.menu.sections.filter((section) => section.id === sectionID)[0]
-  );
 
-  const sectionsTitles = useSelector((state) =>
-    state.menu.menu.sections
-      .filter((section) => section.id !== sectionID)
-      .flatMap((section) => section.title)
-  );
+  const queryClient = useQueryClient();
+
+  const { data: sections = [] } = useQuery({
+    queryKey: [`sections-${menuID}`],
+    queryFn: () => fsGetSections(menuID),
+  });
+
+  const { data: sectionInfo = [], isFetching } = useQuery({
+    queryKey: [`menu/${menuID}/section/${sectionID}`],
+    queryFn: () => fsGetSection(menuID, sectionID),
+  });
+
+  const { isPending, mutate, error } = useMutation({
+    mutationFn: (payload) =>
+      fsUpdateSectionTitle(menuID, sectionInfo.docID, {
+        title: payload.title,
+        translation: '',
+        translationEdit: '',
+      }),
+    onSuccess: () => {
+      const queryKeys = [`sections-${menuID}`];
+      queryClient.invalidateQueries(queryKeys);
+      onClose();
+    },
+  });
 
   const NewUserSchema = Yup.object().shape({
     // title: Yup.string().required('Title cant be empty'),
     title: Yup.string()
-      .notOneOf([...sectionsTitles], 'Section Name Already in use')
-      .required('Title cant be empty'),
+      .required('Title cant be empty')
+      .notOneOf(sections.map((section) => section.title)),
   });
   const defaultValues = useMemo(
     () => ({
-      title: sectionTitle || '',
+      title: sectionInfo?.title || '',
     }),
-    [sectionTitle]
+    [sectionInfo?.title]
   );
 
   const methods = useForm({
@@ -56,67 +79,57 @@ function EditSectionTitleDialog({ isOpen, sectionID, onClose }) {
   });
 
   const {
-    watch,
     handleSubmit,
-    formState: { isSubmitting, isDirty },
+    reset,
+    formState: { isDirty },
   } = methods;
 
-  const values = watch();
+  useEffect(() => {
+    if (sectionInfo) reset(defaultValues);
+  }, [defaultValues, reset, sectionInfo]);
 
-  const onSubmit = async () => {
-    const { title } = values;
-    const sectionRef = `users/${userID}/menus/${menuID}/sections/${sectionID}`;
-    fbTranslate({ sectionRef, text: title });
-    fsUpdateSectionTitle(menuID, sectionID, title);
-
-    // DELETE TRANSLATION_EDIT OBJECT (Firebase)
-    // fsDeleteSectionTranslationEdited(menuID, sectionID);
-
-    await new Promise((resolve) =>
-      setTimeout(() => {
-        dispatch(rdxUpdateMenuSectionTitle({ menuID, sectionID, title }));
-        onClose();
-        resolve();
-      }, 1000)
-    );
+  const onSubmit = async (formData) => {
+    mutate(formData);
   };
 
   return (
-    <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose} scroll="paper">
+    <Dialog fullWidth maxWidth="md" open={isOpen} onClose={onClose} scroll="paper">
       <DialogTitle>Edit Section Title</DialogTitle>
 
-      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ pb: 2, px: 2 }}>
-          <RHFTextField name="title" label="Section Title" />
-        </Box>
-
-        <Divider />
-        <Box sx={{ py: 2, px: 2 }}>
-          <Stack direction="row" spacing={2} justifyContent="right">
-            <Iconify
-              icon="ep:warning-filled"
-              width={38}
-              height={38}
-              sx={{ color: theme.palette.error.main }}
+      <DialogContent>
+        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+          <Card sx={{ p: 1 }}>
+            <RHFTextField
+              name="title"
+              label="Section Title"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <LoadingButton
+                      type="submit"
+                      variant="text"
+                      color="success"
+                      loading={isPending}
+                      disabled={!isDirty}
+                    >
+                      Update
+                    </LoadingButton>
+                  </InputAdornment>
+                ),
+              }}
             />
-            <Typography variant="body2">
-              Editing section title will overwrite current translations to match the new title
+            <Typography variant="caption">
+              Editing section title will overwrite current translations to match the new updated
+              title
             </Typography>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              color="success"
-              loading={isSubmitting}
-              disabled={!isDirty}
-            >
-              Save
-            </LoadingButton>
-            <Button color="inherit" variant="outlined" onClick={onClose}>
-              close
-            </Button>
-          </Stack>
-        </Box>
-      </FormProvider>
+          </Card>
+        </FormProvider>
+      </DialogContent>
+      <DialogActions>
+        <Button color="inherit" variant="outlined" onClick={onClose}>
+          close
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }

@@ -197,8 +197,8 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
                       </TextMaxLine>
                     </Box>
                     <Stack direction="row" spacing={2}>
-                      {meal.portions.map((portion) => (
-                        <Label variant="soft" color="warning">
+                      {meal.portions.map((portion, i) => (
+                        <Label variant="soft" color="warning" key={`${portion.portionSize}-${i}`}>
                           {portion.portionSize} - {portion.gram}g - ${portion.price}
                         </Label>
                       ))}
@@ -233,7 +233,7 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
         <EditSectionTitleDialog
           isOpen={dialogsState.editSectionTitle}
           onClose={() => handleDialogIsOpenState('editSectionTitle', false)}
-          sectionID={id}
+          sectionID={sectionInfo.docID}
         />
       )}
       {dialogsState.translation && (
