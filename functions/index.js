@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable quotes */
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { Translate } = require('@google-cloud/translate').v2;
@@ -8,7 +6,6 @@ admin.initializeApp(functions.config().firebase);
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
-const db = admin.firestore();
 const translate = new Translate({ projectId: process.env.PROJECT_ID });
 
 exports.fbTranslateSectionTitle = functions.https.onCall(async (data, context) => {
@@ -24,7 +21,9 @@ exports.fbTranslateSectionTitle = functions.https.onCall(async (data, context) =
 
   // translate string to target languages
   const tasks = userDoc.languages.map(async (lang) => ({
-    [lang]: await (await translate.translate(text, lang)).slice(0, 1).toString(),
+    [lang]: {
+      title: await (await translate.translate(text, lang)).slice(0, 1).toString(),
+    },
   }));
 
   // resolve translation Promise

@@ -7,7 +7,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
-import { useTheme } from '@mui/material/styles';
 import {
   Card,
   Dialog,
@@ -32,7 +31,6 @@ EditSectionTitleDialog.propTypes = {
 function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
   const { id: menuID } = useParams();
   const { fsUpdateSectionTitle, fsGetSections, fsGetSection } = useAuthContext();
-  const theme = useTheme();
 
   const queryClient = useQueryClient();
 

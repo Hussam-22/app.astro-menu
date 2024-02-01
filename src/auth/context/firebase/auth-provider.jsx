@@ -730,11 +730,12 @@ export function AuthProvider({ children }) {
   );
   const fsUpdateSectionTitle = useCallback(
     async (menuID, sectionID, payload) => {
+      console.log({ menuID, sectionID, payload });
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
       await updateDoc(docRef, payload);
 
       fbTranslate({
-        sectionRef: `/users/${state.user.uid}/menus/${menuID}/sections/${docRef.id}`,
+        sectionRef: `/users/${state.user.id}/menus/${menuID}/sections/${docRef.id}`,
         text: payload.title,
       });
     },
