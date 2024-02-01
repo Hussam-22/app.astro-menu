@@ -53,7 +53,9 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
     visibility: false,
   });
 
-  const availableMealsForSelection = allMeals.filter((meal) => sectionInfo.meals.includes(meal));
+  const availableMealsForSelection = allMeals.filter((meal) =>
+    sectionInfo.meals.includes(meal.docID)
+  );
 
   const languagesLength = user?.languages?.length || 0;
 
@@ -79,14 +81,12 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
     setDialogsState((state) => ({ ...state, [dialogName]: isOpen }));
   };
 
-  const { isVisible } = sectionInfo;
-
   return (
     <>
       <Card sx={{ my: 2 }}>
         <CardHeader
           title={titleCase(sectionInfo.title)}
-          subheader={sectionInfo.isVisible ? '' : 'Section is Hidden'}
+          subheader={sectionInfo.isActive ? '' : 'Section is Hidden'}
           action={
             <>
               {!isFirst && (
@@ -167,13 +167,13 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
           )}
 
           {availableMealsForSelection.map((meal, index) => (
-            <React.Fragment key={meal.id}>
+            <React.Fragment key={meal.docID}>
               <Stack
                 direction="row"
                 alignItems="center"
-                sx={{ filter: !isVisible ? 'grayscale(1) blur(1px)' : '' }}
+                sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
               >
-                <Avatar src={meal.cover.url} alt={meal.title} sx={{ width: 56, height: 56 }} />
+                <Avatar src={meal.cover} alt={meal.title} sx={{ width: 56, height: 56 }} />
                 <Box sx={{ flexGrow: 1, ml: 2, minWidth: 100 }}>
                   <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
                     {meal.title}
