@@ -7,9 +7,10 @@ import { m, AnimatePresence } from 'framer-motion';
 import { Grid } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
-import EmptyContent from 'src/components/empty-content';
 import { MotionViewport } from 'src/components/animate';
+import EmptyContent from 'src/components/empty-content';
 import { rdxGetMenuSections } from 'src/redux/slices/menu';
+import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 import AddSection from 'src/sections/menu/meals-and-sections/sections/AddSection';
 import SectionMeals from 'src/sections/menu/meals-and-sections/sections/SectionMeals';
 
@@ -49,10 +50,11 @@ function MealsAndSections() {
                 .sort((a, b) => a.order - b.order)
                 .map((section, index) => (
                   <m.div
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                    exit={{ opacity: 0 }}
+                    // initial={{ opacity: 0, scale: 0.5 }}
+                    // animate={{ opacity: 1, scale: 1 }}
+                    // transition={{ duration: 0.5 }}
+                    // exit={{ opacity: 0 }}
+                    {...getVariant('fadeIn')}
                     key={section.docID}
                     layout
                   >

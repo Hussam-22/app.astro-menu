@@ -697,11 +697,27 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetSection = useCallback(
-    async (menuID, sectionID) => {
+  const fsDeleteSection = useCallback(
+    async (menuID, sectionID, orderValue) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}`);
-      const docSnap = await getDoc(docRef);
-      return docSnap.data();
+      await deleteDoc(docRef);
+
+      // get all sections that order index is above the one is being deleted and reduce it
+      const docsRef = query(
+        collectionGroup(DB, 'sections'),
+        where('userID', '==', state.user.id),
+        where('menuID', '==', menuID),
+        where('order', '>', orderValue)
+      );
+      const snapshot = await getDocs(docsRef);
+
+      // Update sections order
+      const batch = writeBatch(DB);
+      snapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, { order: increment(-1) });
+      });
+
+      await batch.commit();
     },
     [state]
   );
@@ -712,6 +728,15 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsGetSection = useCallback(
+    async (menuID, sectionID) => {
+      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}`);
+      const docSnap = await getDoc(docRef);
+      return docSnap.data();
+    },
+    [state]
+  );
+
   const fsUpdateSectionVisibility = useCallback(
     async (menuID, sectionID, value) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
@@ -782,30 +807,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsDeleteSection = useCallback(
-    async (menuID, sectionID, orderValue) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}`);
-      await deleteDoc(docRef);
 
-      // get all sections that order index is above the one is being deleted and reduce it
-      const docsRef = query(
-        collectionGroup(DB, 'sections'),
-        where('userID', '==', state.user.id),
-        where('menuID', '==', menuID),
-        where('order', '>', orderValue)
-      );
-      const snapshot = await getDocs(docsRef);
-
-      // Update sections order
-      const batch = writeBatch(DB);
-      snapshot.docs.forEach((doc) => {
-        batch.update(doc.ref, { order: increment(-1) });
-      });
-
-      await batch.commit();
-    },
-    [state]
-  );
   const fsDeleteAllSections = useCallback(
     async (menuID) => {
       const docRef = query(
@@ -1451,7 +1453,7 @@ export function AuthProvider({ children }) {
       // fsAddMealToMenuSelectedMeals,
       // fsRemoveMealFromMenuSelectedMeals,
       // fsDeleteAllSections,
-      // fsDeleteSection,
+      fsDeleteSection,
       // fsRemoveSectionMealsFromMenuSelectedMeals,
       // fsUpdateSectionTitle,
       // fsUpdateSectionOrder,
@@ -1549,7 +1551,7 @@ export function AuthProvider({ children }) {
       // fsAddMealToMenuSelectedMeals,
       // fsRemoveMealFromMenuSelectedMeals,
       // fsDeleteAllSections,
-      // fsDeleteSection,
+      fsDeleteSection,
       // fsRemoveSectionMealsFromMenuSelectedMeals,
       // fsUpdateSectionTitle,
       // fsUpdateSectionOrder,

@@ -35,7 +35,7 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
   const { fsGetSections } = useAuthContext();
 
   const { data: menuSections = [] } = useQuery({
-    queryKey: [`sections-${sectionID}`],
+    queryKey: [`sections-${menuID}`],
     queryFn: () => fsGetSections(menuID),
   });
 
@@ -118,7 +118,7 @@ function MealRow({ mealInfo, currentSectionMeals, menuID, sectionID }) {
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      const queryKeys = [`sections-${menuID}`, ''];
+      const queryKeys = [`sections-${menuID}`];
       queryClient.invalidateQueries(queryKeys);
     },
   });

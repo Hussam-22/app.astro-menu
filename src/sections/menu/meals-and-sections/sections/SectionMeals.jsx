@@ -15,12 +15,15 @@ import {
   Typography,
 } from '@mui/material';
 
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { titleCase } from 'src/utils/change-case';
+import TextMaxLine from 'src/components/text-max-line';
 import { rdxMoveSectionUp, rdxMoveSectionDown } from 'src/redux/slices/menu';
 import AddMealDialog from 'src/sections/menu/meals-and-sections/dialogs/add-meal-dialog';
 import VisibilityDialog from 'src/sections/menu/meals-and-sections/dialogs/visibility-dialog';
+import RemoveSectionDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-section-dialog';
 import EditSectionTitleDialog from 'src/sections/menu/meals-and-sections/dialogs/edit-section-title-dialog';
 
 import TranslationDialog from '../dialogs/translation-dialog';
@@ -158,7 +161,7 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
           }
         />
 
-        <Stack spacing={2} sx={{ p: 2 }}>
+        <Stack spacing={1} sx={{ p: 2 }}>
           {availableMealsForSelection.length === 0 && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               Please add meals from the top right corner action button
@@ -166,30 +169,48 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
             </Box>
           )}
 
-          {availableMealsForSelection.map((meal, index) => (
-            <React.Fragment key={meal.docID}>
-              <Stack
-                direction="row"
-                alignItems="center"
-                sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
-              >
-                <Avatar src={meal.cover} alt={meal.title} sx={{ width: 56, height: 56 }} />
-                <Box sx={{ flexGrow: 1, ml: 2, minWidth: 100 }}>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    {meal.title}
-                  </Typography>
-
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    {meal.description}
-                  </Typography>
-                </Box>
-              </Stack>
-              {availableMealsForSelection.length > 1 &&
-                index + 1 !== availableMealsForSelection.length && (
-                  <Divider sx={{ borderStyle: 'dashed' }} />
-                )}
-            </React.Fragment>
-          ))}
+          {availableMealsForSelection
+            .sort((a, b) => a.title.localeCompare(b.title))
+            .map((meal, index) => (
+              <React.Fragment key={meal.docID}>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
+                >
+                  <Avatar
+                    src={meal.cover}
+                    alt={meal.title}
+                    sx={{ width: 72, height: 72, borderRadius: 1 }}
+                    variant="square"
+                  />
+                  <Stack direction="column" sx={{ px: 2 }} spacing={1}>
+                    <Box>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        {meal.docID}
+                      </Typography>
+                      <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
+                        {meal.title}
+                      </Typography>
+                      <TextMaxLine line={1} variant="body2">
+                        {meal.description}
+                      </TextMaxLine>
+                    </Box>
+                    <Stack direction="row" spacing={2}>
+                      {meal.portions.map((portion) => (
+                        <Label variant="soft" color="warning">
+                          {portion.portionSize} - {portion.gram}g - ${portion.price}
+                        </Label>
+                      ))}
+                    </Stack>
+                  </Stack>
+                </Stack>
+                {availableMealsForSelection.length > 1 &&
+                  index + 1 !== availableMealsForSelection.length && (
+                    <Divider sx={{ borderStyle: 'dashed' }} />
+                  )}
+              </React.Fragment>
+            ))}
         </Stack>
       </Card>
 
@@ -201,15 +222,13 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
           allMeals={allMeals}
         />
       )}
-      {/* {dialogsState.removeSection && (
+      {dialogsState.removeSection && (
         <RemoveSectionDialog
           isOpen={dialogsState.removeSection}
           onClose={() => handleDialogIsOpenState('removeSection', false)}
-          sectionID={id}
           sectionInfo={sectionInfo}
-          menuMeals={menuMeals}
         />
-      )} */}
+      )}
       {dialogsState.editSectionTitle && (
         <EditSectionTitleDialog
           isOpen={dialogsState.editSectionTitle}

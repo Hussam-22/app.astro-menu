@@ -1,30 +1,28 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
-import { useDispatch } from 'react-redux';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import {
-  Button,
+  Box,
   Dialog,
+  Button,
   Divider,
   Typography,
   DialogTitle,
-  DialogActions,
   DialogContent,
+  DialogActions,
 } from '@mui/material';
 
+import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
-import { rdxDeleteMenuSection } from 'src/redux/slices/menu';
 
 // ----------------------------------------------------------------------
 
 RemoveSectionDialog.propTypes = {
   isOpen: PropTypes.bool,
-  sectionID: PropTypes.string,
   onClose: PropTypes.func,
   sectionInfo: PropTypes.object,
-  menuMeals: PropTypes.array,
 };
 
 /* 
@@ -33,40 +31,35 @@ RemoveSectionDialog.propTypes = {
 react will rerender "RemoveSectionDialog" component after "deleteSectionHandler" is triggered, but when it reaches "useSelector", the section was already removed, and it cant retrieve data from the removed section
 */
 
-function RemoveSectionDialog({ isOpen, sectionID, onClose, sectionInfo, menuMeals }) {
-  const { menuID } = useParams();
-  const dispatch = useDispatch();
-  const { fsDeleteSection, fsRemoveSectionMealsFromMenuSelectedMeals } = useAuthContext();
-  const [loading, setLoading] = useState(false);
-  // const sectionInfo = useSelector((state) => state.menu.sections.filter((section) => section.id === sectionID)[0]);
-  // const menuMeals = useSelector((state) => state.menu.meals);
+function RemoveSectionDialog({ isOpen, onClose, sectionInfo }) {
+  const { id: menuID } = useParams();
+  const { fsDeleteSection } = useAuthContext();
+  const queryClient = useQueryClient();
 
-  const deleteSectionHandler = () => {
-    setLoading(true);
-
-    const updatedMenuMeals = menuMeals.filter(
-      (mealID) => sectionInfo.meals.findIndex((sectionMenuID) => sectionMenuID === mealID) === -1
-    );
-
-    // DELETE SECTION FROM MENU (FIREBASE)
-    fsRemoveSectionMealsFromMenuSelectedMeals(menuID, updatedMenuMeals);
-    fsDeleteSection(menuID, sectionID, sectionInfo.order);
-
-    setTimeout(() => {
-      // DELETE SECTION FROM MENU (REDUX)
-      dispatch(rdxDeleteMenuSection({ menuID, sectionID, sectionMeals: sectionInfo.meals }));
-      setLoading(false);
+  const { isPending, mutate, error } = useMutation({
+    mutationFn: () => fsDeleteSection(menuID, sectionInfo.docID, sectionInfo.order),
+    onSuccess: () => {
+      const queryKeys = [`sections-${menuID}`];
+      queryClient.invalidateQueries(queryKeys);
       onClose();
-    }, 1000);
-  };
+    },
+  });
+
+  const deleteSectionHandler = () => mutate();
 
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose} scroll="paper">
       <DialogTitle>Remove Section</DialogTitle>
 
       <DialogContent sx={{ mb: 2 }}>
-        <Typography variant="body1" color="error">
-          {`Are you sure you want to remove "${sectionInfo.title}" section with all its meals ?`}
+        <Typography>
+          Are you sure you want to remove
+          <Box component="span" sx={{ mx: 1 }}>
+            <Label variant="filled" color="warning">
+              {sectionInfo.title}
+            </Label>
+          </Box>
+          section from the menu
         </Typography>
       </DialogContent>
 
@@ -78,7 +71,7 @@ function RemoveSectionDialog({ isOpen, sectionID, onClose, sectionInfo, menuMeal
           variant="contained"
           color="error"
           onClick={deleteSectionHandler}
-          loading={loading}
+          loading={isPending}
         >
           Remove Section
         </LoadingButton>
