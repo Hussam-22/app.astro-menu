@@ -43,7 +43,11 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
     queryFn: () => fsGetSections(menuID),
   });
 
-  const { data: sectionInfo = [], isFetching } = useQuery({
+  const {
+    data: sectionInfo = [],
+    isFetching,
+    error: queryError,
+  } = useQuery({
     queryKey: [`menu/${menuID}/section/${sectionID}`],
     queryFn: () => fsGetSection(menuID, sectionID),
   });

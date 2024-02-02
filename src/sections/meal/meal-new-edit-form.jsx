@@ -130,13 +130,15 @@ function MealNewEditForm({ mealInfo }) {
     setValue('imageFile', null, { isTouched: true, isFocused: true, shouldDirty: true });
   }, [setValue]);
 
-  const { isPending, mutate, isSuccess } = useMutation({
+  const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      const queryKeys = mealInfo?.docID ? ['menus', `menu-${mealInfo.docID}`] : ['menus'];
+      const queryKeys = mealInfo?.docID ? ['meals', `meal-${mealInfo.docID}`] : ['meals'];
       queryClient.invalidateQueries(queryKeys);
     },
   });
+
+  console.log(error);
 
   const onSubmit = async (data) => {
     if (mealInfo?.docID)
