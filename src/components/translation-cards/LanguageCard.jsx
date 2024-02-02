@@ -21,26 +21,12 @@ export default function LanguageCard({
   showDescriptionField = true,
   data,
 }) {
-  const titleData = {
-    translated: data?.translation[languageKey]?.title || '',
-    editedTranslation: data?.translationEdited[languageKey]?.title || '',
-  };
-
-  const descriptionData = {
-    translated: data?.translation[languageKey]?.desc || '',
-    editedTranslation: data?.translationEdited[languageKey]?.desc || '',
-  };
   return (
     <Card>
       <CardHeader title={LANGUAGE_CODES[languageKey]} />
       <Stack direction="column" spacing={3} sx={{ p: 2 }}>
         {showTitleField && (
-          <TranslationTextField
-            field="title"
-            label="Title"
-            languageKey={languageKey}
-            data={titleData}
-          />
+          <TranslationTextField field="title" label="Title" languageKey={languageKey} data={data} />
         )}
         {showDescriptionField && (
           <TranslationTextField
@@ -48,7 +34,7 @@ export default function LanguageCard({
             field="desc"
             label="Description"
             languageKey={languageKey}
-            data={descriptionData}
+            data={data}
           />
         )}
       </Stack>

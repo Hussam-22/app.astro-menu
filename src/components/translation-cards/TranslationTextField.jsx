@@ -28,27 +28,40 @@ export default function TranslationTextField({
   direction = 'row',
   data,
 }) {
+  console.log('//TODO: Fix buttons status on save and reset');
   const { id } = useParams();
   const location = useLocation();
   const { user, fsUpdateTable } = useAuthContext();
-  const { translated, editedTranslation } = data;
   const queryClient = useQueryClient();
 
-  console.log('//TODO: Fix buttons status on save and reset');
+  const translationData = {
+    translated: data?.translation[languageKey]?.[field] || '',
+    editedTranslation: data?.translationEdited[languageKey]?.[field] || '',
+  };
 
-  const tableToUpdate = location.pathname.includes('meal') ? 'meals' : 'branches';
-  const docRef = `users/${user.id}/${tableToUpdate}/${id}`;
+  const tableToUpdate = () => {
+    if (location.pathname.includes('meal'))
+      return { table: 'meals', docRef: `users/${user.id}/meals/${id}` };
+    if (location.pathname.includes('menu'))
+      return {
+        table: 'menu-sections',
+        docRef: `users/${user.id}/menus/${id}/sections/${data.docID}`,
+      };
+    if (location.pathname.includes('branch'))
+      return { table: 'branches', docRef: `users/${user.id}/branches/${id}` };
+    return undefined;
+  };
 
   const [isRestTranslationDirty, setIsRestTranslationDirty] = useState(
-    translated === editedTranslation
+    translationData.translated === translationData.editedTranslation
   );
 
   const NewUserSchema = Yup.object().shape({
     [field]: Yup.string().required(`${label} cant be empty`),
   });
   const defaultValues = useMemo(
-    () => ({ [field]: editedTranslation || translated }),
-    [field, editedTranslation, translated]
+    () => ({ [field]: translationData.editedTranslation || translationData.translated }),
+    [field, translationData.editedTranslation, translationData.translated]
   );
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
@@ -62,20 +75,25 @@ export default function TranslationTextField({
   } = methods;
 
   useEffect(() => {
-    setValue(field, editedTranslation || translated);
+    setValue(field, translationData.editedTranslation || translationData.translated);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [translated]);
+  }, [translationData]);
 
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      if (tableToUpdate === 'meals') {
-        const queryKeys = data?.docID ? ['meals', `meal-${data.docID}`] : ['meals'];
+      if (tableToUpdate().table === 'meals') {
+        const queryKeys = ['meals', `meal-${id}`];
         queryClient.invalidateQueries(queryKeys);
       }
 
-      if (tableToUpdate === 'branches') {
-        const queryKeys = data?.docID ? ['branches', `branch-${data.docID}`] : ['branches'];
+      if (tableToUpdate().table === 'branches') {
+        const queryKeys = ['branches', `branch-${id}`];
+        queryClient.invalidateQueries(queryKeys);
+      }
+
+      if (tableToUpdate().table === 'menu-sections') {
+        const queryKeys = [`sections-${id}`, `menu/${id}/section/${data.docID}`];
         queryClient.invalidateQueries(queryKeys);
       }
     },
@@ -83,17 +101,19 @@ export default function TranslationTextField({
 
   const resetTranslation = () => {
     mutate(() =>
-      fsUpdateTable(docRef, {
-        [`translationEdited.${languageKey}.${field}`]: translated,
+      fsUpdateTable(tableToUpdate().docRef, {
+        [`translationEdited.${languageKey}.${field}`]: translationData.translated,
       })
     );
-    reset({ [field]: translated });
+    reset({ [field]: translationData.translated });
     setIsRestTranslationDirty(true);
   };
 
   const onSubmit = async (formData) => {
     mutate(() =>
-      fsUpdateTable(docRef, { [`translationEdited.${languageKey}.${field}`]: formData[field] })
+      fsUpdateTable(tableToUpdate().docRef, {
+        [`translationEdited.${languageKey}.${field}`]: formData[field],
+      })
     );
   };
 

@@ -8,9 +8,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import {
+  Grid,
   Card,
+  Stack,
   Dialog,
   Button,
+  Skeleton,
   Typography,
   DialogTitle,
   DialogActions,
@@ -19,7 +22,9 @@ import {
 } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import LanguageCard from 'src/components/translation-cards/LanguageCard';
 // ----------------------------------------------------------------------
 
 EditSectionTitleDialog.propTypes = {
@@ -31,7 +36,6 @@ EditSectionTitleDialog.propTypes = {
 function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
   const { id: menuID } = useParams();
   const { fsUpdateSectionTitle, fsGetSections, fsGetSection } = useAuthContext();
-
   const queryClient = useQueryClient();
 
   const { data: sections = [] } = useQuery({
@@ -44,6 +48,8 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
     queryFn: () => fsGetSection(menuID, sectionID),
   });
 
+  const languageKeys = Object.keys(sectionInfo?.translationEdited || {});
+
   const { isPending, mutate, error } = useMutation({
     mutationFn: (payload) =>
       fsUpdateSectionTitle(menuID, sectionInfo.docID, {
@@ -54,7 +60,6 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
     onSuccess: () => {
       const queryKeys = [`sections-${menuID}`];
       queryClient.invalidateQueries(queryKeys);
-      onClose();
     },
   });
 
@@ -90,13 +95,28 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
     mutate(formData);
   };
 
+  const skeletonLanguageCards = (
+    <Grid container spacing={5}>
+      {[...Array(languageKeys.length + 1)].map((_, index) => (
+        <Grid item xs={12} md={12} key={index}>
+          <Card sx={{ p: 3 }}>
+            <Stack direction="column" spacing={3}>
+              <Skeleton variant="rounded" />
+              <Skeleton variant="rounded" />
+            </Stack>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  );
+
   return (
     <Dialog fullWidth maxWidth="md" open={isOpen} onClose={onClose} scroll="paper">
       <DialogTitle>Edit Section Title</DialogTitle>
 
       <DialogContent>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-          <Card sx={{ p: 1 }}>
+          <Card sx={{ p: 3 }}>
             <RHFTextField
               name="title"
               label="Section Title"
@@ -122,6 +142,23 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
             </Typography>
           </Card>
         </FormProvider>
+
+        {isFetching && skeletonLanguageCards}
+
+        {!isFetching && (
+          <Stack direction="column" spacing={1} sx={{ mt: 1 }}>
+            {languageKeys
+              .sort((a, b) => LANGUAGE_CODES[a].localeCompare(LANGUAGE_CODES[b]))
+              .map((key) => (
+                <LanguageCard
+                  languageKey={key}
+                  key={key}
+                  data={sectionInfo}
+                  showDescriptionField={false}
+                />
+              ))}
+          </Stack>
+        )}
       </DialogContent>
       <DialogActions>
         <Button color="inherit" variant="outlined" onClick={onClose}>
