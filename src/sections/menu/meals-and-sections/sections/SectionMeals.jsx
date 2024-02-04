@@ -7,12 +7,13 @@ import {
   Box,
   Card,
   Stack,
+  Switch,
   Avatar,
-  Divider,
   Tooltip,
-  IconButton,
-  CardHeader,
+  Divider,
   Typography,
+  CardHeader,
+  IconButton,
 } from '@mui/material';
 
 import Label from 'src/components/label';
@@ -22,11 +23,8 @@ import { titleCase } from 'src/utils/change-case';
 import TextMaxLine from 'src/components/text-max-line';
 import { rdxMoveSectionUp, rdxMoveSectionDown } from 'src/redux/slices/menu';
 import AddMealDialog from 'src/sections/menu/meals-and-sections/dialogs/add-meal-dialog';
-import VisibilityDialog from 'src/sections/menu/meals-and-sections/dialogs/visibility-dialog';
 import RemoveSectionDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-section-dialog';
 import EditSectionTitleDialog from 'src/sections/menu/meals-and-sections/dialogs/edit-section-title-dialog';
-
-import TranslationDialog from '../dialogs/translation-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -52,7 +50,6 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
     addMeal: false,
     removeSection: false,
     editSectionTitle: false,
-    translation: false,
     visibility: false,
   });
 
@@ -92,6 +89,8 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
           subheader={sectionInfo.isActive ? '' : 'Section is Hidden'}
           action={
             <>
+              <Switch label={sectionInfo.isActive ? 'Visible' : 'Hidden'} />
+
               {!isFirst && (
                 <Tooltip title="move up">
                   <IconButton color="secondary" size="small" onClick={shiftSectionUpHandler}>
@@ -115,26 +114,6 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
                   onClick={() => handleDialogIsOpenState('removeSection', true)}
                 >
                   <Iconify icon="ci:trash-empty" width={22} height={22} />
-                </IconButton>
-              </Tooltip>
-
-              <Tooltip title="Show/Edit Section Translation">
-                <IconButton
-                  color="primary"
-                  size="small"
-                  onClick={() => handleDialogIsOpenState('translation', true)}
-                >
-                  <Iconify icon="cil:language" width={22} height={22} />
-                </IconButton>
-              </Tooltip>
-
-              <Tooltip title="Visibility">
-                <IconButton
-                  color="primary"
-                  size="small"
-                  onClick={() => handleDialogIsOpenState('visibility', true)}
-                >
-                  <Iconify icon="ic:round-access-time" width={22} height={22} />
                 </IconButton>
               </Tooltip>
 
@@ -234,21 +213,6 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
           isOpen={dialogsState.editSectionTitle}
           onClose={() => handleDialogIsOpenState('editSectionTitle', false)}
           sectionID={sectionInfo.docID}
-        />
-      )}
-      {dialogsState.translation && (
-        <TranslationDialog
-          isOpen={dialogsState.translation}
-          onClose={() => handleDialogIsOpenState('translation', false)}
-          sectionID={id}
-          languagesLength={languagesLength}
-        />
-      )}
-      {dialogsState.visibility && (
-        <VisibilityDialog
-          isOpen={dialogsState.visibility}
-          onClose={() => handleDialogIsOpenState('visibility', false)}
-          sectionID={id}
         />
       )}
     </>
