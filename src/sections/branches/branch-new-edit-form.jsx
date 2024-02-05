@@ -101,7 +101,7 @@ export default function BranchNewEditForm({ branchInfo }) {
   );
 
   useEffect(() => {
-    if (branchInfo) reset(defaultValues);
+    if (branchInfo?.docID) reset(defaultValues);
   }, [branchInfo, defaultValues, reset]);
 
   const handelRemove = () => {

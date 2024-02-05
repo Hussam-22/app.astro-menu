@@ -478,6 +478,10 @@ export function AuthProvider({ children }) {
           `gs://menu-app-b268b/${state.user.id}/branches/${branchData.docID}/`
         );
 
+        const bucketPath = `${BUCKET}/${state.user.id}/branches/${branchData.docID}/`;
+        await fsDeleteImage(bucketPath, `cover_200x200.webp`);
+        await fsDeleteImage(bucketPath, `cover_800x800.webp`);
+
         const imageRef = ref(storageRef, 'cover.jpg');
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(

@@ -22,17 +22,12 @@ function BranchManageView() {
   const { fsGetBranch, fsGetBranchTables, fsGetAllBranches } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
 
-  const {
-    data: branchInfo = {},
-    error,
-    isRefetchError,
-    isFetching,
-  } = useQuery({
+  const { data: branchInfo = {}, error } = useQuery({
     queryKey: [`branch-${branchID}`],
     queryFn: () => fsGetBranch(branchID),
   });
 
-  console.log({ error, isRefetchError, isFetching });
+  console.log(error);
 
   const TABS = [
     {
