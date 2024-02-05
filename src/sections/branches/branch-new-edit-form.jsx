@@ -9,7 +9,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Card, Stack, Divider, Typography } from '@mui/material';
+import { Card, Stack, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -145,6 +145,28 @@ export default function BranchNewEditForm({ branchInfo }) {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+      <Stack spacing={2} direction="row" sx={{ justifyContent: 'flex-end', mb: 2 }}>
+        {branchInfo?.docID && (
+          <LoadingButton
+            variant="contained"
+            loading={isPending}
+            color="error"
+            onClick={handleDeleteBranch}
+          >
+            Delete Branch
+          </LoadingButton>
+        )}
+
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          color="success"
+          loading={isPending}
+          disabled={!isDirty}
+        >
+          Save
+        </LoadingButton>
+      </Stack>
       <Stack direction="column" spacing={2}>
         <Card sx={{ p: 3 }}>
           <Typography variant="h3" sx={{ mb: 1 }}>
@@ -183,31 +205,6 @@ export default function BranchNewEditForm({ branchInfo }) {
         <Card sx={{ p: 3 }}>
           <BranchSocialLinks />
         </Card>
-
-        <Divider />
-
-        <Stack spacing={2} direction="row" sx={{ justifyContent: 'flex-end' }}>
-          {branchInfo?.docID && (
-            <LoadingButton
-              variant="contained"
-              loading={isPending}
-              color="error"
-              onClick={handleDeleteBranch}
-            >
-              Delete Branch
-            </LoadingButton>
-          )}
-
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            color="success"
-            loading={isPending}
-            disabled={!isDirty}
-          >
-            Save
-          </LoadingButton>
-        </Stack>
       </Stack>
     </FormProvider>
   );

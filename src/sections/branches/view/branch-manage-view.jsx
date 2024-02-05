@@ -22,12 +22,16 @@ function BranchManageView() {
   const { fsGetBranch, fsGetBranchTables, fsGetAllBranches } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
 
-  const { data: branchInfo = {}, error } = useQuery({
+  const {
+    data: branchInfo = {},
+    error,
+    isPending,
+  } = useQuery({
     queryKey: [`branch-${branchID}`],
     queryFn: () => fsGetBranch(branchID),
   });
 
-  console.log(error);
+  console.log({ error, isPending });
 
   const TABS = [
     {
@@ -38,7 +42,7 @@ function BranchManageView() {
     {
       value: 'Translation',
       icon: <Iconify icon="clarity:language-line" width={20} height={20} />,
-      component: <BranchTranslation />,
+      component: <BranchTranslation branchInfo={branchInfo} isPending={isPending} />,
     },
     {
       value: 'Tables',
