@@ -1,19 +1,21 @@
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { useParams } from 'react-router';
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   Box,
   Card,
   Stack,
-  Switch,
   Avatar,
-  Tooltip,
+  Switch,
   Divider,
-  Typography,
-  CardHeader,
+  Tooltip,
+  FormGroup,
   IconButton,
+  CardHeader,
+  Typography,
+  FormControlLabel,
 } from '@mui/material';
 
 import Label from 'src/components/label';
@@ -21,7 +23,6 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { titleCase } from 'src/utils/change-case';
 import TextMaxLine from 'src/components/text-max-line';
-import { rdxMoveSectionUp, rdxMoveSectionDown } from 'src/redux/slices/menu';
 import AddMealDialog from 'src/sections/menu/meals-and-sections/dialogs/add-meal-dialog';
 import RemoveSectionDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-section-dialog';
 import EditSectionTitleDialog from 'src/sections/menu/meals-and-sections/dialogs/edit-section-title-dialog';
@@ -30,22 +31,17 @@ import EditSectionTitleDialog from 'src/sections/menu/meals-and-sections/dialogs
 
 SectionMeals.propTypes = {
   id: PropTypes.string,
-  dense: PropTypes.bool,
   isLast: PropTypes.bool,
   isFirst: PropTypes.bool,
   sectionInfo: PropTypes.object,
   allMeals: PropTypes.array,
+  allSections: PropTypes.array,
 };
 
-// TODO: sort meals alphabetically
-// TODO: translate sections titles
-// TODO: toggle between section titles locales
-// TODO: show menu preview
-
-export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, allMeals }) {
-  const dispatch = useDispatch();
+export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeals, allSections }) {
   const { id: menuID } = useParams();
-  const { user, fsUpdateSectionOrder } = useAuthContext();
+  const { fsUpdateSection, fsUpdateSectionsOrder } = useAuthContext();
+  const queryClient = useQueryClient();
   const [dialogsState, setDialogsState] = useState({
     addMeal: false,
     removeSection: false,
@@ -53,28 +49,42 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
     visibility: false,
   });
 
-  const availableMealsForSelection = allMeals.filter((meal) =>
-    sectionInfo.meals.includes(meal.docID)
-  );
+  const sectionMeals = allMeals.filter((meal) => sectionInfo.meals.includes(meal.docID));
 
-  const languagesLength = user?.languages?.length || 0;
+  const { mutate, isPending, error, isError, status } = useMutation({
+    mutationFn: (mutateFn) => mutateFn(),
+    onSuccess: () => {
+      queryClient.invalidateQueries([`sections-${menuID}`]);
+    },
+  });
 
-  const [targetSection, affectedSection] = useSelector((state) => state.menu.sectionsReorderIDs);
+  const handleStatusChange = () =>
+    mutate(() => fsUpdateSection(menuID, sectionInfo.docID, { isActive: !sectionInfo.isActive }));
 
-  useEffect(() => {
-    if (targetSection) {
-      fsUpdateSectionOrder(targetSection.menuID, targetSection.id, targetSection.order);
-      fsUpdateSectionOrder(affectedSection.menuID, affectedSection.id, affectedSection.order);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetSection]);
-
-  // ------------------------------- REORDER SECTIONS ---------------------------------------------
-  const shiftSectionDownHandler = () => {
-    dispatch(rdxMoveSectionDown({ menuID, sectionID: id }));
+  const handleShiftSectionUp = () => {
+    const affectedSection = allSections.find((section) => section.order === sectionInfo.order - 1);
+    mutate(() =>
+      fsUpdateSectionsOrder(
+        menuID,
+        sectionInfo.docID,
+        sectionInfo.order - 1,
+        affectedSection.docID,
+        sectionInfo.order
+      )
+    );
   };
-  const shiftSectionUpHandler = () => {
-    dispatch(rdxMoveSectionUp({ menuID, sectionID: id }));
+
+  const handleShiftSectionDown = () => {
+    const affectedSection = allSections.find((section) => section.order === sectionInfo.order + 1);
+    mutate(() =>
+      fsUpdateSectionsOrder(
+        menuID,
+        sectionInfo.docID,
+        sectionInfo.order + 1,
+        affectedSection.docID,
+        sectionInfo.order
+      )
+    );
   };
 
   const handleDialogIsOpenState = (dialogName, isOpen) => {
@@ -86,14 +96,28 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
       <Card sx={{ my: 2 }}>
         <CardHeader
           title={titleCase(sectionInfo.title)}
-          subheader={sectionInfo.isActive ? '' : 'Section is Hidden'}
           action={
-            <>
-              <Switch label={sectionInfo.isActive ? 'Visible' : 'Hidden'} />
+            <FormGroup row>
+              <FormControlLabel
+                labelPlacement="start"
+                label={
+                  !sectionInfo.isActive && (
+                    <Label color="error" variant="filled">
+                      Hidden
+                    </Label>
+                  )
+                }
+                control={<Switch onChange={handleStatusChange} checked={sectionInfo?.isActive} />}
+              />
 
               {!isFirst && (
                 <Tooltip title="move up">
-                  <IconButton color="secondary" size="small" onClick={shiftSectionUpHandler}>
+                  <IconButton
+                    color="secondary"
+                    size="small"
+                    onClick={handleShiftSectionUp}
+                    disabled={isPending && isError}
+                  >
                     <Iconify icon="akar-icons:circle-chevron-up" width={22} height={22} />
                   </IconButton>
                 </Tooltip>
@@ -101,7 +125,7 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
 
               {!isLast && (
                 <Tooltip title="move down">
-                  <IconButton color="secondary" size="small" onClick={shiftSectionDownHandler}>
+                  <IconButton color="secondary" size="small" onClick={handleShiftSectionDown}>
                     <Iconify icon="akar-icons:circle-chevron-down" width={22} height={22} />
                   </IconButton>
                 </Tooltip>
@@ -136,19 +160,19 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
                   <Iconify icon="mdi:hamburger-plus" width={22} height={22} />
                 </IconButton>
               </Tooltip>
-            </>
+            </FormGroup>
           }
         />
 
         <Stack spacing={1} sx={{ p: 2 }}>
-          {availableMealsForSelection.length === 0 && (
+          {sectionMeals.length === 0 && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               Please add meals from the top right corner action button
               <Iconify icon="mdi:hamburger-plus" width={22} height={22} sx={{ ml: 1 }} />
             </Box>
           )}
 
-          {availableMealsForSelection
+          {sectionMeals
             .sort((a, b) => a.title.localeCompare(b.title))
             .map((meal, index) => (
               <React.Fragment key={meal.docID}>
@@ -184,10 +208,9 @@ export default function SectionMeals({ id, dense, isLast, isFirst, sectionInfo, 
                     </Stack>
                   </Stack>
                 </Stack>
-                {availableMealsForSelection.length > 1 &&
-                  index + 1 !== availableMealsForSelection.length && (
-                    <Divider sx={{ borderStyle: 'dashed' }} />
-                  )}
+                {sectionMeals.length > 1 && index + 1 !== sectionMeals.length && (
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+                )}
               </React.Fragment>
             ))}
         </Stack>

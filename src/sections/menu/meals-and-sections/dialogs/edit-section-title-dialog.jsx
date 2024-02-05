@@ -43,18 +43,14 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
     queryFn: () => fsGetSections(menuID),
   });
 
-  const {
-    data: sectionInfo = [],
-    isFetching,
-    error: queryError,
-  } = useQuery({
+  const { data: sectionInfo = [], isFetching } = useQuery({
     queryKey: [`menu/${menuID}/section/${sectionID}`],
     queryFn: () => fsGetSection(menuID, sectionID),
   });
 
   const languageKeys = Object.keys(sectionInfo?.translationEdited || {});
 
-  const { isPending, mutate, error } = useMutation({
+  const { isPending, mutate } = useMutation({
     mutationFn: (payload) =>
       fsUpdateSectionTitle(menuID, sectionInfo.docID, {
         title: payload.title,

@@ -29,7 +29,6 @@ import {
   setDoc,
   getDoc,
   getDocs,
-  Timestamp,
   increment,
   deleteDoc,
   updateDoc,
@@ -756,61 +755,32 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsUpdateSectionsOrder = useCallback(
+    async (
+      menuID,
+      clickedSectionID,
+      clickedSectionOrder,
+      affectedSectionID,
+      affectedSectionNewOrder
+    ) => {
+      try {
+        const batch = writeBatch(DB);
+        const docRef = doc(
+          DB,
+          `/users/${state.user.id}/menus/${menuID}/sections/${clickedSectionID}/`
+        );
+        batch.update(docRef, { order: clickedSectionOrder });
 
-  const fsUpdateSectionVisibility = useCallback(
-    async (menuID, sectionID, value) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
-      await updateDoc(docRef, value);
-    },
-    [state]
-  );
-  const fsUpdateSectionVisibilityDateTimeRange = useCallback(
-    async (menuID, sectionID, value) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
-      await updateDoc(docRef, {
-        // activeDateRange: { from: Timestamp.fromDate(value.date.from), to: Timestamp.fromDate(value.date.to) },
-        activeTimeRange: {
-          isActive: value.isActive,
-          from: Timestamp.fromDate(value.from),
-          to: Timestamp.fromDate(value.to),
-        },
-      });
-    },
-    [state]
-  );
+        const affectedSectionDocRef = doc(
+          DB,
+          `/users/${state.user.id}/menus/${menuID}/sections/${affectedSectionID}/`
+        );
+        batch.update(affectedSectionDocRef, { order: affectedSectionNewOrder });
 
-  const fsUpdateSectionOrder = useCallback(
-    async (menuID, sectionID, order) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
-      await updateDoc(docRef, { order });
-    },
-    [state]
-  );
-  const fsUpdateSectionTranslation = useCallback(
-    async (menuID, sectionID, value) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
-      await updateDoc(docRef, value);
-    },
-    [state]
-  );
-  const fsAddMealToMenuSelectedMeals = useCallback(
-    async (menuID, mealID) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
-      await updateDoc(docRef, { meals: arrayUnion(mealID) });
-    },
-    [state]
-  );
-  const fsRemoveMealFromMenuSelectedMeals = useCallback(
-    async (menuID, mealID) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
-      await updateDoc(docRef, { meals: arrayRemove(mealID) });
-    },
-    [state]
-  );
-  const fsRemoveSectionMealsFromMenuSelectedMeals = useCallback(
-    async (menuID, meals) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
-      await updateDoc(docRef, { meals });
+        await batch.commit();
+      } catch (error) {
+        throw error;
+      }
     },
     [state]
   );
@@ -821,7 +791,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsDeleteAllSections = useCallback(
     async (menuID) => {
       const docRef = query(
@@ -1464,6 +1433,7 @@ export function AuthProvider({ children }) {
       fsUpdateSection,
       fsGetSections,
       fsGetSection,
+      fsUpdateSectionsOrder,
       // fsAddMealToMenuSelectedMeals,
       // fsRemoveMealFromMenuSelectedMeals,
       // fsDeleteAllSections,
@@ -1562,6 +1532,7 @@ export function AuthProvider({ children }) {
       fsUpdateSection,
       fsGetSections,
       fsGetSection,
+      fsUpdateSectionsOrder,
       // fsAddMealToMenuSelectedMeals,
       // fsRemoveMealFromMenuSelectedMeals,
       // fsDeleteAllSections,
