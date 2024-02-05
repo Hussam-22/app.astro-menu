@@ -27,6 +27,8 @@ function AddSection({ sections }) {
       .notOneOf(sections.map((section) => section.title.toLowerCase())),
   });
 
+  // const element = document.getElementById('element')?.scrollIntoView({ behavior: 'smooth' });
+
   const defaultValues = useMemo(() => ({ sectionName: '' }), []);
 
   const methods = useForm({
@@ -43,6 +45,10 @@ function AddSection({ sections }) {
       queryClient.invalidateQueries(queryKeys);
       enqueueSnackbar('Section Add Successfully !!');
       reset();
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth',
+      });
     },
   });
 

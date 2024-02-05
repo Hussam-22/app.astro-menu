@@ -45,11 +45,7 @@ export default function MenuNewEditForm({ menuData, onClose }) {
     defaultValues,
   });
 
-  const {
-    handleSubmit,
-    watch,
-    formState: { isSubmitting },
-  } = methods;
+  const { handleSubmit } = methods;
 
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -73,6 +69,7 @@ export default function MenuNewEditForm({ menuData, onClose }) {
     }
 
     enqueueSnackbar('Update success!');
+    if (!menuData?.docID) onClose();
   };
 
   return (

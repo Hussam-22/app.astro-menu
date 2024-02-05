@@ -1,6 +1,6 @@
+import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useDispatch, useSelector } from 'react-redux';
 
 import {
   Box,
@@ -35,10 +35,11 @@ import {
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Menu Name', align: 'left', width: '40%' },
-  { id: 'totalMeals', label: 'Total Meals', align: 'center', width: '15%' },
   { id: 'lastUpdate', label: 'Last Update', align: 'center', width: '30%' },
   { id: 'status', label: 'Status', align: 'center', width: '15%' },
 ];
+
+console.log('//TODO: Remove Total Meals from the list table');
 
 // ----------------------------------------------------------------------
 
@@ -62,7 +63,6 @@ function MenuListView() {
   });
 
   const router = useRouter();
-  const dispatch = useDispatch();
   const { themeStretch } = useSettingsContext();
   const { fsGetAllMenus } = useAuthContext();
   const [tableData, setTableData] = useState([]);

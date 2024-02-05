@@ -668,7 +668,7 @@ export function AuthProvider({ children }) {
         title,
         meals: [],
         order,
-        isActive: true,
+        isActive: false,
       });
 
       fbTranslate({

@@ -50,7 +50,7 @@ function MenuManageView() {
         heading={menuData?.title || ''}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Meals', href: paths.dashboard.meal.list },
+          { name: 'Menus', href: paths.dashboard.menu.list },
           { name: menuData?.title || '' },
         ]}
         action={

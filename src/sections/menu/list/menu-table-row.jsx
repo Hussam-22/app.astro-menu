@@ -37,7 +37,6 @@ export default function MenusTableRow({ row, onEditRow }) {
         </Box>
       </TableCell>
 
-      <TableCell align="center">{row?.meals?.length || 0}</TableCell>
       <TableCell align="center">{lastUpdatedAt}</TableCell>
       <TableCell align="center">
         <Label
