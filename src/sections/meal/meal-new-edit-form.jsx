@@ -138,16 +138,14 @@ function MealNewEditForm({ mealInfo }) {
     },
   });
 
-  console.log(error);
-
   const onSubmit = async (data) => {
     if (mealInfo?.docID)
       mutate(() =>
         fsUpdateMeal({
           ...data,
+          translation: dirtyFields.title || dirtyFields.description ? '' : mealInfo.translation,
           translationEdited:
             dirtyFields.title || dirtyFields.description ? '' : mealInfo.translationEdited,
-          translation: dirtyFields.title || dirtyFields.description ? '' : mealInfo.translation,
         })
       );
     if (!mealInfo?.docID) {

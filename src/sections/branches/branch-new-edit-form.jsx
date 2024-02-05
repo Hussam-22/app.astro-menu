@@ -3,87 +3,67 @@ import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 // form
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
-import { useMemo, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMemo, useEffect, useCallback } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Card, Stack, Divider, MenuItem, Typography } from '@mui/material';
+import { Card, Stack, Divider, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import { fData } from 'src/utils/format-number';
 import { useAuthContext } from 'src/auth/hooks';
+import { fData } from 'src/utils/format-number';
 import BranchSocialLinks from 'src/sections/branches/components/BranchSocialLinks';
-import FormProvider, {
-  RHFUpload,
-  RHFSwitch,
-  RHFSelect,
-  RHFTextField,
-} from 'src/components/hook-form';
+import FormProvider, { RHFUpload, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 BranchNewEditForm.propTypes = {
-  branchData: PropTypes.object,
+  branchInfo: PropTypes.object,
 };
 
-export default function BranchNewEditForm({ branchData }) {
+export default function BranchNewEditForm({ branchInfo }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { fsAddNewBranch, fsDeleteBranch, fsUpdateBranch } = useAuthContext();
-  const menusList = useSelector((state) => state.menu.menus);
+  const queryClient = useQueryClient();
 
   const NewUserSchema = Yup.object().shape({
     title: Yup.string().required('Menu title is required'),
-    // scheduler: Yup.object().shape({
-    //   alwaysAvailable: Yup.boolean(),
-    //   activeTimeRange: Yup.object().when('alwaysAvailable', {
-    //     is: false,
-    //     then: Yup.object().shape({
-    //       to: Yup.string().required(''),
-    //       from: Yup.string().required(''),
-    //     }),
-    //   }),
-    //   activeDays: Yup.array().when('alwaysAvailable', {
-    //     is: false,
-    //     then: Yup.array().min(1, 'At least One Day should be selected'),
-    //   }),
-    // }),
-    // 'cover.file': Yup.mixed().required('Menu Cover is Required'),
-    // cover: Yup.mixed().test('required', 'Menu Cover is required', (value) => value.file !== ''),
+    cover: Yup.mixed().required('imgURL is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
-      title: branchData?.title || '',
-      description: branchData?.description || '',
-      wifiPassword: branchData?.wifiPassword || '',
-      activeMenuID: branchData?.activeMenuID || '',
-      isActive: !!branchData?.isActive,
-      isDeleted: branchData?.isDeleted || false,
-      createdAt: branchData?.createdAt || '',
-      scanLimits: branchData?.scanLimits || '',
-      cover: branchData?.cover || '',
-      imgUrl: branchData?.cover || '',
+      title: branchInfo?.title || '',
+      description: branchInfo?.description || '',
+      wifiPassword: branchInfo?.wifiPassword || '',
+      activeMenuID: branchInfo?.activeMenuID || '',
+      isActive: !!branchInfo?.isActive,
+      isDeleted: branchInfo?.isDeleted || false,
+      createdAt: branchInfo?.createdAt || '',
+      scanLimits: branchInfo?.scanLimits || '',
+      cover: branchInfo?.cover || '',
+      imgUrl: branchInfo?.cover || '',
 
-      mealVisual: branchData?.mealVisual || '',
-      menuVisual: branchData?.menuVisual || '',
+      mealVisual: branchInfo?.mealVisual || '',
+      menuVisual: branchInfo?.menuVisual || '',
 
       socialLinks: {
-        facebook: branchData?.socialLinks?.facebook || '',
-        instagram: branchData?.socialLinks?.instagram || '',
-        twitter: branchData?.socialLinks?.twitter || '',
-        youtube: branchData?.socialLinks?.youtube || '',
-        snapchat: branchData?.socialLinks?.snapchat || '',
-        tiktok: branchData?.socialLinks?.tiktok || '',
-        linkedin: branchData?.socialLinks?.linkedin || '',
-        website: branchData?.socialLinks?.website || '',
-        other: branchData?.socialLinks?.other || '',
-        // useMasterLinks: branchData?.socialLinks?.useMasterLinks || false,
+        facebook: branchInfo?.socialLinks?.facebook || '',
+        instagram: branchInfo?.socialLinks?.instagram || '',
+        twitter: branchInfo?.socialLinks?.twitter || '',
+        youtube: branchInfo?.socialLinks?.youtube || '',
+        snapchat: branchInfo?.socialLinks?.snapchat || '',
+        tiktok: branchInfo?.socialLinks?.tiktok || '',
+        linkedin: branchInfo?.socialLinks?.linkedin || '',
+        website: branchInfo?.socialLinks?.website || '',
+        other: branchInfo?.socialLinks?.other || '',
+        // useMasterLinks: branchInfo?.socialLinks?.useMasterLinks || false,
       },
     }),
-    [branchData]
+    [branchInfo]
   );
 
   const methods = useForm({
@@ -97,12 +77,11 @@ export default function BranchNewEditForm({ branchData }) {
     setValue,
     handleSubmit,
     getFieldState,
-    formState: { isDirty, isSubmitting },
+    formState: { isDirty, dirtyFields },
   } = methods;
 
   const values = watch();
 
-  // -------------------------------- Show Selected Image Handler --------------------------------------------
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];
@@ -121,31 +100,46 @@ export default function BranchNewEditForm({ branchData }) {
     [setValue]
   );
 
+  useEffect(() => {
+    if (branchInfo) reset(defaultValues);
+  }, [branchInfo, defaultValues, reset]);
+
   const handelRemove = () => {
     setValue('cover', '');
   };
 
-  const onSubmit = async (data) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const shouldUpdateDescription = getFieldState('description').isDirty;
+  const { isPending, mutate } = useMutation({
+    mutationFn: (mutateFn) => mutateFn(),
+    onSuccess: () => {
+      const queryKeys = ['branches', `branch-${branchInfo?.docID}`];
+      queryClient.invalidateQueries(queryKeys);
+      enqueueSnackbar('Update success!');
+      if (!branchInfo?.docID) router.push(paths.dashboard.branches.list);
+    },
+  });
+
+  const onSubmit = async (formData) => {
     const shouldUpdateCover = getFieldState('cover').isDirty;
-    if (branchData?.docID)
-      fsUpdateBranch(
-        { docID: branchData.docID, ...data },
-        shouldUpdateDescription,
-        shouldUpdateCover
+    if (branchInfo?.docID)
+      mutate(() =>
+        fsUpdateBranch(
+          {
+            ...formData,
+            docID: branchInfo?.docID,
+            translation: dirtyFields.description ? '' : branchInfo.translation,
+            translationEdited: dirtyFields.description ? '' : branchInfo.translationEdited,
+          },
+          shouldUpdateCover
+        )
       );
-    if (!branchData?.docID) {
-      fsAddNewBranch(data);
-      router.push(paths.dashboard.branches.list);
+    if (!branchInfo?.docID) {
+      mutate(() => fsAddNewBranch(formData));
     }
-    reset(data);
-    enqueueSnackbar('Update success!');
   };
 
   const handleDeleteBranch = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    fsDeleteBranch(branchData?.docID);
+    fsDeleteBranch(branchInfo?.docID);
     router.push(paths.dashboard.branches.list);
   };
 
@@ -186,12 +180,6 @@ export default function BranchNewEditForm({ branchData }) {
           </Stack>
         </Card>
 
-        {menusList?.length !== 0 && (
-          <Card sx={{ p: 3 }}>
-            <SelectMenu />
-          </Card>
-        )}
-
         <Card sx={{ p: 3 }}>
           <BranchSocialLinks />
         </Card>
@@ -199,10 +187,10 @@ export default function BranchNewEditForm({ branchData }) {
         <Divider />
 
         <Stack spacing={2} direction="row" sx={{ justifyContent: 'flex-end' }}>
-          {branchData?.docID && (
+          {branchInfo?.docID && (
             <LoadingButton
               variant="contained"
-              loading={isSubmitting}
+              loading={isPending}
               color="error"
               onClick={handleDeleteBranch}
             >
@@ -214,7 +202,7 @@ export default function BranchNewEditForm({ branchData }) {
             type="submit"
             variant="contained"
             color="success"
-            loading={isSubmitting}
+            loading={isPending}
             disabled={!isDirty}
           >
             Save
@@ -224,22 +212,3 @@ export default function BranchNewEditForm({ branchData }) {
     </FormProvider>
   );
 }
-
-// ----------------------------------------------------------------------------
-
-function SelectMenu({ menusList }) {
-  return (
-    <RHFSelect name="activeMenuID" label="Default Menu" placeholder="Default Menu">
-      <MenuItem value="" />
-      {menusList.map((menu) => (
-        <MenuItem key={menu.id} value={menu.id}>
-          {menu.title}
-        </MenuItem>
-      ))}
-    </RHFSelect>
-  );
-}
-
-SelectMenu.propTypes = {
-  menusList: PropTypes.array,
-};

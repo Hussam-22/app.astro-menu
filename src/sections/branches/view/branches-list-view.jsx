@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link as RouterLink } from 'react-router-dom';
 
 // @mui
@@ -17,11 +18,9 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 // redux
-import { useDispatch } from 'src/redux/store';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 // sections
-import { rdxSetBranchByID } from 'src/redux/slices/branch';
 // hooks
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -63,19 +62,13 @@ export default function BranchesListView() {
     });
   const { themeStretch } = useSettingsContext();
   const router = useRouter();
-  const dispatch = useDispatch();
   const { fsGetAllBranches } = useAuthContext();
-  const [tableData, setTableData] = useState([]);
   const [filterName, setFilterName] = useState('');
 
-  useEffect(() => {
-    (async () => {
-      const branchesData = await fsGetAllBranches();
-      setTableData(branchesData);
-      // dispatch(rdxGetBranchesList(branchesData));
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { data: tableData = [] } = useQuery({
+    queryKey: ['branches'],
+    queryFn: fsGetAllBranches,
+  });
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
@@ -83,7 +76,7 @@ export default function BranchesListView() {
   };
 
   const handleEditRow = (id) => {
-    dispatch(rdxSetBranchByID(id));
+    // dispatch(rdxSetBranchByID(id));
     router.push(paths.dashboard.branches.manage(id));
   };
 

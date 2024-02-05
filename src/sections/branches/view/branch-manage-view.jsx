@@ -1,14 +1,13 @@
+import { useState } from 'react';
 import { m } from 'framer-motion';
 import { useParams } from 'react-router';
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 
 import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import { rdxSetBranch } from 'src/redux/slices/branch';
 import { useSettingsContext } from 'src/components/settings';
 import BranchTables from 'src/sections/branches/BranchTables';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -18,34 +17,28 @@ import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 
 function BranchManageView() {
   const { id: branchID } = useParams();
-  const dispatch = useDispatch();
   const theme = useTheme();
   const { themeStretch } = useSettingsContext();
-  const { fsGetBranch, fsGetBranchTables, fsGetAllBranches, user } = useAuthContext();
+  const { fsGetBranch, fsGetBranchTables, fsGetAllBranches } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
-  const branchData = useSelector((state) => state.branch.branch);
 
-  useEffect(() => {
-    (async () => {
-      if (branchData?.title === undefined) dispatch(rdxSetBranch(await fsGetBranch(branchID)));
-      // dispatch(rdxGetAllMeals(await fsGetAllMeals()));
-      // dispatch(rdxGetAllMenu(await fsGetAllMenus()));
-    })();
-  }, [
-    branchID,
-    dispatch,
-    fsGetBranch,
-    fsGetBranchTables,
-    // fsGetAllMenus,
-    branchData?.title,
-    fsGetAllBranches,
-  ]);
+  const {
+    data: branchInfo = {},
+    error,
+    isRefetchError,
+    isFetching,
+  } = useQuery({
+    queryKey: [`branch-${branchID}`],
+    queryFn: () => fsGetBranch(branchID),
+  });
+
+  console.log({ error, isRefetchError, isFetching });
 
   const TABS = [
     {
       value: 'Branch Info',
       icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
-      component: <BranchNewEditForm branchData={branchData} />,
+      component: branchInfo?.docID && <BranchNewEditForm branchInfo={branchInfo} />,
     },
     {
       value: 'Translation',
@@ -78,11 +71,11 @@ function BranchManageView() {
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={branchData?.title || ''}
+        heading={branchInfo?.data?.title || ''}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Branches', href: paths.dashboard.branches.list },
-          { name: branchData?.title || '' },
+          { name: branchInfo?.title || '' },
         ]}
         action={
           <Typography variant="caption" sx={{ color: theme.palette.grey[600] }}>
@@ -91,7 +84,7 @@ function BranchManageView() {
         }
       />
 
-      {branchData?.docID && (
+      {branchInfo?.docID && (
         <>
           <Tabs
             allowScrollButtonsMobile
@@ -114,7 +107,7 @@ function BranchManageView() {
 
           <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
 
-          {branchData?.docID &&
+          {branchInfo?.docID &&
             TABS.map((tab) => {
               const isMatched = tab.value === currentTab;
               return (

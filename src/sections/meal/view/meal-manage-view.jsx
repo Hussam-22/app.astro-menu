@@ -24,8 +24,6 @@ function MealManageView() {
   const { data: mealInfo = {}, isFetching } = useQuery({
     queryKey: [`meal-${mealID}`],
     queryFn: () => fsGetMeal(mealID),
-    retryDelay: 3 * 1000,
-    retry: 5,
   });
 
   const TABS = [

@@ -389,21 +389,26 @@ export function AuthProvider({ children }) {
 
     return dataArr;
   }, [state]);
+
   const fsGetBranch = useCallback(
     async (branchID, userID = state.user.id) => {
-      const docRef = doc(DB, `/users/${userID}/branches/${branchID}/`);
-      const docSnap = await getDoc(docRef);
+      try {
+        const docRef = doc(DB, `/users/${userID}/branches/${branchID}/`);
+        const docSnap = await getDoc(docRef);
 
-      const bucketPath = `${BUCKET}/${userID}/branches/${branchID}/`;
+        if (docSnap.data().translation === '') throw new Error('No Translation Found !!');
 
-      const imgUrl = await fsGetImgDownloadUrl(bucketPath, 'cover_800x800.webp');
-      return {
-        data: {
+        const bucketPath = `${BUCKET}/${userID}/branches/${branchID}/`;
+        const imgUrl = await fsGetImgDownloadUrl(bucketPath, 'cover_800x800.webp');
+
+        return {
           ...docSnap.data(),
           lastUpdatedAt: new Date(docSnap.data().lastUpdatedAt.seconds * 1000).toDateString(),
-        },
-        cover: imgUrl,
-      };
+          cover: imgUrl,
+        };
+      } catch (error) {
+        throw error;
+      }
     },
     [state]
   );
@@ -451,7 +456,7 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateBranch = useCallback(
-    async (branchData, shouldUpdateDescription, shouldUpdateCover) => {
+    async (branchData, shouldUpdateCover) => {
       const docRef = doc(DB, `/users/${state.user.id}/branches/${branchData.docID}`);
       const { cover: imageFile, ...documentData } = branchData;
       await updateDoc(docRef, {
@@ -460,7 +465,7 @@ export function AuthProvider({ children }) {
         lastUpdatedAt: new Date(),
       });
 
-      if (shouldUpdateDescription)
+      if (branchData.translation === '')
         fbTranslateBranchDesc({
           branchRef: docRef.path,
           text: { description: documentData.description },
@@ -468,7 +473,6 @@ export function AuthProvider({ children }) {
         });
 
       if (shouldUpdateCover) {
-        console.log(imageFile);
         const storageRef = ref(
           STORAGE,
           `gs://menu-app-b268b/${state.user.id}/branches/${branchData.docID}/`
@@ -892,8 +896,32 @@ export function AuthProvider({ children }) {
   const fsUpdateMeal = useCallback(
     async (payload) => {
       try {
+        const { imageFile, cover, ...mealData } = payload;
         const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.docID}/`);
-        await updateDoc(docRef, payload);
+        await updateDoc(docRef, mealData);
+
+        const storageRef = ref(
+          STORAGE,
+          `gs://menu-app-b268b/${state.user.id}/meals/${payload.docID}/`
+        );
+
+        const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
+
+        if (imageFile) {
+          const imageRef = ref(storageRef, `${payload.docID}.${fileExtension}`);
+
+          const bucketPath = `${BUCKET}/${state.user.id}/meals/${payload.docID}/`;
+          await fsDeleteImage(bucketPath, `${payload.docID}_200x200.webp`);
+          await fsDeleteImage(bucketPath, `${payload.docID}_800x800.webp`);
+
+          const uploadTask = uploadBytesResumable(imageRef, imageFile);
+          uploadTask.on(
+            'state_changed',
+            (snapshot) => {},
+            (error) => {},
+            () => {}
+          );
+        }
 
         if (payload.translation === '' && payload.translationEdited === '')
           fbTranslateMeal({
@@ -935,13 +963,11 @@ export function AuthProvider({ children }) {
 
   const fsGetMeal = useCallback(
     async (mealID) => {
-      // eslint-disable-next-line no-useless-catch
       try {
         const docRef = doc(DB, `/users/${state.user.id}/meals/${mealID}/`);
         const docSnap = await getDoc(docRef);
 
         const bucketPath = `${BUCKET}/${state.user.id}/meals/${mealID}/`;
-
         const imgUrl = await fsGetImgDownloadUrl(bucketPath, `${mealID}_800x800.webp`);
 
         if (docSnap.data().translation === '' || docSnap?.data()?.translation === undefined)
