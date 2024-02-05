@@ -134,6 +134,7 @@ function MealNewEditForm({ mealInfo }) {
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       const queryKeys = mealInfo?.docID ? ['meals', `meal-${mealInfo.docID}`] : ['meals'];
+      queryClient.removeQueries({ queryKey: [`meal-${mealInfo.docID}`], exact: true });
       queryClient.invalidateQueries(queryKeys);
     },
   });

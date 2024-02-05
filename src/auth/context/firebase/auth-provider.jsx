@@ -298,7 +298,6 @@ export function AuthProvider({ children }) {
     return docSnap.data();
   }, [state]);
 
-  // ?--------------------------------------------------------------------------------------------------------------------
   const fsAddBatchTablesToBranch = useCallback(
     async (tablesCount, branchID, CurrentCount) => {
       const docRef = doc(DB, `/users/${state.user.id}/branches/${branchID}/`);
@@ -477,10 +476,6 @@ export function AuthProvider({ children }) {
           STORAGE,
           `gs://menu-app-b268b/${state.user.id}/branches/${branchData.docID}/`
         );
-
-        const bucketPath = `${BUCKET}/${state.user.id}/branches/${branchData.docID}/`;
-        await fsDeleteImage(bucketPath, `cover_200x200.webp`);
-        await fsDeleteImage(bucketPath, `cover_800x800.webp`);
 
         const imageRef = ref(storageRef, 'cover.jpg');
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
@@ -914,9 +909,9 @@ export function AuthProvider({ children }) {
         if (imageFile) {
           const imageRef = ref(storageRef, `${payload.docID}.${fileExtension}`);
 
-          const bucketPath = `${BUCKET}/${state.user.id}/meals/${payload.docID}/`;
-          await fsDeleteImage(bucketPath, `${payload.docID}_200x200.webp`);
-          await fsDeleteImage(bucketPath, `${payload.docID}_800x800.webp`);
+          // const bucketPath = `${BUCKET}/${state.user.id}/meals/${payload.docID}/`;
+          // await fsDeleteImage(bucketPath, `${payload.docID}_200x200.webp`);
+          // await fsDeleteImage(bucketPath, `${payload.docID}_800x800.webp`);
 
           const uploadTask = uploadBytesResumable(imageRef, imageFile);
           uploadTask.on(

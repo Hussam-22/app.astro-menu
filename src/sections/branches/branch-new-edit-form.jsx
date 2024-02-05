@@ -112,6 +112,10 @@ export default function BranchNewEditForm({ branchInfo }) {
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       const queryKeys = ['branches', `branch-${branchInfo?.docID}`];
+      queryClient.removeQueries({
+        queryKey: [`branch-${branchInfo.docID}`],
+        exact: true,
+      });
       queryClient.invalidateQueries(queryKeys);
       enqueueSnackbar('Update success!');
       if (!branchInfo?.docID) router.push(paths.dashboard.branches.list);
