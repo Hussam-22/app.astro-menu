@@ -1,21 +1,20 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import {
-  Select,
-  Dialog,
   Button,
+  Dialog,
+  Select,
   MenuItem,
   DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
 } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { rdxUpdateTable } from 'src/redux/slices/branch';
 
 ChangeDefaultMenu.propTypes = {
   onClose: PropTypes.func,
@@ -24,11 +23,14 @@ ChangeDefaultMenu.propTypes = {
 
 function ChangeDefaultMenu({ isOpen, onClose }) {
   const { id: branchID } = useParams();
-  const dispatch = useDispatch();
-  const menusList = useSelector((state) => state.menu.menus);
-  const { fsChangeMenuForAllTables } = useAuthContext();
+  const { fsChangeMenuForAllTables, fsGetAllMenus } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState(menusList[0].id);
+
+  const { data: menusList = [] } = useQuery({
+    queryKey: ['menus'],
+    queryFn: () => fsGetAllMenus(),
+  });
+  const [selectedMenu, setSelectedMenu] = useState();
 
   const onMenuChange = (e) => {
     setSelectedMenu(e.target.value);
@@ -38,7 +40,6 @@ function ChangeDefaultMenu({ isOpen, onClose }) {
     setIsLoading(true);
 
     fsChangeMenuForAllTables(branchID, selectedMenu);
-    dispatch(rdxUpdateTable(selectedMenu));
 
     setTimeout(() => {
       setIsLoading(false);
@@ -58,7 +59,7 @@ function ChangeDefaultMenu({ isOpen, onClose }) {
           fullWidth
         >
           {menusList.map((menu) => (
-            <MenuItem key={menu.id} value={menu.id}>
+            <MenuItem key={menu.docID} value={menu.docID}>
               {menu.title}
             </MenuItem>
           ))}

@@ -299,24 +299,31 @@ export function AuthProvider({ children }) {
   }, [state]);
 
   const fsAddBatchTablesToBranch = useCallback(
-    async (tablesCount, branchID, CurrentCount) => {
-      const docRef = doc(DB, `/users/${state.user.id}/branches/${branchID}/`);
-      const docSnap = await getDoc(docRef);
-      const { activeMenuID = '' } = docSnap.data();
+    async (tablesToAddCount, branchID, menuID) => {
+      // const branchRef = doc(DB, `/users/${state.user.id}/branches/${branchID}/`);
+      // const docSnap = await getDoc(branchRef);
+      // const { activeMenuID = '' } = docSnap.data();
+      const batch = writeBatch(DB);
 
-      const totalTables = +tablesCount + +CurrentCount;
-      const startIndex = 1 + +CurrentCount;
+      const tablesRef = query(
+        collectionGroup(DB, 'tables'),
+        where('userID', '==', state.user.id),
+        where('branchID', '==', branchID)
+      );
+      const snapshot = await getCountFromServer(tablesRef);
+      const currentTablesCount = snapshot.data().count;
+
+      const totalTables = +tablesToAddCount + currentTablesCount;
+      const startIndex = 1 + currentTablesCount;
+
+      const newDocRef = doc(collection(DB, `/users/${state.user.id}/branches/${branchID}/tables`));
 
       // eslint-disable-next-line no-plusplus
-      for (let index = startIndex; index <= totalTables; index++) {
-        const newDocRef = doc(
-          collection(DB, `/users/${state.user.id}/branches/${branchID}/tables`)
-        );
-        // eslint-disable-next-line no-await-in-loop
-        await setDoc(newDocRef, {
-          id: newDocRef.id,
+      for (let index = startIndex; index < totalTables.length; index++) {
+        batch.set(newDocRef, {
+          docID: newDocRef.id,
           userID: state.user.id,
-          activeMenuID,
+          menuID,
           branchID,
           isActive: true,
           title: `Table ${index}`,
@@ -324,6 +331,8 @@ export function AuthProvider({ children }) {
           index,
         });
       }
+
+      await batch.commit();
     },
     [state]
   );
@@ -513,6 +522,7 @@ export function AuthProvider({ children }) {
       const querySnapshot = await getDocs(docRef);
       const dataArr = [];
       querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+
       return dataArr;
     },
     [state]

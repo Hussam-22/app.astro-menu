@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Box, Grid, Card, Button, Avatar, Divider } from '@mui/material';
+import { Box, Card, Stack, Avatar, Button, useTheme } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import DownloadAllQRs from 'src/sections/branches/components/DownloadAllQRs';
@@ -11,12 +11,12 @@ import ChangeDefaultMenu from './dialogs/ChangeDefaultMenu';
 
 TablesCard.propTypes = {
   tables: PropTypes.array,
-  theme: PropTypes.object,
   onTableClick: PropTypes.func,
   onNewTableAdd: PropTypes.func,
 };
 
-function TablesCard({ tables, theme, onTableClick, onNewTableAdd }) {
+function TablesCard({ tables, onTableClick, onNewTableAdd }) {
+  const theme = useTheme();
   const [openDialog, setOpenDialog] = useState({
     newTable: false,
     changeDefaultMenu: false,
@@ -39,80 +39,70 @@ function TablesCard({ tables, theme, onTableClick, onNewTableAdd }) {
   };
 
   return (
-    <Grid item xs={12}>
-      <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
-        <Card sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, flexWrap: 'wrap' }}>
-            <Button
-              variant="text"
-              startIcon={<Iconify icon="mdi:file-replace-outline" />}
-              onClick={() => openDialogHandler('changeDefaultMenu')}
-            >
-              Change Menu for All Tables
-            </Button>
-            <Button
-              variant="text"
-              startIcon={<Iconify icon="uil:image-download" />}
-              onClick={downloadAllTableQRImages}
-            >
-              Download All Tables QR Images
-            </Button>
-            <Button
-              variant="text"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-              onClick={() => openDialogHandler('newTable')}
-            >
-              New Table(s)
-            </Button>
-          </Box>
-
-          <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
-
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              flexWrap: 'wrap',
-              gap: '10px 20px',
-              pt: 2,
-            }}
-          >
-            {[...tables]
-              .sort((a, b) => a.index - b.index)
-              .map((table) => (
-                <Avatar
-                  key={table.id}
-                  variant="circular"
-                  sx={{
-                    width: 32,
-                    height: 32,
-                    bgcolor: table.isActive ? theme.palette.success.main : theme.palette.error.main,
-                    border: 'dashed 1px #000000',
-                  }}
-                >
-                  <Button onClick={() => onTableClick(table)} sx={{ color: '#FFFFFF' }}>
-                    {table.index}
-                  </Button>
-                </Avatar>
-              ))}
-          </Box>
-          {openDialog.newTable && (
-            <AddTablesDialog
-              isOpen={openDialog.newTable}
-              onClose={() => onDialogClose('newTable')}
-              onNewTableAdd={onNewTableAdd}
-            />
-          )}
-          {openDialog.changeDefaultMenu && (
-            <ChangeDefaultMenu
-              isOpen={openDialog.changeDefaultMenu}
-              onClose={() => onDialogClose('changeDefaultMenu')}
-            />
-          )}
-          <DownloadAllQRs tables={tables} />
-        </Card>
+    <Stack direction="column" spacing={1}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, flexWrap: 'wrap' }}>
+        <Button
+          variant="text"
+          startIcon={<Iconify icon="mdi:file-replace-outline" />}
+          onClick={() => openDialogHandler('changeDefaultMenu')}
+        >
+          Change Menu for All Tables
+        </Button>
+        <Button
+          variant="text"
+          startIcon={<Iconify icon="uil:image-download" />}
+          onClick={downloadAllTableQRImages}
+        >
+          Download All Tables QR Images
+        </Button>
+        <Button
+          variant="text"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+          onClick={() => openDialogHandler('newTable')}
+        >
+          New Table(s)
+        </Button>
       </Box>
-    </Grid>
+      <Card sx={{ p: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '10px 20px',
+          }}
+        >
+          {[...tables]
+            .sort((a, b) => a.index - b.index)
+            .map((table) => (
+              <Avatar
+                key={table.id}
+                variant="rounded"
+                sx={{
+                  width: 32,
+                  height: 32,
+                  bgcolor: table.isActive ? theme.palette.success.main : theme.palette.error.main,
+                }}
+              >
+                <Button onClick={() => onTableClick(table)} sx={{ color: '#FFFFFF' }}>
+                  {table.index}
+                </Button>
+              </Avatar>
+            ))}
+        </Box>
+        {openDialog.newTable && (
+          <AddTablesDialog isOpen={openDialog.newTable} onClose={() => onDialogClose('newTable')} />
+        )}
+        {openDialog.changeDefaultMenu && (
+          <ChangeDefaultMenu
+            isOpen={openDialog.changeDefaultMenu}
+            onClose={() => onDialogClose('changeDefaultMenu')}
+          />
+        )}
+        <DownloadAllQRs tables={tables} />
+      </Card>
+    </Stack>
   );
 }
 

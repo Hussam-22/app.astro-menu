@@ -47,7 +47,7 @@ function BranchManageView() {
     {
       value: 'Tables',
       icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
-      component: <BranchTables />,
+      component: <BranchTables branchInfo={branchInfo} />,
     },
     // {
     //   value: 'Statistics',
