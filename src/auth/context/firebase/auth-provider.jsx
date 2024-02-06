@@ -403,7 +403,7 @@ export function AuthProvider({ children }) {
         return {
           ...docSnap.data(),
           lastUpdatedAt: new Date(docSnap.data().lastUpdatedAt.seconds * 1000).toDateString(),
-          cover: imgUrl,
+          cover: `${imgUrl}?${Date.now()}`,
         };
       } catch (error) {
         throw error;
@@ -481,15 +481,9 @@ export function AuthProvider({ children }) {
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
           'state_changed',
-          (snapshot) => {
-            console.log(snapshot.totalBytes);
-          },
-          (error) => {
-            console.log(error);
-          },
-          () => {
-            console.log('IMAGE UPLOADED !!');
-          }
+          (snapshot) => {},
+          (error) => {},
+          () => {}
         );
       }
     },
@@ -893,7 +887,7 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateMeal = useCallback(
-    async (payload) => {
+    async (payload, imageIsDirty) => {
       try {
         const { imageFile, cover, ...mealData } = payload;
         const docRef = doc(DB, `/users/${state.user.id}/meals/${payload.docID}/`);
@@ -904,9 +898,8 @@ export function AuthProvider({ children }) {
           `gs://menu-app-b268b/${state.user.id}/meals/${payload.docID}/`
         );
 
-        const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
-
-        if (imageFile) {
+        if (imageFile && imageIsDirty) {
+          const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
           const imageRef = ref(storageRef, `${payload.docID}.${fileExtension}`);
 
           // const bucketPath = `${BUCKET}/${state.user.id}/meals/${payload.docID}/`;
@@ -923,11 +916,12 @@ export function AuthProvider({ children }) {
         }
 
         if (payload.translation === '' && payload.translationEdited === '')
-          fbTranslateMeal({
-            mealRef: `/users/${state.user.id}/meals/${payload.docID}`,
-            text: { title: payload.title, desc: payload.description },
-            userID: state.user.id,
-          });
+          console.log('TRANSLATE');
+        fbTranslateMeal({
+          mealRef: `/users/${state.user.id}/meals/${payload.docID}`,
+          text: { title: payload.title, desc: payload.description },
+          userID: state.user.id,
+        });
       } catch (error) {
         console.log(error);
         throw error;
@@ -974,7 +968,7 @@ export function AuthProvider({ children }) {
 
         return {
           ...docSnap.data(),
-          cover: imgUrl,
+          cover: `${imgUrl}?${Date.now()}`,
         };
       } catch (error) {
         console.log(error);

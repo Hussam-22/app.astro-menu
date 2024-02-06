@@ -133,21 +133,23 @@ function MealNewEditForm({ mealInfo }) {
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      const queryKeys = mealInfo?.docID ? ['meals', `meal-${mealInfo.docID}`] : ['meals'];
-      queryClient.removeQueries({ queryKey: [`meal-${mealInfo.docID}`], exact: true });
-      queryClient.invalidateQueries(queryKeys);
+      queryClient.invalidateQueries(['meals', `meal-${mealInfo.docID}`]);
+      queryClient.invalidateQueries(['meals']);
     },
   });
 
   const onSubmit = async (data) => {
     if (mealInfo?.docID)
       mutate(() =>
-        fsUpdateMeal({
-          ...data,
-          translation: dirtyFields.title || dirtyFields.description ? '' : mealInfo.translation,
-          translationEdited:
-            dirtyFields.title || dirtyFields.description ? '' : mealInfo.translationEdited,
-        })
+        fsUpdateMeal(
+          {
+            ...data,
+            translation: dirtyFields.title || dirtyFields.description ? '' : mealInfo.translation,
+            translationEdited:
+              dirtyFields.title || dirtyFields.description ? '' : mealInfo.translationEdited,
+          },
+          dirtyFields.imageFile
+        )
       );
     if (!mealInfo?.docID) {
       mutate(() => fsAddNewMeal(data));

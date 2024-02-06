@@ -31,7 +31,7 @@ function BranchManageView() {
     queryFn: () => fsGetBranch(branchID),
   });
 
-  console.log({ error, isPending });
+  console.log(error);
 
   const TABS = [
     {

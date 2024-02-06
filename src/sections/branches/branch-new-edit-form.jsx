@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 // form
 import { useForm } from 'react-hook-form';
+import { useMemo, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMemo, useEffect, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // @mui
@@ -13,8 +13,8 @@ import { Card, Stack, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import { useAuthContext } from 'src/auth/hooks';
 import { fData } from 'src/utils/format-number';
+import { useAuthContext } from 'src/auth/hooks';
 import BranchSocialLinks from 'src/sections/branches/components/BranchSocialLinks';
 import FormProvider, { RHFUpload, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
@@ -100,9 +100,9 @@ export default function BranchNewEditForm({ branchInfo }) {
     [setValue]
   );
 
-  useEffect(() => {
-    if (branchInfo?.docID) reset(defaultValues);
-  }, [branchInfo, defaultValues, reset]);
+  // useEffect(() => {
+  //   if (branchInfo?.docID) reset(defaultValues);
+  // }, [branchInfo?.docID, defaultValues, reset, branchInfo?.cover]);
 
   const handelRemove = () => {
     setValue('cover', '');
@@ -111,12 +111,10 @@ export default function BranchNewEditForm({ branchInfo }) {
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      const queryKeys = ['branches', `branch-${branchInfo?.docID}`];
-      queryClient.removeQueries({
-        queryKey: [`branch-${branchInfo.docID}`],
-        exact: true,
-      });
-      queryClient.invalidateQueries(queryKeys);
+      queryClient.invalidateQueries(['branches']);
+      setTimeout(() => {
+        queryClient.invalidateQueries([`branch-${branchInfo?.docID}`]);
+      }, 1000);
       enqueueSnackbar('Update success!');
       if (!branchInfo?.docID) router.push(paths.dashboard.branches.list);
     },
