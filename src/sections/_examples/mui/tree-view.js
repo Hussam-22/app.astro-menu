@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
+import TreeItem from '@mui/lab/TreeItem';
 // @mui
 import TreeView from '@mui/lab/TreeView';
+import { styled } from '@mui/material/styles';
 import Container from '@mui/material/Container';
-import { alpha, styled } from '@mui/material/styles';
-import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -13,7 +13,6 @@ import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-//
 import ComponentBlock from '../component-block';
 
 // ----------------------------------------------------------------------
@@ -25,16 +24,16 @@ const StyledTreeView = styled(TreeView)({
 });
 
 const StyledTreeItem = styled((props) => <TreeItem {...props} />)(({ theme }) => ({
-  [`& .${treeItemClasses.iconContainer}`]: {
-    '& .close': {
-      opacity: 0.3,
-    },
-  },
-  [`& .${treeItemClasses.group}`]: {
-    marginLeft: 15,
-    paddingLeft: 18,
-    borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
-  },
+  // [`& .${treeItemClasses.iconContainer}`]: {
+  //   '& .close': {
+  //     opacity: 0.3,
+  //   },
+  // },
+  // [`& .${treeItemClasses.group}`]: {
+  //   marginLeft: 15,
+  //   paddingLeft: 18,
+  //   borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
+  // },
 }));
 
 StyledTreeItem.propTypes = {
