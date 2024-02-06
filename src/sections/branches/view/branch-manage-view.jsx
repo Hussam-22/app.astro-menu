@@ -25,13 +25,13 @@ function BranchManageView() {
   const {
     data: branchInfo = {},
     error,
-    isPending,
+    isFetching,
   } = useQuery({
     queryKey: [`branch-${branchID}`],
     queryFn: () => fsGetBranch(branchID),
   });
 
-  console.log(error);
+  console.log(isFetching);
 
   const TABS = [
     {
@@ -42,7 +42,7 @@ function BranchManageView() {
     {
       value: 'Translation',
       icon: <Iconify icon="clarity:language-line" width={20} height={20} />,
-      component: <BranchTranslation branchInfo={branchInfo} isPending={isPending} />,
+      component: <BranchTranslation branchInfo={branchInfo} isFetching={isFetching} />,
     },
     {
       value: 'Tables',

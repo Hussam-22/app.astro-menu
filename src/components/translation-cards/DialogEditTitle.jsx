@@ -81,7 +81,13 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
           translation: '',
         });
 
-      if (tableToUpdate === 'branches') fsUpdateBranch();
+      if (tableToUpdate === 'branches')
+        fsUpdateBranch({
+          docID: data.docID,
+          description: formData.description,
+          translationEdited: '',
+          translation: '',
+        });
     });
     onClose();
   };

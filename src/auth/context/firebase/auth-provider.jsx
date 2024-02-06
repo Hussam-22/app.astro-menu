@@ -455,7 +455,7 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateBranch = useCallback(
-    async (branchData, shouldUpdateCover) => {
+    async (branchData, shouldUpdateCover = false) => {
       const docRef = doc(DB, `/users/${state.user.id}/branches/${branchData.docID}`);
       const { cover: imageFile, ...documentData } = branchData;
       await updateDoc(docRef, {
@@ -901,10 +901,6 @@ export function AuthProvider({ children }) {
         if (imageFile && imageIsDirty) {
           const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
           const imageRef = ref(storageRef, `${payload.docID}.${fileExtension}`);
-
-          // const bucketPath = `${BUCKET}/${state.user.id}/meals/${payload.docID}/`;
-          // await fsDeleteImage(bucketPath, `${payload.docID}_200x200.webp`);
-          // await fsDeleteImage(bucketPath, `${payload.docID}_800x800.webp`);
 
           const uploadTask = uploadBytesResumable(imageRef, imageFile);
           uploadTask.on(

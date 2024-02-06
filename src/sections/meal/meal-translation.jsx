@@ -1,22 +1,13 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import {
-  Box,
-  Card,
-  Grid,
-  Stack,
-  Tooltip,
-  Skeleton,
-  CardHeader,
-  IconButton,
-  Typography,
-} from '@mui/material';
+import { Box, Card, Grid, Stack, Tooltip, CardHeader, IconButton, Typography } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import LanguageCard from 'src/components/translation-cards/LanguageCard';
 import DialogEditTitle from 'src/components/translation-cards/DialogEditTitle';
+import TranslationCardSkeleton from 'src/components/translation-cards/translation-skeleton';
 
 MealTranslation.propTypes = { mealInfo: PropTypes.object, isFetching: PropTypes.bool };
 
@@ -28,21 +19,7 @@ export default function MealTranslation({ mealInfo, isFetching }) {
     setIsOpenModal(false);
   };
 
-  if (isFetching)
-    return (
-      <Grid container spacing={5}>
-        {[...Array(languageKeys.length + 1)].map((_, index) => (
-          <Grid item xs={12} md={12} key={index}>
-            <Card sx={{ p: 3 }}>
-              <Stack direction="column" spacing={3}>
-                <Skeleton variant="rounded" />
-                <Skeleton variant="rounded" />
-              </Stack>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    );
+  if (isFetching) return <TranslationCardSkeleton languageKeys={languageKeys} />;
 
   return (
     <Grid container spacing={5}>
