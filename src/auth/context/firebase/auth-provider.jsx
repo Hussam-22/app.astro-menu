@@ -42,7 +42,6 @@ import {
   getCountFromServer,
 } from 'firebase/firestore';
 
-// config
 import { FIREBASE_API } from 'src/config-global';
 
 import { AuthContext } from './auth-context';
