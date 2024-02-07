@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { m } from 'framer-motion';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
@@ -11,7 +10,6 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useSettingsContext } from 'src/components/settings';
 import MenuNewEditForm from 'src/sections/menu/menu-new-edit-form';
 import MealsAndSections from 'src/sections/menu/meals-and-sections';
-import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 
 function MenuManageView() {
@@ -85,18 +83,7 @@ function MenuManageView() {
           {menuData?.docID &&
             TABS.map((tab) => {
               const isMatched = tab.value === currentTab;
-              return (
-                isMatched && (
-                  <Box
-                    component={m.div}
-                    {...getVariant('fadeInRight')}
-                    key={tab.value}
-                    id={tab.value}
-                  >
-                    {tab.component}
-                  </Box>
-                )
-              );
+              return isMatched && <Box key={tab.value}>{tab.component}</Box>;
             })}
         </>
       )}
