@@ -299,7 +299,7 @@ export function AuthProvider({ children }) {
 
   const fsAddBatchTablesToBranch = useCallback(
     async (branchID, menuID) => {
-      const MAX_ALLOWED_USER_TABLES = 50;
+      const MAX_ALLOWED_USER_TABLES = 5;
       const batch = writeBatch(DB);
 
       for (let index = 1; index <= MAX_ALLOWED_USER_TABLES; index += 1) {
