@@ -298,27 +298,14 @@ export function AuthProvider({ children }) {
   }, [state]);
 
   const fsAddBatchTablesToBranch = useCallback(
-    async (tablesToAddCount, branchID, menuID) => {
-      // const branchRef = doc(DB, `/users/${state.user.id}/branches/${branchID}/`);
-      // const docSnap = await getDoc(branchRef);
-      // const { activeMenuID = '' } = docSnap.data();
+    async (branchID, menuID) => {
+      const MAX_ALLOWED_USER_TABLES = 50;
       const batch = writeBatch(DB);
 
-      const tablesRef = query(
-        collectionGroup(DB, 'tables'),
-        where('userID', '==', state.user.id),
-        where('branchID', '==', branchID)
-      );
-      const snapshot = await getCountFromServer(tablesRef);
-      const currentTablesCount = snapshot.data().count;
-
-      const totalTables = +tablesToAddCount + currentTablesCount;
-      const startIndex = 1 + currentTablesCount;
-
-      const newDocRef = doc(collection(DB, `/users/${state.user.id}/branches/${branchID}/tables`));
-
-      // eslint-disable-next-line no-plusplus
-      for (let index = startIndex; index < totalTables.length; index++) {
+      for (let index = 1; index <= MAX_ALLOWED_USER_TABLES; index += 1) {
+        const newDocRef = doc(
+          collection(DB, `/users/${state.user.id}/branches/${branchID}/tables`)
+        );
         batch.set(newDocRef, {
           docID: newDocRef.id,
           userID: state.user.id,
@@ -526,6 +513,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+
   const fsUpdateBranchTable = useCallback(
     async (branchID, tableID, value) => {
       const docRef = doc(DB, `/users/${state.user.id}/branches/${branchID}/tables/${tableID}`);

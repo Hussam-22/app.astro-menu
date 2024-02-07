@@ -41,10 +41,10 @@ function AddTablesDialog({ isOpen, onClose }) {
     queryKey: ['menus'],
     queryFn: () => fsGetAllMenus(),
   });
-  const [selectedMenu, setSelectedMenu] = useState(menusList?.[0].docID || '');
+  const [selectedMenu, setSelectedMenu] = useState(menusList?.[0]?.docID || '');
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () => fsAddBatchTablesToBranch(countRef.current.value, branchID, selectedMenu),
+    mutationFn: () => fsAddBatchTablesToBranch(branchID, selectedMenu),
     onSuccess: () => {
       queryClient.invalidateQueries(['branch-tables', branchID]);
       enqueueSnackbar('Tables Added Successfully !!');

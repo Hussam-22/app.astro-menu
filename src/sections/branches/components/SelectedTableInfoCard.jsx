@@ -1,11 +1,12 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { useSnackbar } from 'notistack';
+import { useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
+import { useMemo, useEffect } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
-import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
@@ -26,21 +27,29 @@ import { useAuthContext } from 'src/auth/hooks';
 import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 
 SelectedTableInfoCard.propTypes = {
-  table: PropTypes.object,
-  updateTablesList: PropTypes.func,
+  tableInfo: PropTypes.object,
 };
 
-function SelectedTableInfoCard({ table, updateTablesList }) {
-  const dispatch = useDispatch();
+function SelectedTableInfoCard({ tableInfo }) {
   const theme = useTheme();
-  const [isLoading, setIsLoading] = useState(false);
-  const { fsUpdateBranchTable, fsDeleteTable, user, fsGetAllMenus } = useAuthContext();
+  const { id: branchID } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
+  const { fsUpdateBranchTable, user, fsGetAllMenus } = useAuthContext();
+  const queryClient = useQueryClient();
 
-  const { data: menusList = [], isFetched } = useQuery({
+  const { data: menusList = [] } = useQuery({
     queryKey: ['menus'],
     queryFn: fsGetAllMenus,
   });
-  console.log(menusList);
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ['branch-tables', branchID],
+    mutationFn: (mutateFn) => mutateFn(),
+    onSuccess: () => {
+      enqueueSnackbar('Update Successfully !!');
+      queryClient.invalidateQueries(['branch-tables']);
+    },
+  });
 
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title cant be empty !!'),
@@ -48,13 +57,12 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
 
   const defaultValues = useMemo(
     () => ({
-      activeMenuID: table.activeMenuID || '',
-      isActive: table.isActive,
-      note: table.note,
-      title: table.title,
-      index: table.index,
+      menuID: tableInfo?.menuID || '',
+      isActive: tableInfo?.isActive,
+      note: tableInfo?.note,
+      title: tableInfo?.title,
     }),
-    [table]
+    [tableInfo]
   );
 
   const methods = useForm({
@@ -70,38 +78,28 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
   } = methods;
 
   useEffect(() => {
-    reset(table);
-  }, [reset, table]);
+    if (tableInfo) reset(defaultValues);
+  }, [defaultValues, reset, tableInfo]);
 
   const values = watch();
 
-  const onSubmit = async () => {
-    fsUpdateBranchTable(table.branchID, table.id, { ...values });
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    updateTablesList({ keepMounted: true });
+  const onSubmit = async (formData) => {
+    mutate(() => fsUpdateBranchTable(tableInfo.branchID, tableInfo.docID, { ...formData }));
+    // updateTablesList({ keepMounted: true });
   };
 
-  const deleteTableHandler = async () => {
-    setIsLoading(true);
-    await fsDeleteTable(table.branchID, table.id);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    updateTablesList();
-  };
-
-  const qrURL = `${window.location.host}/qrMenu/${user.id}/${table.id}`;
+  const qrURL = `${window.location.host}/qrMenu/${user.id}/${tableInfo.docID}`;
 
   const copUrlHandler = () => {
     navigator.clipboard.writeText(qrURL);
   };
 
   const downloadQR = () => {
-    const canvas = document.getElementById(table.index);
+    const canvas = document.getElementById(tableInfo.index);
     const pngUrl = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
     const downloadLink = document.createElement('a');
     downloadLink.href = pngUrl;
-    downloadLink.download = `${table.index}.png`;
+    downloadLink.download = `${tableInfo.index}.png`;
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
@@ -113,8 +111,13 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
         <Card sx={{ p: 3, height: 1 }}>
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack direction="column" spacing={2}>
-              <Stack direction="row" alignItems="center" justifyContent="space-between">
-                <Typography variant="h4">Table# {values.index}</Typography>
+              <Stack direction="row" alignItems="self-end" justifyContent="space-between">
+                <Stack direction="column">
+                  <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+                    {tableInfo?.docID}
+                  </Typography>
+                  <Typography variant="h4">Table# {tableInfo?.index}</Typography>
+                </Stack>
                 <RHFSwitch
                   name="isActive"
                   label={`Table is ${values.isActive ? 'Active' : 'Disabled'}`}
@@ -126,10 +129,10 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
                 <RHFTextField name="title" label="Table Nickname" />
                 {menusList?.length !== 0 && menusList !== undefined && (
                   <RHFSelect
-                    name="activeMenuID"
+                    name="menuID"
                     label="Default Menu"
                     placeholder="Default Menu"
-                    defaultValue={table.activeMenuID}
+                    defaultValue={tableInfo?.menuID}
                   >
                     {menusList.map((menu) => (
                       <MenuItem key={menu.docID} value={menu.docID}>
@@ -140,22 +143,13 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
                 )}
               </Stack>
               <RHFTextField name="note" label="Note" multiline rows={3} />
-              <Stack spacing={2} direction="row">
-                {/* <LoadingButton
-                  loading={isLoading}
-                  variant="soft"
-                  color="error"
-                  startIcon={<Iconify icon="ant-design:save-twotone" />}
-                  onClick={deleteTableHandler}
-                >
-                  Delete
-                </LoadingButton> */}
+              <Stack spacing={2} direction="row" justifyContent="flex-end" alignItems="center">
                 <LoadingButton
-                  loading={isSubmitting}
+                  loading={isPending}
                   type="submit"
                   variant="contained"
                   color="success"
-                  startIcon={<Iconify icon="ant-design:save-twotone" />}
+                  startIcon={<Iconify icon="ion:save-sharp" />}
                 >
                   Save
                 </LoadingButton>
@@ -179,7 +173,7 @@ function SelectedTableInfoCard({ table, updateTablesList }) {
             <QRCodeCanvas
               value={qrURL}
               size={200}
-              id={table.index}
+              id={tableInfo?.index}
               style={{
                 border: `solid 5px ${theme.palette.primary.main}`,
                 borderRadius: 5,

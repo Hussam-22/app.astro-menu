@@ -13,8 +13,8 @@ function DownloadAllQRs({ tables }) {
       <QRCodeCanvas
         value={qrURL}
         size={200}
-        id={table.id}
-        key={table.id}
+        id={table.docID}
+        key={table.docID}
         style={{ display: 'none' }}
       />
     );
