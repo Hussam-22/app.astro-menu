@@ -18,14 +18,12 @@ function BranchTables({ branchInfo }) {
   const { fsGetBranchTables } = useAuthContext();
   const [selectedTable, setSelectedTable] = useState();
 
-  const { data: tables = [], isFetching } = useQuery({
+  const { data: tables = [] } = useQuery({
     queryKey: ['branch-tables', branchID],
     queryFn: () => fsGetBranchTables(branchID),
   });
 
   const handleOnTableClick = (table) => setSelectedTable(table);
-
-  // if (isFetching) return <TableInfoSkeleton />;
 
   return (
     <Grid container spacing={3}>

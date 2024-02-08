@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import {
@@ -23,41 +24,45 @@ ChangeDefaultMenu.propTypes = {
 
 function ChangeDefaultMenu({ isOpen, onClose }) {
   const { id: branchID } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
   const { fsChangeMenuForAllTables, fsGetAllMenus } = useAuthContext();
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: menusList = [] } = useQuery({
     queryKey: ['menus'],
     queryFn: () => fsGetAllMenus(),
   });
-  const [selectedMenu, setSelectedMenu] = useState();
+  const [selectedMenuID, setSelectedMenuID] = useState('');
+  console.log(selectedMenuID);
 
   const onMenuChange = (e) => {
-    setSelectedMenu(e.target.value);
+    setSelectedMenuID(e.target.value);
   };
 
-  const changeMenu = () => {
-    setIsLoading(true);
-
-    fsChangeMenuForAllTables(branchID, selectedMenu);
-
-    setTimeout(() => {
-      setIsLoading(false);
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: () => fsChangeMenuForAllTables(branchID, selectedMenuID),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['branch-tables', branchID] });
+      enqueueSnackbar('Tables Menu were updated successfully !!');
       onClose();
-    }, 1000);
-  };
+    },
+  });
+
+  console.log(error);
 
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose}>
       <DialogTitle>Change Menu for All Tables</DialogTitle>
       <DialogContent sx={{ mt: 3 }}>
         <Select
-          value={selectedMenu}
+          value={selectedMenuID}
           onChange={onMenuChange}
           size="small"
           variant="filled"
           fullWidth
+          required
         >
+          <MenuItem value="" />
           {menusList.map((menu) => (
             <MenuItem key={menu.docID} value={menu.docID}>
               {menu.title}
@@ -66,7 +71,12 @@ function ChangeDefaultMenu({ isOpen, onClose }) {
         </Select>
       </DialogContent>
       <DialogActions>
-        <LoadingButton variant="contained" color="success" onClick={changeMenu} loading={isLoading}>
+        <LoadingButton
+          variant="contained"
+          color="success"
+          onClick={() => mutate()}
+          loading={isPending}
+        >
           Save
         </LoadingButton>
         <Button variant="contained" onClick={onClose}>

@@ -7,7 +7,6 @@ import { Box, Card, Stack, Button, Avatar, useTheme } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import DownloadAllQRs from 'src/sections/branches/components/DownloadAllQRs';
 
-import AddTablesDialog from './dialogs/AddTablesDialog';
 import ChangeDefaultMenu from './dialogs/ChangeDefaultMenu';
 
 TablesCard.propTypes = {
@@ -18,12 +17,9 @@ TablesCard.propTypes = {
 
 function TablesCard({ tables, onTableClick, selectedTableID }) {
   const theme = useTheme();
-  const [openDialog, setOpenDialog] = useState({
-    newTable: false,
-    changeDefaultMenu: false,
-  });
-  const onDialogClose = (dialog) => setOpenDialog((state) => ({ ...state, [dialog]: false }));
-  const openDialogHandler = (dialog) => setOpenDialog((state) => ({ ...state, [dialog]: true }));
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onClose = () => setIsOpen(false);
 
   const downloadAllTableQRImages = () => {
     tables.map((table) => {
@@ -46,7 +42,7 @@ function TablesCard({ tables, onTableClick, selectedTableID }) {
           <Button
             variant="text"
             startIcon={<Iconify icon="mdi:file-replace-outline" />}
-            onClick={() => openDialogHandler('changeDefaultMenu')}
+            onClick={() => setIsOpen(true)}
           >
             Change Menu for All Tables
           </Button>
@@ -56,13 +52,6 @@ function TablesCard({ tables, onTableClick, selectedTableID }) {
             onClick={downloadAllTableQRImages}
           >
             Download All Tables QR Images
-          </Button>
-          <Button
-            variant="text"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() => openDialogHandler('newTable')}
-          >
-            New Table(s)
           </Button>
         </Box>
         <Card sx={{ p: 2 }}>
@@ -87,7 +76,13 @@ function TablesCard({ tables, onTableClick, selectedTableID }) {
                     border: `2px solid ${
                       table.isActive ? theme.palette.success.main : theme.palette.error.main
                     }`,
-                    bgcolor: selectedTableID === table.docID ? 'secondary.main' : 'unset',
+                    bgcolor:
+                      // eslint-disable-next-line no-nested-ternary
+                      selectedTableID === table.docID
+                        ? table.isActive
+                          ? 'success.main'
+                          : 'error.main'
+                        : 'unset',
                   }}
                 >
                   <Button onClick={() => onTableClick(table)} sx={{ color: 'text.primary' }}>
@@ -96,18 +91,8 @@ function TablesCard({ tables, onTableClick, selectedTableID }) {
                 </Avatar>
               ))}
           </Box>
-          {openDialog.newTable && (
-            <AddTablesDialog
-              isOpen={openDialog.newTable}
-              onClose={() => onDialogClose('newTable')}
-            />
-          )}
-          {openDialog.changeDefaultMenu && (
-            <ChangeDefaultMenu
-              isOpen={openDialog.changeDefaultMenu}
-              onClose={() => onDialogClose('changeDefaultMenu')}
-            />
-          )}
+
+          {isOpen && <ChangeDefaultMenu isOpen={isOpen} onClose={onClose} />}
           <DownloadAllQRs tables={tables} />
         </Card>
       </Stack>

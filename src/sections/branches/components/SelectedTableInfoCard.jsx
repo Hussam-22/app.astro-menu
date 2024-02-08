@@ -83,11 +83,8 @@ function SelectedTableInfoCard({ tableInfo }) {
 
   const values = watch();
 
-  console.log(values);
-
   const onSubmit = async (formData) => {
     mutate(() => fsUpdateBranchTable(tableInfo.branchID, tableInfo.docID, { ...formData }));
-    // updateTablesList({ keepMounted: true });
   };
 
   const qrURL = `${window.location.host}/qrMenu/${user.id}/${tableInfo?.docID}`;

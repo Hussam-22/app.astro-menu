@@ -343,21 +343,24 @@ export function AuthProvider({ children }) {
     return dataArr[0];
   }, []);
 
-  const fsChangeMenuForAllTables = useCallback(async (branchID, menuID) => {
-    const docsRef = query(
-      collectionGroup(DB, 'tables'),
-      where('userID', '==', state.user.id),
-      where('branchID', '==', branchID)
-    );
-    const snapshot = await getDocs(docsRef);
+  const fsChangeMenuForAllTables = useCallback(
+    async (branchID, menuID) => {
+      const docsRef = query(
+        collectionGroup(DB, 'tables'),
+        where('userID', '==', state.user.id),
+        where('branchID', '==', branchID)
+      );
+      const snapshot = await getDocs(docsRef);
 
-    const batch = writeBatch(DB);
-    snapshot.docs.forEach((doc) => {
-      batch.update(doc.ref, { activeMenuID: menuID });
-    });
+      const batch = writeBatch(DB);
+      snapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, { menuID });
+      });
 
-    await batch.commit();
-  }, []);
+      await batch.commit();
+    },
+    [state]
+  );
 
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
@@ -1436,7 +1439,7 @@ export function AuthProvider({ children }) {
       fsGetBranchTables,
       fsUpdateBranchTable,
       // fsGetTableInfo,
-      // fsChangeMenuForAllTables,
+      fsChangeMenuForAllTables,
       // // ---- ORDERS ----
       // fsGetAllOrders,
       fsGetAllTableOrders,
@@ -1535,7 +1538,7 @@ export function AuthProvider({ children }) {
       fsGetBranchTables,
       fsUpdateBranchTable,
       // fsGetTableInfo,
-      // fsChangeMenuForAllTables,
+      fsChangeMenuForAllTables,
       // // ---- ORDERS ----
       // fsGetAllOrders,
       fsGetAllTableOrders,
