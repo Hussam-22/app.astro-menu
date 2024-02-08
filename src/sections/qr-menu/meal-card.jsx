@@ -12,7 +12,7 @@ function MealCard({ mealInfo }) {
     <Card sx={{ bgcolor: 'background.default', p: 3 }}>
       <Stack direction="column" spacing={1}>
         <Image src={cover} ratio="16/9" sx={{ borderRadius: 2 }} />
-        <Typography variant="h6">{title}</Typography>
+        <Typography variant="h4">{title}</Typography>
         <Typography variant="body2">{description}</Typography>
       </Stack>
     </Card>

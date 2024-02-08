@@ -22,7 +22,8 @@ function MenuSection({ sectionInfo }) {
     queryFn: () => fsGetSectionMeals(userID, sectionMeals),
   });
 
-  console.log(error);
+  // hide sections without meals
+  if (meals.length === 0) return null;
 
   return (
     <Stack spacing={2}>

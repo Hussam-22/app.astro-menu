@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { Stack, Divider, useTheme } from '@mui/material';
+import { Stack, useTheme } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import MenuSection from 'src/sections/qr-menu/menu-section';
@@ -34,10 +34,10 @@ function QrMenuView() {
   return (
     <Stack
       direction="column"
-      spacing={2}
-      divider={
-        <Divider sx={{ border: 'dashed 1px', borderColor: theme.palette.divider }} flexItem />
-      }
+      spacing={5}
+      // divider={
+      //   <Divider sx={{ border: 'dashed 1px', borderColor: theme.palette.divider }} flexItem />
+      // }
     >
       {sections
         .filter((section) => section.meals.length !== 0)
