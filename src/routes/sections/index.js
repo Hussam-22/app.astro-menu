@@ -3,6 +3,8 @@ import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import MainLayout from 'src/layouts/main';
 // config
+import { qrMenuRoutes } from 'src/routes/sections/qr-menu';
+
 // import { PATH_AFTER_LOGIN } from 'src/config-global';
 import { authRoutes } from './auth';
 import { authDemoRoutes } from './auth-demo';
@@ -45,6 +47,9 @@ export default function Router() {
 
     // Components routes
     ...componentsRoutes,
+
+    // Qr Menu
+    ...qrMenuRoutes,
 
     // No match 404
     { path: '*', element: <Navigate to="/404" replace /> },

@@ -813,6 +813,31 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsGetSectionMeals = useCallback(async (userID, sectionMeals) => {
+    const docRef = query(
+      collectionGroup(DB, 'meals'),
+      where('userID', '==', userID),
+      where('docID', 'in', sectionMeals),
+      where('isActive', '==', true)
+    );
+    const querySnapshot = await getDocs(docRef);
+    const dataArr = [];
+    const asyncOperations = [];
+
+    querySnapshot.forEach((element) => {
+      const asyncOperation = async () => {
+        const bucket = `menu-app-b268b/${userID}/meals/${element.data().docID}/`;
+        const cover = await fsGetImgDownloadUrl(bucket, `${element.data().docID}_800x800.webp`);
+
+        dataArr.push({ ...element.data(), cover });
+      };
+      asyncOperations.push(asyncOperation());
+    });
+
+    await Promise.all(asyncOperations);
+
+    return dataArr;
+  }, []);
 
   // ------------------ | MEALS | ------------------
 
@@ -1412,6 +1437,7 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      fsGetUser,
       // ---- GENERIC ----
       fsUpdateTable,
       // fsQueryDoc,
@@ -1449,6 +1475,7 @@ export function AuthProvider({ children }) {
       fsGetSections,
       fsGetSection,
       fsUpdateSectionsOrder,
+      fsGetSectionMeals,
       // fsAddMealToMenuSelectedMeals,
       // fsRemoveMealFromMenuSelectedMeals,
       // fsDeleteAllSections,
@@ -1513,6 +1540,7 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      fsGetUser,
       // ---- GENERIC ----
       fsUpdateTable,
       // fsQueryDoc,
@@ -1548,6 +1576,7 @@ export function AuthProvider({ children }) {
       fsGetSections,
       fsGetSection,
       fsUpdateSectionsOrder,
+      fsGetSectionMeals,
       // fsAddMealToMenuSelectedMeals,
       // fsRemoveMealFromMenuSelectedMeals,
       // fsDeleteAllSections,
