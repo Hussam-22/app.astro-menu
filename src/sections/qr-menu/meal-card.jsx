@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { QueryCache } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { Card, Stack, Typography } from '@mui/material';
 
@@ -11,21 +11,10 @@ function MealCard({ mealInfo }) {
   const { cover, docID, description, isActive, isNew, mealLabels, portions, title, translation } =
     mealInfo;
 
-  const queryCache = new QueryCache({
-    onError: (error) => {
-      console.log(error);
-    },
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onSettled: (data, error) => {
-      console.log(data, error);
-    },
-  });
+  const queryClient = useQueryClient();
+  const cachedData = queryClient.getQueryData(['mealsLabel', userID]);
 
-  const query = queryCache.find(['mealsLabel', userID]);
-
-  console.log(query);
+  console.log(cachedData);
 
   return (
     <Card sx={{ bgcolor: 'background.default', p: 3 }}>
