@@ -12,11 +12,17 @@ function QrMenuView() {
   const tableID = 'CAosVcB66qxLOxqZtt3S';
 
   const theme = useTheme();
-  const { fsGetUser, fsGetBranch, fsGetSections } = useAuthContext();
+  const { fsGetUser, fsGetMealLabels, fsGetBranch, fsGetSections } = useAuthContext();
 
   const { data: userInfo = {}, isFetching: isUserFetching } = useQuery({
     queryKey: ['user', userID],
     queryFn: () => fsGetUser(userID),
+  });
+
+  const { data: mealsLabel = [] } = useQuery({
+    queryKey: ['mealsLabel', userID],
+    queryFn: () => fsGetMealLabels(userID),
+    enabled: !isUserFetching,
   });
 
   const { data: branchInfo = {}, isFetching: isBranchFetching } = useQuery({
