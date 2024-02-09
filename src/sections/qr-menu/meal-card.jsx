@@ -22,10 +22,11 @@ function MealCard({ mealInfo }) {
   return (
     <Card sx={{ bgcolor: 'background.default', p: 3 }}>
       <Stack direction="column" spacing={1}>
+        <Typography variant="h4">{title}</Typography>
         <Box sx={{ position: 'relative' }}>
           <Image src={cover} ratio="16/9" sx={{ borderRadius: 1 }} />
           {isNew && (
-            <Box sx={{ position: 'absolute', bottom: -15, right: 10 }}>
+            <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
               <Label
                 variant="filled"
                 color="error"
@@ -37,7 +38,6 @@ function MealCard({ mealInfo }) {
           )}
         </Box>
 
-        <Typography variant="h4">{title}</Typography>
         <Typography variant="body2">{description}</Typography>
         <Stack direction="row" spacing={1}>
           {labels.map((label) => (
