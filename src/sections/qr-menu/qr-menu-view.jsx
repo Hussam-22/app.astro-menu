@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 import { Stack, useTheme } from '@mui/material';
 
@@ -12,7 +12,15 @@ function QrMenuView() {
   const tableID = 'CAosVcB66qxLOxqZtt3S';
 
   const theme = useTheme();
-  const { fsGetUser, fsGetMealLabels, fsGetBranch, fsGetSections } = useAuthContext();
+  const {
+    fsGetUser,
+    fsGetMealLabels,
+    fsGetBranch,
+    fsGetSections,
+    fsOrderSnapshot,
+    fsInitiateNewOrder,
+    orderSnapShot,
+  } = useAuthContext();
 
   const { data: userInfo = {}, isFetching: isUserFetching } = useQuery({
     queryKey: ['user', userID],
@@ -31,10 +39,31 @@ function QrMenuView() {
     enabled: !isUserFetching,
   });
 
-  const { data: sections = [], isFetching: isSectionsFetching } = useQuery({
+  const { data: sections = [] } = useQuery({
     queryKey: ['sections', userID, menuID],
     queryFn: () => fsGetSections(menuID, userID),
     enabled: !isBranchFetching,
+  });
+
+  const { isFetching: isOrderFetching, error } = useQuery({
+    queryKey: ['order', userID, branchID, tableID, menuID],
+    queryFn: () => fsOrderSnapshot({ userID, branchID, tableID, menuID }),
+  });
+
+  console.log(orderSnapShot);
+
+  // initiatedBy, tableID, menuID, waiterID, userID, branchID
+
+  const { isPending } = useMutation({
+    queryFn: () =>
+      fsInitiateNewOrder({
+        initiatedBy: 'customer',
+        tableID,
+        menuID,
+        waiterID: '',
+        userID,
+        branchID,
+      }),
   });
 
   return (

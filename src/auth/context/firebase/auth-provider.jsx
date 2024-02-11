@@ -88,6 +88,7 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [dataSnapshotListener, setDataSnapshotListener] = useState([]);
   const [docSnapshot, setDocSnapshot] = useState([]);
+  const [orderSnapShot, setOrderSnapShot] = useState({});
 
   const initialize = useCallback(() => {
     try {
@@ -213,6 +214,10 @@ export function AuthProvider({ children }) {
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
 
   const status = state.loading ? 'loading' : checkAuthenticated;
+  // ?----------------------------------- Firebase Functions --------------------------------------
+  const fbTranslate = httpsCallable(FUNCTIONS, 'fbTranslateSectionTitle');
+  const fbTranslateMeal = httpsCallable(FUNCTIONS, 'fbTranslateMeal');
+  const fbTranslateBranchDesc = httpsCallable(FUNCTIONS, 'fbTranslateBranchDesc');
   // ?--------------------------------- IMAGES ----------------------------------
 
   // ?-------------------- IMAGES --------------------------------------------------
@@ -275,10 +280,7 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-  // ?----------------------------------- Firebase Functions --------------------------------------
-  const fbTranslate = httpsCallable(FUNCTIONS, 'fbTranslateSectionTitle');
-  const fbTranslateMeal = httpsCallable(FUNCTIONS, 'fbTranslateMeal');
-  const fbTranslateBranchDesc = httpsCallable(FUNCTIONS, 'fbTranslateBranchDesc');
+
   // ---------------------------------------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
     const docRef = doc(DB, docPath);
@@ -634,24 +636,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsAddToDB = useCallback(
-    async (table, dataObj) => {
-      const newDocRef = doc(collection(DB, table));
-      await setDoc(newDocRef, {
-        ...dataObj,
-        id: newDocRef.id,
-        userID: state.user.id,
-      });
-
-      return newDocRef.id;
-    },
-    [state]
-  );
-
-  const fsRemoveFromDB = useCallback(async (table, id) => {
-    const docRef = doc(DB, table + id);
-    await deleteDoc(docRef);
-  }, []);
 
   // ---------------------------------- MENU SECTIONS ----------------------------------------
   const fsAddSection = useCallback(
@@ -781,6 +765,31 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsGetSectionMeals = useCallback(async (userID, sectionMeals) => {
+    const docRef = query(
+      collectionGroup(DB, 'meals'),
+      where('userID', '==', userID),
+      where('docID', 'in', sectionMeals),
+      where('isActive', '==', true)
+    );
+    const querySnapshot = await getDocs(docRef);
+    const dataArr = [];
+    const asyncOperations = [];
+
+    querySnapshot.forEach((element) => {
+      const asyncOperation = async () => {
+        const bucket = `menu-app-b268b/${userID}/meals/${element.data().docID}/`;
+        const cover = await fsGetImgDownloadUrl(bucket, `${element.data().docID}_800x800.webp`);
+
+        dataArr.push({ ...element.data(), cover });
+      };
+      asyncOperations.push(asyncOperation());
+    });
+
+    await Promise.all(asyncOperations);
+
+    return dataArr;
+  }, []);
   const fsEmptyMenuSelectedMeals = useCallback(
     async (menuID) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
@@ -813,31 +822,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetSectionMeals = useCallback(async (userID, sectionMeals) => {
-    const docRef = query(
-      collectionGroup(DB, 'meals'),
-      where('userID', '==', userID),
-      where('docID', 'in', sectionMeals),
-      where('isActive', '==', true)
-    );
-    const querySnapshot = await getDocs(docRef);
-    const dataArr = [];
-    const asyncOperations = [];
-
-    querySnapshot.forEach((element) => {
-      const asyncOperation = async () => {
-        const bucket = `menu-app-b268b/${userID}/meals/${element.data().docID}/`;
-        const cover = await fsGetImgDownloadUrl(bucket, `${element.data().docID}_800x800.webp`);
-
-        dataArr.push({ ...element.data(), cover });
-      };
-      asyncOperations.push(asyncOperation());
-    });
-
-    await Promise.all(asyncOperations);
-
-    return dataArr;
-  }, []);
 
   // ------------------ | MEALS | ------------------
 
@@ -1098,6 +1082,66 @@ export function AuthProvider({ children }) {
   );
 
   // -------------------------- QR Menu - Cart -----------------------------------
+  const fsInitiateNewOrder = useCallback(async (payload) => {
+    const { initiatedBy, tableID, menuID, waiterID, userID, branchID } = payload;
+    const docRef = doc(collection(DB, `/users/${userID}/branches/${branchID}/orders`));
+    await setDoc(docRef, {
+      id: docRef.id,
+      userID,
+      branchID,
+      tableID,
+      menuID,
+      waiterID,
+      initiatedBy,
+      totalBill: 0,
+      paymentMethod: '',
+      sessionExpiryTime: new Date().getTime() + 45 * 60000,
+      cart: [],
+      isClosed: false,
+      isCanceled: false,
+      isPaid: false,
+      lastUpdate: new Date(),
+    });
+    return docRef.id;
+  }, []);
+
+  const fsOrderSnapshot = useCallback(async (payload) => {
+    const { userID, branchID, tableID, menuID } = payload;
+    const docRef = query(
+      collectionGroup(DB, 'orders'),
+      where('userID', '==', userID),
+      where('branchID', '==', branchID),
+      where('tableID', '==', tableID),
+      where('isClosed', '==', false)
+    );
+
+    const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        setOrderSnapShot(doc.data());
+      });
+    });
+
+    // if (orderSnapShot?.orderID === undefined)
+    //   fsInitiateNewOrder({
+    //     initiatedBy: 'customer',
+    //     tableID,
+    //     menuID,
+    //     waiterID: '',
+    //     userID,
+    //     branchID,
+    //   });
+
+    return unsubscribe;
+  }, []);
+
+  const fsAddMealToCart = useCallback(async (payload) => {
+    const { orderID, userID, branchID, cart } = payload;
+    const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
+
+    updateDoc(docRef, { cart });
+    // if (resetStatus) updateDoc(docRef, { status: { ...status, ready: '', collected: '', kitchen: '' } });
+  }, []);
+
   const fsConfirmCartOrder = useCallback(async (dataObj) => {
     const { userID, branchID, cart } = dataObj;
     const totalBill = cart.reduce((sum, item) => sum + item.price, 0);
@@ -1123,37 +1167,6 @@ export function AuthProvider({ children }) {
     );
 
     await Promise.all([...toResolveUser, ...branchMealsOrderUsage]);
-  }, []);
-  // ------------------------------------------------------------------------------------------------------------------
-  const fsInitiateNewOrder = useCallback(async (payload) => {
-    const { initiatedBy, tableID, menuID, waiterID, userID, branchID, cart } = payload;
-    const docRef = doc(collection(DB, `/users/${userID}/branches/${branchID}/orders`));
-    await setDoc(docRef, {
-      id: docRef.id,
-      userID,
-      branchID,
-      tableID,
-      menuID,
-      waiterID,
-      initiatedBy,
-      totalBill: 0,
-      paymentMethod: '',
-      sessionExpiryTime: new Date().getTime() + 45 * 60000,
-      cart,
-      isClosed: false,
-      isCanceled: false,
-      isPaid: false,
-      lastUpdate: new Date(),
-    });
-    return docRef.id;
-  }, []);
-
-  const fsAddMealToCart = useCallback(async (payload) => {
-    const { orderID, userID, branchID, cart } = payload;
-    const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
-
-    updateDoc(docRef, { cart });
-    // if (resetStatus) updateDoc(docRef, { status: { ...status, ready: '', collected: '', kitchen: '' } });
   }, []);
 
   const fsRemoveMealFromCart = useCallback(async (payload) => {
@@ -1186,25 +1199,6 @@ export function AuthProvider({ children }) {
     // update
   }, []);
 
-  const fsOrdersSnapshot = useCallback(async (payload) => {
-    const { userID, branchID, tableID } = payload;
-    const docRef = query(
-      collectionGroup(DB, 'orders'),
-      where('userID', '==', userID),
-      where('branchID', '==', branchID),
-      where('tableID', '==', tableID),
-      where('isClosed', '==', false)
-    );
-
-    const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        setDataSnapshotListener(doc.data());
-      });
-    });
-
-    // TODO unsubscribe()
-    return [unsubscribe];
-  }, []);
   // ------------------------------------------------------------------------------------------------------------------
 
   const fsUpdateScanLog = useCallback(async (payload) => {
@@ -1460,15 +1454,18 @@ export function AuthProvider({ children }) {
       fsDeleteBranch,
       // ---- TABLES ----
       fsAddBatchTablesToBranch,
-      // fsDeleteTable,
       fsGetBranchTablesCount,
       fsGetBranchTables,
       fsUpdateBranchTable,
-      // fsGetTableInfo,
       fsChangeMenuForAllTables,
-      // // ---- ORDERS ----
-      // fsGetAllOrders,
       fsGetAllTableOrders,
+      // fsDeleteTable,
+      // fsGetTableInfo,
+      // // ---- ORDERS ----
+      fsInitiateNewOrder,
+      fsOrderSnapshot,
+      orderSnapShot,
+      // fsGetAllOrders,
       // // ---- MENU SECTIONS ----
       fsAddSection,
       fsUpdateSection,
@@ -1476,12 +1473,12 @@ export function AuthProvider({ children }) {
       fsGetSection,
       fsUpdateSectionsOrder,
       fsGetSectionMeals,
+      fsDeleteSection,
+      fsUpdateSectionTitle,
       // fsAddMealToMenuSelectedMeals,
       // fsRemoveMealFromMenuSelectedMeals,
       // fsDeleteAllSections,
-      fsDeleteSection,
       // fsRemoveSectionMealsFromMenuSelectedMeals,
-      fsUpdateSectionTitle,
       // fsUpdateSectionOrder,
       // fsUpdateSectionTranslation,
       // fsUpdateSectionVisibility,
@@ -1568,6 +1565,9 @@ export function AuthProvider({ children }) {
       // fsGetTableInfo,
       fsChangeMenuForAllTables,
       // // ---- ORDERS ----
+      fsInitiateNewOrder,
+      fsOrderSnapshot,
+      orderSnapShot,
       // fsGetAllOrders,
       fsGetAllTableOrders,
       // // ---- MENU SECTIONS ----

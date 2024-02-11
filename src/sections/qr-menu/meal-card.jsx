@@ -1,16 +1,19 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { Box, Card, Stack, Typography } from '@mui/material';
+import { Box, Card, Stack, Select, Divider, MenuItem, InputBase, Typography } from '@mui/material';
 
-import Image from 'src/components/image';
 import Label from 'src/components/label';
+import Image from 'src/components/image';
+import AddMealToCart from 'src/sections/qr-menu/add-meal-to-cart';
 
 function MealCard({ mealInfo }) {
   //   const { lang } = useParams();
   const userID = 'n2LrTyRkktYlddyljHUPsodtpsf1';
   const { cover, docID, description, isActive, isNew, mealLabels, portions, title, translation } =
     mealInfo;
+  const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
 
   const queryClient = useQueryClient();
   const cachedMealLabels = queryClient.getQueryData(['mealsLabel', userID]);
@@ -18,6 +21,10 @@ function MealCard({ mealInfo }) {
   const labels = cachedMealLabels.filter((cachedMealLabel) =>
     mealLabels.includes(cachedMealLabel.docID)
   );
+
+  const onPortionChange = (e) => {
+    setSelectedPortionIndex(e.target.value);
+  };
 
   return (
     <Card sx={{ bgcolor: 'background.default', p: 3 }}>
@@ -41,8 +48,29 @@ function MealCard({ mealInfo }) {
         <Typography variant="body2">{description}</Typography>
         <Stack direction="row" spacing={1}>
           {labels.map((label) => (
-            <Label variant="filled">#{label.title}</Label>
+            <Label variant="filled" key={label.docID}>
+              #{label.title}
+            </Label>
           ))}
+        </Stack>
+        <Divider />
+        <Stack direction="row" justifyContent="space-between">
+          <Select
+            value={selectedPortionIndex}
+            onChange={onPortionChange}
+            input={<InputBase sx={{ pl: 2, bgcolor: 'warning.lighter', borderRadius: 1 }} />}
+            inputProps={{
+              sx: { textTransform: 'capitalize' },
+            }}
+          >
+            {portions.map((portion, index) => (
+              <MenuItem key={index} value={index}>
+                {portion.portionSize}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <AddMealToCart portion={portions[selectedPortionIndex]} mealInfo={mealInfo} />
         </Stack>
       </Stack>
     </Card>
