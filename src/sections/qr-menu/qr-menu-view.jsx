@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { Stack, useTheme } from '@mui/material';
 
@@ -39,32 +39,19 @@ function QrMenuView() {
     enabled: !isUserFetching,
   });
 
-  const { data: sections = [] } = useQuery({
+  const { data: sections = [], isFetched: sectionsIsFetched } = useQuery({
     queryKey: ['sections', userID, menuID],
     queryFn: () => fsGetSections(menuID, userID),
     enabled: !isBranchFetching,
   });
 
-  const { isFetching: isOrderFetching, error } = useQuery({
+  const { isFetched: isOrderFetched, error } = useQuery({
     queryKey: ['order', userID, branchID, tableID, menuID],
     queryFn: () => fsOrderSnapshot({ userID, branchID, tableID, menuID }),
+    enabled: sectionsIsFetched,
   });
 
-  console.log(orderSnapShot);
-
-  // initiatedBy, tableID, menuID, waiterID, userID, branchID
-
-  const { isPending } = useMutation({
-    queryFn: () =>
-      fsInitiateNewOrder({
-        initiatedBy: 'customer',
-        tableID,
-        menuID,
-        waiterID: '',
-        userID,
-        branchID,
-      }),
-  });
+  console.log({ error, orderSnapShot });
 
   return (
     <Stack

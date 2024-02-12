@@ -88,7 +88,7 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [dataSnapshotListener, setDataSnapshotListener] = useState([]);
   const [docSnapshot, setDocSnapshot] = useState([]);
-  const [orderSnapShot, setOrderSnapShot] = useState({});
+  const [orderSnapShot, setOrderSnapShot] = useState([]);
 
   const initialize = useCallback(() => {
     try {
@@ -1116,20 +1116,24 @@ export function AuthProvider({ children }) {
     );
 
     const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
+      const orders = [];
       querySnapshot.forEach((doc) => {
-        setOrderSnapShot(doc.data());
+        setOrderSnapShot((state) => [...state, doc.data()]);
+        orders.push(doc.data());
       });
-    });
 
-    // if (orderSnapShot?.orderID === undefined)
-    //   fsInitiateNewOrder({
-    //     initiatedBy: 'customer',
-    //     tableID,
-    //     menuID,
-    //     waiterID: '',
-    //     userID,
-    //     branchID,
-    //   });
+      console.log(orders);
+
+      if (orders.length === 0)
+        fsInitiateNewOrder({
+          initiatedBy: 'customer',
+          tableID,
+          menuID,
+          waiterID: '',
+          userID,
+          branchID,
+        });
+    });
 
     return unsubscribe;
   }, []);
