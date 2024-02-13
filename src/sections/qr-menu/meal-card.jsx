@@ -1,11 +1,11 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { Box, Card, Stack, Select, Divider, MenuItem, InputBase, Typography } from '@mui/material';
 
-import Image from 'src/components/image';
 import Label from 'src/components/label';
+import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
 import AddMealToCart from 'src/sections/qr-menu/add-meal-to-cart';
 
@@ -14,7 +14,7 @@ function MealCard({ mealInfo }) {
   const userID = 'n2LrTyRkktYlddyljHUPsodtpsf1';
   const { cover, docID, description, isActive, isNew, mealLabels, portions, title, translation } =
     mealInfo;
-  const { user } = useAuthContext();
+  const { user, orderSnapShot } = useAuthContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
 
   const queryClient = useQueryClient();
@@ -27,6 +27,20 @@ function MealCard({ mealInfo }) {
   const onPortionChange = (e) => {
     setSelectedPortionIndex(e.target.value);
   };
+  console.log(orderSnapShot);
+
+  const getPortionOrderCount = useCallback(
+    (portionID) => {
+      const { cart } = orderSnapShot;
+      if (cart && Array.isArray(cart)) {
+        const qty =
+          orderSnapShot.cart.find((cartPortion) => cartPortion.id === portionID)?.qty || 0;
+        return qty;
+      }
+      return 0;
+    },
+    [orderSnapShot]
+  );
 
   return (
     <Card sx={{ bgcolor: 'background.default', p: 1 }}>
@@ -68,18 +82,33 @@ function MealCard({ mealInfo }) {
           </Box>
         )}
         {isActive && (
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Select
               value={selectedPortionIndex}
               onChange={onPortionChange}
-              input={<InputBase sx={{ pl: 2, bgcolor: 'primary.lighter', borderRadius: 0.5 }} />}
+              input={<InputBase sx={{ pl: 2, borderRadius: 0.5 }} />}
               inputProps={{
                 sx: { textTransform: 'capitalize' },
               }}
             >
               {portions.map((portion, index) => (
                 <MenuItem key={index} value={index}>
-                  {`${portion.portionSize} - ${portion.gram}gram`}
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Typography variant="caption">{`${portion.portionSize} - ${portion.gram}gram`}</Typography>
+                    <Label
+                      variant="soft"
+                      color={getPortionOrderCount(portion.id) > 0 ? 'success' : 'default'}
+                    >{`x${getPortionOrderCount(portion.id)}`}</Label>
+                  </Stack>
                 </MenuItem>
               ))}
             </Select>
