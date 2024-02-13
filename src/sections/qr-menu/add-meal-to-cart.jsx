@@ -12,7 +12,7 @@ function AddMealToCart({ portion, mealInfo }) {
 
   const count = useMemo(
     () =>
-      orderSnapShot.cart.reduce((accumulator, cartPortion) => {
+      orderSnapShot?.cart?.reduce((accumulator, cartPortion) => {
         if (cartPortion.mealID === mealInfo.docID) {
           return cartPortion.qty + accumulator;
         }

@@ -18,7 +18,7 @@ function MealCard({ mealInfo }) {
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
 
   const queryClient = useQueryClient();
-  const cachedMealLabels = queryClient.getQueryData(['mealsLabel', userID]);
+  const cachedMealLabels = queryClient.getQueryData(['mealsLabel', userID]) || [];
 
   const labels = cachedMealLabels.filter((cachedMealLabel) =>
     mealLabels.includes(cachedMealLabel.docID)

@@ -109,6 +109,7 @@ export function palette(mode) {
       default: '#FFFFFF',
       neutral: GREY[200],
       light: GREY[100],
+      dark: '#000000',
     },
     action: {
       ...COMMON.action,
@@ -129,6 +130,7 @@ export function palette(mode) {
       default: GREY[900],
       neutral: alpha(GREY[800], 0.12),
       light: GREY[800],
+      dark: GREY[900],
     },
     action: {
       ...COMMON.action,
