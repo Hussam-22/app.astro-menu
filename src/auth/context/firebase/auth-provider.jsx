@@ -769,8 +769,8 @@ export function AuthProvider({ children }) {
     const docRef = query(
       collectionGroup(DB, 'meals'),
       where('userID', '==', userID),
-      where('docID', 'in', sectionMeals),
-      where('isActive', '==', true)
+      where('docID', 'in', sectionMeals)
+      // where('isActive', '==', true)
     );
     const querySnapshot = await getDocs(docRef);
     const dataArr = [];
@@ -1086,7 +1086,7 @@ export function AuthProvider({ children }) {
     const { initiatedBy, tableID, menuID, waiterID, userID, branchID } = payload;
     const docRef = doc(collection(DB, `/users/${userID}/branches/${branchID}/orders`));
     await setDoc(docRef, {
-      id: docRef.id,
+      docID: docRef.id,
       userID,
       branchID,
       tableID,
@@ -1118,11 +1118,9 @@ export function AuthProvider({ children }) {
     const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
       const orders = [];
       querySnapshot.forEach((doc) => {
-        setOrderSnapShot((state) => [...state, doc.data()]);
+        setOrderSnapShot(doc.data());
         orders.push(doc.data());
       });
-
-      console.log(orders);
 
       if (orders.length === 0)
         fsInitiateNewOrder({
@@ -1512,7 +1510,7 @@ export function AuthProvider({ children }) {
       // // ---- QR Menu ----
       // fsConfirmCartOrder,
       // fsUpdateScanLog,
-      // fsAddMealToCart,
+      fsAddMealToCart,
       // fsRemoveMealFromCart,
       // fsOrdersSnapshot,
       // fsInitiateNewOrder,
@@ -1616,7 +1614,7 @@ export function AuthProvider({ children }) {
       // // ---- QR Menu ----
       // fsConfirmCartOrder,
       // fsUpdateScanLog,
-      // fsAddMealToCart,
+      fsAddMealToCart,
       // fsRemoveMealFromCart,
       // fsOrdersSnapshot,
       // fsInitiateNewOrder,

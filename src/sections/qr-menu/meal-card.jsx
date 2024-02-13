@@ -4,8 +4,9 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { Box, Card, Stack, Select, Divider, MenuItem, InputBase, Typography } from '@mui/material';
 
-import Label from 'src/components/label';
 import Image from 'src/components/image';
+import Label from 'src/components/label';
+import { useAuthContext } from 'src/auth/hooks';
 import AddMealToCart from 'src/sections/qr-menu/add-meal-to-cart';
 
 function MealCard({ mealInfo }) {
@@ -13,6 +14,7 @@ function MealCard({ mealInfo }) {
   const userID = 'n2LrTyRkktYlddyljHUPsodtpsf1';
   const { cover, docID, description, isActive, isNew, mealLabels, portions, title, translation } =
     mealInfo;
+  const { user } = useAuthContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
 
   const queryClient = useQueryClient();
@@ -27,11 +29,14 @@ function MealCard({ mealInfo }) {
   };
 
   return (
-    <Card sx={{ bgcolor: 'background.default', p: 3 }}>
+    <Card sx={{ bgcolor: 'background.default', p: 1 }}>
       <Stack direction="column" spacing={1}>
-        <Typography variant="h4">{title}</Typography>
         <Box sx={{ position: 'relative' }}>
-          <Image src={cover} ratio="16/9" sx={{ borderRadius: 1 }} />
+          <Image
+            src={cover}
+            ratio="16/9"
+            sx={{ borderRadius: 1, filter: `grayscale(${isActive ? '0' : '100'})` }}
+          />
           {isNew && (
             <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
               <Label
@@ -44,34 +49,46 @@ function MealCard({ mealInfo }) {
             </Box>
           )}
         </Box>
-
-        <Typography variant="body2">{description}</Typography>
+        <Typography variant="h4">{title}</Typography>
         <Stack direction="row" spacing={1}>
           {labels.map((label) => (
-            <Label variant="filled" key={label.docID}>
+            <Label variant="soft" color="default" key={label.docID} sx={{ fontSize: 10 }}>
               #{label.title}
             </Label>
           ))}
         </Stack>
-        <Divider />
-        <Stack direction="row" justifyContent="space-between">
-          <Select
-            value={selectedPortionIndex}
-            onChange={onPortionChange}
-            input={<InputBase sx={{ pl: 2, bgcolor: 'warning.lighter', borderRadius: 1 }} />}
-            inputProps={{
-              sx: { textTransform: 'capitalize' },
-            }}
-          >
-            {portions.map((portion, index) => (
-              <MenuItem key={index} value={index}>
-                {portion.portionSize}
-              </MenuItem>
-            ))}
-          </Select>
+        <Typography variant="body2">{description}</Typography>
 
-          <AddMealToCart portion={portions[selectedPortionIndex]} mealInfo={mealInfo} />
-        </Stack>
+        <Divider />
+        {!isActive && (
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h6" sx={{ color: 'text.disabled' }}>
+              Out of Stock
+            </Typography>
+          </Box>
+        )}
+        {isActive && (
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Select
+              value={selectedPortionIndex}
+              onChange={onPortionChange}
+              input={<InputBase sx={{ pl: 2, bgcolor: 'primary.lighter', borderRadius: 0.5 }} />}
+              inputProps={{
+                sx: { textTransform: 'capitalize' },
+              }}
+            >
+              {portions.map((portion, index) => (
+                <MenuItem key={index} value={index}>
+                  {`${portion.portionSize} - ${portion.gram}gram`}
+                </MenuItem>
+              ))}
+            </Select>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <AddMealToCart portion={portions[selectedPortionIndex]} mealInfo={mealInfo} />
+              <Typography variant="h6">{`${portions[selectedPortionIndex].price} ${user.currency}`}</Typography>
+            </Stack>
+          </Stack>
+        )}
       </Stack>
     </Card>
   );

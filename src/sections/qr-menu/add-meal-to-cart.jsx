@@ -9,6 +9,7 @@ import { useAuthContext } from 'src/auth/hooks';
 
 function AddMealToCart({ portion, mealInfo }) {
   const { fsAddMealToCart, orderSnapShot } = useAuthContext();
+  const { docID, userID, branchID, cart } = orderSnapShot;
   const queryClient = useQueryClient();
 
   const mealInCartCount = orderSnapShot;
@@ -18,7 +19,19 @@ function AddMealToCart({ portion, mealInfo }) {
   const { mutate, isPending } = useMutation({ mutationFn: (mutateFn) => mutateFn() });
 
   const onQtyChange = (qtyValue) => {
-    // mutate(() => fsAddMealToCart({orderID, userID, branchID, cart}));
+    const updatedCart = cart;
+    const portionIndex = cart.findIndex(
+      (cartPortion) => cartPortion.title === portion.title && cartPortion.mealID === mealInfo.docID
+    );
+    const qty = updatedCart[portionIndex]?.qty || 0;
+    console.log(portionIndex);
+
+    if (portionIndex > -1) updatedCart[portionIndex].qty = qty + 1;
+    if (portionIndex === -1) updatedCart.push({ ...portion, mealID: mealInfo.docID, qty: 1 });
+
+    console.log({ qty, cartQty: updatedCart });
+
+    // mutate(() => fsAddMealToCart({ docID, userID, branchID, cart }));
     setCount((state) => state + qtyValue);
   };
 

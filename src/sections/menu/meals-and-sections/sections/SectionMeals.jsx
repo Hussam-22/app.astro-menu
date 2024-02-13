@@ -181,12 +181,35 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                   alignItems="center"
                   sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
                 >
-                  <Avatar
-                    src={meal.cover}
-                    alt={meal.title}
-                    sx={{ width: 72, height: 72, borderRadius: 1 }}
-                    variant="square"
-                  />
+                  <Box sx={{ position: 'relative' }}>
+                    <Avatar
+                      src={meal.cover}
+                      alt={meal.title}
+                      sx={{
+                        width: 72,
+                        height: 72,
+                        borderRadius: 1,
+                        filter: `grayscale(${meal.isActive ? 0 : '100'})`,
+                      }}
+                      variant="square"
+                    />
+                    {!meal.isActive && (
+                      <Label
+                        variant="filled"
+                        color="error"
+                        sx={{
+                          position: 'absolute',
+                          bottom: -15,
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          fontSize: 9,
+                          fontWeight: '200',
+                        }}
+                      >
+                        Out of Stock
+                      </Label>
+                    )}
+                  </Box>
                   <Stack direction="column" sx={{ px: 2 }} spacing={1}>
                     <Box>
                       <Typography variant="caption" sx={{ color: 'text.secondary' }}>

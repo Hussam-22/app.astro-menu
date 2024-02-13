@@ -55,10 +55,12 @@ function MealLabelsView() {
 
   const onClose = () => setIsOpen(false);
 
-  const { data: mealLabelsList = [] } = useQuery({
+  const { data: mealLabelsList = [], error } = useQuery({
     queryKey: ['meal-labels'],
-    queryFn: fsGetMealLabels,
+    queryFn: () => fsGetMealLabels(),
   });
+
+  console.log(error);
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);

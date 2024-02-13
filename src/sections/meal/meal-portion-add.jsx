@@ -3,6 +3,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Box, Card, Stack, Button, IconButton, Typography, InputAdornment } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
+import generateID from 'src/utils/generate-id';
 import { RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
@@ -24,6 +25,7 @@ export default function MealPortionAdd() {
       portionSize: '',
       price: 0,
       gram: 0,
+      id: generateID(10),
     });
   };
 

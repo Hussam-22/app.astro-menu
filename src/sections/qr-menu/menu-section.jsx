@@ -26,7 +26,7 @@ function MenuSection({ sectionInfo }) {
   if (meals.length === 0) return null;
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 1 }}>
       <Typography variant="h2">{title}</Typography>
       <Stack direction="column" spacing={2}>
         {meals.map((meal) => (

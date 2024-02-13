@@ -51,8 +51,6 @@ function QrMenuView() {
     enabled: sectionsIsFetched,
   });
 
-  console.log({ error, orderSnapShot });
-
   return (
     <Stack
       direction="column"
@@ -62,7 +60,8 @@ function QrMenuView() {
       // }
     >
       {sections
-        .filter((section) => section.meals.length !== 0)
+        .filter((section) => section.isActive)
+        .sort((a, b) => a.order - b.order)
         .map((section) => (
           <MenuSection key={section.docID} sectionInfo={section} />
         ))}
