@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
 import { Stack, Drawer, Divider, useTheme, Typography, CircularProgress } from '@mui/material';
@@ -16,57 +16,64 @@ CartDrawer.propTypes = {
 
 function CartDrawer({ openState, toggleDrawer }) {
   const theme = useTheme();
-  const { menuMeals } = useSelector((state) => state.qrMenu);
-  const { fsRemoveMealFromCart, dataSnapshotListener } = useAuthContext();
+  const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [cartMeal, setCartMeals] = useState([]);
-  const [totalBill, setTotalBill] = useState(0);
 
-  useEffect(() => {
-    // re-construct data and load them to cart state
-    if (
-      dataSnapshotListener?.cart &&
-      dataSnapshotListener.isPaid === false &&
-      dataSnapshotListener.isCanceled === false
-    ) {
-      setTotalBill(
-        dataSnapshotListener.id &&
-          dataSnapshotListener.cart.reduce((sum, item) => sum + item.price, 0)
-      );
+  const queryClient = useQueryClient();
+  const cachedMealLabels = queryClient.getQueryData(['sectionMeals']) || [];
 
-      const mealsArr = menuMeals.filter((meal) =>
-        dataSnapshotListener.cart.some((cartItem) => cartItem.mealID === meal.id)
-      );
-      setCartMeals(
-        mealsArr.map((meal) => ({
-          ...meal,
-          portions: dataSnapshotListener.cart
-            .filter((cartItem) => cartItem.mealID === meal.id)
-            .map((cartItem) => ({
-              comment: cartItem.comment,
-              portionSize: cartItem.portionSize,
-              price: cartItem.price,
-              qty: 1,
-              id: cartItem.id,
-            })),
-        }))
-      );
-    } else {
-      setCartMeals([]);
-      setTotalBill(0);
-    }
-  }, [dataSnapshotListener, menuMeals]);
+  console.log(cachedMealLabels);
+
+  const totalBill = useMemo(
+    () =>
+      orderSnapShot?.docID &&
+      orderSnapShot.cart.reduce(
+        (accumulator, portion) => accumulator + portion.price * portion.qty,
+        0
+      ),
+    [orderSnapShot.cart, orderSnapShot?.docID]
+  );
+
+  // useEffect(() => {
+  //   // re-construct data and load them to cart state
+  //   if (
+  //     orderSnapShot?.cart &&
+  //     orderSnapShot.isPaid === false &&
+  //     orderSnapShot.isCanceled === false
+  //   ) {
+  //     const mealsArr = cachedMealLabels.filter((meal) =>
+  //       orderSnapShot.cart.some((cartItem) => cartItem.mealID === meal.id)
+  //     );
+  //     setCartMeals(
+  //       mealsArr.map((meal) => ({
+  //         ...meal,
+  //         portions: orderSnapShot.cart
+  //           .filter((cartItem) => cartItem.mealID === meal.id)
+  //           .map((cartItem) => ({
+  //             comment: cartItem.comment,
+  //             portionSize: cartItem.portionSize,
+  //             price: cartItem.price,
+  //             qty: 1,
+  //             id: cartItem.id,
+  //           })),
+  //       }))
+  //     );
+  //   } else {
+  //     setCartMeals([]);
+  //   }
+  // }, [orderSnapShot, cachedMealLabels]);
 
   const removeMeal = (portion) => {
     setIsLoading(true);
 
-    const cart = dataSnapshotListener.cart.filter((cartPortion) => cartPortion.id !== portion.id);
+    const cart = orderSnapShot.cart.filter((cartPortion) => cartPortion.id !== portion.id);
 
     fsRemoveMealFromCart(
       {
-        orderID: dataSnapshotListener.id,
-        userID: dataSnapshotListener.userID,
-        branchID: dataSnapshotListener.branchID,
+        orderID: orderSnapShot.id,
+        userID: orderSnapShot.userID,
+        branchID: orderSnapShot.branchID,
         cart,
       },
       true

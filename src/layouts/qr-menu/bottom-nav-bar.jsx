@@ -16,6 +16,7 @@ BottomNavModern.propTypes = {
 };
 
 function BottomNavModern({ containerWidth }) {
+  const { orderSnapShot } = useAuthContext();
   const [drawerStates, setDrawerStates] = useState({
     menu: false,
     cart: false,
@@ -24,14 +25,19 @@ function BottomNavModern({ containerWidth }) {
   const { selectedLanguage, languages, defaultLanguage, filterKeywords } = useSelector(
     (state) => state.qrMenu
   );
-  const { dataSnapshotListener } = useAuthContext();
 
-  const totalCartItems =
-    (dataSnapshotListener?.isPaid === false &&
-      dataSnapshotListener?.isCanceled === false &&
-      dataSnapshotListener?.id &&
-      dataSnapshotListener?.cart?.length) ||
-    0;
+  // const totalCartItems =
+  //   (dataSnapshotListener?.isPaid === false &&
+  //     dataSnapshotListener?.isCanceled === false &&
+  //     dataSnapshotListener?.id &&
+  //     dataSnapshotListener?.cart?.length) ||
+  //   0;
+
+  const totalCartItems = useMemo(
+    () =>
+      orderSnapShot?.cart?.reduce((accumulator, cartPortion) => cartPortion.qty + accumulator, 0),
+    [orderSnapShot?.cart]
+  );
 
   const isFilterApplied = useMemo(
     () => Object.values(filterKeywords).includes(true),
