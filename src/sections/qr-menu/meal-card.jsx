@@ -7,6 +7,7 @@ import { Box, Card, Stack, Select, Divider, MenuItem, InputBase, Typography } fr
 import Label from 'src/components/label';
 import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
+import TextMaxLine from 'src/components/text-max-line';
 import AddMealToCart from 'src/sections/qr-menu/add-meal-to-cart';
 
 function MealCard({ mealInfo, isMealActive }) {
@@ -16,6 +17,7 @@ function MealCard({ mealInfo, isMealActive }) {
   const { cover, docID, description, isNew, mealLabels, portions, title, translation } = mealInfo;
   const { user, orderSnapShot } = useAuthContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
+  const [isReadMore, setIsReadMore] = useState(false);
 
   const queryClient = useQueryClient();
   const cachedMealLabels = queryClient.getQueryData(['mealsLabel', userID]) || [];
@@ -44,7 +46,7 @@ function MealCard({ mealInfo, isMealActive }) {
   );
 
   return (
-    <Card sx={{ bgcolor: 'background.default', p: 1 }}>
+    <Card sx={{ bgcolor: 'background.default', p: 0 }}>
       <Stack direction="column" spacing={1}>
         <Box sx={{ position: 'relative' }}>
           <Image
@@ -64,15 +66,26 @@ function MealCard({ mealInfo, isMealActive }) {
             </Box>
           )}
         </Box>
-        <Typography variant="h4">{title}</Typography>
-        <Stack direction="row" spacing={1}>
+        <Typography variant="h4" sx={{ px: 2 }}>
+          {title}
+        </Typography>
+        <Stack direction="row" spacing={1} sx={{ px: 2 }}>
           {labels.map((label) => (
             <Label variant="soft" color="default" key={label.docID} sx={{ fontSize: 10 }}>
               #{label.title}
             </Label>
           ))}
         </Stack>
-        <Typography variant="body2">{description}</Typography>
+        {!isReadMore && (
+          <TextMaxLine line={2} variant="body2" onClick={() => setIsReadMore(true)} sx={{ px: 2 }}>
+            {description}
+          </TextMaxLine>
+        )}
+        {isReadMore && (
+          <Typography variant="body2" onClick={() => setIsReadMore(false)} sx={{ px: 2 }}>
+            {description}
+          </Typography>
+        )}
 
         <Divider />
         {!isMealActive && (
