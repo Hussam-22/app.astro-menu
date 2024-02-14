@@ -43,7 +43,7 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
   const currentSectionMeals = currentSectionInfo?.meals;
   const otherSectionsMeals = menuSections
     .filter((section) => section.docID !== sectionID)
-    .flatMap((section) => section.meals)
+    .flatMap((section) => section.meals.flatMap((meal) => meal.mealID))
     .filter((mealID) => !currentSectionMeals.includes(mealID));
 
   const sectionAvailableMeals = allMeals.filter((meal) => !otherSectionsMeals.includes(meal.docID));
@@ -112,6 +112,7 @@ MealRow.propTypes = {
 };
 
 function MealRow({ mealInfo, currentSectionMeals, menuID, sectionID }) {
+  console.log(currentSectionMeals);
   const { fsUpdateSection } = useAuthContext();
   const queryClient = useQueryClient();
 
@@ -125,15 +126,15 @@ function MealRow({ mealInfo, currentSectionMeals, menuID, sectionID }) {
 
   const handleAddMealToSection = (mealID) => {
     // if mealID DOES exists, Remove it
-    if (currentSectionMeals.includes(mealID))
+    if (currentSectionMeals.flatMap((meal) => meal.mealID).includes(mealID))
       mutate(() =>
         fsUpdateSection(menuID, sectionID, {
-          meals: currentSectionMeals.filter((sectionMealID) => sectionMealID !== mealID),
+          meals: currentSectionMeals.filter((sectionMeal) => sectionMeal.mealID !== mealID),
         })
       );
 
     // if mealID DOES NOT exists, Add it
-    if (!currentSectionMeals.includes(mealID))
+    if (!currentSectionMeals.flatMap((meal) => meal.mealID).includes(mealID))
       mutate(() =>
         fsUpdateSection(menuID, sectionID, {
           meals: [...currentSectionMeals, { mealID, isActive: mealInfo.isActive }],
@@ -152,7 +153,7 @@ function MealRow({ mealInfo, currentSectionMeals, menuID, sectionID }) {
       {isPending && <CircularProgress />}
       {!isPending && (
         <IconButton onClick={() => handleAddMealToSection(mealInfo.docID)}>
-          {currentSectionMeals?.includes(mealInfo.docID) ? (
+          {currentSectionMeals.flatMap((meal) => meal.mealID)?.includes(mealInfo.docID) ? (
             <Iconify icon="mdi:minus-circle" width={24} height={24} sx={{ color: 'error.main' }} />
           ) : (
             <Iconify

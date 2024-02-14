@@ -277,7 +277,7 @@ function MealNewEditForm({ mealInfo }) {
           <DialogTitle sx={{ pb: 2 }}>Add New Meal Label</DialogTitle>
 
           <DialogContent>
-            <MealLabelNewEditForm onClose={onClose} mealID={mealInfo.docID} />
+            <MealLabelNewEditForm onClose={onClose} mealID={mealInfo?.docID} />
           </DialogContent>
         </Dialog>
       )}

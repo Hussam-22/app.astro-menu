@@ -22,10 +22,12 @@ export default function MealLabelNewEditForm({ onClose, mealID }) {
   const { fsGetMealLabels, fsAddNewMealLabel } = useAuthContext();
   const queryClient = useQueryClient();
 
-  const { data: mealLabelsList = [] } = useQuery({
+  const { data: mealLabelsList = [], error } = useQuery({
     queryKey: ['meal-labels'],
     queryFn: fsGetMealLabels,
   });
+
+  console.log(error);
 
   const NewMealSchema = Yup.object().shape({
     title: Yup.string()
