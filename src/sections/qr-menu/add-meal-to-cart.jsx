@@ -1,14 +1,17 @@
-import { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useMemo, useState } from 'react';
 
 import { Stack, Typography, IconButton } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
+import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
+import DialogAddComment from 'src/layouts/qr-menu/components/DialogAddComment';
 
 function AddMealToCart({ portion, mealInfo }) {
-  const { fsAddMealToCart, orderSnapShot } = useAuthContext();
+  const { fsUpdateCart, orderSnapShot } = useAuthContext();
   const { docID, userID, branchID, cart } = orderSnapShot;
+  const [isOpen, setIsOpen] = useState(false);
 
   const count = useMemo(
     () =>
@@ -21,38 +24,49 @@ function AddMealToCart({ portion, mealInfo }) {
     [mealInfo.docID, orderSnapShot.cart]
   );
 
-  const onQtyChange = (qtyValue) => {
-    let updatedCart = cart;
-    const portionIndex = cart.findIndex((cartPortion) => cartPortion.id === portion.id);
-    const qty = updatedCart[portionIndex]?.qty || 0;
+  const onQtyChange = (qtyValue, comment = '') => {
+    const updatedCart = cart;
 
     if (qtyValue === +1) {
-      if (portionIndex > -1) updatedCart[portionIndex].qty = qty + 1;
-      if (portionIndex === -1) updatedCart.push({ ...portion, mealID: mealInfo.docID, qty: 1 });
-      fsAddMealToCart({ orderID: docID, userID, branchID, cart: updatedCart });
+      updatedCart.push({
+        ...portion,
+        mealID: mealInfo.docID,
+        qty: 1,
+        comment,
+        id: generateID(8),
+      });
+      fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
+      setIsOpen(false);
     }
 
-    if (portionIndex !== -1 && qtyValue === -1) {
-      if (qty > 1) {
-        updatedCart[portionIndex].qty = qty - 1;
+    if (qtyValue === -1) {
+      const index = cart.findLastIndex(
+        (cartPortion) =>
+          cartPortion.mealID === mealInfo.docID && cartPortion.portionSize === portion.portionSize
+      );
+      if (index !== -1) {
+        updatedCart.splice(index, 1);
+        fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
       }
-      if (qty === 1) {
-        updatedCart = updatedCart.filter((cartPortion) => cartPortion.id !== portion.id);
-      }
-      fsAddMealToCart({ orderID: docID, userID, branchID, cart: updatedCart });
     }
   };
 
   return (
-    <Stack direction="row" alignItems="center" justifyContent="space-evenly">
-      <IconButton onClick={() => onQtyChange(-1)} disabled={count === 0}>
-        <Iconify icon="zondicons:minus-solid" sx={{ color: count === 0 ? '' : 'error.main' }} />
-      </IconButton>
-      <Typography>{count}</Typography>
-      <IconButton onClick={() => onQtyChange(+1)}>
-        <Iconify icon="flat-color-icons:plus" />
-      </IconButton>
-    </Stack>
+    <>
+      <Stack direction="row" alignItems="center" justifyContent="space-evenly">
+        <IconButton onClick={() => onQtyChange(-1)} disabled={count === 0}>
+          <Iconify icon="zondicons:minus-solid" sx={{ color: count === 0 ? '' : 'error.main' }} />
+        </IconButton>
+        <Typography>{count}</Typography>
+        <IconButton onClick={() => setIsOpen(true)}>
+          <Iconify icon="flat-color-icons:plus" />
+        </IconButton>
+      </Stack>
+
+      {isOpen && (
+        <DialogAddComment isOpen={isOpen} onClose={() => setIsOpen(false)} addMeal={onQtyChange} />
+      )}
+    </>
   );
 }
 export default AddMealToCart;

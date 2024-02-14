@@ -27,19 +27,20 @@ function MealCard({ mealInfo }) {
   const onPortionChange = (e) => {
     setSelectedPortionIndex(e.target.value);
   };
-  console.log(orderSnapShot);
 
   const getPortionOrderCount = useCallback(
-    (portionID) => {
+    (portionSize) => {
       const { cart } = orderSnapShot;
       if (cart && Array.isArray(cart)) {
-        const qty =
-          orderSnapShot.cart.find((cartPortion) => cartPortion.id === portionID)?.qty || 0;
+        const qty = cart.filter(
+          (cartPortion) =>
+            cartPortion.mealID === mealInfo.docID && cartPortion.portionSize === portionSize
+        ).length;
         return qty;
       }
       return 0;
     },
-    [orderSnapShot]
+    [mealInfo.docID, orderSnapShot]
   );
 
   return (
@@ -106,8 +107,8 @@ function MealCard({ mealInfo }) {
                     <Typography variant="caption">{`${portion.portionSize} - ${portion.gram}gram`}</Typography>
                     <Label
                       variant="soft"
-                      color={getPortionOrderCount(portion.id) > 0 ? 'success' : 'default'}
-                    >{`x${getPortionOrderCount(portion.id)}`}</Label>
+                      color={getPortionOrderCount(portion.portionSize) > 0 ? 'success' : 'default'}
+                    >{`x${getPortionOrderCount(portion.portionSize)}`}</Label>
                   </Stack>
                 </MenuItem>
               ))}

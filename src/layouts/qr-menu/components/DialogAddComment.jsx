@@ -10,13 +10,16 @@ import Iconify from 'src/components/iconify';
 
 DialogAddComment.propTypes = {
   isOpen: PropTypes.bool,
-  loading: PropTypes.bool,
   onClose: PropTypes.func,
-  addComment: PropTypes.func,
+  addMeal: PropTypes.func,
 };
 
-export default function DialogAddComment({ isOpen, onClose, addComment, loading }) {
+export default function DialogAddComment({ isOpen, onClose, addMeal }) {
   const commentRef = useRef();
+
+  const handleMealAddWithComment = () => {
+    addMeal(+1, commentRef.current.value);
+  };
 
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose} scroll="paper">
@@ -36,8 +39,7 @@ export default function DialogAddComment({ isOpen, onClose, addComment, loading 
             type="submit"
             variant="contained"
             color="success"
-            onClick={() => addComment(commentRef.current.value)}
-            loading={loading}
+            onClick={handleMealAddWithComment}
             startIcon={<Iconify icon="mdi:hamburger-plus" />}
           >
             Add Meal

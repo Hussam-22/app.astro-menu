@@ -1136,7 +1136,7 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
-  const fsAddMealToCart = useCallback(async (payload) => {
+  const fsUpdateCart = useCallback(async (payload) => {
     const { orderID, userID, branchID, cart } = payload;
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
 
@@ -1510,8 +1510,8 @@ export function AuthProvider({ children }) {
       // // ---- QR Menu ----
       // fsConfirmCartOrder,
       // fsUpdateScanLog,
-      fsAddMealToCart,
-      // fsRemoveMealFromCart,
+      fsUpdateCart,
+      fsRemoveMealFromCart,
       // fsOrdersSnapshot,
       // fsInitiateNewOrder,
       // // ---- Waiter ----
@@ -1614,8 +1614,8 @@ export function AuthProvider({ children }) {
       // // ---- QR Menu ----
       // fsConfirmCartOrder,
       // fsUpdateScanLog,
-      fsAddMealToCart,
-      // fsRemoveMealFromCart,
+      fsUpdateCart,
+      fsRemoveMealFromCart,
       // fsOrdersSnapshot,
       // fsInitiateNewOrder,
       // // ---- Waiter ----
