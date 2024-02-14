@@ -7,14 +7,15 @@ import {
   Box,
   Card,
   Stack,
-  Avatar,
   Switch,
-  Divider,
+  Avatar,
   Tooltip,
+  Divider,
+  useTheme,
   FormGroup,
-  IconButton,
-  CardHeader,
   Typography,
+  CardHeader,
+  IconButton,
   FormControlLabel,
 } from '@mui/material';
 
@@ -39,6 +40,7 @@ SectionMeals.propTypes = {
 };
 
 export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeals, allSections }) {
+  const theme = useTheme();
   const { id: menuID } = useParams();
   const { fsUpdateSection, fsUpdateSectionsOrder } = useAuthContext();
   const queryClient = useQueryClient();
@@ -49,7 +51,9 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
     visibility: false,
   });
 
-  const sectionMeals = allMeals.filter((meal) => sectionInfo.meals.includes(meal.docID));
+  const sectionMeals = allMeals.filter((meal) =>
+    sectionInfo.meals.some((sectionMeal) => sectionMeal.mealID === meal.docID)
+  );
 
   const { mutate, isPending, error, isError, status } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -91,9 +95,20 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
     setDialogsState((state) => ({ ...state, [dialogName]: isOpen }));
   };
 
+  const onMealStatusChange = (mealID) => {
+    const { meals: sectionMealsInfo } = sectionInfo;
+    const index = sectionMealsInfo.findIndex((meal) => meal.mealID === mealID);
+    const updatedMeals = sectionMealsInfo;
+    updatedMeals[index].isActive = !sectionMealsInfo[index].isActive;
+
+    mutate(() => fsUpdateSection(menuID, sectionInfo.docID, { meals: updatedMeals }));
+  };
+
   return (
     <>
-      <Card sx={{ my: 2 }}>
+      <Card
+        sx={{ my: 2, border: !sectionInfo.isActive && `dashed 1px ${theme.palette.error.main}` }}
+      >
         <CardHeader
           title={titleCase(sectionInfo.title)}
           action={
@@ -103,7 +118,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                 label={
                   !sectionInfo.isActive && (
                     <Label color="error" variant="filled">
-                      Hidden
+                      Section is Hidden
                     </Label>
                   )
                 }
@@ -181,35 +196,45 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                   alignItems="center"
                   sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
                 >
-                  <Box sx={{ position: 'relative' }}>
-                    <Avatar
-                      src={meal.cover}
-                      alt={meal.title}
-                      sx={{
-                        width: 72,
-                        height: 72,
-                        borderRadius: 1,
-                        filter: `grayscale(${meal.isActive ? 0 : '100'})`,
-                      }}
-                      variant="square"
-                    />
-                    {!meal.isActive && (
-                      <Label
-                        variant="filled"
-                        color="error"
+                  <Stack direction="column" spacing={1}>
+                    <Box sx={{ position: 'relative' }}>
+                      <Avatar
+                        src={meal.cover}
+                        alt={meal.title}
                         sx={{
-                          position: 'absolute',
-                          bottom: -15,
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          fontSize: 9,
-                          fontWeight: '200',
+                          width: 72,
+                          height: 72,
+                          borderRadius: 1,
+                          filter: `grayscale(${meal.isActive ? 0 : '100'})`,
                         }}
-                      >
-                        Out of Stock
-                      </Label>
-                    )}
-                  </Box>
+                        variant="square"
+                      />
+                      {!meal.isActive && (
+                        <Label
+                          variant="filled"
+                          color="error"
+                          sx={{
+                            position: 'absolute',
+                            bottom: -10,
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            fontSize: 11,
+                            fontWeight: '200',
+                          }}
+                        >
+                          Hard Disable
+                        </Label>
+                      )}
+                    </Box>
+                    <Switch
+                      disabled={!meal.isActive || !sectionInfo.isActive}
+                      checked={
+                        sectionInfo.meals.find((sectionMeal) => sectionMeal.mealID === meal.docID)
+                          ?.isActive
+                      }
+                      onChange={() => onMealStatusChange(meal.docID)}
+                    />
+                  </Stack>
                   <Stack direction="column" sx={{ px: 2 }} spacing={1}>
                     <Box>
                       <Typography variant="caption" sx={{ color: 'text.secondary' }}>

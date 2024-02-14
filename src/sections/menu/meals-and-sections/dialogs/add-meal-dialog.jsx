@@ -134,7 +134,11 @@ function MealRow({ mealInfo, currentSectionMeals, menuID, sectionID }) {
 
     // if mealID DOES NOT exists, Add it
     if (!currentSectionMeals.includes(mealID))
-      mutate(() => fsUpdateSection(menuID, sectionID, { meals: [...currentSectionMeals, mealID] }));
+      mutate(() =>
+        fsUpdateSection(menuID, sectionID, {
+          meals: [...currentSectionMeals, { mealID, isActive: mealInfo.isActive }],
+        })
+      );
   };
 
   return (
