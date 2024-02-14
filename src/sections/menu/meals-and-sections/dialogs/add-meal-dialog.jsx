@@ -5,7 +5,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Stack } from '@mui/system';
 import {
-  Box,
   Dialog,
   Avatar,
   Divider,
@@ -143,12 +142,18 @@ function MealRow({ mealInfo, currentSectionMeals, menuID, sectionID }) {
   };
 
   return (
-    <Stack direction="row" alignItems="center" spacing={2}>
+    <Stack direction="row" alignItems="center" spacing={1}>
       <Avatar src={mealInfo.cover} sx={{ width: 32, height: 32 }} />
 
-      <Box sx={{ flexGrow: 1, ml: 2, minWidth: 100 }}>
+      <Stack direction="column" sx={{ flexGrow: 1, ml: 0, minWidth: 100 }}>
         <Typography variant="subtitle2">{mealInfo.title}</Typography>
-      </Box>
+        {!mealInfo.isActive && (
+          <Typography variant="caption" color="error">
+            T
+            {`his meal will not show on customers QR-Menu because it is "Hard Disabled" from "Meals" page`}
+          </Typography>
+        )}
+      </Stack>
 
       {isPending && <CircularProgress />}
       {!isPending && (
