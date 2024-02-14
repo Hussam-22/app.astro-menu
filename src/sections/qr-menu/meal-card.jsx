@@ -9,11 +9,11 @@ import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
 import AddMealToCart from 'src/sections/qr-menu/add-meal-to-cart';
 
-function MealCard({ mealInfo }) {
+function MealCard({ mealInfo, isMealActive }) {
+  console.log(isMealActive);
   //   const { lang } = useParams();
   const userID = 'n2LrTyRkktYlddyljHUPsodtpsf1';
-  const { cover, docID, description, isActive, isNew, mealLabels, portions, title, translation } =
-    mealInfo;
+  const { cover, docID, description, isNew, mealLabels, portions, title, translation } = mealInfo;
   const { user, orderSnapShot } = useAuthContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
 
@@ -50,7 +50,7 @@ function MealCard({ mealInfo }) {
           <Image
             src={cover}
             ratio="16/9"
-            sx={{ borderRadius: 1, filter: `grayscale(${isActive ? '0' : '100'})` }}
+            sx={{ borderRadius: 1, filter: `grayscale(${isMealActive ? '0' : '100'})` }}
           />
           {isNew && (
             <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
@@ -75,14 +75,14 @@ function MealCard({ mealInfo }) {
         <Typography variant="body2">{description}</Typography>
 
         <Divider />
-        {!isActive && (
+        {!isMealActive && (
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="h6" sx={{ color: 'text.disabled' }}>
               Out of Stock
             </Typography>
           </Box>
         )}
-        {isActive && (
+        {isMealActive && (
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             justifyContent="space-between"
@@ -129,7 +129,6 @@ MealCard.propTypes = {
     cover: PropTypes.string,
     docID: PropTypes.string,
     description: PropTypes.string,
-    isActive: PropTypes.bool,
     isNew: PropTypes.bool,
     mealLabels: PropTypes.array,
     portions: PropTypes.array,
@@ -137,4 +136,5 @@ MealCard.propTypes = {
     translation: PropTypes.object,
     translationEdited: PropTypes.object,
   }),
+  isMealActive: PropTypes.bool,
 };

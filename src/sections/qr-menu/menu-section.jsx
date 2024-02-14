@@ -19,19 +19,31 @@ function MenuSection({ sectionInfo }) {
     error,
   } = useQuery({
     queryKey: ['sectionMeals', userID, sectionMeals],
-    queryFn: () => fsGetSectionMeals(userID, sectionMeals),
+    queryFn: () =>
+      fsGetSectionMeals(
+        userID,
+        sectionMeals.flatMap((meal) => meal.mealID)
+      ),
   });
 
   // hide sections without meals
-  if (meals.length === 0) return null;
+  if (meals.filter((meal) => meal.isActive).length === 0) return null;
 
   return (
     <Stack spacing={2} sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 1 }}>
       <Typography variant="h2">{title}</Typography>
       <Stack direction="column" spacing={2}>
-        {meals.map((meal) => (
-          <MealCard key={meal.docID} mealInfo={meal} />
-        ))}
+        {meals
+          .filter((meal) => meal.isActive)
+          .map((meal) => (
+            <MealCard
+              key={meal.docID}
+              mealInfo={meal}
+              isMealActive={
+                sectionMeals.find((sectionMeal) => sectionMeal.mealID === meal.docID).isActive
+              }
+            />
+          ))}
       </Stack>
     </Stack>
   );
