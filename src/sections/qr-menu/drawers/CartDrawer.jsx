@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
@@ -21,9 +21,10 @@ import Scrollbar from 'src/components/scrollbar';
 const CartDrawer = ({ openState, toggleDrawer }) => {
   const theme = useTheme();
   const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
-  const [isLoading, setIsLoading] = useState(false);
+
   const queryClient = useQueryClient();
   const cachedMealLabels = queryClient.getQueriesData({ queryKey: ['sectionMeals'] }) || [];
+
   const availableMeals = cachedMealLabels.flatMap((item) => item[1]);
 
   const cartMeals = useMemo(

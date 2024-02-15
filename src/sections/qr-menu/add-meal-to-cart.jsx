@@ -6,7 +6,7 @@ import { Stack, Typography, IconButton } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
-import DialogAddComment from 'src/layouts/qr-menu/components/DialogAddComment';
+import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
 function AddMealToCart({ portion, mealInfo }) {
   const { fsUpdateCart, orderSnapShot } = useAuthContext();

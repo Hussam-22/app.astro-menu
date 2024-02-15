@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
+import { useQueryClient } from '@tanstack/react-query';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { Box } from '@mui/system';
 import { Chip, Stack, Drawer, Button, Divider, Typography } from '@mui/material';
 
 import {
-  rdxScrollTo,
   rdxResetFilter,
   rdxResetKeywords,
   rdxAddFilteredMeals,
@@ -19,19 +19,22 @@ SectionsDrawer.propTypes = {
 
 function SectionsDrawer({ openState, toggleDrawer }) {
   const dispatch = useDispatch();
-  const {
-    menuSections,
-    menuMeals,
-    filterKeywords,
-    sectionTitlesRefs,
-    selectedLanguage,
-    defaultLanguage,
-  } = useSelector((state) => state.qrMenu);
+  const { menuMeals, filterKeywords, sectionTitlesRefs, selectedLanguage, defaultLanguage } =
+    useSelector((state) => state.qrMenu);
 
-  const onSectionClickHandler = (section) => {
-    const sectionElement = sectionTitlesRefs.find((item) => item.id === section.id);
-    dispatch(rdxScrollTo(sectionElement.element));
+  // const { data: sections = [], isFetched: sectionsIsFetched } = useQuery({
+  //   queryKey: ['sections', userID, menuID],
+  //   queryFn: () => fsGetSections(menuID, userID),
+  //   enabled: !isBranchFetching,
+  // });
+
+  const onSectionClickHandler = (sectionID) => {
+    // const sectionElement = sectionTitlesRefs.find((item) => item.docID === section.id);
+    // dispatch(rdxScrollTo(sectionElement.element));
     // sectionElement.element.scrollIntoView({ behavior: 'smooth' });
+    const sectionElement = document.getElementById(sectionID);
+    sectionElement.scrollIntoView({ behavior: 'smooth' });
+
     toggleDrawer('menu');
   };
 
@@ -59,14 +62,14 @@ function SectionsDrawer({ openState, toggleDrawer }) {
     dispatch(rdxResetKeywords());
   };
 
+  const queryClient = useQueryClient();
+  const cachedSections = queryClient.getQueriesData({ queryKey: ['sections'] }) || [];
+  const menuSections = cachedSections[0][1];
+  console.log(menuSections);
+
   return (
-    <Drawer
-      anchor="bottom"
-      open={openState}
-      onClose={() => toggleDrawer('menu')}
-      sx={{ width: '80%' }}
-    >
-      <Box sx={{ p: 3 }}>
+    <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('menu')}>
+      <Box sx={{ p: 3, mx: 'auto' }}>
         <Stack
           direction="row"
           spacing={3}
@@ -76,12 +79,17 @@ function SectionsDrawer({ openState, toggleDrawer }) {
             <Stack direction="column" spacing={0.5}>
               <Typography variant="h4">Menu Sections</Typography>
               {[...menuSections]
-                .filter((section) => section.meals.length !== 0)
+                .filter(
+                  (section) =>
+                    section.isActive &&
+                    section.meals.length !== 0 &&
+                    section.meals.filter((meal) => meal.isActive).length !== 0
+                )
                 .sort((a, b) => a.order - b.order)
                 .map((section) => (
                   <Typography
-                    onClick={() => onSectionClickHandler(section)}
-                    key={section.id}
+                    onClick={() => onSectionClickHandler(section.docID)}
+                    key={section.docID}
                     sx={{ fontWeight: '700' }}
                   >
                     {selectedLanguage === defaultLanguage

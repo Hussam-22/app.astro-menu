@@ -11,7 +11,7 @@ function QrMenuLayout({ children }) {
       <QrMenuHeader />
       <Container maxWidth="sm" component="main" sx={{ py: 5 }}>
         {children}
-        <BottomNavBar containerWidth={350} />
+        <BottomNavBar containerWidth={380} />
       </Container>
     </Box>
   );

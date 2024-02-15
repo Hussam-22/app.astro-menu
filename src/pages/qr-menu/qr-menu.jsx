@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import QrMenuView from 'src/sections/qr-menu/qr-menu-view';
+import QrMenuView from 'src/sections/qr-menu/view/qr-menu-view';
 
 export default function QrMenuPage() {
   return (

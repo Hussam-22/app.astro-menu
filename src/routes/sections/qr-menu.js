@@ -21,6 +21,6 @@ export const qrMenuRoutes = [
         </Suspense>
       </QrMenuLayout>
     ),
-    children: [{ path: 'qr-menu', element: <QrMenuPage /> }],
+    children: [{ path: 'qr-menu/:userID/:branchID/:tableID', element: <QrMenuPage /> }],
   },
 ];

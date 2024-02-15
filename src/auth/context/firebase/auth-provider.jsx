@@ -88,7 +88,7 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [dataSnapshotListener, setDataSnapshotListener] = useState([]);
   const [docSnapshot, setDocSnapshot] = useState([]);
-  const [orderSnapShot, setOrderSnapShot] = useState([]);
+  const [orderSnapShot, setOrderSnapShot] = useState({});
 
   const initialize = useCallback(() => {
     try {
@@ -333,16 +333,21 @@ export function AuthProvider({ children }) {
     [state]
   );
 
-  const fsGetTableInfo = useCallback(async (userID, tableID) => {
-    const docRef = query(
-      collectionGroup(DB, 'tables'),
-      where('userID', '==', userID),
-      where('id', '==', tableID)
-    );
-    const querySnapshot = await getDocs(docRef);
-    const dataArr = [];
-    querySnapshot.forEach((doc) => dataArr.push(doc.data()));
-    return dataArr[0];
+  const fsGetTableInfo = useCallback(async (userID, branchID, tableID) => {
+    try {
+      const docRef = query(
+        collectionGroup(DB, 'tables'),
+        where('userID', '==', userID),
+        where('branchID', '==', branchID),
+        where('docID', '==', tableID)
+      );
+      const querySnapshot = await getDocs(docRef);
+      const dataArr = [];
+      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+      return dataArr[0];
+    } catch (error) {
+      throw error;
+    }
   }, []);
 
   const fsChangeMenuForAllTables = useCallback(
@@ -1116,13 +1121,7 @@ export function AuthProvider({ children }) {
     );
 
     const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
-      const orders = [];
-      querySnapshot.forEach((doc) => {
-        setOrderSnapShot(doc.data());
-        orders.push(doc.data());
-      });
-
-      if (orders.length === 0)
+      if (querySnapshot.docs.length === 0)
         fsInitiateNewOrder({
           initiatedBy: 'customer',
           tableID,
@@ -1131,6 +1130,10 @@ export function AuthProvider({ children }) {
           userID,
           branchID,
         });
+
+      querySnapshot.forEach((doc) => {
+        setOrderSnapShot(doc.data());
+      });
     });
 
     return unsubscribe;
@@ -1462,7 +1465,7 @@ export function AuthProvider({ children }) {
       fsChangeMenuForAllTables,
       fsGetAllTableOrders,
       // fsDeleteTable,
-      // fsGetTableInfo,
+      fsGetTableInfo,
       // // ---- ORDERS ----
       fsInitiateNewOrder,
       fsOrderSnapshot,
@@ -1564,7 +1567,7 @@ export function AuthProvider({ children }) {
       fsGetBranchTablesCount,
       fsGetBranchTables,
       fsUpdateBranchTable,
-      // fsGetTableInfo,
+      fsGetTableInfo,
       fsChangeMenuForAllTables,
       // // ---- ORDERS ----
       fsInitiateNewOrder,

@@ -11,7 +11,6 @@ import TextMaxLine from 'src/components/text-max-line';
 import AddMealToCart from 'src/sections/qr-menu/add-meal-to-cart';
 
 function MealCard({ mealInfo, isMealActive }) {
-  console.log(isMealActive);
   //   const { lang } = useParams();
   const userID = 'n2LrTyRkktYlddyljHUPsodtpsf1';
   const { cover, docID, description, isNew, mealLabels, portions, title, translation } = mealInfo;

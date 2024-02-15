@@ -1,24 +1,20 @@
 import PropTypes from 'prop-types';
+import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import MealCard from 'src/sections/qr-menu/meal-card';
 
 function MenuSection({ sectionInfo }) {
-  // const {userID} = useParams()
-  const userID = 'n2LrTyRkktYlddyljHUPsodtpsf1';
-  const { title, meals: sectionMeals } = sectionInfo;
+  const { userID } = useParams();
+  const { title, meals: sectionMeals, docID: sectionID } = sectionInfo;
 
   const { fsGetSectionMeals } = useAuthContext();
 
-  const {
-    data: meals = [],
-    isFetching: isUserFetching,
-    error,
-  } = useQuery({
-    queryKey: ['sectionMeals', userID, sectionMeals],
+  const { data: meals = [] } = useQuery({
+    queryKey: ['sectionMeals', userID, sectionID],
     queryFn: () =>
       fsGetSectionMeals(
         userID,
@@ -30,22 +26,26 @@ function MenuSection({ sectionInfo }) {
   if (meals.filter((meal) => meal.isActive).length === 0) return null;
 
   return (
-    <Stack spacing={2} sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 1 }}>
-      <Typography variant="h2">{title}</Typography>
-      <Stack direction="column" spacing={2}>
-        {meals
-          .filter((meal) => meal.isActive)
-          .map((meal) => (
-            <MealCard
-              key={meal.docID}
-              mealInfo={meal}
-              isMealActive={
-                sectionMeals.find((sectionMeal) => sectionMeal.mealID === meal.docID).isActive
-              }
-            />
-          ))}
+    <Box>
+      <Typography variant="h3" id={sectionID}>
+        {title}
+      </Typography>
+      <Stack spacing={2} sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 1 }}>
+        <Stack direction="column" spacing={4}>
+          {meals
+            .filter((meal) => meal.isActive)
+            .map((meal) => (
+              <MealCard
+                key={meal.docID}
+                mealInfo={meal}
+                isMealActive={
+                  sectionMeals.find((sectionMeal) => sectionMeal.mealID === meal.docID).isActive
+                }
+              />
+            ))}
+        </Stack>
       </Stack>
-    </Stack>
+    </Box>
   );
 }
 export default MenuSection;
@@ -54,5 +54,6 @@ MenuSection.propTypes = {
   sectionInfo: PropTypes.shape({
     title: PropTypes.string,
     meals: PropTypes.array,
+    docID: PropTypes.string,
   }),
 };

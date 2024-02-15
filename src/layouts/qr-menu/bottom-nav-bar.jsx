@@ -6,10 +6,10 @@ import { Stack, Paper, Divider } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import CartDrawer from 'src/layouts/qr-menu/drawers/CartDrawer';
-import ActionButton from 'src/layouts/qr-menu/components/ActionButton';
-import LanguageDrawer from 'src/layouts/qr-menu/drawers/LanguageDrawer';
-import SectionsDrawer from 'src/layouts/qr-menu/drawers/SectionsDrawer';
+import CartDrawer from 'src/sections/qr-menu/drawers/CartDrawer';
+import ActionButton from 'src/sections/qr-menu/components/ActionButton';
+import LanguageDrawer from 'src/sections/qr-menu/drawers/LanguageDrawer';
+import SectionsDrawer from 'src/sections/qr-menu/drawers/SectionsDrawer';
 
 BottomNavModern.propTypes = {
   containerWidth: PropTypes.number,
@@ -26,13 +26,6 @@ function BottomNavModern({ containerWidth }) {
     (state) => state.qrMenu
   );
 
-  // const totalCartItems =
-  //   (dataSnapshotListener?.isPaid === false &&
-  //     dataSnapshotListener?.isCanceled === false &&
-  //     dataSnapshotListener?.id &&
-  //     dataSnapshotListener?.cart?.length) ||
-  //   0;
-
   const totalCartItems = useMemo(
     () =>
       orderSnapShot?.cart?.reduce((accumulator, cartPortion) => cartPortion.qty + accumulator, 0),
@@ -47,6 +40,8 @@ function BottomNavModern({ containerWidth }) {
   const toggleDrawer = (drawer) => {
     setDrawerStates((state) => ({ ...state, [drawer]: !state[drawer] }));
   };
+
+  if (orderSnapShot?.docID === undefined) return null;
 
   return (
     <>
