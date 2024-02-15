@@ -87,15 +87,17 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                 )
                 .sort((a, b) => a.order - b.order)
                 .map((section) => (
-                  <Typography
+                  <Button
                     onClick={() => onSectionClickHandler(section.docID)}
                     key={section.docID}
                     sx={{ fontWeight: '700' }}
+                    variant="outlined"
+                    disableRipple
                   >
                     {selectedLanguage === defaultLanguage
                       ? section.title
                       : section.translationEdited[selectedLanguage]}
-                  </Typography>
+                  </Button>
                 ))}
             </Stack>
           )}
