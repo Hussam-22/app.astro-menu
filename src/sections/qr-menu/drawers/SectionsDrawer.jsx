@@ -1,16 +1,12 @@
 import PropTypes from 'prop-types';
-import { useQueryClient } from '@tanstack/react-query';
-import { useSelector, useDispatch } from 'react-redux';
+import { useParams } from 'react-router';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
 import { Chip, Stack, Drawer, Button, Divider, Typography } from '@mui/material';
 
-import {
-  rdxResetFilter,
-  rdxResetKeywords,
-  rdxAddFilteredMeals,
-  rdxToggleFilterKeyword,
-} from '../../../redux/slices/qrMenu';
+import { useAuthContext } from 'src/auth/hooks';
+import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 SectionsDrawer.propTypes = {
   openState: PropTypes.bool,
@@ -18,54 +14,30 @@ SectionsDrawer.propTypes = {
 };
 
 function SectionsDrawer({ openState, toggleDrawer }) {
-  const dispatch = useDispatch();
-  const { menuMeals, filterKeywords, sectionTitlesRefs, selectedLanguage, defaultLanguage } =
-    useSelector((state) => state.qrMenu);
+  const { userID } = useParams();
+  const { fsGetMealLabels } = useAuthContext();
+  const { setLabel, labels, reset } = useQrMenuContext();
 
-  // const { data: sections = [], isFetched: sectionsIsFetched } = useQuery({
-  //   queryKey: ['sections', userID, menuID],
-  //   queryFn: () => fsGetSections(menuID, userID),
-  //   enabled: !isBranchFetching,
-  // });
+  const { data: mealsLabel = [] } = useQuery({
+    queryKey: ['mealsLabel', userID],
+    queryFn: () => fsGetMealLabels(userID),
+  });
 
   const onSectionClickHandler = (sectionID) => {
-    // const sectionElement = sectionTitlesRefs.find((item) => item.docID === section.id);
-    // dispatch(rdxScrollTo(sectionElement.element));
-    // sectionElement.element.scrollIntoView({ behavior: 'smooth' });
     const sectionElement = document.getElementById(sectionID);
     sectionElement.scrollIntoView({ behavior: 'smooth' });
-
     toggleDrawer('menu');
   };
 
-  const onKeywordClickHandler = (key) => {
-    // TOGGLE KEYWORD SELECTION
-    dispatch(rdxToggleFilterKeyword(key));
+  const onMealLabelClick = (labelID) => {
+    setLabel(labelID);
   };
 
-  const filterByKeywordHandler = () => {
-    const selectedKeywords = Object.entries(filterKeywords)
-      .map(([key, value]) => value === true && key)
-      .filter((value) => value !== false);
-
-    const mealsWithSelectedKeywords = menuMeals
-      .filter((meal) => meal.metaKeywords.some((keyword) => selectedKeywords.includes(keyword)))
-      .map((meal) => meal.id);
-
-    // ADD MEALS THAT HAS SELECTED KEYWORDS TO RDX
-    dispatch(rdxAddFilteredMeals(mealsWithSelectedKeywords));
-    toggleDrawer('menu');
-  };
-
-  const resetHandler = () => {
-    dispatch(rdxResetFilter());
-    dispatch(rdxResetKeywords());
-  };
+  const resetHandler = () => reset();
 
   const queryClient = useQueryClient();
   const cachedSections = queryClient.getQueriesData({ queryKey: ['sections'] }) || [];
   const menuSections = cachedSections[0][1];
-  console.log(menuSections);
 
   return (
     <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('menu')}>
@@ -94,42 +66,46 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                     variant="outlined"
                     disableRipple
                   >
-                    {selectedLanguage === defaultLanguage
+                    {/* {selectedLanguage === defaultLanguage
                       ? section.title
-                      : section.translationEdited[selectedLanguage]}
+                      : section.translationEdited[selectedLanguage]} */}
+                    {section.title}
                   </Button>
                 ))}
             </Stack>
           )}
 
-          {filterKeywords.length !== 0 && (
+          {mealsLabel.length !== 0 && (
             <Box
               sx={{
                 display: 'grid',
                 gap: 1,
                 p: { md: 1 },
-                gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)' },
               }}
             >
               <Typography variant="h4" sx={{ gridColumn: '1/-1' }}>
-                Meals Type
+                Meal Type
               </Typography>
-              {Object.entries(filterKeywords).map(([key, value]) => (
+              {mealsLabel.map((label) => (
                 <Chip
-                  key={key}
-                  label={`#${key}`}
+                  key={label.docID}
+                  label={`#${label.title}`}
                   sx={{ fontWeight: '700' }}
-                  onClick={() => onKeywordClickHandler(key, value)}
+                  onClick={() => onMealLabelClick(label.docID)}
                   size="small"
-                  color={value ? 'primary' : 'default'}
+                  color={labels.includes(label.docID) ? 'primary' : 'default'}
                 />
               ))}
 
               <Divider sx={{ my: 1, gridColumn: '1/-1' }} />
-              <Button variant="contained" size="small" onClick={filterByKeywordHandler}>
-                Filter
-              </Button>
-              <Button variant="outlined" size="small" onClick={resetHandler}>
+              <Button
+                variant="contained"
+                color="warning"
+                size="small"
+                onClick={resetHandler}
+                disabled={labels.length === 0}
+              >
                 Reset
               </Button>
             </Box>

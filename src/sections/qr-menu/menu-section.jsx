@@ -6,12 +6,14 @@ import { Box, Stack, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import MealCard from 'src/sections/qr-menu/meal-card';
+import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
+import MealCardSkeleton from 'src/sections/qr-menu/components/meal-card-skeleton';
 
 function MenuSection({ sectionInfo }) {
   const { userID } = useParams();
   const { title, meals: sectionMeals, docID: sectionID } = sectionInfo;
-
   const { fsGetSectionMeals } = useAuthContext();
+  const { labels, loading } = useQrMenuContext();
 
   const { data: meals = [] } = useQuery({
     queryKey: ['sectionMeals', userID, sectionID],
@@ -22,8 +24,15 @@ function MenuSection({ sectionInfo }) {
       ),
   });
 
+  const filteredMeals =
+    labels.length === 0
+      ? meals
+      : meals.filter((meal) => meal.mealLabels.some((mealLabelID) => labels.includes(mealLabelID)));
+
   // hide sections without meals
-  if (meals.filter((meal) => meal.isActive).length === 0) return null;
+  if (filteredMeals.filter((meal) => meal.isActive).length === 0) return null;
+
+  if (loading) return <MealCardSkeleton />;
 
   return (
     <Box>
@@ -32,7 +41,7 @@ function MenuSection({ sectionInfo }) {
       </Typography>
       <Stack spacing={2} sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 1 }}>
         <Stack direction="column" spacing={4}>
-          {meals
+          {filteredMeals
             .filter((meal) => meal.isActive)
             .map((meal) => (
               <MealCard

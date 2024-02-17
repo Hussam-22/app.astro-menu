@@ -10,6 +10,7 @@ import CartDrawer from 'src/sections/qr-menu/drawers/CartDrawer';
 import ActionButton from 'src/sections/qr-menu/components/ActionButton';
 import LanguageDrawer from 'src/sections/qr-menu/drawers/LanguageDrawer';
 import SectionsDrawer from 'src/sections/qr-menu/drawers/SectionsDrawer';
+import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 BottomNavModern.propTypes = {
   containerWidth: PropTypes.number,
@@ -17,6 +18,8 @@ BottomNavModern.propTypes = {
 
 function BottomNavModern({ containerWidth }) {
   const { orderSnapShot } = useAuthContext();
+  const { labels } = useQrMenuContext();
+
   const [drawerStates, setDrawerStates] = useState({
     menu: false,
     cart: false,
@@ -84,7 +87,7 @@ function BottomNavModern({ containerWidth }) {
             icon="mdi:food"
             label="Menu"
             sx={{ color: '#FFF' }}
-            badgeContent={isFilterApplied ? ' ' : null}
+            badgeContent={labels.length === 0 ? null : ''}
           />
           <ActionButton
             clickAction={() => toggleDrawer('cart')}
