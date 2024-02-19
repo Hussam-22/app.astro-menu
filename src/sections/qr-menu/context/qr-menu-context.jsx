@@ -13,6 +13,7 @@ export const useQrMenuContext = () => {
 export function QrMenuContextProvider({ children }) {
   const [labels, setLabels] = useState([]);
   const [user, setUser] = useState({});
+  const [selectedLanguage, setLanguage] = useState(user?.defaultLanguage || 'en');
   const [loading, setLoading] = useState(false);
 
   const setLabel = useCallback(
@@ -41,8 +42,10 @@ export function QrMenuContextProvider({ children }) {
       loading,
       setUser,
       user,
+      selectedLanguage,
+      setLanguage,
     }),
-    [labels, setLabel, reset, loading, setUser, user]
+    [labels, setLabel, reset, loading, setUser, user, selectedLanguage, setLanguage]
   );
   return <QrMenuContext.Provider value={memoizedValue}>{children}</QrMenuContext.Provider>;
 }

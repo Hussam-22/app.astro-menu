@@ -11,9 +11,22 @@ import MealCardSkeleton from 'src/sections/qr-menu/components/meal-card-skeleton
 
 function MenuSection({ sectionInfo }) {
   const { userID } = useParams();
-  const { title, meals: sectionMeals, docID: sectionID } = sectionInfo;
+  const {
+    title,
+    meals: sectionMeals,
+    docID: sectionID,
+    translationEdited,
+    translation,
+  } = sectionInfo;
   const { fsGetSectionMeals } = useAuthContext();
-  const { labels, loading } = useQrMenuContext();
+  const { labels, loading, selectedLanguage, user } = useQrMenuContext();
+
+  const getTitle = () => {
+    if (selectedLanguage === user.defaultLanguage) return title;
+    return translationEdited?.[selectedLanguage]?.title
+      ? translationEdited?.[selectedLanguage]?.title
+      : translation?.[selectedLanguage]?.title;
+  };
 
   const { data: meals = [] } = useQuery({
     queryKey: ['sectionMeals', userID, sectionID],
@@ -36,10 +49,14 @@ function MenuSection({ sectionInfo }) {
 
   return (
     <Box>
-      <Typography variant="h3" id={sectionID}>
-        {title}
+      <Typography
+        variant="h3"
+        id={sectionID}
+        sx={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+      >
+        {getTitle()}
       </Typography>
-      <Stack spacing={2} sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 1 }}>
+      <Stack spacing={2} sx={{ bgcolor: 'background.paper', p: 1, borderRadius: 1 }}>
         <Stack direction="column" spacing={4}>
           {filteredMeals
             .filter((meal) => meal.isActive)
@@ -64,5 +81,7 @@ MenuSection.propTypes = {
     title: PropTypes.string,
     meals: PropTypes.array,
     docID: PropTypes.string,
+    translation: PropTypes.object,
+    translationEdited: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   }),
 };

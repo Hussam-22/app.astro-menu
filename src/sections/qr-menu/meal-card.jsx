@@ -14,14 +14,21 @@ import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 function MealCard({ mealInfo, isMealActive }) {
   //   const { lang } = useParams();
   const userID = 'n2LrTyRkktYlddyljHUPsodtpsf1';
-  const { cover, docID, description, isNew, mealLabels, portions, title, translation } = mealInfo;
+  const {
+    cover,
+    docID,
+    description,
+    isNew,
+    mealLabels,
+    portions,
+    title,
+    translation,
+    translationEdited,
+  } = mealInfo;
   const { orderSnapShot } = useAuthContext();
-  const { user } = useQrMenuContext();
+  const { user, selectedLanguage } = useQrMenuContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
-
-  console.log(user);
-
   const queryClient = useQueryClient();
   const cachedMealLabels = queryClient.getQueryData(['mealsLabel', userID]) || [];
 
@@ -31,6 +38,20 @@ function MealCard({ mealInfo, isMealActive }) {
 
   const onPortionChange = (e) => {
     setSelectedPortionIndex(e.target.value);
+  };
+
+  const getTitle = () => {
+    if (selectedLanguage === user.defaultLanguage) return title;
+    return translationEdited?.[selectedLanguage]?.title
+      ? translationEdited?.[selectedLanguage]?.title
+      : translation?.[selectedLanguage]?.title;
+  };
+
+  const getDescription = () => {
+    if (selectedLanguage === user.defaultLanguage) return description;
+    return translationEdited?.[selectedLanguage]?.desc
+      ? translationEdited?.[selectedLanguage]?.desc
+      : translation?.[selectedLanguage]?.desc;
   };
 
   const getPortionOrderCount = useCallback(
@@ -69,8 +90,11 @@ function MealCard({ mealInfo, isMealActive }) {
             </Box>
           )}
         </Box>
-        <Typography variant="h4" sx={{ px: 2 }}>
-          {title}
+        <Typography
+          variant="h4"
+          sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+        >
+          {getTitle()}
         </Typography>
         <Stack direction="row" spacing={1} sx={{ px: 2 }}>
           {labels.map((label) => (
@@ -80,13 +104,22 @@ function MealCard({ mealInfo, isMealActive }) {
           ))}
         </Stack>
         {!isReadMore && (
-          <TextMaxLine line={2} variant="body2" onClick={() => setIsReadMore(true)} sx={{ px: 2 }}>
-            {description}
+          <TextMaxLine
+            line={2}
+            variant="body2"
+            onClick={() => setIsReadMore(true)}
+            sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+          >
+            {getDescription()}
           </TextMaxLine>
         )}
         {isReadMore && (
-          <Typography variant="body2" onClick={() => setIsReadMore(false)} sx={{ px: 2 }}>
-            {description}
+          <Typography
+            variant="body2"
+            onClick={() => setIsReadMore(false)}
+            sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+          >
+            {getDescription()}
           </Typography>
         )}
 
@@ -131,7 +164,10 @@ function MealCard({ mealInfo, isMealActive }) {
             </Select>
             <Stack direction="row" spacing={1} alignItems="center">
               <AddMealToCart portion={portions[selectedPortionIndex]} mealInfo={mealInfo} />
-              <Typography variant="h6">{`${portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
+              <Typography
+                variant="h6"
+                sx={{ pr: 2 }}
+              >{`${portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
             </Stack>
           </Stack>
         )}
@@ -150,7 +186,7 @@ MealCard.propTypes = {
     portions: PropTypes.array,
     title: PropTypes.string,
     translation: PropTypes.object,
-    translationEdited: PropTypes.object,
+    translationEdited: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   }),
   isMealActive: PropTypes.bool,
 };

@@ -23,6 +23,7 @@ export default function LoadingButton(theme) {
               },
             }),
           }),
+          borderRadius: '25px',
         }),
       },
     },

@@ -1,26 +1,22 @@
-import React from 'react';
+import useSWR from 'swr';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
 
-import { Box } from '@mui/system';
-import { Drawer } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Stack, Drawer, Divider } from '@mui/material';
 
-import LanguageButton from '../components/LanguageButton';
-import { rdxChangeLanguage } from '../../../redux/slices/qrMenu';
+import Image from 'src/components/image';
+import { fetcher } from 'src/utils/axios';
+import { LANGUAGE_CODES } from 'src/locales/languageCodes';
+import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 LanguageDrawer.propTypes = {
   openState: PropTypes.bool,
   toggleDrawer: PropTypes.func,
-  lang: PropTypes.object,
 };
 
-function LanguageDrawer({ openState, toggleDrawer, lang }) {
-  const dispatch = useDispatch();
-
-  const onlanguagechange = (code) => {
-    dispatch(rdxChangeLanguage(code));
-    toggleDrawer('cart');
-  };
+function LanguageDrawer({ openState, toggleDrawer }) {
+  const { user } = useQrMenuContext();
 
   return (
     <Drawer
@@ -30,19 +26,71 @@ function LanguageDrawer({ openState, toggleDrawer, lang }) {
         sx: {
           maxHeight: '50%',
           minHeight: '20%',
-          width: '100%',
         },
       }}
       onClose={() => toggleDrawer('cart')}
     >
-      <Box sx={{ p: 3, display: 'flex', flexDirection: 'column' }}>
-        {lang.languages &&
-          lang.languages.map((language) => (
-            <LanguageButton code={language} key={language} onlanguagechange={onlanguagechange} />
+      <Stack
+        direction="column"
+        spacing={0.5}
+        divider={<Divider sx={{ borderStyle: 'dashed' }} />}
+        sx={{ p: 3 }}
+        justifyContent="center"
+        alignItems="center"
+      >
+        {user?.languages.length !== 0 &&
+          user.languages.map((language) => (
+            <LanguageButton toggleDrawer={toggleDrawer} code={language} key={language} />
           ))}
-      </Box>
+      </Stack>
     </Drawer>
   );
 }
 
 export default LanguageDrawer;
+
+// ----------------------------------------------------------------------------
+
+function LanguageButton({ code, toggleDrawer }) {
+  const { setLanguage, selectedLanguage } = useQrMenuContext();
+  const [loading, setLoading] = useState(false);
+
+  const { data, isLoading, error, isValidating } = useSWR(
+    `https://restcountries.com/v3.1/lang/${LANGUAGE_CODES[code]}?fields=languages,flags`,
+    fetcher
+  );
+
+  const onlanguagechange = () => {
+    setLoading(true);
+
+    setTimeout(() => {
+      setLanguage(code);
+      setLoading(false);
+      toggleDrawer('cart');
+    }, 500);
+  };
+
+  return (
+    <Stack direction="row" spacing={1} alignItems="center">
+      {!isValidating && data.length !== 0 && (
+        <Image
+          src={`${data.filter((item) => Object.keys(item.languages).length === 1)[0].flags.svg}`}
+          sx={{ width: 44, height: 28, borderRadius: 1 }}
+          onClick={() => onlanguagechange(code)}
+        />
+      )}
+      <LoadingButton
+        variant={selectedLanguage === code ? 'contained' : 'outlined'}
+        onClick={() => onlanguagechange(code)}
+        loading={loading}
+      >
+        {LANGUAGE_CODES[code]}
+      </LoadingButton>
+    </Stack>
+  );
+}
+
+LanguageButton.propTypes = {
+  code: PropTypes.string,
+  toggleDrawer: PropTypes.func,
+};

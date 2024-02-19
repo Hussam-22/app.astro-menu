@@ -24,7 +24,7 @@ const queryClient = new QueryClient({
 
 root.render(
   <QueryClientProvider client={queryClient}>
-    <ReactQueryDevtools initialIsOpen={false} />
+    <ReactQueryDevtools initialIsOpen={false} buttonPosition="top-right" />
     <HelmetProvider>
       <BrowserRouter>
         <Suspense>
