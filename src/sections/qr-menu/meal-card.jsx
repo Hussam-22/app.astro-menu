@@ -9,14 +9,18 @@ import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
 import TextMaxLine from 'src/components/text-max-line';
 import AddMealToCart from 'src/sections/qr-menu/add-meal-to-cart';
+import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 function MealCard({ mealInfo, isMealActive }) {
   //   const { lang } = useParams();
   const userID = 'n2LrTyRkktYlddyljHUPsodtpsf1';
   const { cover, docID, description, isNew, mealLabels, portions, title, translation } = mealInfo;
-  const { user, orderSnapShot } = useAuthContext();
+  const { orderSnapShot } = useAuthContext();
+  const { user } = useQrMenuContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
+
+  console.log(user);
 
   const queryClient = useQueryClient();
   const cachedMealLabels = queryClient.getQueryData(['mealsLabel', userID]) || [];
@@ -127,7 +131,7 @@ function MealCard({ mealInfo, isMealActive }) {
             </Select>
             <Stack direction="row" spacing={1} alignItems="center">
               <AddMealToCart portion={portions[selectedPortionIndex]} mealInfo={mealInfo} />
-              <Typography variant="h6">{`${portions[selectedPortionIndex].price} ${user.currency}`}</Typography>
+              <Typography variant="h6">{`${portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
             </Stack>
           </Stack>
         )}

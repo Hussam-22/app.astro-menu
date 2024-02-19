@@ -6,10 +6,10 @@ import { Stack, Paper, Divider } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import CartDrawer from 'src/sections/qr-menu/drawers/CartDrawer';
+import CartDrawer from 'src/sections/qr-menu/drawers/cart-drawer';
 import ActionButton from 'src/sections/qr-menu/components/ActionButton';
-import LanguageDrawer from 'src/sections/qr-menu/drawers/LanguageDrawer';
-import SectionsDrawer from 'src/sections/qr-menu/drawers/SectionsDrawer';
+import LanguageDrawer from 'src/sections/qr-menu/drawers/language-drawer';
+import SectionsDrawer from 'src/sections/qr-menu/drawers/sections-drawer';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 BottomNavModern.propTypes = {

@@ -25,8 +25,10 @@ function SectionsDrawer({ openState, toggleDrawer }) {
 
   const onSectionClickHandler = (sectionID) => {
     const sectionElement = document.getElementById(sectionID);
-    sectionElement.scrollIntoView({ behavior: 'smooth' });
-    toggleDrawer('menu');
+    if (sectionElement) {
+      sectionElement.scrollIntoView({ behavior: 'smooth' });
+      toggleDrawer('menu');
+    }
   };
 
   const onMealLabelClick = (labelID) => {
@@ -43,45 +45,52 @@ function SectionsDrawer({ openState, toggleDrawer }) {
     <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('menu')}>
       <Box sx={{ p: 3, mx: 'auto' }}>
         <Stack
-          direction="row"
-          spacing={3}
+          direction={{ sm: 'row', xs: 'column' }}
+          spacing={{ sm: 3, xs: 1 }}
           divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
         >
-          {menuSections.length !== 0 && (
-            <Stack direction="column" spacing={0.5}>
-              <Typography variant="h4">Menu Sections</Typography>
-              {[...menuSections]
-                .filter(
-                  (section) =>
-                    section.isActive &&
-                    section.meals.length !== 0 &&
-                    section.meals.filter((meal) => meal.isActive).length !== 0
-                )
-                .sort((a, b) => a.order - b.order)
-                .map((section) => (
-                  <Button
-                    onClick={() => onSectionClickHandler(section.docID)}
-                    key={section.docID}
-                    sx={{ fontWeight: '700' }}
-                    variant="outlined"
-                    disableRipple
-                  >
-                    {/* {selectedLanguage === defaultLanguage
+          <Box>
+            <Typography variant="h4">Menu Sections</Typography>
+            {menuSections.length !== 0 && (
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: 'repeat(2,1fr)', sm: 'repeat(1,1fr)' },
+                  gap: 1,
+                }}
+              >
+                {[...menuSections]
+                  .filter(
+                    (section) =>
+                      section.isActive &&
+                      section.meals.length !== 0 &&
+                      section.meals.filter((meal) => meal.isActive).length !== 0
+                  )
+                  .sort((a, b) => a.order - b.order)
+                  .map((section) => (
+                    <Button
+                      onClick={() => onSectionClickHandler(section.docID)}
+                      key={section.docID}
+                      sx={{ fontWeight: '700' }}
+                      variant="outlined"
+                      disableRipple
+                    >
+                      {/* {selectedLanguage === defaultLanguage
                       ? section.title
                       : section.translationEdited[selectedLanguage]} */}
-                    {section.title}
-                  </Button>
-                ))}
-            </Stack>
-          )}
+                      {section.title}
+                    </Button>
+                  ))}
+              </Box>
+            )}
+          </Box>
 
           {mealsLabel.length !== 0 && (
             <Box
               sx={{
                 display: 'grid',
                 gap: 1,
-                p: { md: 1 },
-                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)' },
+                gridTemplateColumns: { xs: 'repeat(3, 1fr)', sm: 'repeat(4, 1fr)' },
               }}
             >
               <Typography variant="h4" sx={{ gridColumn: '1/-1' }}>
@@ -95,6 +104,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                   onClick={() => onMealLabelClick(label.docID)}
                   size="small"
                   color={labels.includes(label.docID) ? 'primary' : 'default'}
+                  variant="soft"
                 />
               ))}
 
