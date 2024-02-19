@@ -1004,23 +1004,23 @@ export function AuthProvider({ children }) {
     [state]
   );
 
-  const fsGetMealLabels = useCallback(async () => {
-    try {
-      const dataArr = [];
-      const docRef = query(
-        collectionGroup(DB, 'meal-labels'),
-        where('userID', '==', state.user.id)
-      );
-      const querySnapshot = await getDocs(docRef);
-      querySnapshot.forEach((doc) => {
-        dataArr.push(doc.data());
-      });
-      return dataArr;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  }, [state]);
+  const fsGetMealLabels = useCallback(
+    async (userID = state?.user?.id) => {
+      try {
+        const dataArr = [];
+        const docRef = query(collectionGroup(DB, 'meal-labels'), where('userID', '==', userID));
+        const querySnapshot = await getDocs(docRef);
+        querySnapshot.forEach((doc) => {
+          dataArr.push(doc.data());
+        });
+        return dataArr;
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+    [state]
+  );
 
   const fsAddNewMealLabel = useCallback(
     async (title) => {
