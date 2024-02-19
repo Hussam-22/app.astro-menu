@@ -70,13 +70,13 @@ function MealCard({ mealInfo, isMealActive }) {
   );
 
   return (
-    <Card sx={{ bgcolor: 'background.default', p: 0 }}>
+    <Card sx={{ bgcolor: 'background.default', p: 0, boxShadow: 10 }}>
       <Stack direction="column" spacing={1}>
         <Box sx={{ position: 'relative' }}>
           <Image
             src={cover}
             ratio="16/9"
-            sx={{ borderRadius: 1, filter: `grayscale(${isMealActive ? '0' : '100'})` }}
+            sx={{ borderRadius: 0, filter: `grayscale(${isMealActive ? '0' : '100'})` }}
           />
           {isNew && (
             <Box sx={{ position: 'absolute', top: 10, right: 10 }}>

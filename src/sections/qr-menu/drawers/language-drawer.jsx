@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
-import { Stack, Drawer, Divider } from '@mui/material';
+import { Stack, Drawer } from '@mui/material';
 
 import Image from 'src/components/image';
 import { fetcher } from 'src/utils/axios';
@@ -32,11 +32,10 @@ function LanguageDrawer({ openState, toggleDrawer }) {
     >
       <Stack
         direction="column"
-        spacing={0.5}
-        divider={<Divider sx={{ borderStyle: 'dashed' }} />}
-        sx={{ p: 3 }}
-        justifyContent="center"
-        alignItems="center"
+        spacing={1}
+        sx={{ p: 3, mx: 'auto' }}
+        justifyContent="left"
+        alignItems="left"
       >
         {user?.languages.length !== 0 &&
           user.languages.map((language) => (
@@ -83,6 +82,9 @@ function LanguageButton({ code, toggleDrawer }) {
         variant={selectedLanguage === code ? 'contained' : 'outlined'}
         onClick={() => onlanguagechange(code)}
         loading={loading}
+        sx={{
+          minWidth: 200,
+        }}
       >
         {LANGUAGE_CODES[code]}
       </LoadingButton>

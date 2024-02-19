@@ -52,11 +52,19 @@ function MenuSection({ sectionInfo }) {
       <Typography
         variant="h3"
         id={sectionID}
-        sx={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+        sx={{
+          direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr',
+          bgcolor: 'common.black',
+          color: 'common.white',
+          borderRadius: 1,
+          px: 2,
+          py: 1,
+          mb: 2,
+        }}
       >
         {getTitle()}
       </Typography>
-      <Stack spacing={2} sx={{ bgcolor: 'background.paper', p: 1, borderRadius: 1 }}>
+      <Stack spacing={2}>
         <Stack direction="column" spacing={4}>
           {filteredMeals
             .filter((meal) => meal.isActive)
