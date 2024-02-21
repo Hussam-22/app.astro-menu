@@ -34,9 +34,7 @@ import {
   updateDoc,
   onSnapshot,
   writeBatch,
-  arrayUnion,
   collection,
-  arrayRemove,
   getFirestore,
   collectionGroup,
   getCountFromServer,
@@ -87,8 +85,10 @@ const BUCKET = 'menu-app-b268b';
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [dataSnapshotListener, setDataSnapshotListener] = useState([]);
-  const [docSnapshot, setDocSnapshot] = useState([]);
   const [orderSnapShot, setOrderSnapShot] = useState({});
+
+  const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
+  const status = state.loading ? 'loading' : checkAuthenticated;
 
   const initialize = useCallback(() => {
     try {
@@ -142,22 +142,18 @@ export function AuthProvider({ children }) {
       });
     }
   }, []);
-
   useEffect(() => {
     initialize();
   }, [initialize]);
-
   // LOGIN
   const login = useCallback(async (email, password) => {
     await signInWithEmailAndPassword(AUTH, email, password);
   }, []);
-
   // UPDATE USER PROFILE
   const updateUserProfile = useCallback(async (displayName) => {
     const userProfile = await updateProfile(AUTH.currentUser, { displayName });
     return userProfile;
   }, []);
-
   // REGISTER
   const register = useCallback(async (email, password, displayName) => {
     // ONLY ALLOW KOJAK DOMAIN TO REGISTER
@@ -175,29 +171,29 @@ export function AuthProvider({ children }) {
       password,
     });
   }, []);
-
   // LOGOUT
   const logout = useCallback(async () => {
     await signOut(AUTH);
   }, []);
-
   // FORGOT PASSWORD
   const forgotPassword = useCallback(async (email) => {
     if (!email.endsWith('@kojak-group.com')) throw new Error('Email Domain Not Allowed !!');
     await sendPasswordResetEmail(AUTH, email);
   }, []);
-
   const updateUserAccessPaths = useCallback(async (userID, allowedPaths) => {
     const docRef = doc(DB, `/users/${userID}`);
     await updateDoc(docRef, { allowedPaths });
   }, []);
-
   const fsGetUser = useCallback(async (userID) => {
-    const docRef = doc(DB, `/users/${userID}`);
-    const docSnapshot = await getDoc(docRef);
-    return docSnapshot.data();
+    try {
+      const docRef = doc(DB, `/users/${userID}`);
+      const docSnapshot = await getDoc(docRef);
+      if (!docSnapshot.data()) throw Error('No User Was Returned !!');
+      return docSnapshot.data();
+    } catch (error) {
+      throw error;
+    }
   }, []);
-
   const fsGetUsers = useCallback(async () => {
     const docRef = collection(DB, '/users');
     const queryRef = query(docRef);
@@ -209,18 +205,11 @@ export function AuthProvider({ children }) {
 
     return documents.filter((user) => user.email !== 'hussam@hotmail.co.uk');
   }, []);
-
-  // ----------------------------------------------------------------------
-  const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
-
-  const status = state.loading ? 'loading' : checkAuthenticated;
-  // ?----------------------------------- Firebase Functions --------------------------------------
+  // ------------------------- Firebase Functions -----------------
   const fbTranslate = httpsCallable(FUNCTIONS, 'fbTranslateSectionTitle');
   const fbTranslateMeal = httpsCallable(FUNCTIONS, 'fbTranslateMeal');
   const fbTranslateBranchDesc = httpsCallable(FUNCTIONS, 'fbTranslateBranchDesc');
-  // ?--------------------------------- IMAGES ----------------------------------
-
-  // ?-------------------- IMAGES --------------------------------------------------
+  // ------------------------ Image Handiling ----------------------
   const fsGetImgDownloadUrl = useCallback(async (bucketPath, imgID) => {
     // eslint-disable-next-line no-useless-catch
     try {
@@ -280,25 +269,11 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-
-  // ---------------------------------------------------------
+  // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
     const docRef = doc(DB, docPath);
     await updateDoc(docRef, payload);
   }, []);
-
-  const fsQueryDoc = useCallback(async (docPath) => {
-    const docRef = doc(DB, docPath);
-    const docSnap = await getDoc(docRef);
-    return docSnap.data();
-  }, []);
-
-  const fsGetUserData = useCallback(async () => {
-    const docRef = doc(DB, `/users/${state.user.id}`);
-    const docSnap = await getDoc(docRef);
-    return docSnap.data();
-  }, [state]);
-
   const fsAddBatchTablesToBranch = useCallback(
     async (branchID, menuID) => {
       const MAX_ALLOWED_USER_TABLES = 5;
@@ -324,15 +299,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
-  const fsDeleteTable = useCallback(
-    async (branchID, tableID) => {
-      const docRef = doc(DB, `/users/${state.user.id}/branches/${branchID}/tables/${tableID}`);
-      await deleteDoc(docRef);
-    },
-    [state]
-  );
-
   const fsGetTableInfo = useCallback(async (userID, branchID, tableID) => {
     try {
       const docRef = query(
@@ -349,7 +315,6 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-
   const fsChangeMenuForAllTables = useCallback(
     async (branchID, menuID) => {
       const docsRef = query(
@@ -368,7 +333,71 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsGetBranchTables = useCallback(
+    async (branchID, userID = state.user.id) => {
+      const docRef = query(
+        collectionGroup(DB, 'tables'),
+        where('userID', '==', userID),
+        where('branchID', '==', branchID)
+      );
+      const querySnapshot = await getDocs(docRef);
+      const dataArr = [];
+      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
 
+      return dataArr;
+    },
+    [state]
+  );
+  const fsUpdateBranchTable = useCallback(
+    async (branchID, tableID, value) => {
+      const docRef = doc(DB, `/users/${state.user.id}/branches/${branchID}/tables/${tableID}`);
+      await updateDoc(docRef, value);
+    },
+    [state]
+  );
+  const fsGetBranchTablesCount = useCallback(
+    async (branchID) => {
+      const query_ = query(
+        collectionGroup(DB, 'tables'),
+        where('userID', '==', state.user.id),
+        where('branchID', '==', branchID)
+      );
+      const snapshot = await getCountFromServer(query_);
+      return snapshot.data().count;
+    },
+    [state]
+  );
+  // ------------------------ Orders -----------------------------
+  const fsGetAllTableOrders = useCallback(
+    async (tableID) => {
+      const docRef = query(
+        collectionGroup(DB, 'orders'),
+        where('userID', '==', state.user.id),
+        where('tableID', '==', tableID)
+      );
+      const querySnapshot = await getDocs(docRef);
+      const dataArr = [];
+      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+      return dataArr;
+    },
+    [state]
+  );
+  const fsGetAllOrders = useCallback(async (year) => {
+    const start = new Date(`01/01/${year}`);
+    const end = new Date(`12/01/${year}`);
+
+    const docRef = query(
+      collectionGroup(DB, 'orders'),
+      where('userID', '==', state.user.id),
+      where('confirmTime', '>=', start),
+      where('confirmTime', '<=', end)
+    );
+    const querySnapshot = await getDocs(docRef);
+    const dataArr = [];
+    querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+    return dataArr;
+  }, []);
+  // ----------------------- Branches ----------------------------
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
       collectionGroup(DB, 'branches'),
@@ -393,7 +422,6 @@ export function AuthProvider({ children }) {
 
     return dataArr;
   }, [state]);
-
   const fsGetBranch = useCallback(
     async (branchID, userID = state.user.id) => {
       try {
@@ -507,74 +535,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
-  const fsGetBranchTables = useCallback(
-    async (branchID, userID = state.user.id) => {
-      const docRef = query(
-        collectionGroup(DB, 'tables'),
-        where('userID', '==', userID),
-        where('branchID', '==', branchID)
-      );
-      const querySnapshot = await getDocs(docRef);
-      const dataArr = [];
-      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
-
-      return dataArr;
-    },
-    [state]
-  );
-
-  const fsUpdateBranchTable = useCallback(
-    async (branchID, tableID, value) => {
-      const docRef = doc(DB, `/users/${state.user.id}/branches/${branchID}/tables/${tableID}`);
-      await updateDoc(docRef, value);
-    },
-    [state]
-  );
-  const fsGetBranchTablesCount = useCallback(
-    async (branchID) => {
-      const query_ = query(
-        collectionGroup(DB, 'tables'),
-        where('userID', '==', state.user.id),
-        where('branchID', '==', branchID)
-      );
-      const snapshot = await getCountFromServer(query_);
-      return snapshot.data().count;
-    },
-    [state]
-  );
-
-  const fsGetAllOrders = useCallback(async (year) => {
-    const start = new Date(`01/01/${year}`);
-    const end = new Date(`12/01/${year}`);
-
-    const docRef = query(
-      collectionGroup(DB, 'orders'),
-      where('userID', '==', state.user.id),
-      where('confirmTime', '>=', start),
-      where('confirmTime', '<=', end)
-    );
-    const querySnapshot = await getDocs(docRef);
-    const dataArr = [];
-    querySnapshot.forEach((doc) => dataArr.push(doc.data()));
-    return dataArr;
-  }, []);
-
-  const fsGetAllTableOrders = useCallback(
-    async (tableID) => {
-      const docRef = query(
-        collectionGroup(DB, 'orders'),
-        where('userID', '==', state.user.id),
-        where('tableID', '==', tableID)
-      );
-      const querySnapshot = await getDocs(docRef);
-      const dataArr = [];
-      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
-      return dataArr;
-    },
-    [state]
-  );
-
+  // ------------------------- Menu --------------------------------
   const fsGetMenu = useCallback(
     async (menuID) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
@@ -583,7 +544,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsGetAllMenus = useCallback(async () => {
     const docRef = query(
       collectionGroup(DB, 'menus'),
@@ -605,7 +565,6 @@ export function AuthProvider({ children }) {
     );
     return dataArr;
   }, [state]);
-
   const fsAddNewMenu = useCallback(
     async (data) => {
       const newDocRef = doc(collection(DB, `/users/${state.user.id}/menus/`));
@@ -633,7 +592,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsDeleteMenu = useCallback(
     async (docID) => {
       const docRef = doc(DB, `/users/${state.user.id}/menus/${docID}`);
@@ -641,8 +599,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
-  // ---------------------------------- MENU SECTIONS ----------------------------------------
+  // --------------------- Menu Sections --------------------------
   const fsAddSection = useCallback(
     async (menuID, title, order) => {
       const userID = state.user.id;
@@ -827,38 +784,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
-  // ------------------ | MEALS | ------------------
-
-  const fsDocSnapshot = useCallback(
-    async (type, id) => {
-      const docRef = query(
-        collectionGroup(DB, type),
-        where('userID', '==', state.user.id),
-        where('id', '==', id)
-      );
-
-      const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          setDocSnapshot(doc.data());
-        });
-      });
-
-      // TODO unsubscribe()
-      return unsubscribe;
-    },
-    [state]
-  );
-
-  const fsGetAllMealsOFF = useCallback(async (userID) => {
-    const dataArr = [];
-    const docRef = query(collectionGroup(DB, 'meals'), where('userID', '==', userID));
-    const querySnapshot = await getDocs(docRef);
-    querySnapshot.forEach((doc) => {
-      dataArr.push({ id: doc.id, qty: 0, ...doc.data() });
-    });
-    return dataArr;
-  }, []);
+  // ------------------------- Meals --------------------------------
   const fsAddNewMeal = useCallback(
     async (mealInfo) => {
       const newDocRef = doc(collection(DB, `/users/${state.user.id}/meals/`));
@@ -963,7 +889,6 @@ export function AuthProvider({ children }) {
 
     return dataArr;
   }, [state]);
-
   const fsGetMeal = useCallback(
     async (mealID) => {
       try {
@@ -987,7 +912,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsDeleteMeal = useCallback(
     async (mealID) => {
       try {
@@ -1003,7 +927,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsGetMealLabels = useCallback(
     async (userID = state?.user?.id) => {
       try {
@@ -1021,7 +944,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsAddNewMealLabel = useCallback(
     async (title) => {
       const docRef = doc(collection(DB, `/users/${state.user.id}/meal-labels/`));
@@ -1029,7 +951,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const updatedAffectedMeals = useCallback(
     async (mealLabelID) => {
       const mealRef = query(
@@ -1056,7 +977,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsUpdateMealLabel = useCallback(
     async (payload) => {
       try {
@@ -1070,7 +990,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsDeleteMealLabel = useCallback(
     async (mealLabelID) => {
       try {
@@ -1085,7 +1004,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsInitiateNewOrder = useCallback(async (payload) => {
     const { initiatedBy, tableID, menuID, waiterID, userID, branchID } = payload;
@@ -1109,7 +1027,6 @@ export function AuthProvider({ children }) {
     });
     return docRef.id;
   }, []);
-
   const fsOrderSnapshot = useCallback(async (payload) => {
     const { userID, branchID, tableID, menuID } = payload;
     const docRef = query(
@@ -1138,7 +1055,6 @@ export function AuthProvider({ children }) {
 
     return unsubscribe;
   }, []);
-
   const fsUpdateCart = useCallback(async (payload) => {
     const { orderID, userID, branchID, cart } = payload;
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
@@ -1146,7 +1062,6 @@ export function AuthProvider({ children }) {
     updateDoc(docRef, { cart });
     // if (resetStatus) updateDoc(docRef, { status: { ...status, ready: '', collected: '', kitchen: '' } });
   }, []);
-
   const fsConfirmCartOrder = useCallback(async (dataObj) => {
     const { userID, branchID, cart } = dataObj;
     const totalBill = cart.reduce((sum, item) => sum + item.price, 0);
@@ -1173,19 +1088,16 @@ export function AuthProvider({ children }) {
 
     await Promise.all([...toResolveUser, ...branchMealsOrderUsage]);
   }, []);
-
   const fsRemoveMealFromCart = useCallback(async (payload) => {
     const { orderID, userID, branchID, cart } = payload;
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
     await updateDoc(docRef, { cart });
   }, []);
-
   const fsUpdateOrderStatus = useCallback(async (payload) => {
     const { orderID, status, userID, branchID } = payload;
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
     updateDoc(docRef, { status });
   }, []);
-
   const fsCancelOrder = useCallback(async (payload) => {
     const { orderID, userID, branchID } = payload;
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
@@ -1193,7 +1105,6 @@ export function AuthProvider({ children }) {
     await updateDoc(docRef, { isCanceled: true, lastUpdate: new Date() });
     await updateDoc(docRef, { isClosed: true });
   }, []);
-
   const fsOrderIsPaid = useCallback(async (payload) => {
     const { orderID, userID, branchID } = payload;
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
@@ -1203,9 +1114,6 @@ export function AuthProvider({ children }) {
 
     // update
   }, []);
-
-  // ------------------------------------------------------------------------------------------------------------------
-
   const fsUpdateScanLog = useCallback(async (payload) => {
     const month = new Date().getMonth();
     const year = new Date().getFullYear();
@@ -1221,16 +1129,17 @@ export function AuthProvider({ children }) {
       [`statisticsSummary.branches.${branchID}.scans.${year}.${month}`]: increment(1),
     });
   }, []);
-  // ------------------------------------------------------------------------------------------------------------------
-
-  // ? ---------------------------- WAITER --------------------------------
-
-  const fsGetWaiterLogin = useCallback(async (userCode, password, userID, branchID) => {
-    const docRef = doc(DB, `/users/${userID}/branches/${branchID}/waiters/${userCode}`);
-    const docSnap = await getDoc(docRef);
-    return docSnap.data();
+  // ------------------ Waiter ----------------------------------
+  const fsGetWaiterLogin = useCallback(async (userID, waiterID) => {
+    try {
+      const docRef = doc(DB, `/users/${userID}/waiters/${waiterID}`);
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.data()) throw Error;
+      return docSnap.data();
+    } catch (error) {
+      throw Error;
+    }
   }, []);
-
   const fsGetWaitersList = useCallback(async () => {
     const dataArr = [];
     const docRef = query(collectionGroup(DB, 'waiters'), where('userID', '==', state.user.id));
@@ -1240,7 +1149,6 @@ export function AuthProvider({ children }) {
     });
     return dataArr;
   }, [state]);
-
   const fsAddNewWaiter = useCallback(
     async (newStaffInfo) => {
       const newDocRef = doc(collection(DB, `/users/${state.user.id}/waiters`));
@@ -1256,7 +1164,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsUpdateWaiterInfo = useCallback(
     async (payload) => {
       const waiterDocRef = doc(DB, `/users/${state.user.id}/waiters/${payload.id}`);
@@ -1264,7 +1171,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsDeleteWaiter = useCallback(
     async (payload) => {
       const waiterDocRef = doc(DB, `/users/${state.user.id}/waiters/${payload}`);
@@ -1272,7 +1178,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsWaiterTablesSnapshot = useCallback(async (payload) => {
     const { userID, branchID } = payload;
     const docRef = query(
@@ -1300,131 +1205,7 @@ export function AuthProvider({ children }) {
     // TODO unsubscribe()
     return [unsubscribe];
   }, []);
-
-  /* 
-  // ----------------------------------------------------------------------
-
-  const fsGetScanCountTable = useCallback( async (branchID, tableID) => {
-    const query_ = query(
-      collectionGroup(DB, 'scanLogs'),
-      where('branchID', '==', branchID),
-      where('tableID', '==', tableID)
-    );
-    const snapshot = await getCountFromServer(query_);
-    return snapshot.data().count;
-  },[]);
-
-  const fsGetScanCountBranch = useCallback( async (branchID, year, month) => {
-    const start = new Date(`${month}/01/${year}`);
-    const end = new Date(`${month === 12 ? 1 : month + 1}/01/${year + (month === 12 ? 1 : 0)}`);
-
-    const query_ = query(
-      collectionGroup(DB, 'scanLogs'),
-      where('branchID', '==', branchID),
-      where('scanTime', '>=', start),
-      where('scanTime', '<', end)
-    );
-    const snapshot = await getCountFromServer(query_);
-    return snapshot.data().count;
-  },[]); 
-  */
-  // -----------------------------------------------------------------------------
-  // ! -------------------------------------------- Meta Tags -------------------------------------------------------------
-
-  const fsUpdateAllMetaTags = useCallback(
-    async (tagsIDs, mealID) => {
-      console.log(tagsIDs);
-      const batchAdd = writeBatch(DB);
-      const batchRemove = writeBatch(DB);
-      const batch = writeBatch(DB);
-
-      if (tagsIDs.length !== 0) {
-        const docsRefAdd = query(
-          collectionGroup(DB, 'metaTags'),
-          where('userID', '==', state.user.id),
-          where('id', 'in', tagsIDs)
-        );
-        const snapshotAdd = await getDocs(docsRefAdd);
-        snapshotAdd.docs.forEach((doc) => {
-          batch.update(doc.ref, { mealIDs: arrayUnion(mealID) });
-        });
-      }
-
-      // if (tagsIDs.length !== 0) {
-      //   await updateDoc(waiterDocRef, { metaKeywords: arrayRemove(tagID) });
-      // }
-      const docsRefRemove = query(
-        collectionGroup(DB, 'metaTags'),
-        where('userID', '==', state.user.id),
-        where('id', 'not-in', tagsIDs)
-      );
-      const snapshotRemove = await getDocs(docsRefRemove);
-
-      snapshotRemove.docs.forEach((doc) => {
-        batch.update(doc.ref, { mealIDs: arrayRemove(mealID) });
-      });
-
-      // await batchAdd.commit();
-      // await batchRemove.commit();
-      await batch.commit();
-    },
-    [state]
-  );
-
-  const fsRemoveTagFromAllMeals = useCallback(
-    async (tagID) => {
-      const batch = writeBatch(DB);
-
-      const docsRef = query(
-        collectionGroup(DB, 'meals'),
-        where('userID', '==', state.user.id),
-        where('metaKeywords', 'array-contains', tagID)
-      );
-      const snapshotAdd = await getDocs(docsRef);
-      snapshotAdd.docs.forEach((doc) => {
-        batch.update(doc.ref, { metaKeywords: arrayRemove(tagID) });
-      });
-
-      await batch.commit();
-    },
-    [state]
-  );
-
-  const fsUpdateMealMetaTags = useCallback(
-    async (tagID, mealID, Type) => {
-      const waiterDocRef = doc(DB, `/users/${state.user.id}/meals/${mealID}`);
-      if (Type === 'REMOVE') await updateDoc(waiterDocRef, { metaKeywords: arrayRemove(tagID) });
-      if (Type === 'ADD') await updateDoc(waiterDocRef, { metaKeywords: arrayUnion(tagID) });
-    },
-    [state]
-  );
-
-  // ! ------------------------------------------ Extension ---------------------------------------------------------------
-  const fsSendEmail = useCallback(async () => {
-    const newDocRef = doc(collection(DB, `/users/${state.user.id}/mail/`));
-    setDoc(newDocRef, {
-      to: 'hussam@hotmail.co.uk',
-      message: {
-        subject: 'Hello from firebase',
-        text: 'this is some random text',
-        html: `<img src='https://cdn.dribbble.com/userupload/3158902/file/original-7c71bfa677e61dea61bc2acd59158d32.jpg?resize=400x300' alt='logo' /> <h4>Thank you for your purchase</h4>`,
-      },
-    });
-    return newDocRef.id;
-  }, [state]);
-
-  const fsSendSMS = useCallback(async () => {
-    const newDocRef = doc(collection(DB, `/users/${state.user.id}/sms/`));
-    setDoc(newDocRef, {
-      flowId: '64ae5102d6fc056cc029fa84',
-      mobile: '009717440031',
-      vars: {
-        name: 'Nour Sallora',
-      },
-    });
-    return newDocRef.id;
-  }, [state]);
-  // ! ---------------------------------------------------------------------------------------------------------
+  // ------------------------------------------------------------
 
   const memoizedValue = useMemo(
     () => ({
@@ -1518,7 +1299,7 @@ export function AuthProvider({ children }) {
       // fsOrdersSnapshot,
       // fsInitiateNewOrder,
       // // ---- Waiter ----
-      // fsGetWaiterLogin,
+      fsGetWaiterLogin,
       // fsWaiterTablesSnapshot,
       // fsUpdateOrderStatus,
       // fsCancelOrder,
@@ -1622,7 +1403,7 @@ export function AuthProvider({ children }) {
       // fsOrdersSnapshot,
       // fsInitiateNewOrder,
       // // ---- Waiter ----
-      // fsGetWaiterLogin,
+      fsGetWaiterLogin,
       // fsWaiterTablesSnapshot,
       // fsUpdateOrderStatus,
       // fsCancelOrder,

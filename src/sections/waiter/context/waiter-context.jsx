@@ -5,18 +5,18 @@ import { useMemo, useState, useContext, useCallback, createContext } from 'react
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 
-export const QrMenuContext = createContext();
+export const WaiterContext = createContext();
 
-export const useQrMenuContext = () => {
-  const qrMenu = useContext(QrMenuContext);
-  if (!qrMenu) throw Error('This is not a QR Menu Context');
+export const useWaiterContext = () => {
+  const waiter = useContext(WaiterContext);
+  if (!waiter) throw Error('This is not a QR Menu Context');
 
-  return qrMenu;
+  return waiter;
 };
 
-export function QrMenuContextProvider({ children }) {
-  const { userID } = useParams();
-  const { fsGetUser } = useAuthContext();
+export function WaiterContextProvider({ children }) {
+  const { userID, waiterID } = useParams();
+  const { fsGetUser, fsGetWaiterLogin } = useAuthContext();
   const [labels, setLabels] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -24,6 +24,16 @@ export function QrMenuContextProvider({ children }) {
     queryKey: ['user', userID],
     queryFn: () => fsGetUser(userID),
     enabled: userID !== undefined,
+  });
+
+  const {
+    data: waiterInfo = {},
+    isSuccess: isWaiterInfoSuccess,
+    error: waiterError,
+  } = useQuery({
+    queryKey: ['waiter', userID, waiterID],
+    queryFn: () => fsGetWaiterLogin(userID, waiterID),
+    enabled: userID !== undefined && waiterID !== undefined,
   });
 
   const [selectedLanguage, setLanguage] = useState(user?.defaultLanguage || 'en');
@@ -55,10 +65,14 @@ export function QrMenuContextProvider({ children }) {
       user,
       selectedLanguage,
       setLanguage,
+      waiterInfo,
     }),
-    [labels, setLabel, reset, loading, user, selectedLanguage, setLanguage]
+    [labels, setLabel, reset, loading, user, selectedLanguage, setLanguage, waiterInfo]
   );
-  return <QrMenuContext.Provider value={memoizedValue}>{children}</QrMenuContext.Provider>;
+  return <WaiterContext.Provider value={memoizedValue}>{children}</WaiterContext.Provider>;
 }
 
-QrMenuContextProvider.propTypes = { children: PropTypes.node };
+WaiterContextProvider.propTypes = {
+  children: PropTypes.node,
+  // defaultSettings: PropTypes.object,
+};

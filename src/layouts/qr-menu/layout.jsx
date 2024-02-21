@@ -11,7 +11,7 @@ function QrMenuLayout({ children }) {
     <Box
       component="main"
       sx={{
-        bgcolor: 'background.neutral',
+        // bgcolor: 'background.neutral',
         height: 1,
       }}
     >

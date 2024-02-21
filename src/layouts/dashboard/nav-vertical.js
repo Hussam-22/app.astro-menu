@@ -26,9 +26,7 @@ import { useNavData } from './config-navigation';
 
 export default function NavVertical({ openNav, onCloseNav }) {
   const { user } = useMockedUser();
-
   const pathname = usePathname();
-
   const lgUp = useResponsive('up', 'lg');
 
   const navData = useNavData();

@@ -1,24 +1,30 @@
 import PropTypes from 'prop-types';
 
-import { Box, Container } from '@mui/material';
+import { Box } from '@mui/material';
 
-import { QrMenuContextProvider } from 'src/sections/qr-menu/context/qr-menu-context';
+import Main from 'src/layouts/waiter/main';
+import WaiterView from 'src/sections/waiter/view/waiter-view';
+import TablesNavVertical from 'src/layouts/waiter/tables-nav-vertical';
+import WaiterHorizontalNav from 'src/layouts/waiter/table-nav-horizontal';
+import { WaiterContextProvider } from 'src/sections/waiter/context/waiter-context';
 
 function WaiterLayout({ children }) {
   return (
-    <Box
-      component="main"
-      sx={{
-        bgcolor: 'background.neutral',
-        height: 1,
-      }}
-    >
-      <QrMenuContextProvider>
-        <Container maxWidth="xl" component="main" sx={{ py: 2 }}>
-          {children}
-        </Container>
-      </QrMenuContextProvider>
-    </Box>
+    <WaiterContextProvider>
+      <Box
+        sx={{
+          minHeight: 1,
+          display: 'flex',
+          flexDirection: 'row',
+        }}
+      >
+        <TablesNavVertical />
+        <Main>
+          <WaiterHorizontalNav />
+          <WaiterView>{children}</WaiterView>
+        </Main>
+      </Box>
+    </WaiterContextProvider>
   );
 }
 export default WaiterLayout;

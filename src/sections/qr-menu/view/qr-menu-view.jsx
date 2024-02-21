@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { Stack, Typography } from '@mui/material';
@@ -6,7 +5,6 @@ import { Stack, Typography } from '@mui/material';
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import MenuSection from 'src/sections/qr-menu/menu-section';
-import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 function QrMenuView() {
   const { userID, branchID, tableID } = useParams();
@@ -20,8 +18,6 @@ function QrMenuView() {
     orderSnapShot,
   } = useAuthContext();
 
-  const { setUser } = useQrMenuContext();
-
   const {
     data: tableInfo = {},
     isSuccess: isTableInfoSuccess,
@@ -29,12 +25,6 @@ function QrMenuView() {
   } = useQuery({
     queryKey: ['table', userID, branchID, tableID],
     queryFn: () => fsGetTableInfo(userID, branchID, tableID),
-  });
-
-  const { data: userInfo = {} } = useQuery({
-    queryKey: ['user', userID],
-    queryFn: () => fsGetUser(userID),
-    enabled: isTableInfoSuccess && tableInfo.isActive,
   });
 
   const { data: branchInfo = {} } = useQuery({
@@ -62,11 +52,6 @@ function QrMenuView() {
     queryFn: () => fsOrderSnapshot({ userID, branchID, tableID, menuID: tableInfo.menuID }),
     enabled: isTableInfoSuccess && tableInfo.isActive && tableInfo.menuID !== null,
   });
-
-  useEffect(() => {
-    if (userInfo.uid) setUser(userInfo);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userInfo]);
 
   if (!tableInfo?.isActive)
     return <Typography variant="h1">Sorry this table is not taking orders !!</Typography>;
