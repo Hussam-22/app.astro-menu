@@ -1,14 +1,11 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 
-// layouts
 import MainLayout from 'src/layouts/main';
-// config
+import { waiterRoutes } from 'src/routes/sections/waiter';
 import { qrMenuRoutes } from 'src/routes/sections/qr-menu';
 
-// import { PATH_AFTER_LOGIN } from 'src/config-global';
 import { authRoutes } from './auth';
 import { authDemoRoutes } from './auth-demo';
-//
 import { HomePage, mainRoutes } from './main';
 import { dashboardRoutes } from './dashboard';
 import { componentsRoutes } from './components';
@@ -50,6 +47,9 @@ export default function Router() {
 
     // Qr Menu
     ...qrMenuRoutes,
+
+    // Waiter
+    ...waiterRoutes,
 
     // No match 404
     { path: '*', element: <Navigate to="/404" replace /> },
