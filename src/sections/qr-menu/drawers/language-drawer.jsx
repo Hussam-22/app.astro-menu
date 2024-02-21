@@ -54,7 +54,7 @@ function LanguageButton({ code, toggleDrawer }) {
   const { setLanguage, selectedLanguage } = useQrMenuContext();
   const [loading, setLoading] = useState(false);
 
-  const { data, isLoading, error, isValidating } = useSWR(
+  const { data, isValidating } = useSWR(
     `https://restcountries.com/v3.1/lang/${LANGUAGE_CODES[code]}?fields=languages,flags`,
     fetcher
   );
