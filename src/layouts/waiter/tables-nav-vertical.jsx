@@ -1,9 +1,10 @@
 // import PropTypes from 'prop-types';
 
-import { Box, Stack, Avatar } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 
 import { NAV } from 'src/layouts/config-layout';
 import Scrollbar from 'src/components/scrollbar';
+import BranchTables from 'src/sections/waiter/branch-tables';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function TablesNavVertical() {
@@ -36,12 +37,7 @@ function TablesNavVertical() {
         >
           {/* <Logo sx={{ mt: 3, ml: 4, mb: 1 }} /> */}
 
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 1, p: 2 }}>
-            {[...Array(50)].map((table, index) => (
-              <Avatar key={index} />
-            ))}
-          </Box>
-
+          <BranchTables />
           <Box sx={{ flexGrow: 1 }} />
         </Scrollbar>
       </Stack>
