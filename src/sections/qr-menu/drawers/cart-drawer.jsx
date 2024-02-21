@@ -17,10 +17,12 @@ import {
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
+import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 const CartDrawer = ({ openState, toggleDrawer }) => {
   const theme = useTheme();
   const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
+  const { user } = useQrMenuContext();
 
   const queryClient = useQueryClient();
   const cachedMealLabels = queryClient.getQueriesData({ queryKey: ['sectionMeals'] }) || [];
@@ -29,18 +31,22 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
 
   const cartMeals = useMemo(
     () =>
+      availableMeals.length !== 0 &&
       availableMeals.filter((meal) =>
-        orderSnapShot.cart.some((portion) => portion.mealID === meal.docID)
+        orderSnapShot.cart.some((portion) => portion.mealID === meal?.docID)
       ),
     [availableMeals, orderSnapShot.cart]
   );
 
-  const totalBill = useMemo(
+  const orderValue = useMemo(
     () =>
       orderSnapShot?.docID &&
       orderSnapShot.cart.reduce((accumulator, portion) => accumulator + portion.price, 0),
     [orderSnapShot.cart, orderSnapShot?.docID]
   );
+
+  const taxValue = orderValue * (user.taxValue / 100);
+  const totalBill = orderValue + taxValue;
 
   const removeMeal = (portion) => {
     const cart = orderSnapShot.cart.filter((cartPortion) => cartPortion.id !== portion.id);
@@ -116,11 +122,26 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
               </React.Fragment>
             ))}
           </Stack>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', px: 3, mb: 2 }}>
-            <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-              Total Bill : {totalBill} AED
+          <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ mb: 2 }}>
+            <Typography variant="caption">
+              Order : {orderValue}{' '}
+              <Box component="span" sx={{ typography: 'caption' }}>
+                AED
+              </Box>
             </Typography>
-          </Box>
+            <Typography variant="caption">
+              Tax : {taxValue}{' '}
+              <Box component="span" sx={{ typography: 'caption' }}>
+                AED
+              </Box>
+            </Typography>
+            <Typography variant="h6" sx={{ color: 'success.main' }}>
+              Total Bill : {totalBill}{' '}
+              <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
+                AED
+              </Box>
+            </Typography>
+          </Stack>
         </Container>
       </Scrollbar>
     </Drawer>

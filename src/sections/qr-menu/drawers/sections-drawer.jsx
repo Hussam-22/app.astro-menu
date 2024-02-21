@@ -16,12 +16,24 @@ SectionsDrawer.propTypes = {
 function SectionsDrawer({ openState, toggleDrawer }) {
   const { userID } = useParams();
   const { fsGetMealLabels } = useAuthContext();
-  const { setLabel, labels, reset } = useQrMenuContext();
+  const { setLabel, labels, reset, selectedLanguage, user } = useQrMenuContext();
+
+  const queryClient = useQueryClient();
+  const cachedSections = queryClient.getQueriesData({ queryKey: ['sections'] }) || [];
+  const menuSections = cachedSections[0][1];
 
   const { data: mealsLabel = [] } = useQuery({
     queryKey: ['mealsLabel', userID],
     queryFn: () => fsGetMealLabels(userID),
   });
+
+  const getTitle = (section) => {
+    const { title, translation, translationEdited } = section;
+    if (selectedLanguage === user.defaultLanguage) return title;
+    return translationEdited?.[selectedLanguage]?.title
+      ? translationEdited?.[selectedLanguage]?.title
+      : translation?.[selectedLanguage]?.title;
+  };
 
   const onSectionClickHandler = (sectionID) => {
     const sectionElement = document.getElementById(sectionID);
@@ -37,13 +49,9 @@ function SectionsDrawer({ openState, toggleDrawer }) {
 
   const resetHandler = () => reset();
 
-  const queryClient = useQueryClient();
-  const cachedSections = queryClient.getQueriesData({ queryKey: ['sections'] }) || [];
-  const menuSections = cachedSections[0][1];
-
   return (
     <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('menu')}>
-      <Box sx={{ p: 3, mx: 'auto' }}>
+      <Box sx={{ p: 3, mx: { sm: 'auto' } }}>
         <Stack
           direction={{ sm: 'row', xs: 'column' }}
           spacing={{ sm: 3, xs: 1 }}
@@ -75,10 +83,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                       variant="outlined"
                       disableRipple
                     >
-                      {/* {selectedLanguage === defaultLanguage
-                      ? section.title
-                      : section.translationEdited[selectedLanguage]} */}
-                      {section.title}
+                      {getTitle(section)}
                     </Button>
                   ))}
               </Box>

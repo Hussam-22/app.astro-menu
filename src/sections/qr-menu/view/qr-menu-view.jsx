@@ -72,7 +72,7 @@ function QrMenuView() {
     return <Typography variant="h1">Sorry this table is not taking orders !!</Typography>;
 
   return (
-    <Stack direction="column" spacing={5}>
+    <Stack direction="column" spacing={5} sx={{ py: 5 }}>
       {sections
         .filter((section) => section.isActive)
         .sort((a, b) => a.order - b.order)
