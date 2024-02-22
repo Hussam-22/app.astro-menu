@@ -1,15 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
 
 import { Box, Button, Avatar, useTheme } from '@mui/material';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function BranchTables() {
   const theme = useTheme();
   const { tables } = useWaiterContext();
+  const { fsOrderSnapshot, orderSnapShot } = useAuthContext();
   const [selectedTableID, setSelectedTableID] = useState('');
+  const [unsubscribe, setUnsubscribe] = useState(null);
 
-  const onTableClick = (tableInfo) => {};
+  const { mutate } = useMutation({
+    mutationFn: () => unsubscribe(),
+    onSuccess: () => console.log('Unsubscribed Successfully !!'),
+  });
+
+  useEffect(
+    () => () => {
+      // Unsubscribe when the component unmounts
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    },
+    [unsubscribe]
+  );
+
+  console.log(orderSnapShot);
+
+  const onTableClick = async (tableInfo) => {
+    const { userID, branchID, docID: tableID, menuID } = tableInfo;
+    if (unsubscribe) {
+      // If there's an existing subscription, unsubscribe before subscribing to the new table
+      unsubscribe();
+    }
+    const newUnsubscribe = await fsOrderSnapshot({ userID, branchID, tableID, menuID });
+    setUnsubscribe(() => newUnsubscribe);
+    setSelectedTableID(tableID);
+  };
 
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 1, p: 2 }}>
