@@ -8,9 +8,8 @@ import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function BranchTables() {
   const theme = useTheme();
-  const { tables } = useWaiterContext();
+  const { tables, setSelectedTable, selectedTable } = useWaiterContext();
   const { fsOrderSnapshot, orderSnapShot } = useAuthContext();
-  const [selectedTableID, setSelectedTableID] = useState('');
   const [unsubscribe, setUnsubscribe] = useState(null);
 
   const { mutate } = useMutation({
@@ -38,7 +37,7 @@ function BranchTables() {
     }
     const newUnsubscribe = await fsOrderSnapshot({ userID, branchID, tableID, menuID });
     setUnsubscribe(() => newUnsubscribe);
-    setSelectedTableID(tableID);
+    setSelectedTable(tableInfo);
   };
 
   return (
@@ -57,7 +56,7 @@ function BranchTables() {
               }`,
               bgcolor:
                 // eslint-disable-next-line no-nested-ternary
-                selectedTableID === table.docID
+                selectedTable.docID === table.docID
                   ? table.isActive
                     ? 'success.main'
                     : 'error.main'

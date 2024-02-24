@@ -8,15 +8,8 @@ import MenuSection from 'src/sections/qr-menu/menu-section';
 
 function QrMenuView() {
   const { userID, branchID, tableID } = useParams();
-  const {
-    fsGetUser,
-    fsGetMealLabels,
-    fsGetBranch,
-    fsGetTableInfo,
-    fsGetSections,
-    fsOrderSnapshot,
-    orderSnapShot,
-  } = useAuthContext();
+  const { fsGetMealLabels, fsGetBranch, fsGetTableInfo, fsGetSections, fsOrderSnapshot } =
+    useAuthContext();
 
   const {
     data: tableInfo = {},
