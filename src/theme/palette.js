@@ -36,7 +36,7 @@ const SECONDARY = {
 };
 
 const INFO = {
-  lighter: '#CAFDF5',
+  lighter: '#D6F3FF',
   light: '#61F3F3',
   main: '#00B8D9',
   dark: '#006C9C',

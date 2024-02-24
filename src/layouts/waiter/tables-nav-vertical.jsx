@@ -1,6 +1,6 @@
 // import PropTypes from 'prop-types';
 
-import { Box, Stack } from '@mui/material';
+import { Box, Stack, Divider, Typography } from '@mui/material';
 
 import { NAV } from 'src/layouts/config-layout';
 import Scrollbar from 'src/components/scrollbar';
@@ -8,7 +8,8 @@ import BranchTables from 'src/sections/waiter/branch-tables';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function TablesNavVertical() {
-  const { user, waiterInfo } = useWaiterContext();
+  const { branchInfo } = useWaiterContext();
+
   return (
     <Box
       component="nav"
@@ -36,7 +37,18 @@ function TablesNavVertical() {
           }}
         >
           {/* <Logo sx={{ mt: 3, ml: 4, mb: 1 }} /> */}
-
+          <Box
+            sx={{
+              px: 3,
+              py: 4,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Typography variant="h5">{branchInfo.title}</Typography>
+          </Box>
+          <Divider sx={{ borderStyle: 'dashed' }} />
           <BranchTables />
           <Box sx={{ flexGrow: 1 }} />
         </Scrollbar>

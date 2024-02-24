@@ -61,7 +61,7 @@ const TableOrder = () => {
 
   return (
     <Card sx={{ p: 3 }}>
-      <Stack direction="column" spacing={1} sx={{ py: 2 }}>
+      <Stack direction="column" spacing={0.25}>
         {cartMeals.map((meal) => (
           <React.Fragment key={meal.docID}>
             <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>

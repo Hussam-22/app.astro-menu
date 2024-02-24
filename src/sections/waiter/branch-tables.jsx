@@ -27,8 +27,6 @@ function BranchTables() {
     [unsubscribe]
   );
 
-  console.log(orderSnapShot);
-
   const onTableClick = async (tableInfo) => {
     const { userID, branchID, docID: tableID, menuID } = tableInfo;
     if (unsubscribe) {
