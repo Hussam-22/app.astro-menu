@@ -1024,6 +1024,7 @@ export function AuthProvider({ children }) {
       isCanceled: false,
       isPaid: false,
       lastUpdate: new Date(),
+      status: [],
     });
     return docRef.id;
   }, []);
@@ -1301,7 +1302,7 @@ export function AuthProvider({ children }) {
       // // ---- Waiter ----
       fsGetWaiterLogin,
       // fsWaiterTablesSnapshot,
-      // fsUpdateOrderStatus,
+      fsUpdateOrderStatus,
       // fsCancelOrder,
       // fsOrderIsPaid,
       // fsAddNewWaiter,
@@ -1405,7 +1406,7 @@ export function AuthProvider({ children }) {
       // // ---- Waiter ----
       fsGetWaiterLogin,
       // fsWaiterTablesSnapshot,
-      // fsUpdateOrderStatus,
+      fsUpdateOrderStatus,
       // fsCancelOrder,
       // fsOrderIsPaid,
       // fsGetWaitersList,
