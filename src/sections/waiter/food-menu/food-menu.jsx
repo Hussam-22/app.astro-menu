@@ -23,7 +23,7 @@ function FoodMenu() {
     return <Typography variant="h6">Sorry this table is not taking orders !!</Typography>;
 
   return (
-    <Stack direction="column" spacing={3} sx={{ py: 5 }}>
+    <Stack direction="column" spacing={3}>
       {sections
         .filter((section) => section.isActive)
         .sort((a, b) => a.order - b.order)

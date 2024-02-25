@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router';
 import { useQuery, useQueries } from '@tanstack/react-query';
 
-import { Stack } from '@mui/material';
+import { Stack, Divider } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import TableOrder from 'src/sections/waiter/table-order';
@@ -41,14 +41,21 @@ function WaiterView() {
   });
 
   return (
-    <>
-      <Stack direction="column" spacing={2} sx={{ pb: 4, pt: 1 }}>
+    <Stack
+      direction="row"
+      spacing={3}
+      sx={{ py: 2 }}
+      divider={<Divider sx={{ borderStyle: 'dashed' }} flexItem orientation="vertical" />}
+    >
+      <Stack direction="column" spacing={2} sx={{ width: '50%' }}>
         {tableInfo?.docID && sections.length !== 0 && <TableActionBar openDrawer={onOpen} />}
         {tableInfo?.docID && sections.length !== 0 && <TableOrder />}
       </Stack>
 
-      <QrMenuDrawer isOpen={isOpen} onClose={onClose} />
-    </>
+      {tableInfo?.docID && sections.length !== 0 && (
+        <QrMenuDrawer isOpen={isOpen} onClose={onClose} />
+      )}
+    </Stack>
   );
 }
 export default WaiterView;

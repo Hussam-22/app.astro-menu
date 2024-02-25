@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import { useState, useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 
 import {
   Box,
@@ -28,12 +27,6 @@ function WaiterMenuMealCard({ mealInfo, isMealActive }) {
   const { user } = useWaiterContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
-  const queryClient = useQueryClient();
-  const cachedMealLabels = queryClient.getQueryData(['mealsLabel', userID]) || [];
-
-  const labels = cachedMealLabels.filter((cachedMealLabel) =>
-    mealLabels.includes(cachedMealLabel.docID)
-  );
 
   const onPortionChange = (e) => {
     setSelectedPortionIndex(e.target.value);
@@ -55,7 +48,7 @@ function WaiterMenuMealCard({ mealInfo, isMealActive }) {
   );
 
   return (
-    <Card sx={{ bgcolor: 'background.default', p: 1, position: 'relative' }}>
+    <Card sx={{ bgcolor: 'background.paper', p: 1, position: 'relative' }}>
       {isNew && (
         <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
           <Label variant="filled" color="error" sx={{ fontSize: 10 }}>
@@ -91,7 +84,7 @@ function WaiterMenuMealCard({ mealInfo, isMealActive }) {
           </Box>
         )}
         {isMealActive && (
-          <Stack direction="column" justifyContent="space-between" alignItems="center">
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Select
               value={selectedPortionIndex}
               onChange={onPortionChange}

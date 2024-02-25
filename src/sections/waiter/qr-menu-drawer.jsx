@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Box, Drawer } from '@mui/material';
+import { Box } from '@mui/material';
 
+import Scrollbar from 'src/components/scrollbar';
 import FoodMenu from 'src/sections/waiter/food-menu/food-menu';
 
 QrMenuDrawer.propTypes = {
@@ -12,22 +13,24 @@ QrMenuDrawer.propTypes = {
 
 function QrMenuDrawer({ isOpen, onClose }) {
   return (
-    <Drawer
-      anchor="right"
-      open={isOpen}
-      PaperProps={{
-        sx: {
-          // maxHeight: '50%',
-          // minHeight: '20%',
-          maxWidth: 400,
-        },
-      }}
-      onClose={onClose}
-    >
-      <Box sx={{ p: 2 }}>
+    // <Drawer
+    //   anchor="right"
+    //   open={isOpen}
+    //   PaperProps={{
+    //     sx: {
+    //       // maxHeight: '50%',
+    //       // minHeight: '20%',
+    //       maxWidth: 400,
+    //     },
+    //   }}
+    //   onClose={onClose}
+    // >
+    <Scrollbar sx={{ height: '100dvh' }}>
+      <Box>
         <FoodMenu />
       </Box>
-    </Drawer>
+    </Scrollbar>
+    // </Drawer>
   );
 }
 
