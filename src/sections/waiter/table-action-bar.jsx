@@ -1,14 +1,12 @@
-import PropTypes from 'prop-types';
 import { useMutation } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
-import { Card, Stack, Button } from '@mui/material';
+import { Card, Stack } from '@mui/material';
 
-import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { ORDER_STATUS } from 'src/_mock/_order-status';
 
-function TableActionBar({ openDrawer }) {
+function TableActionBar() {
   const { orderSnapShot, fsUpdateOrderStatus } = useAuthContext();
 
   const currentStatusValue = orderSnapShot?.status?.at(-1)?.value || 0;
@@ -42,17 +40,9 @@ function TableActionBar({ openDrawer }) {
         <LoadingButton variant="soft" color={statusColor} onClick={onOrderStatusUpdate}>
           {statusLabel}
         </LoadingButton>
-        <Button
-          variant="soft"
-          color="info"
-          startIcon={<Iconify icon="mdi:food-outline" />}
-          onClick={openDrawer}
-        >
-          Open Menu
-        </Button>
       </Stack>
     </Card>
   );
 }
 export default TableActionBar;
-TableActionBar.propTypes = { openDrawer: PropTypes.func };
+// TableActionBar.propTypes = { openDrawer: PropTypes.func };
