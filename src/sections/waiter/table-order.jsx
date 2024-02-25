@@ -44,8 +44,8 @@ const TableOrder = () => {
     [orderSnapShot.cart, orderSnapShot?.docID]
   );
 
-  const taxValue = Math.floor(orderValue * (user.taxValue / 100));
-  const totalBill = orderValue + taxValue;
+  const taxValue = +(orderValue * (user.taxValue / 100)).toFixed(2);
+  const totalBill = +orderValue + taxValue;
 
   const removeMeal = (portion) => {
     const cart = orderSnapShot.cart.filter((cartPortion) => cartPortion.id !== portion.id);
@@ -114,7 +114,7 @@ const TableOrder = () => {
           </React.Fragment>
         ))}
       </Stack>
-      <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ mb: 2 }}>
+      <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ my: 2 }}>
         <Typography variant="caption">
           Order : {orderValue}{' '}
           <Box component="span" sx={{ typography: 'caption' }}>

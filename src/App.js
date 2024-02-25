@@ -47,7 +47,7 @@ export default function App() {
             defaultSettings={{
               themeMode: 'light', // 'light' | 'dark'
               themeDirection: 'ltr', //  'rtl' | 'ltr'
-              themeContrast: 'default', // 'default' | 'bold'
+              themeContrast: 'bold', // 'default' | 'bold'
               themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
               themeColorPresets: 'default', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
               themeStretch: false,

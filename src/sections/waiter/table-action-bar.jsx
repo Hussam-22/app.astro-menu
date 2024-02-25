@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack } from '@mui/material';
 
+import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { ORDER_STATUS } from 'src/_mock/_order-status';
 
@@ -10,9 +11,11 @@ function TableActionBar() {
   const { orderSnapShot, fsUpdateOrderStatus } = useAuthContext();
 
   const currentStatusValue = orderSnapShot?.status?.at(-1)?.value || 0;
-  const { color: statusColor, label: statusLabel } = ORDER_STATUS.find(
-    (item) => item.value === currentStatusValue + 1
-  );
+  const {
+    color: statusColor,
+    label: statusLabel,
+    icon,
+  } = ORDER_STATUS.find((item) => item.value === currentStatusValue + 1);
 
   const { mutate, error } = useMutation({
     mutationFn: () => {
@@ -37,7 +40,12 @@ function TableActionBar() {
   return (
     <Card sx={{ p: 2 }}>
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <LoadingButton variant="soft" color={statusColor} onClick={onOrderStatusUpdate}>
+        <LoadingButton
+          variant="soft"
+          color={statusColor}
+          onClick={onOrderStatusUpdate}
+          startIcon={<Iconify icon={icon} />}
+        >
           {statusLabel}
         </LoadingButton>
       </Stack>

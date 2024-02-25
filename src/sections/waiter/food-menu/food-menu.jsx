@@ -21,8 +21,8 @@ function FoodMenu() {
   });
 
   const { data: menuInfo = {} } = useQuery({
-    queryKey: ['menu', selectedTable.menuID],
-    queryFn: () => fsGetMenu(selectedTable.menuID),
+    queryKey: ['menu', userID, selectedTable.menuID],
+    queryFn: () => fsGetMenu(selectedTable.menuID, userID),
     enabled: selectedTable.isActive && selectedTable.menuID !== null,
   });
 

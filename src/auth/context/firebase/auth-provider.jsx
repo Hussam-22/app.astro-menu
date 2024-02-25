@@ -537,8 +537,8 @@ export function AuthProvider({ children }) {
   );
   // ------------------------- Menu --------------------------------
   const fsGetMenu = useCallback(
-    async (menuID) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/`);
+    async (menuID, userID = state.user.id) => {
+      const docRef = doc(DB, `/users/${userID}/menus/${menuID}/`);
       const docSnap = await getDoc(docRef);
       return docSnap.data();
     },
