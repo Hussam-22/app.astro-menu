@@ -1096,6 +1096,7 @@ export function AuthProvider({ children }) {
   }, []);
   const fsUpdateOrderStatus = useCallback(async (payload) => {
     const { orderID, status, userID, branchID } = payload;
+    console.log(payload);
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
     updateDoc(docRef, { status });
   }, []);

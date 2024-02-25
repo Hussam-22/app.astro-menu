@@ -26,6 +26,8 @@ const TableOrder = () => {
 
   const availableMeals = cachedMealLabels.flatMap((item) => item[1]);
 
+  console.log(cachedMealLabels);
+
   const cartMeals = useMemo(
     () =>
       availableMeals.length !== 0 &&

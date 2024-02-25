@@ -11,15 +11,22 @@ import { ORDER_STATUS } from 'src/_mock/_order-status';
 function TableActionBar({ openDrawer }) {
   const { orderSnapShot, fsUpdateOrderStatus } = useAuthContext();
 
+  const currentStatusValue = orderSnapShot?.status?.at(-1)?.value || 0;
+  const { color: statusColor, label: statusLabel } = ORDER_STATUS.find(
+    (item) => item.value === currentStatusValue + 1
+  );
+
   const { mutate, error } = useMutation({
     mutationFn: () => {
       const { docID: orderID, userID, branchID } = orderSnapShot;
       if (orderSnapShot?.status.length === 0) {
-        const status = [...orderSnapShot.status, { ...ORDER_STATUS[0], time: new Date() }];
+        const status = [{ ...ORDER_STATUS[0], time: new Date() }];
+        console.log(status);
         fsUpdateOrderStatus({ orderID, userID, branchID, status });
+        return;
       }
 
-      const nextValue = orderSnapShot.status.at(-1);
+      const nextValue = orderSnapShot.status.at(-1).value + 1;
       const nextStatus = ORDER_STATUS.find((statusItem) => statusItem.value === nextValue);
       const status = [...orderSnapShot.status, { ...nextStatus, time: new Date() }];
       fsUpdateOrderStatus({ orderID, userID, branchID, status });
@@ -27,15 +34,13 @@ function TableActionBar({ openDrawer }) {
     onSuccess: () => {},
   });
 
-  console.log(error);
-
   const onOrderStatusUpdate = () => mutate();
 
   return (
     <Card sx={{ p: 2 }}>
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <LoadingButton variant="soft" color="warning" onClick={onOrderStatusUpdate}>
-          Status Update
+        <LoadingButton variant="soft" color={statusColor} onClick={onOrderStatusUpdate}>
+          {statusLabel}
         </LoadingButton>
         <Button
           variant="soft"

@@ -40,9 +40,9 @@ export function WaiterContextProvider({ children }) {
     enabled: waiterInfo?.branchID !== undefined,
   });
 
-  const { data: tables = [] } = useQuery({
-    queryKey: ['branch-tables', branchID],
-    queryFn: () => fsGetBranchTables(branchID),
+  const { data: tables = [], error } = useQuery({
+    queryKey: ['branch-tables', branchID, userID],
+    queryFn: () => fsGetBranchTables(branchID, userID),
     enabled: waiterInfo.docID !== undefined,
   });
 
