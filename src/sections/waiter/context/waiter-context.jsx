@@ -53,13 +53,11 @@ export function WaiterContextProvider({ children }) {
     enabled: waiterInfo.docID !== undefined,
   });
 
-  const { error } = useQuery({
+  useQuery({
     queryKey: ['active-orders', branchID, userID],
     queryFn: () => fsGetActiveOrdersSnapshot(userID, branchID),
     enabled: waiterInfo.docID !== undefined,
   });
-
-  console.log(error);
 
   const memoizedValue = useMemo(
     () => ({
