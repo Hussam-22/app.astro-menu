@@ -14,8 +14,8 @@ import {
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-import { blinkingStyle } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
+import { blinkingBorder, blinkingElement } from 'src/theme/css';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 const TableOrder = () => {
@@ -29,14 +29,14 @@ const TableOrder = () => {
   const getStatus = () => {
     if (isInKitchen && !isReadyToServe)
       return {
-        color: 'warning.main',
+        color: theme.palette.warning.main,
         labelColor: 'warning',
         icon: 'ph:cooking-pot-light',
         status: 'Preparing Order...',
       };
     if (isInKitchen && isReadyToServe)
       return {
-        color: 'info.main',
+        color: theme.palette.info.main,
         labelColor: 'info',
         icon: 'dashicons:food',
         status: 'Ready to Serve',
@@ -86,9 +86,10 @@ const TableOrder = () => {
     <Card
       sx={{
         p: 3,
-        border: getStatus().color !== 'none' && 'solid 2px',
-        borderColor: getStatus().color,
+        // border: getStatus().color !== 'none' && 'solid 2px',
+        // borderColor: getStatus().color,
         position: 'relative',
+        ...(getStatus() !== 'none' && { ...blinkingBorder(getStatus().color) }),
       }}
     >
       {getStatus() !== 'none' && (
@@ -102,7 +103,7 @@ const TableOrder = () => {
             fontSize: 15,
             borderRadius: '0 0 0 20px',
             p: 2,
-            ...blinkingStyle,
+            ...blinkingElement,
           }}
         >
           {getStatus().status}

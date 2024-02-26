@@ -149,7 +149,7 @@ export const hideScroll = {
   },
 };
 
-export const blinkingStyle = {
+export const blinkingElement = {
   animation: 'blink 2s infinite',
   '@keyframes blink': {
     '0%': {
@@ -163,3 +163,21 @@ export const blinkingStyle = {
     },
   },
 };
+
+export function blinkingBorder(color) {
+  return {
+    animation: 'blinkBorder 2s infinite',
+    border: `2px solid ${color}`, // Initial border style
+    '@keyframes blinkBorder': {
+      '0%': {
+        border: `2px solid ${color}`, // Initial border style
+      },
+      '50%': {
+        border: '2px solid transparent', // Blinking border style
+      },
+      '100%': {
+        border: `2px solid ${color}`, // Initial border style
+      },
+    },
+  };
+}
