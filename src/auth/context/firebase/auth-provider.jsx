@@ -1056,6 +1056,7 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
   const fsGetActiveOrdersSnapshot = useCallback(async (userID, branchID) => {
+    console.log(userID, branchID);
     const docRef = query(
       collectionGroup(DB, 'orders'),
       where('userID', '==', userID),

@@ -47,14 +47,19 @@ export function WaiterContextProvider({ children }) {
     enabled: waiterInfo?.branchID !== undefined,
   });
 
-  const { data: tables = [], error } = useQuery({
+  const { data: tables = [] } = useQuery({
     queryKey: ['branch-tables', branchID, userID],
-    // queryFn: () => fsGetBranchTables(branchID, userID),
+    queryFn: () => fsGetBranchTables(branchID, userID),
+    enabled: waiterInfo.docID !== undefined,
+  });
+
+  const { error } = useQuery({
+    queryKey: ['active-orders', branchID, userID],
     queryFn: () => fsGetActiveOrdersSnapshot(userID, branchID),
     enabled: waiterInfo.docID !== undefined,
   });
 
-  console.log({ tables, error, activeOrders });
+  console.log(error);
 
   const memoizedValue = useMemo(
     () => ({
