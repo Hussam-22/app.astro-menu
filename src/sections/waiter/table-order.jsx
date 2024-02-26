@@ -12,7 +12,9 @@ import {
   CircularProgress,
 } from '@mui/material';
 
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+import { blinkingStyle } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
@@ -20,6 +22,27 @@ const TableOrder = () => {
   const theme = useTheme();
   const { user } = useWaiterContext();
   const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
+  const { isInKitchen, isReadyToServe } = orderSnapShot;
+
+  console.log({ isInKitchen, isReadyToServe });
+
+  const getStatus = () => {
+    if (isInKitchen && !isReadyToServe)
+      return {
+        color: 'warning.main',
+        labelColor: 'warning',
+        icon: 'ph:cooking-pot-light',
+        status: 'Preparing Order...',
+      };
+    if (isInKitchen && isReadyToServe)
+      return {
+        color: 'info.main',
+        labelColor: 'info',
+        icon: 'dashicons:food',
+        status: 'Ready to Serve',
+      };
+    return 'none';
+  };
 
   const queryClient = useQueryClient();
   const cachedMealLabels = queryClient.getQueriesData({ queryKey: ['sectionMeals'] }) || [];
@@ -60,7 +83,31 @@ const TableOrder = () => {
   });
 
   return (
-    <Card sx={{ p: 3 }}>
+    <Card
+      sx={{
+        p: 3,
+        border: getStatus().color !== 'none' && 'solid 2px',
+        borderColor: getStatus().color,
+        position: 'relative',
+      }}
+    >
+      {getStatus() !== 'none' && (
+        <Label
+          color={getStatus().labelColor}
+          startIcon={<Iconify icon={getStatus().icon} />}
+          sx={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            fontSize: 15,
+            borderRadius: '0 0 0 20px',
+            p: 2,
+            ...blinkingStyle,
+          }}
+        >
+          {getStatus().status}
+        </Label>
+      )}
       <Stack direction="column" spacing={0.25}>
         {cartMeals.map((meal) => (
           <React.Fragment key={meal.docID}>
