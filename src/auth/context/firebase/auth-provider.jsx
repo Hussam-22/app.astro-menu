@@ -86,6 +86,7 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [dataSnapshotListener, setDataSnapshotListener] = useState([]);
   const [orderSnapShot, setOrderSnapShot] = useState({});
+  const [activeOrders, setActiveOrders] = useState([]);
 
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
   const status = state.loading ? 'loading' : checkAuthenticated;
@@ -1054,6 +1055,27 @@ export function AuthProvider({ children }) {
 
     return unsubscribe;
   }, []);
+  const fsGetActiveOrdersSnapshot = useCallback(async (userID, branchID) => {
+    const docRef = query(
+      collectionGroup(DB, 'orders'),
+      where('userID', '==', userID),
+      where('branchID', '==', branchID),
+      where('isPaid', '==', false),
+      where('isCanceled', '==', false)
+    );
+
+    const tablesArray = [];
+
+    const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        tablesArray.push(doc.data());
+      });
+    });
+
+    setActiveOrders(tablesArray);
+
+    return unsubscribe;
+  }, []);
   const fsUpdateCart = useCallback(async (payload) => {
     const { orderID, userID, branchID, cart } = payload;
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
@@ -1246,7 +1268,9 @@ export function AuthProvider({ children }) {
       // // ---- ORDERS ----
       fsInitiateNewOrder,
       fsOrderSnapshot,
+      fsGetActiveOrdersSnapshot,
       orderSnapShot,
+      activeOrders,
       // fsGetAllOrders,
       // // ---- MENU SECTIONS ----
       fsAddSection,
@@ -1349,7 +1373,9 @@ export function AuthProvider({ children }) {
       // // ---- ORDERS ----
       fsInitiateNewOrder,
       fsOrderSnapshot,
+      fsGetActiveOrdersSnapshot,
       orderSnapShot,
+      activeOrders,
       // fsGetAllOrders,
       fsGetAllTableOrders,
       // // ---- MENU SECTIONS ----

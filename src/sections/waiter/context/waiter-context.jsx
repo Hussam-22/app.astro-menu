@@ -16,8 +16,15 @@ export const useWaiterContext = () => {
 
 export function WaiterContextProvider({ children }) {
   const { userID, waiterID } = useParams();
-  const { fsGetUser, fsGetWaiterLogin, fsGetBranchTables, fsGetMealLabels, fsGetBranch } =
-    useAuthContext();
+  const {
+    fsGetUser,
+    fsGetWaiterLogin,
+    fsGetBranchTables,
+    fsGetMealLabels,
+    fsGetBranch,
+    fsGetActiveOrdersSnapshot,
+    activeOrders,
+  } = useAuthContext();
   const [selectedTable, setSelectedTable] = useState({});
 
   const { data: user = {} } = useQuery({
@@ -42,9 +49,12 @@ export function WaiterContextProvider({ children }) {
 
   const { data: tables = [], error } = useQuery({
     queryKey: ['branch-tables', branchID, userID],
-    queryFn: () => fsGetBranchTables(branchID, userID),
+    // queryFn: () => fsGetBranchTables(branchID, userID),
+    queryFn: () => fsGetActiveOrdersSnapshot(userID, branchID),
     enabled: waiterInfo.docID !== undefined,
   });
+
+  console.log({ tables, error, activeOrders });
 
   const memoizedValue = useMemo(
     () => ({

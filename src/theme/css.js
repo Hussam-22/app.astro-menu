@@ -181,3 +181,21 @@ export function blinkingBorder(color) {
     },
   };
 }
+
+export function blinkingBg(color) {
+  return {
+    animation: 'blinkingBg 2s infinite',
+    bgcolor: ` ${color}`,
+    '@keyframes blinkingBg': {
+      '0%': {
+        bgcolor: `${color}`,
+      },
+      '50%': {
+        bgcolor: 'transparent',
+      },
+      '100%': {
+        bgcolor: `${color}`,
+      },
+    },
+  };
+}

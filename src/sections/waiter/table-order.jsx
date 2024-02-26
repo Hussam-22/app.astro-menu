@@ -16,6 +16,7 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { blinkingBorder, blinkingElement } from 'src/theme/css';
+import { getOrderStatusStyle } from 'src/utils/get-order-status-styles';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 const TableOrder = () => {
@@ -24,25 +25,7 @@ const TableOrder = () => {
   const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
   const { isInKitchen, isReadyToServe } = orderSnapShot;
 
-  console.log({ isInKitchen, isReadyToServe });
-
-  const getStatus = () => {
-    if (isInKitchen && !isReadyToServe)
-      return {
-        color: theme.palette.warning.main,
-        labelColor: 'warning',
-        icon: 'ph:cooking-pot-light',
-        status: 'Preparing Order...',
-      };
-    if (isInKitchen && isReadyToServe)
-      return {
-        color: theme.palette.info.main,
-        labelColor: 'info',
-        icon: 'dashicons:food',
-        status: 'Ready to Serve',
-      };
-    return 'none';
-  };
+  const getStatus = getOrderStatusStyle(isInKitchen, isReadyToServe, theme);
 
   const queryClient = useQueryClient();
   const cachedMealLabels = queryClient.getQueriesData({ queryKey: ['sectionMeals'] }) || [];
@@ -86,16 +69,16 @@ const TableOrder = () => {
     <Card
       sx={{
         p: 3,
-        // border: getStatus().color !== 'none' && 'solid 2px',
-        // borderColor: getStatus().color,
+        // border: getStatus.color !== 'none' && 'solid 2px',
+        // borderColor: getStatus.color,
         position: 'relative',
-        ...(getStatus() !== 'none' && { ...blinkingBorder(getStatus().color) }),
+        ...(getStatus !== 'none' && { ...blinkingBorder(getStatus.color) }),
       }}
     >
-      {getStatus() !== 'none' && (
+      {getStatus !== 'none' && (
         <Label
-          color={getStatus().labelColor}
-          startIcon={<Iconify icon={getStatus().icon} />}
+          color={getStatus.labelColor}
+          startIcon={<Iconify icon={getStatus.icon} />}
           sx={{
             position: 'absolute',
             top: 0,
@@ -106,7 +89,7 @@ const TableOrder = () => {
             ...blinkingElement,
           }}
         >
-          {getStatus().status}
+          {getStatus.status}
         </Label>
       )}
       <Stack direction="column" spacing={0.25}>

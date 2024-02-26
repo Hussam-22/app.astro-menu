@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
 
 import { Box, Button, Avatar, useTheme } from '@mui/material';
 
+import { blinkingBorder } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
+import { getOrderStatusStyle } from 'src/utils/get-order-status-styles';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function BranchTables() {
@@ -11,11 +12,14 @@ function BranchTables() {
   const { tables, setSelectedTable, selectedTable } = useWaiterContext();
   const { fsOrderSnapshot, orderSnapShot } = useAuthContext();
   const [unsubscribe, setUnsubscribe] = useState(null);
+  const { isInKitchen, isReadyToServe } = orderSnapShot;
 
-  const { mutate } = useMutation({
-    mutationFn: () => unsubscribe(),
-    onSuccess: () => console.log('Unsubscribed Successfully !!'),
-  });
+  const getStatus = getOrderStatusStyle(isInKitchen, isReadyToServe, theme);
+
+  // const { mutate } = useMutation({
+  //   mutationFn: () => unsubscribe(),
+  //   onSuccess: () => console.log('Unsubscribed Successfully !!'),
+  // });
 
   useEffect(
     () => () => {
@@ -49,9 +53,10 @@ function BranchTables() {
             sx={{
               width: 32,
               height: 32,
-              border: `2px solid ${
-                table.isActive ? theme.palette.success.main : theme.palette.error.main
-              }`,
+              // border: `2px solid ${
+              //   table.isActive ? theme.palette.success.main : theme.palette.error.main
+              // }`,
+              ...(getStatus !== 'none' && { ...blinkingBorder(getStatus.color) }),
               bgcolor:
                 // eslint-disable-next-line no-nested-ternary
                 selectedTable.docID === table.docID
