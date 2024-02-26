@@ -1006,7 +1006,7 @@ export function AuthProvider({ children }) {
   );
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsInitiateNewOrder = useCallback(async (payload) => {
-    const { initiatedBy, tableID, menuID, waiterID, userID, branchID } = payload;
+    const { tableID, menuID, waiterID, userID, branchID } = payload;
     const docRef = doc(collection(DB, `/users/${userID}/branches/${branchID}/orders`));
     await setDoc(docRef, {
       docID: docRef.id,
@@ -1015,16 +1015,13 @@ export function AuthProvider({ children }) {
       tableID,
       menuID,
       waiterID,
-      initiatedBy,
-      totalBill: 0,
-      paymentMethod: '',
-      sessionExpiryTime: new Date().getTime() + 45 * 60000,
       cart: [],
-      isClosed: false,
+      status: [],
+      isInKitchen: false,
+      isReadyToServe: false,
       isCanceled: false,
       isPaid: false,
-      lastUpdate: new Date(),
-      status: [],
+      sessionExpiryTime: new Date().getTime() + 45 * 60000,
     });
     return docRef.id;
   }, []);
@@ -1035,7 +1032,8 @@ export function AuthProvider({ children }) {
       where('userID', '==', userID),
       where('branchID', '==', branchID),
       where('tableID', '==', tableID),
-      where('isClosed', '==', false)
+      where('isPaid', '==', false),
+      where('isCanceled', '==', false)
     );
 
     const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
@@ -1095,10 +1093,9 @@ export function AuthProvider({ children }) {
     await updateDoc(docRef, { cart });
   }, []);
   const fsUpdateOrderStatus = useCallback(async (payload) => {
-    const { orderID, status, userID, branchID } = payload;
-    console.log(payload);
+    const { orderID, toUpdateFields, userID, branchID } = payload;
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
-    updateDoc(docRef, { status });
+    updateDoc(docRef, toUpdateFields);
   }, []);
   const fsCancelOrder = useCallback(async (payload) => {
     const { orderID, userID, branchID } = payload;
@@ -1108,13 +1105,10 @@ export function AuthProvider({ children }) {
     await updateDoc(docRef, { isClosed: true });
   }, []);
   const fsOrderIsPaid = useCallback(async (payload) => {
-    const { orderID, userID, branchID } = payload;
+    const { orderID, userID, branchID, status } = payload;
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
 
-    await updateDoc(docRef, { isPaid: true, lastUpdate: new Date() });
-    await updateDoc(docRef, { isClosed: true });
-
-    // update
+    await updateDoc(docRef, { isPaid: true, status });
   }, []);
   const fsUpdateScanLog = useCallback(async (payload) => {
     const month = new Date().getMonth();
@@ -1305,7 +1299,7 @@ export function AuthProvider({ children }) {
       // fsWaiterTablesSnapshot,
       fsUpdateOrderStatus,
       // fsCancelOrder,
-      // fsOrderIsPaid,
+      fsOrderIsPaid,
       // fsAddNewWaiter,
       // fsGetWaitersList,
       // fsUpdateWaiterInfo,
@@ -1409,7 +1403,7 @@ export function AuthProvider({ children }) {
       // fsWaiterTablesSnapshot,
       fsUpdateOrderStatus,
       // fsCancelOrder,
-      // fsOrderIsPaid,
+      fsOrderIsPaid,
       // fsGetWaitersList,
       // fsUpdateWaiterInfo,
       // fsDeleteWaiter,

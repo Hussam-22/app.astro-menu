@@ -5,48 +5,69 @@ import { Card, Stack } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import { ORDER_STATUS } from 'src/_mock/_order-status';
 
 function TableActionBar() {
   const { orderSnapShot, fsUpdateOrderStatus } = useAuthContext();
-
-  const currentStatusValue = orderSnapShot?.status?.at(-1)?.value || 0;
   const {
-    color: statusColor,
-    label: statusLabel,
-    icon,
-  } = ORDER_STATUS.find((item) => item.value === currentStatusValue + 1);
+    docID: orderID,
+    userID,
+    branchID,
+    isPaid,
+    isCanceled,
+    isInKitchen,
+    isReadyToServe,
+    cart,
+  } = orderSnapShot;
 
-  const { mutate, error } = useMutation({
-    mutationFn: () => {
-      const { docID: orderID, userID, branchID } = orderSnapShot;
-      if (orderSnapShot?.status.length === 0) {
-        const status = [{ ...ORDER_STATUS[0], time: new Date() }];
-        console.log(status);
-        fsUpdateOrderStatus({ orderID, userID, branchID, status });
-        return;
-      }
+  console.log({ isInKitchen });
 
-      const nextValue = orderSnapShot.status.at(-1).value + 1;
-      const nextStatus = ORDER_STATUS.find((statusItem) => statusItem.value === nextValue);
-      const status = [...orderSnapShot.status, { ...nextStatus, time: new Date() }];
-      fsUpdateOrderStatus({ orderID, userID, branchID, status });
+  const isCancelOrderDisabled = cart.length === 0;
+  const isCollectPaymentDisabled = !isReadyToServe;
+  const isSendToKitchenDisabled = cart.length === 0 || isInKitchen;
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (value) => {
+      let field;
+      if (value === 'CANCEL') field = { isCanceled: true };
+      if (value === 'COLLECT') field = { isPayed: true };
+      if (value === 'KITCHEN') field = { isInKitchen: true };
+      fsUpdateOrderStatus({ orderID, userID, branchID, toUpdateFields: field });
     },
     onSuccess: () => {},
   });
 
-  const onOrderStatusUpdate = () => mutate();
+  const onOrderStatusUpdate = (value) => mutate(value);
 
   return (
     <Card sx={{ p: 2 }}>
       <Stack direction="row" spacing={2} justifyContent="flex-end">
         <LoadingButton
           variant="soft"
-          color={statusColor}
-          onClick={onOrderStatusUpdate}
-          startIcon={<Iconify icon={icon} />}
+          color="error"
+          onClick={() => onOrderStatusUpdate('CANCEL')}
+          startIcon={<Iconify icon="icon-park-twotone:close-one" />}
+          disabled={isCancelOrderDisabled}
         >
-          {statusLabel}
+          Cancel Order
+        </LoadingButton>
+        <LoadingButton
+          variant="soft"
+          color="success"
+          onClick={() => onOrderStatusUpdate('COLLECT')}
+          startIcon={<Iconify icon="ri:check-double-line" />}
+          disabled={isCollectPaymentDisabled}
+        >
+          Collect Payment
+        </LoadingButton>
+        <LoadingButton
+          variant="soft"
+          color="warning"
+          onClick={() => onOrderStatusUpdate('KITCHEN')}
+          startIcon={<Iconify icon="ph:cooking-pot-light" />}
+          disabled={isSendToKitchenDisabled}
+          loading={isPending}
+        >
+          Send to Kitchen
         </LoadingButton>
       </Stack>
     </Card>

@@ -1,10 +1,9 @@
 export const ORDER_STATUS = [
-  { value: 0, label: 'Open', customerText: '', color: 'secondary', icon: 'ph:read-cv-logo' },
   {
     value: 1,
-    label: 'Start New Order',
+    label: 'Table is Empty',
     customerText: 'Taking Order',
-    color: 'secondary',
+    color: 'inherit',
     icon: 'dashicons:welcome-write-blog',
   },
   {

@@ -46,55 +46,16 @@ export function WaiterContextProvider({ children }) {
     enabled: waiterInfo.docID !== undefined,
   });
 
-  const { data: labels = [] } = useQuery({
-    queryKey: ['mealsLabel', userID],
-    queryFn: () => fsGetMealLabels(userID),
-    enabled: tables?.isActive,
-  });
-
-  const [selectedLanguage, setLanguage] = useState(user?.defaultLanguage || 'en');
-
-  // const setLabel = useCallback(
-  //   (labelID) => {
-  //     setLoading(true);
-  //     // Remove labelID if it exists in the array
-  //     setLabels((state) => state.filter((label) => label !== labelID));
-  //     // Add labelID if it doesn't exist in the array
-  //     if (!labels.includes(labelID)) {
-  //       setLabels((state) => [...new Set([...state, labelID])]);
-  //     }
-  //     setTimeout(() => {
-  //       setLoading(false);
-  //     }, 1000);
-  //   },
-  //   [labels]
-  // );
-
-  // const reset = useCallback(() => setLabels([]), []);
-
   const memoizedValue = useMemo(
     () => ({
-      labels,
       user,
-      selectedLanguage,
-      setLanguage,
-      waiterInfo,
       tables,
+      branchInfo,
+      waiterInfo,
       selectedTable,
       setSelectedTable,
-      branchInfo,
     }),
-    [
-      labels,
-      user,
-      selectedLanguage,
-      setLanguage,
-      waiterInfo,
-      tables,
-      selectedTable,
-      setSelectedTable,
-      branchInfo,
-    ]
+    [user, tables, branchInfo, waiterInfo, selectedTable, setSelectedTable]
   );
   return <WaiterContext.Provider value={memoizedValue}>{children}</WaiterContext.Provider>;
 }

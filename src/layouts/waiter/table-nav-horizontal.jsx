@@ -8,16 +8,16 @@ function WaiterHorizontalNav() {
   return (
     <Box
       sx={{
-        mt: 3,
-        mb: 1,
-        py: 2,
-        px: 3,
-        borderRadius: 2,
+        py: 1.4,
         borderBottom: `dashed 1px ${theme.palette.divider}`,
-        bgcolor: 'info.lighter',
       }}
     >
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ bgcolor: 'info.lighter', borderRadius: 2, py: 2, px: 3 }}
+      >
         <Typography
           sx={{ fontWeight: theme.typography.fontWeightBold, color: 'info.main' }}
         >{`Hello, ${waiterInfo.fullname}`}</Typography>

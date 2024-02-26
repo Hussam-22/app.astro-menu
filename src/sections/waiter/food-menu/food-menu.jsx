@@ -26,8 +26,6 @@ function FoodMenu() {
     enabled: selectedTable.isActive && selectedTable.menuID !== null,
   });
 
-  console.log(menuInfo);
-
   if (!selectedTable?.isActive)
     return <Typography variant="h6">Sorry this table is not taking orders !!</Typography>;
 
