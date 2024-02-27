@@ -53,6 +53,7 @@ export function WaiterContextProvider({ children }) {
     enabled: waiterInfo.docID !== undefined,
   });
 
+  // Get Orders Snapshot
   useQuery({
     queryKey: ['active-orders', branchID, userID],
     queryFn: () => fsGetActiveOrdersSnapshot(userID, branchID),

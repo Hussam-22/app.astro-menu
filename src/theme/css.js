@@ -164,11 +164,11 @@ export const blinkingElement = {
   },
 };
 
-export function blinkingBorder(color) {
+export function blinkingBorder(color, id) {
   return {
-    animation: 'blinkBorder 2s infinite',
+    animation: `${id} 2s infinite`,
     border: `2px solid ${color}`, // Initial border style
-    '@keyframes blinkBorder': {
+    [`@keyframes ${id}`]: {
       '0%': {
         border: `2px solid ${color}`, // Initial border style
       },

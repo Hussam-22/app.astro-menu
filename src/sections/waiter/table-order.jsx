@@ -21,16 +21,17 @@ import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 const TableOrder = () => {
   const theme = useTheme();
-  const { user } = useWaiterContext();
-  const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
+  const { user, selectedTable } = useWaiterContext();
+  const { fsRemoveMealFromCart, activeOrders } = useAuthContext();
+  const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
   const { isInKitchen, isReadyToServe } = orderSnapShot;
 
   const getStatus = getOrderStatusStyle(isInKitchen, isReadyToServe, theme);
 
   const queryClient = useQueryClient();
-  const cachedMealLabels = queryClient.getQueriesData({ queryKey: ['sectionMeals'] }) || [];
+  const cachedSectionMeals = queryClient.getQueriesData({ queryKey: ['sectionMeals'] }) || [];
 
-  const availableMeals = cachedMealLabels.flatMap((item) => item[1]);
+  const availableMeals = cachedSectionMeals.flatMap((item) => item[1]);
 
   const cartMeals = useMemo(
     () =>
@@ -69,10 +70,8 @@ const TableOrder = () => {
     <Card
       sx={{
         p: 3,
-        // border: getStatus.color !== 'none' && 'solid 2px',
-        // borderColor: getStatus.color,
         position: 'relative',
-        ...(getStatus !== 'none' && { ...blinkingBorder(getStatus.color) }),
+        ...(getStatus !== 'none' && { ...blinkingBorder(getStatus.color, orderSnapShot.docID) }),
       }}
     >
       {getStatus !== 'none' && (

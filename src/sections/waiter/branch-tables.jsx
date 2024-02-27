@@ -1,45 +1,51 @@
-import { useState, useEffect } from 'react';
+import { useCallback } from 'react';
 
 import { Box, Button, Avatar, useTheme } from '@mui/material';
 
+import { blinkingBorder } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
+import { getOrderStatusStyle } from 'src/utils/get-order-status-styles';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function BranchTables() {
   const theme = useTheme();
-  const { tables, setSelectedTable, selectedTable, user, branchInfo } = useWaiterContext();
-  const { fsOrderSnapshot, activeOrders, fsGetActiveOrdersSnapshot } = useAuthContext();
-  const [unsubscribe, setUnsubscribe] = useState(null);
-  // const { isInKitchen, isReadyToServe } = tables;
+  const { tables, setSelectedTable, selectedTable } = useWaiterContext();
+  const { activeOrders } = useAuthContext();
 
-  // const getStatus = getOrderStatusStyle(isInKitchen, isReadyToServe, theme);
-  console.log(activeOrders);
+  const getStyle = useCallback(
+    (tableInfo) => {
+      // TABLE IN-ACTIVE === RED
+      if (!tableInfo.isActive)
+        return {
+          border: `solid 2px ${theme.palette.error.main}`,
+          bgcolor: selectedTable.docID === tableInfo.docID ? 'error.main' : 'unset',
+        };
 
-  // const { mutate } = useMutation({
-  //   mutationFn: () => unsubscribe(),
-  //   onSuccess: () => console.log('Unsubscribed Successfully !!'),
-  // });
-
-  useEffect(
-    () => () => {
-      // Unsubscribe when the component unmounts
-      if (unsubscribe) {
-        unsubscribe();
+      // TABLE ACTIVE WITH ORDER === BLINKING COLORS
+      if (tableInfo.isActive && activeOrders.length !== 0) {
+        const tableOrder = activeOrders.find((order) => order.tableID === tableInfo.docID);
+        if (!tableOrder) return { border: `solid 2px ${theme.palette.grey[200]}` };
+        const { isInKitchen, isReadyToServe } = tableOrder;
+        return {
+          ...blinkingBorder(
+            getOrderStatusStyle(isInKitchen, isReadyToServe, theme).color,
+            tableInfo.docID
+          ),
+          bgcolor:
+            selectedTable.docID === tableInfo.docID
+              ? getOrderStatusStyle(isInKitchen, isReadyToServe, theme).color
+              : 'unset',
+        };
       }
-    },
-    [unsubscribe]
-  );
 
-  const onTableClick = async (tableInfo) => {
-    const { userID, branchID, docID: tableID, menuID } = tableInfo;
-    if (unsubscribe) {
-      // If there's an existing subscription, unsubscribe before subscribing to the new table
-      unsubscribe();
-    }
-    const newUnsubscribe = await fsOrderSnapshot({ userID, branchID, tableID, menuID });
-    setUnsubscribe(() => newUnsubscribe);
-    setSelectedTable(tableInfo);
-  };
+      // TABLE IS ACTIVE WITHOUT ORDER === BLACK
+      return {
+        border: `solid 2px ${theme.palette.grey[500]}`,
+        bgcolor: 'common.black',
+      };
+    },
+    [activeOrders, selectedTable.docID, theme]
+  );
 
   return (
     tables.length !== 0 && (
@@ -53,20 +59,11 @@ function BranchTables() {
               sx={{
                 width: 32,
                 height: 32,
-                // border: `2px solid ${
-                //   table.isActive ? theme.palette.success.main : theme.palette.error.main
-                // }`,
-                // ...(getStatus !== 'none' && { ...blinkingBorder(getStatus.color) }),
-                bgcolor:
-                  // eslint-disable-next-line no-nested-ternary
-                  selectedTable.docID === table.docID
-                    ? table.isActive
-                      ? 'success.main'
-                      : 'error.main'
-                    : 'unset',
+                font: () => console.log(getStyle(table)),
+                ...getStyle(table),
               }}
             >
-              <Button onClick={() => onTableClick(table)} sx={{ color: 'text.primary' }}>
+              <Button onClick={() => setSelectedTable(table)} sx={{ color: 'text.primary' }}>
                 {table.index}
               </Button>
             </Avatar>

@@ -5,9 +5,12 @@ import { Card, Stack } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function TableActionBar() {
-  const { orderSnapShot, fsUpdateOrderStatus } = useAuthContext();
+  const { activeOrders, fsUpdateOrderStatus } = useAuthContext();
+  const { selectedTable } = useWaiterContext();
+  const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
   const {
     docID: orderID,
     userID,
@@ -18,8 +21,6 @@ function TableActionBar() {
     isReadyToServe,
     cart,
   } = orderSnapShot;
-
-  console.log({ isInKitchen });
 
   const isCancelOrderDisabled = cart.length === 0;
   const isCollectPaymentDisabled = !isReadyToServe;

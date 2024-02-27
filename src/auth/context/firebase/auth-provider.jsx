@@ -1056,7 +1056,6 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
   const fsGetActiveOrdersSnapshot = useCallback(async (userID, branchID) => {
-    console.log(userID, branchID);
     const docRef = query(
       collectionGroup(DB, 'orders'),
       where('userID', '==', userID),
@@ -1065,15 +1064,15 @@ export function AuthProvider({ children }) {
       where('isCanceled', '==', false)
     );
 
-    const tablesArray = [];
-
     const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
+      const tablesArray = [];
       querySnapshot.forEach((doc) => {
-        tablesArray.push(doc.data());
+        if (doc.exists()) {
+          tablesArray.push(doc.data());
+        }
       });
+      setActiveOrders(tablesArray);
     });
-
-    setActiveOrders(tablesArray);
 
     return unsubscribe;
   }, []);
