@@ -11,6 +11,7 @@ function TableActionBar() {
   const { activeOrders, fsUpdateOrderStatus } = useAuthContext();
   const { selectedTable } = useWaiterContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
+
   const {
     docID: orderID,
     userID,

@@ -13,7 +13,7 @@ import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function WaiterView() {
   const { userID } = useParams();
-  const { fsGetSectionMeals, fsGetSections } = useAuthContext();
+  const { fsGetSectionMeals, fsGetSections, activeOrders } = useAuthContext();
   const { selectedTable: tableInfo } = useWaiterContext();
 
   const { data: sections = [] } = useQuery({
@@ -34,6 +34,8 @@ function WaiterView() {
       enabled: sections.length !== 0,
     })),
   });
+
+  if (activeOrders.length === 0) return null;
 
   return (
     <Stack

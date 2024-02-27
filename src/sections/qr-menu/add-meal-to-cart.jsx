@@ -6,12 +6,16 @@ import { Stack, Typography, IconButton } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
+import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
 function AddMealToCart({ portion, mealInfo }) {
-  const { fsUpdateCart, orderSnapShot } = useAuthContext();
-  const { docID, userID, branchID, cart } = orderSnapShot;
+  const { fsUpdateCart, activeOrders } = useAuthContext();
+  const { selectedTable } = useWaiterContext();
   const [isOpen, setIsOpen] = useState(false);
+
+  const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
+  const { docID, userID, branchID, cart } = orderSnapShot;
 
   const count = useMemo(
     () =>

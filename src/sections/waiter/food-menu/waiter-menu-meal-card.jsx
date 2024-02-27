@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router';
 import { useState, useCallback } from 'react';
 
 import {
@@ -21,12 +20,15 @@ import AddMealToCart from 'src/sections/qr-menu/add-meal-to-cart';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function WaiterMenuMealCard({ mealInfo, isMealActive }) {
-  const { userID } = useParams();
-  const { cover, docID, description, isNew, mealLabels, portions, title } = mealInfo;
-  const { orderSnapShot } = useAuthContext();
-  const { user } = useWaiterContext();
+  const { cover, description, isNew, portions, title } = mealInfo;
+  const { activeOrders } = useAuthContext();
+  const { user, selectedTable } = useWaiterContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
+
+  const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
+
+  console.log(orderSnapShot);
 
   const onPortionChange = (e) => {
     setSelectedPortionIndex(e.target.value);

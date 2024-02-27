@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+import { useParams } from 'react-router';
+import { useMutation } from '@tanstack/react-query';
 
 import { Box, Button, Avatar, useTheme } from '@mui/material';
 
@@ -9,8 +11,9 @@ import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function BranchTables() {
   const theme = useTheme();
-  const { tables, setSelectedTable, selectedTable } = useWaiterContext();
-  const { activeOrders } = useAuthContext();
+  const { waiterID, userID } = useParams();
+  const { tables, setSelectedTable, selectedTable, branchInfo } = useWaiterContext();
+  const { activeOrders, fsInitiateNewOrder } = useAuthContext();
 
   const getStyle = useCallback(
     (tableInfo) => {
@@ -41,11 +44,36 @@ function BranchTables() {
       // TABLE IS ACTIVE WITHOUT ORDER === BLACK
       return {
         border: `solid 2px ${theme.palette.grey[500]}`,
-        bgcolor: 'common.black',
+        bgcolor: 'unset',
       };
     },
     [activeOrders, selectedTable.docID, theme]
   );
+
+  const { mutate, error, isPending } = useMutation({
+    mutationKey: ['active-orders', branchInfo.docID, userID],
+    mutationFn: async (table) => {
+      const { docID: tableID, menuID, branchID } = table;
+      await fsInitiateNewOrder({
+        initiatedBy: 'waiter',
+        tableID,
+        menuID,
+        waiterID,
+        userID,
+        branchID,
+      });
+      return table;
+    },
+    onSuccess: (table) => {
+      setSelectedTable(table);
+    },
+  });
+
+  const onTableSelect = (table) => {
+    const tableOrder = activeOrders.find((order) => order.tableID === table.docID);
+    if (tableOrder) setSelectedTable(table);
+    if (!tableOrder) mutate(table);
+  };
 
   return (
     tables.length !== 0 && (
@@ -59,11 +87,10 @@ function BranchTables() {
               sx={{
                 width: 32,
                 height: 32,
-                font: () => console.log(getStyle(table)),
                 ...getStyle(table),
               }}
             >
-              <Button onClick={() => setSelectedTable(table)} sx={{ color: 'text.primary' }}>
+              <Button onClick={() => onTableSelect(table)} sx={{ color: 'text.primary' }}>
                 {table.index}
               </Button>
             </Avatar>
