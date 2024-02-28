@@ -24,6 +24,7 @@ const TableOrder = () => {
   const { user, selectedTable } = useWaiterContext();
   const { fsRemoveMealFromCart, activeOrders } = useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
+
   const { isInKitchen, isReadyToServe } = orderSnapShot;
 
   const getStatus = getOrderStatusStyle(isInKitchen, isReadyToServe, theme);

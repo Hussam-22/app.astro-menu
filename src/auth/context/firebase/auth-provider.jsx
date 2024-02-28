@@ -1021,6 +1021,8 @@ export function AuthProvider({ children }) {
       isReadyToServe: false,
       isCanceled: false,
       isPaid: false,
+      initiationTime: new Date(),
+      lastUpdate: new Date(),
       sessionExpiryTime: new Date().getTime() + 45 * 60000,
     });
     return docRef.id;
@@ -1117,13 +1119,6 @@ export function AuthProvider({ children }) {
     const { orderID, toUpdateFields, userID, branchID } = payload;
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
     updateDoc(docRef, toUpdateFields);
-  }, []);
-  const fsCancelOrder = useCallback(async (payload) => {
-    const { orderID, userID, branchID } = payload;
-    const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
-
-    await updateDoc(docRef, { isCanceled: true, lastUpdate: new Date() });
-    await updateDoc(docRef, { isClosed: true });
   }, []);
   const fsOrderIsPaid = useCallback(async (payload) => {
     const { orderID, userID, branchID, status } = payload;

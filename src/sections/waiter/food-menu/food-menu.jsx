@@ -31,7 +31,10 @@ function FoodMenu() {
 
   return (
     <Stack direction="column" spacing={2}>
-      <Typography variant="h6">{`Menu name: ${menuInfo?.title}`}</Typography>
+      <Stack direction="column">
+        <Typography variant="overline">Menu</Typography>
+        <Typography variant="caption">{menuInfo?.title}</Typography>
+      </Stack>
       <Scrollbar sx={{ height: '100dvh' }}>
         <Stack direction="column" spacing={3}>
           {sections

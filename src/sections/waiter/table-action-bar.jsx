@@ -9,8 +9,27 @@ import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function TableActionBar() {
   const { activeOrders, fsUpdateOrderStatus } = useAuthContext();
-  const { selectedTable } = useWaiterContext();
+  const { selectedTable, setSelectedTable } = useWaiterContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (value) => {
+      let field;
+      if (value === 'CANCEL') field = { isCanceled: true };
+      if (value === 'COLLECT') field = { isPayed: true };
+      if (value === 'KITCHEN') field = { isInKitchen: true };
+      fsUpdateOrderStatus({ orderID, userID, branchID, toUpdateFields: field });
+      return value;
+    },
+    onSuccess: (value) => {
+      console.log(value);
+      if (value !== 'KITCHEN') setSelectedTable({});
+    },
+  });
+
+  const onOrderStatusUpdate = (field) => mutate(field);
+
+  if (!orderSnapShot) return null;
 
   const {
     docID: orderID,
@@ -26,19 +45,6 @@ function TableActionBar() {
   const isCancelOrderDisabled = cart.length === 0;
   const isCollectPaymentDisabled = !isReadyToServe;
   const isSendToKitchenDisabled = cart.length === 0 || isInKitchen;
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: (value) => {
-      let field;
-      if (value === 'CANCEL') field = { isCanceled: true };
-      if (value === 'COLLECT') field = { isPayed: true };
-      if (value === 'KITCHEN') field = { isInKitchen: true };
-      fsUpdateOrderStatus({ orderID, userID, branchID, toUpdateFields: field });
-    },
-    onSuccess: () => {},
-  });
-
-  const onOrderStatusUpdate = (value) => mutate(value);
 
   return (
     <Card sx={{ p: 2 }}>
