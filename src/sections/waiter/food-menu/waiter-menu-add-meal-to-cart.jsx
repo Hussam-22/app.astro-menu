@@ -12,7 +12,9 @@ function WaiterMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
   const { fsUpdateCart, activeOrders } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTableID);
-  const { docID, userID, branchID, cart } = orderSnapShot;
+  const { docID, userID, branchID, cart, updateCount } = orderSnapShot;
+
+  console.log(updateCount);
 
   const count = useMemo(
     () =>
@@ -35,6 +37,7 @@ function WaiterMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
         qty: 1,
         comment,
         id: generateID(8),
+        update: updateCount,
       });
       fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
       setIsOpen(false);

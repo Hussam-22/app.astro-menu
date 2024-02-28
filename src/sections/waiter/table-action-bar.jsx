@@ -17,7 +17,7 @@ function TableActionBar() {
     mutationFn: (value) => {
       let field;
       if (value === 'CANCEL') field = { isCanceled: true };
-      if (value === 'COLLECT') field = { isPayed: true };
+      if (value === 'COLLECT') field = { isPaid: true };
       fsUpdateOrderStatus({ orderID, userID, branchID, toUpdateFields: field });
       return value;
     },
