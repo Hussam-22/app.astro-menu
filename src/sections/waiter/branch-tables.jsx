@@ -12,23 +12,38 @@ import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 function BranchTables() {
   const theme = useTheme();
   const { waiterID, userID } = useParams();
-  const { tables, setSelectedTable, selectedTable, branchInfo } = useWaiterContext();
+  const { tables, setSelectedTable, selectedTable, branchInfo, setIsLoading } = useWaiterContext();
   const { activeOrders, fsInitiateNewOrder } = useAuthContext();
 
   const getStyle = useCallback(
     (tableInfo) => {
+      const { isActive } = tableInfo;
+      const tableOrder = activeOrders.find((order) => order.tableID === tableInfo.docID);
+
       // TABLE IN-ACTIVE === RED
-      if (!tableInfo.isActive)
+      if (!isActive)
         return {
           border: `solid 2px ${theme.palette.error.main}`,
           bgcolor: selectedTable.docID === tableInfo.docID ? 'error.main' : 'unset',
         };
 
+      // TABLE IS ACTIVE WITHOUT ORDER === GREY
+      if (isActive && !tableOrder)
+        return {
+          border: `solid 2px ${theme.palette.grey[500]}`,
+          bgcolor: 'unset',
+        };
+
       // TABLE ACTIVE WITH ORDER === BLINKING COLORS
-      if (tableInfo.isActive && activeOrders.length !== 0) {
-        const tableOrder = activeOrders.find((order) => order.tableID === tableInfo.docID);
-        if (!tableOrder) return { border: `solid 2px ${theme.palette.grey[200]}` };
+      if (isActive && tableOrder) {
         const { isInKitchen, isReadyToServe } = tableOrder;
+
+        if (!isInKitchen && !isReadyToServe)
+          return {
+            border: `solid 2px ${theme.palette.success.main}`,
+            bgcolor: 'unset',
+          };
+
         return {
           ...blinkingBorder(
             getOrderStatusStyle(isInKitchen, isReadyToServe, theme).color,
@@ -41,9 +56,8 @@ function BranchTables() {
         };
       }
 
-      // TABLE IS ACTIVE WITHOUT ORDER === BLACK
       return {
-        border: `solid 2px ${theme.palette.grey[500]}`,
+        border: `solid 2px ${theme.palette.secondary.main}`,
         bgcolor: 'unset',
       };
     },
@@ -71,8 +85,14 @@ function BranchTables() {
 
   const onTableSelect = (table) => {
     const tableOrder = activeOrders.find((order) => order.tableID === table.docID);
-    if (tableOrder) setSelectedTable(table);
-    if (!tableOrder) mutate(table);
+    if (tableOrder) {
+      setIsLoading(true);
+      setTimeout(() => {
+        setSelectedTable(table);
+        setIsLoading(false);
+      }, 500);
+    }
+    if (!tableOrder && table.isActive) mutate(table);
   };
 
   return (

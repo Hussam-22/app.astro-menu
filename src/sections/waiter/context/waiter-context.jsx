@@ -26,6 +26,7 @@ export function WaiterContextProvider({ children }) {
     activeOrders,
   } = useAuthContext();
   const [selectedTable, setSelectedTable] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const { data: user = {} } = useQuery({
     queryKey: ['user', userID],
@@ -68,8 +69,10 @@ export function WaiterContextProvider({ children }) {
       waiterInfo,
       selectedTable,
       setSelectedTable,
+      isLoading,
+      setIsLoading,
     }),
-    [user, tables, branchInfo, waiterInfo, selectedTable, setSelectedTable]
+    [user, tables, branchInfo, waiterInfo, selectedTable, setSelectedTable, isLoading, setIsLoading]
   );
   return <WaiterContext.Provider value={memoizedValue}>{children}</WaiterContext.Provider>;
 }
