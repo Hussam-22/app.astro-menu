@@ -84,7 +84,6 @@ const BUCKET = 'menu-app-b268b';
 
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [dataSnapshotListener, setDataSnapshotListener] = useState([]);
   const [orderSnapShot, setOrderSnapShot] = useState({});
   const [activeOrders, setActiveOrders] = useState([]);
 
@@ -1196,33 +1195,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsWaiterTablesSnapshot = useCallback(async (payload) => {
-    const { userID, branchID } = payload;
-    const docRef = query(
-      collectionGroup(DB, 'orders'),
-      where('userID', '==', userID),
-      where('branchID', '==', branchID),
-      where('isClosed', '==', false)
-    );
 
-    const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        setDataSnapshotListener((state) => {
-          const ordersArr = state;
-          const orderIndex = ordersArr.findIndex((order) => order.id === doc.data().id);
-          // if order is new, add it to state
-          if (orderIndex === -1) return [...state, doc.data()];
-
-          // if order not new, remove it from array and replace it with updated version
-          ordersArr.splice(orderIndex, 1);
-          return [...ordersArr, doc.data()];
-        });
-      });
-    });
-
-    // TODO unsubscribe()
-    return [unsubscribe];
-  }, []);
   // ------------------------------------------------------------
 
   const memoizedValue = useMemo(

@@ -6,14 +6,14 @@ import { Box, Card, Stack, Select, Divider, MenuItem, InputBase, Typography } fr
 
 import Label from 'src/components/label';
 import Image from 'src/components/image';
+import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import TextMaxLine from 'src/components/text-max-line';
 import AddMealToCart from 'src/sections/qr-menu/add-meal-to-cart';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 function MealCard({ mealInfo, isMealActive }) {
-  //   const { lang } = useParams();
-  const userID = 'n2LrTyRkktYlddyljHUPsodtpsf1';
+  const { userID } = useParams();
   const {
     cover,
     docID,

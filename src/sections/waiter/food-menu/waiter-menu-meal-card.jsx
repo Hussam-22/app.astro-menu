@@ -16,8 +16,8 @@ import {
 import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
 import TextMaxLine from 'src/components/text-max-line';
-import AddMealToCart from 'src/sections/qr-menu/add-meal-to-cart';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
+import WaiterMenuAddMealToCart from 'src/sections/waiter/food-menu/waiter-menu-add-meal-to-cart';
 
 function WaiterMenuMealCard({ mealInfo, isMealActive }) {
   const { cover, description, isNew, portions, title } = mealInfo;
@@ -27,8 +27,6 @@ function WaiterMenuMealCard({ mealInfo, isMealActive }) {
   const [isReadMore, setIsReadMore] = useState(false);
 
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
-
-  console.log(orderSnapShot);
 
   const onPortionChange = (e) => {
     setSelectedPortionIndex(e.target.value);
@@ -113,7 +111,11 @@ function WaiterMenuMealCard({ mealInfo, isMealActive }) {
               ))}
             </Select>
             <Stack direction="row" spacing={1} alignItems="center">
-              <AddMealToCart portion={portions[selectedPortionIndex]} mealInfo={mealInfo} />
+              <WaiterMenuAddMealToCart
+                portion={portions[selectedPortionIndex]}
+                mealInfo={mealInfo}
+                selectedTableID={selectedTable.docID}
+              />
               <Typography
                 variant="h6"
                 sx={{ pr: 2 }}

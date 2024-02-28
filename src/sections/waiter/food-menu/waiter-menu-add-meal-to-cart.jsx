@@ -8,10 +8,11 @@ import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
-function AddMealToCart({ portion, mealInfo }) {
-  const { fsUpdateCart, orderSnapShot } = useAuthContext();
-  const { docID, userID, branchID, cart } = orderSnapShot;
+function WaiterMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
+  const { fsUpdateCart, activeOrders } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
+  const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTableID);
+  const { docID, userID, branchID, cart } = orderSnapShot;
 
   const count = useMemo(
     () =>
@@ -69,6 +70,10 @@ function AddMealToCart({ portion, mealInfo }) {
     </>
   );
 }
-export default AddMealToCart;
+export default WaiterMenuAddMealToCart;
 
-AddMealToCart.propTypes = { portion: PropTypes.object, mealInfo: PropTypes.object };
+WaiterMenuAddMealToCart.propTypes = {
+  portion: PropTypes.object,
+  mealInfo: PropTypes.object,
+  selectedTableID: PropTypes.string,
+};

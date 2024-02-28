@@ -39,7 +39,7 @@ function QrMenuView() {
     enabled: isTableInfoSuccess && tableInfo.isActive && tableInfo.menuID !== null,
   });
 
-  const { data: orderInfo = {} } = useQuery({
+  const { data: orderInfo = {}, error } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: tableInfo.menuID ? ['order', userID, branchID, tableID, tableInfo.menuID] : null,
     queryFn: () => fsOrderSnapshot({ userID, branchID, tableID, menuID: tableInfo.menuID }),
