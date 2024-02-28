@@ -1007,28 +1007,55 @@ export function AuthProvider({ children }) {
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsInitiateNewOrder = useCallback(async (payload) => {
     const { tableID, menuID, waiterID, userID, branchID } = payload;
-    const docRef = doc(collection(DB, `/users/${userID}/branches/${branchID}/orders`));
-    await setDoc(docRef, {
-      docID: docRef.id,
-      userID,
-      branchID,
-      tableID,
-      menuID,
-      waiterID,
-      cart: [],
-      status: [],
-      isInKitchen: false,
-      isReadyToServe: false,
-      isCanceled: false,
-      isPaid: false,
-      initiationTime: new Date(),
-      lastUpdate: new Date(),
-      sessionExpiryTime: new Date().getTime() + 45 * 60000,
-    });
-    return docRef.id;
+
+    const existingDocRef = query(
+      collectionGroup(DB, 'orders'),
+      where('userID', '==', userID),
+      where('branchID', '==', branchID),
+      where('tableID', '==', tableID),
+      where('isPaid', '==', false),
+      where('isCanceled', '==', false)
+    );
+    const querySnapshot = await getDocs(existingDocRef);
+    console.log(querySnapshot.empty);
+    // Check if the query snapshot is empty
+    if (querySnapshot.empty) {
+      const docRef = doc(collection(DB, `/users/${userID}/branches/${branchID}/orders`));
+      await setDoc(docRef, {
+        docID: docRef.id,
+        userID,
+        branchID,
+        tableID,
+        menuID,
+        waiterID,
+        cart: [],
+        status: [],
+        isInKitchen: false,
+        isReadyToServe: false,
+        isCanceled: false,
+        isPaid: false,
+        updateCount: 0,
+        initiationTime: new Date(),
+        lastUpdate: new Date(),
+        sessionExpiryTime: new Date().getTime() + 45 * 60000,
+      });
+      return docRef.id;
+    }
+    return null;
   }, []);
+
   const fsOrderSnapshot = useCallback(async (payload) => {
     const { userID, branchID, tableID, menuID } = payload;
+
+    await fsInitiateNewOrder({
+      initiatedBy: 'customer',
+      tableID,
+      menuID,
+      waiterID: '',
+      userID,
+      branchID,
+    });
+
     const docRef = query(
       collectionGroup(DB, 'orders'),
       where('userID', '==', userID),
@@ -1039,17 +1066,8 @@ export function AuthProvider({ children }) {
     );
 
     const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
-      if (querySnapshot.docs.length === 0)
-        fsInitiateNewOrder({
-          initiatedBy: 'customer',
-          tableID,
-          menuID,
-          waiterID: '',
-          userID,
-          branchID,
-        });
-
       querySnapshot.forEach((doc) => {
+        console.log(doc.data());
         setOrderSnapShot(doc.data());
       });
     });

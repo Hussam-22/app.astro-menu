@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
+import { LoadingButton } from '@mui/lab';
 import {
   Card,
   Stack,
@@ -21,11 +22,11 @@ import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 const TableOrder = () => {
   const theme = useTheme();
-  const { user, selectedTable } = useWaiterContext();
-  const { fsRemoveMealFromCart, activeOrders } = useAuthContext();
+  const { selectedTable } = useWaiterContext();
+  const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus } = useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
 
-  const { isInKitchen, isReadyToServe } = orderSnapShot;
+  const { isInKitchen, isReadyToServe, docID: orderID, userID, branchID } = orderSnapShot;
 
   const getStatus = getOrderStatusStyle(isInKitchen, isReadyToServe, theme);
 
@@ -43,28 +44,24 @@ const TableOrder = () => {
     [availableMeals, orderSnapShot.cart]
   );
 
-  const orderValue = useMemo(
-    () =>
-      orderSnapShot?.docID &&
-      orderSnapShot.cart.reduce((accumulator, portion) => accumulator + portion.price, 0),
-    [orderSnapShot.cart, orderSnapShot?.docID]
-  );
-
-  const taxValue = +(orderValue * (user.taxValue / 100)).toFixed(2);
-  const totalBill = +orderValue + taxValue;
-
-  const removeMeal = (portion) => {
-    const cart = orderSnapShot.cart.filter((cartPortion) => cartPortion.id !== portion.id);
-    fsRemoveMealFromCart({
-      orderID: orderSnapShot.docID,
-      userID: orderSnapShot.userID,
-      branchID: orderSnapShot.branchID,
-      cart,
+  const removeMeal = (portion) =>
+    mutate(() => {
+      const cart = orderSnapShot.cart.filter((cartPortion) => cartPortion.id !== portion.id);
+      fsRemoveMealFromCart({
+        orderID,
+        userID,
+        branchID,
+        cart,
+      });
     });
-  };
+
+  const onOrderStatusUpdate = () =>
+    mutate(() =>
+      fsUpdateOrderStatus({ orderID, userID, branchID, toUpdateFields: { isInKitchen: true } })
+    );
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (portion) => removeMeal(portion),
+    mutationFn: (mutateFn) => mutateFn(),
   });
 
   return (
@@ -117,7 +114,11 @@ const TableOrder = () => {
                         sx={{ borderStyle: 'dashed', mx: 1 }}
                       />
 
-                      <IconButton onClick={() => mutate(portion)} sx={{ p: 0.5 }}>
+                      <IconButton
+                        onClick={() => removeMeal(portion)}
+                        sx={{ p: 0.5 }}
+                        disabled={isInKitchen}
+                      >
                         {isPending ? (
                           <CircularProgress color="secondary" size={20} />
                         ) : (
@@ -125,7 +126,7 @@ const TableOrder = () => {
                             icon="eva:trash-2-outline"
                             width={20}
                             height={20}
-                            sx={{ color: 'error.main' }}
+                            sx={{ color: !isInKitchen ? 'error.main' : 'default' }}
                           />
                         )}
                       </IconButton>
@@ -143,26 +144,19 @@ const TableOrder = () => {
           </React.Fragment>
         ))}
       </Stack>
-      <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ my: 2 }}>
-        <Typography variant="caption">
-          Order : {orderValue}{' '}
-          <Box component="span" sx={{ typography: 'caption' }}>
-            AED
-          </Box>
-        </Typography>
-        <Typography variant="caption">
-          Tax : {taxValue}{' '}
-          <Box component="span" sx={{ typography: 'caption' }}>
-            AED
-          </Box>
-        </Typography>
-        <Typography variant="h6" sx={{ color: 'success.main' }}>
-          Total Bill : {totalBill}{' '}
-          <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
-            AED
-          </Box>
-        </Typography>
-      </Stack>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+        {!isInKitchen && (
+          <LoadingButton
+            variant="soft"
+            color="warning"
+            onClick={() => onOrderStatusUpdate()}
+            startIcon={<Iconify icon="ph:cooking-pot-light" />}
+            loading={isPending}
+          >
+            Send to Kitchen
+          </LoadingButton>
+        )}
+      </Box>
     </Card>
   );
 };
