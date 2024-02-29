@@ -14,8 +14,6 @@ function WaiterMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTableID);
   const { docID, userID, branchID, cart, updateCount } = orderSnapShot;
 
-  console.log(updateCount);
-
   const count = useMemo(
     () =>
       orderSnapShot?.cart?.reduce((accumulator, cartPortion) => {

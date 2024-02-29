@@ -1017,7 +1017,6 @@ export function AuthProvider({ children }) {
       where('isCanceled', '==', false)
     );
     const querySnapshot = await getDocs(existingDocRef);
-    console.log(querySnapshot.empty);
     // Check if the query snapshot is empty
     if (querySnapshot.empty) {
       const docRef = doc(collection(DB, `/users/${userID}/branches/${branchID}/orders`));
@@ -1030,8 +1029,8 @@ export function AuthProvider({ children }) {
         waiterID,
         cart: [],
         status: [],
-        isInKitchen: false,
-        isReadyToServe: false,
+        isInKitchen: [],
+        isReadyToServe: [],
         isCanceled: false,
         isPaid: false,
         updateCount: 0,

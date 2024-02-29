@@ -35,9 +35,17 @@ const TableOrder = () => {
     cart,
     updateCount,
   } = orderSnapShot;
-  const isSendToKitchenDisabled = cart.length === 0 || isInKitchen;
 
-  const getStatus = getOrderStatusStyle(isInKitchen, isReadyToServe, theme);
+  const isSendToKitchenDisabled = (updateValue) =>
+    cart.filter((cartItem) => cartItem.update === updateValue).length === 0 ||
+    isInKitchen.includes(updateValue);
+
+  const getStatus = (updateValue) =>
+    getOrderStatusStyle(
+      isInKitchen.includes(updateValue),
+      isReadyToServe.includes(updateValue),
+      theme
+    );
 
   const queryClient = useQueryClient();
   const cachedSectionMeals = queryClient.getQueriesData({ queryKey: ['sectionMeals'] }) || [];
@@ -49,7 +57,7 @@ const TableOrder = () => {
       availableMeals.length !== 0 &&
       availableMeals.filter((meal) =>
         orderSnapShot.cart
-          .filter((mealObj) => mealObj.update === updateNo)
+          .filter((portion) => portion.update === updateNo) // Filter cart by updateNo
           .some((portion) => portion.mealID === meal?.docID)
       ),
     [availableMeals, orderSnapShot]
@@ -74,7 +82,23 @@ const TableOrder = () => {
         orderID,
         userID,
         branchID,
-        toUpdateFields: { isInKitchen: true, updateCount: updateCount + 1 },
+        toUpdateFields: {
+          isInKitchen: [...isInKitchen, updateCount],
+          updateCount: updateCount + 1,
+        },
+      })
+    );
+
+  const onReadyToServe = (value) =>
+    mutate(() =>
+      fsUpdateOrderStatus({
+        orderID,
+        userID,
+        branchID,
+        toUpdateFields: {
+          isInKitchen: isInKitchen.filter((orderIndex) => orderIndex !== value),
+          isReadyToServe: [...isReadyToServe, value],
+        },
       })
     );
 
@@ -84,21 +108,37 @@ const TableOrder = () => {
 
   return (
     <Stack direction="column" spacing={2}>
-      {[...Array(updateCount + 1)].map((_, orderUpdate) => (
+      {[...Array(updateCount + 1)].map((_, orderIndex) => (
         <Card
-          key={orderUpdate}
+          key={`${orderID}${orderIndex}`}
           sx={{
             p: 3,
             position: 'relative',
-            ...(getStatus !== 'none' && {
-              ...blinkingBorder(getStatus.color, orderSnapShot.docID),
+            overflow: 'visible',
+            ...(getStatus(+orderIndex) !== 'none' && {
+              ...blinkingBorder(getStatus(+orderIndex).color, `${orderID}${orderIndex}`),
             }),
           }}
         >
-          {getStatus !== 'none' && (
+          <Label
+            color="default"
+            variant="filled"
+            sx={{
+              position: 'absolute',
+              top: -10,
+              left: -10,
+              fontSize: 15,
+              borderRadius: 4,
+              p: 0,
+            }}
+          >
+            {orderIndex + 1}
+          </Label>
+
+          {getStatus(orderIndex) !== 'none' && (
             <Label
-              color={getStatus.labelColor}
-              startIcon={<Iconify icon={getStatus.icon} />}
+              color={getStatus(orderIndex).labelColor}
+              startIcon={<Iconify icon={getStatus(orderIndex).icon} />}
               sx={{
                 position: 'absolute',
                 top: 0,
@@ -109,18 +149,21 @@ const TableOrder = () => {
                 ...blinkingElement,
               }}
             >
-              {getStatus.status}
+              {getStatus(orderIndex).status}
             </Label>
           )}
           <Stack direction="column" spacing={0.25}>
-            {cartMeals(orderUpdate).map((meal) => (
+            {cartMeals(orderIndex).map((meal) => (
               <React.Fragment key={meal.docID}>
                 <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
                   {meal.title}
                 </Typography>
                 <Box sx={{ ml: 3 }}>
                   {orderSnapShot.cart
-                    .filter((cartPortion) => cartPortion.mealID === meal.docID)
+                    .filter(
+                      (cartPortion) =>
+                        cartPortion.mealID === meal.docID && cartPortion.update === orderIndex
+                    )
                     .map((portion) => (
                       <Stack key={portion.id}>
                         <Stack direction="row" justifyContent="space-between">
@@ -145,7 +188,10 @@ const TableOrder = () => {
                           <IconButton
                             onClick={() => removeMeal(portion)}
                             sx={{ p: 0.5 }}
-                            disabled={isInKitchen}
+                            disabled={
+                              isInKitchen.includes(orderIndex) ||
+                              isReadyToServe.includes(orderIndex)
+                            }
                           >
                             {isPending ? (
                               <CircularProgress color="secondary" size={20} />
@@ -154,7 +200,13 @@ const TableOrder = () => {
                                 icon="eva:trash-2-outline"
                                 width={20}
                                 height={20}
-                                sx={{ color: !isInKitchen ? 'error.main' : 'default' }}
+                                sx={{
+                                  color:
+                                    isInKitchen.includes(orderIndex) ||
+                                    isReadyToServe.includes(orderIndex)
+                                      ? 'default'
+                                      : 'error.main',
+                                }}
                               />
                             )}
                           </IconButton>
@@ -173,16 +225,29 @@ const TableOrder = () => {
             ))}
           </Stack>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            {!isInKitchen && (
+            {!isInKitchen.includes(orderIndex) && !isReadyToServe.includes(orderIndex) && (
               <LoadingButton
                 variant="soft"
                 color="warning"
                 onClick={() => onOrderStatusUpdate()}
                 startIcon={<Iconify icon="ph:cooking-pot-light" />}
                 loading={isPending}
-                disabled={isSendToKitchenDisabled}
+                disabled={isSendToKitchenDisabled(orderIndex)}
               >
                 Send to Kitchen
+              </LoadingButton>
+            )}
+
+            {isInKitchen.includes(orderIndex) && (
+              <LoadingButton
+                variant="soft"
+                color="info"
+                onClick={() => onReadyToServe(orderIndex)}
+                startIcon={<Iconify icon="ph:cooking-pot-light" />}
+                loading={isPending}
+                // disabled={isSendToKitchenDisabled(orderIndex)}
+              >
+                Ready to Serve
               </LoadingButton>
             )}
           </Box>
@@ -190,11 +255,6 @@ const TableOrder = () => {
       ))}
     </Stack>
   );
-};
-
-TableOrder.propTypes = {
-  //   openState: PropTypes.bool,
-  //   toggleDrawer: PropTypes.func,
 };
 
 export default TableOrder;

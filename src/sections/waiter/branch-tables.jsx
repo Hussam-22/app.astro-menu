@@ -36,9 +36,9 @@ function BranchTables() {
 
       // TABLE ACTIVE WITH ORDER === BLINKING COLORS
       if (isActive && tableOrder) {
-        const { isInKitchen, isReadyToServe } = tableOrder;
+        const { isInKitchen, isReadyToServe, updateCount } = tableOrder;
 
-        if (!isInKitchen && !isReadyToServe)
+        if (isInKitchen.length === 0)
           return {
             border: `solid 2px ${theme.palette.success.main}`,
             bgcolor: 'unset',
@@ -46,12 +46,20 @@ function BranchTables() {
 
         return {
           ...blinkingBorder(
-            getOrderStatusStyle(isInKitchen, isReadyToServe, theme).color,
+            getOrderStatusStyle(
+              isInKitchen.at(-1) === updateCount - 1,
+              isReadyToServe.at(-1) === updateCount - 1,
+              theme
+            ).color,
             tableInfo.docID
           ),
           bgcolor:
             selectedTable.docID === tableInfo.docID
-              ? getOrderStatusStyle(isInKitchen, isReadyToServe, theme).color
+              ? getOrderStatusStyle(
+                  isInKitchen.at(-1) === updateCount - 1,
+                  isReadyToServe.at(-1) === updateCount - 1,
+                  theme
+                ).color
               : 'unset',
         };
       }
