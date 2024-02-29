@@ -1,12 +1,12 @@
 export function getOrderStatusStyle(isInKitchen, isReadyToServe, theme) {
-  if (isInKitchen && !isReadyToServe)
+  if (isInKitchen)
     return {
       color: theme.palette.warning.main,
       labelColor: 'warning',
       icon: 'ph:cooking-pot-light',
       status: 'Preparing Order...',
     };
-  if (isInKitchen && isReadyToServe)
+  if (isReadyToServe)
     return {
       color: theme.palette.info.main,
       labelColor: 'info',
