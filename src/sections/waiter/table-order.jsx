@@ -117,7 +117,6 @@ const TableOrder = () => {
             overflow: 'visible',
             ...(getStatus(+orderIndex) !== 'none' && {
               ...blinkingBorder(getStatus(+orderIndex).color, `${orderID}${orderIndex}`),
-              fontSize: () => console.log(getStatus(+orderIndex)),
             }),
           }}
         >

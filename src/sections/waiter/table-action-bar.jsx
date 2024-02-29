@@ -50,11 +50,16 @@ function TableActionBar() {
     isInKitchen,
     isReadyToServe,
     cart,
+    updateCount,
   } = orderSnapShot;
 
   const isCancelOrderDisabled = cart.length === 0;
-  const isCollectPaymentDisabled = !isReadyToServe;
-  const isSendToKitchenDisabled = cart.length === 0 || isInKitchen;
+  const isCollectPaymentDisabled =
+    cart.some((item) => item.update === updateCount) ||
+    cart.length === 0 ||
+    isInKitchen.length !== 0;
+
+  console.log(isReadyToServe.includes(updateCount - 1));
 
   return (
     <Card sx={{ px: 2 }}>
