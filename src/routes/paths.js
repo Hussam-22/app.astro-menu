@@ -72,10 +72,6 @@ export const paths = {
     auth0: {
       login: `${ROOTS.AUTH}/auth0/login`,
     },
-    restaurant: {
-      waiterLogin: `${ROOTS.AUTH}/waiter/login`,
-      kitchenLogin: `${ROOTS.AUTH}/kitchen/login`,
-    },
   },
   authDemo: {
     classic: {

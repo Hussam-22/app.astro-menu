@@ -1,24 +1,20 @@
 import * as Yup from 'yup';
-import { useSnackbar } from 'notistack';
+import { useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { LoadingButton } from '@mui/lab';
 import { Stack, Typography } from '@mui/material';
 
-import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
-const userID = 'n2LrTyRkktYlddyljHUPsodtpsf1';
-const waiterID = '0dKABg8il9nDMsz8JgB1';
-
-function RestaurantLoginView() {
-  const router = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
-  const { fsGetWaiterLogin, staff } = useAuthContext();
-  const [isLoading, setIsLoading] = useState(false);
+function RestaurantLoginFormView() {
+  const { userID, waiterID } = useParams();
+  const { fsGetWaiterLogin, fsUpdateWaiterInfo, staff } = useAuthContext();
+  const { setWaiterUnsubscribe } = useWaiterContext();
 
   const NewMealSchema = Yup.object().shape({
     passCode: Yup.string().required('Pass Code is Required'),
@@ -35,17 +31,31 @@ function RestaurantLoginView() {
 
   const { handleSubmit } = methods;
 
-  useEffect(() => {
-    if (staff?.docID) router.replace('/waiter/n2LrTyRkktYlddyljHUPsodtpsf1/0dKABg8il9nDMsz8JgB1');
-  }, [router, staff]);
+  const {
+    mutate,
+    error: mutationError,
+    isPending,
+    isSuccess,
+  } = useMutation({
+    mutationFn: (mutationFn) => mutationFn(),
+    onSuccess: (unsubscribeFn) => {
+      fsUpdateWaiterInfo(userID, waiterID, { isLoggedIn: true, lastLogIn: new Date() });
+      setWaiterUnsubscribe(() => unsubscribeFn);
+    },
+  });
+
+  console.log({ isSuccess, mutationError });
+
+  // useEffect(() => {
+  //   if (staff?.docID !== undefined) {
+  //     mutate(() =>
+  //       fsUpdateWaiterInfo(userID, waiterID, { isLoggedIn: true, lastLogIn: new Date() })
+  //     );
+  //   }
+  // }, [fsUpdateWaiterInfo, mutate, staff?.docID, userID, waiterID]);
 
   const onSubmit = async ({ passCode }) => {
-    setIsLoading(true);
-    fsGetWaiterLogin(userID, waiterID, passCode);
-    setIsLoading(!staff?.docID);
-    enqueueSnackbar('Login successful!');
-
-    // mutate(() => fsAddNewMealLabel(data.title));
+    mutate(() => fsGetWaiterLogin(userID, waiterID, passCode));
   };
 
   return (
@@ -61,7 +71,7 @@ function RestaurantLoginView() {
           <RHFTextField name="passCode" label="Pass Code" type="password" />
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="caption">Powered by ProzEffect Menu</Typography>
-            <LoadingButton variant="contained" type="submit" sx={{ px: 2 }}>
+            <LoadingButton variant="contained" type="submit" sx={{ px: 2 }} loading={isPending}>
               Login
             </LoadingButton>
           </Stack>
@@ -70,4 +80,4 @@ function RestaurantLoginView() {
     </Stack>
   );
 }
-export default RestaurantLoginView;
+export default RestaurantLoginFormView;

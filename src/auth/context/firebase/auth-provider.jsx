@@ -1067,7 +1067,6 @@ export function AuthProvider({ children }) {
 
     const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        console.log(doc.data());
         setOrderSnapShot(doc.data());
       });
     });
@@ -1161,26 +1160,38 @@ export function AuthProvider({ children }) {
   }, []);
   // ------------------ Waiter ----------------------------------
   const fsGetWaiterLogin = useCallback(async (userID, waiterID, passCode) => {
+    let errorOccurred = false;
+
     try {
       const docRef = query(
         collectionGroup(DB, 'waiters'),
         where('userID', '==', userID),
         where('docID', '==', waiterID),
-        where('passCode', '==', passCode),
+        where('passCode', '==', +passCode),
         where('isActive', '==', true)
       );
 
       const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          console.log(doc.data());
-          setStaff(doc.data());
-        });
+        if (querySnapshot.empty) {
+          errorOccurred = true;
+          throw new Error('Nothing was returned!');
+        } else {
+          querySnapshot.forEach((doc) => {
+            setStaff(doc.data());
+          });
+        }
       });
 
       return unsubscribe;
     } catch (error) {
-      console.log(error);
-      throw Error;
+      throw error;
+    } finally {
+      if (errorOccurred) {
+        console.log('ERROR');
+        // Error occurred, do not return unsubscribe
+        // eslint-disable-next-line no-unsafe-finally
+        throw new Error('Nothing was returned!');
+      }
     }
   }, []);
   const fsGetWaitersList = useCallback(async () => {
@@ -1208,8 +1219,8 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateWaiterInfo = useCallback(
-    async (payload) => {
-      const waiterDocRef = doc(DB, `/users/${state.user.id}/waiters/${payload.id}`);
+    async (userID, waiterID, payload) => {
+      const waiterDocRef = doc(DB, `/users/${userID}/waiters/${waiterID}`);
       await updateDoc(waiterDocRef, payload);
     },
     [state]
@@ -1236,6 +1247,7 @@ export function AuthProvider({ children }) {
       logout,
       fsGetUser,
       staff,
+      setStaff,
       // ---- GENERIC ----
       fsUpdateTable,
       // fsQueryDoc,
@@ -1326,7 +1338,7 @@ export function AuthProvider({ children }) {
       fsOrderIsPaid,
       // fsAddNewWaiter,
       // fsGetWaitersList,
-      // fsUpdateWaiterInfo,
+      fsUpdateWaiterInfo,
       // fsDeleteWaiter,
       // // ---- RTD ----
       // dataSnapshotListener,
@@ -1345,6 +1357,7 @@ export function AuthProvider({ children }) {
       logout,
       fsGetUser,
       staff,
+      setStaff,
       // ---- GENERIC ----
       fsUpdateTable,
       // fsQueryDoc,
@@ -1432,7 +1445,7 @@ export function AuthProvider({ children }) {
       // fsCancelOrder,
       fsOrderIsPaid,
       // fsGetWaitersList,
-      // fsUpdateWaiterInfo,
+      fsUpdateWaiterInfo,
       // fsDeleteWaiter,
       // // ---- RTD ----
       // dataSnapshotListener,

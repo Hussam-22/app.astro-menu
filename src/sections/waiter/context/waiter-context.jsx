@@ -15,7 +15,7 @@ export const useWaiterContext = () => {
 };
 
 export function WaiterContextProvider({ children }) {
-  const { userID, waiterID } = useParams();
+  const { userID } = useParams();
   const {
     fsGetUser,
     fsGetBranchTables,
@@ -25,18 +25,13 @@ export function WaiterContextProvider({ children }) {
   } = useAuthContext();
   const [selectedTable, setSelectedTable] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [waiterUnsubscribe, setWaiterUnsubscribe] = useState();
 
   const { data: user = {} } = useQuery({
     queryKey: ['user', userID],
     queryFn: () => fsGetUser(userID),
-    enabled: userID !== undefined,
+    enabled: userID !== undefined && waiterInfo.isLoggedIn,
   });
-
-  // const { data: waiterInfo = {} } = useQuery({
-  //   queryKey: ['waiter', userID, waiterID],
-  //   queryFn: () => fsGetWaiterLogin(userID, waiterID),
-  //   enabled: userID !== undefined && waiterID !== undefined,
-  // });
 
   const branchID = waiterInfo?.branchID || '';
 
@@ -69,8 +64,21 @@ export function WaiterContextProvider({ children }) {
       setSelectedTable,
       isLoading,
       setIsLoading,
+      waiterUnsubscribe,
+      setWaiterUnsubscribe,
     }),
-    [user, tables, branchInfo, waiterInfo, selectedTable, setSelectedTable, isLoading, setIsLoading]
+    [
+      user,
+      tables,
+      branchInfo,
+      waiterInfo,
+      selectedTable,
+      setSelectedTable,
+      isLoading,
+      setIsLoading,
+      waiterUnsubscribe,
+      setWaiterUnsubscribe,
+    ]
   );
   return <WaiterContext.Provider value={memoizedValue}>{children}</WaiterContext.Provider>;
 }

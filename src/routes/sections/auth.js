@@ -8,8 +8,6 @@ import CompactLayout from 'src/layouts/compact';
 import AuthClassicLayout from 'src/layouts/auth/classic';
 // components
 import { SplashScreen } from 'src/components/loading-screen';
-import StaffAuthGuard from 'src/auth/guard/staff-auth-guard';
-import RestaurantLoginLayout from 'src/layouts/auth/restaurant';
 
 // ----------------------------------------------------------------------
 
@@ -33,9 +31,6 @@ const FirebaseForgotPasswordPage = lazy(() => import('src/pages/auth/firebase/fo
 // AUTH0
 const Auth0LoginPage = lazy(() => import('src/pages/auth/auth0/login'));
 const Auth0Callback = lazy(() => import('src/pages/auth/auth0/callback'));
-
-// RESTAURANT
-const RestaurantLoginPage = lazy(() => import('src/pages/auth/restaurant/login-page'));
 
 // ----------------------------------------------------------------------
 
@@ -174,30 +169,9 @@ const authAuth0 = {
   ],
 };
 
-const restaurantAuth = {
-  path: 'restaurant',
-  element: (
-    <StaffAuthGuard>
-      <Suspense fallback={<SplashScreen />}>
-        <Outlet />
-      </Suspense>
-    </StaffAuthGuard>
-  ),
-  children: [
-    {
-      path: 'login',
-      element: (
-        <RestaurantLoginLayout>
-          <RestaurantLoginPage />
-        </RestaurantLoginLayout>
-      ),
-    },
-  ],
-};
-
 export const authRoutes = [
   {
     path: 'auth',
-    children: [authAmplify, authJwt, authFirebase, authAuth0, restaurantAuth],
+    children: [authAmplify, authJwt, authFirebase, authAuth0],
   },
 ];
