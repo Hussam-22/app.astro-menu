@@ -18,12 +18,10 @@ export function WaiterContextProvider({ children }) {
   const { userID, waiterID } = useParams();
   const {
     fsGetUser,
-    fsGetWaiterLogin,
     fsGetBranchTables,
-    fsGetMealLabels,
     fsGetBranch,
     fsGetActiveOrdersSnapshot,
-    activeOrders,
+    staff: waiterInfo,
   } = useAuthContext();
   const [selectedTable, setSelectedTable] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -34,11 +32,11 @@ export function WaiterContextProvider({ children }) {
     enabled: userID !== undefined,
   });
 
-  const { data: waiterInfo = {} } = useQuery({
-    queryKey: ['waiter', userID, waiterID],
-    queryFn: () => fsGetWaiterLogin(userID, waiterID),
-    enabled: userID !== undefined && waiterID !== undefined,
-  });
+  // const { data: waiterInfo = {} } = useQuery({
+  //   queryKey: ['waiter', userID, waiterID],
+  //   queryFn: () => fsGetWaiterLogin(userID, waiterID),
+  //   enabled: userID !== undefined && waiterID !== undefined,
+  // });
 
   const branchID = waiterInfo?.branchID || '';
 

@@ -41,25 +41,13 @@ function TableActionBar() {
 
   if (!orderSnapShot) return null;
 
-  const {
-    docID: orderID,
-    userID,
-    branchID,
-    isPaid,
-    isCanceled,
-    isInKitchen,
-    isReadyToServe,
-    cart,
-    updateCount,
-  } = orderSnapShot;
+  const { docID: orderID, userID, branchID, isInKitchen, cart, updateCount } = orderSnapShot;
 
   const isCancelOrderDisabled = cart.length === 0;
   const isCollectPaymentDisabled =
     cart.some((item) => item.update === updateCount) ||
     cart.length === 0 ||
     isInKitchen.length !== 0;
-
-  console.log(isReadyToServe.includes(updateCount - 1));
 
   return (
     <Card sx={{ px: 2 }}>

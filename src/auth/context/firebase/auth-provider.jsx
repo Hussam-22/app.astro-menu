@@ -86,6 +86,7 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [orderSnapShot, setOrderSnapShot] = useState({});
   const [activeOrders, setActiveOrders] = useState([]);
+  const [staff, setStaff] = useState({});
 
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
   const status = state.loading ? 'loading' : checkAuthenticated;
@@ -1159,13 +1160,26 @@ export function AuthProvider({ children }) {
     });
   }, []);
   // ------------------ Waiter ----------------------------------
-  const fsGetWaiterLogin = useCallback(async (userID, waiterID) => {
+  const fsGetWaiterLogin = useCallback(async (userID, waiterID, passCode) => {
     try {
-      const docRef = doc(DB, `/users/${userID}/waiters/${waiterID}`);
-      const docSnap = await getDoc(docRef);
-      if (!docSnap.data()) throw Error;
-      return docSnap.data();
+      const docRef = query(
+        collectionGroup(DB, 'waiters'),
+        where('userID', '==', userID),
+        where('docID', '==', waiterID),
+        where('passCode', '==', passCode),
+        where('isActive', '==', true)
+      );
+
+      const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          console.log(doc.data());
+          setStaff(doc.data());
+        });
+      });
+
+      return unsubscribe;
     } catch (error) {
+      console.log(error);
       throw Error;
     }
   }, []);
@@ -1221,6 +1235,7 @@ export function AuthProvider({ children }) {
       register,
       logout,
       fsGetUser,
+      staff,
       // ---- GENERIC ----
       fsUpdateTable,
       // fsQueryDoc,
@@ -1329,6 +1344,7 @@ export function AuthProvider({ children }) {
       register,
       logout,
       fsGetUser,
+      staff,
       // ---- GENERIC ----
       fsUpdateTable,
       // fsQueryDoc,

@@ -38,7 +38,7 @@ function BranchTables() {
       if (isActive && tableOrder) {
         const { isInKitchen, isReadyToServe, updateCount, cart } = tableOrder;
 
-        if (isInKitchen.length === 0 && cart.length === 0 && isReadyToServe.length === 0)
+        if (isInKitchen.length === 0 && isReadyToServe.length === 0)
           return {
             border: `solid 2px ${theme.palette.success.main}`,
             bgcolor: 'unset',
