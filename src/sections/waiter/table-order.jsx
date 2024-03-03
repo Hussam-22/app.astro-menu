@@ -243,7 +243,7 @@ const TableOrder = () => {
                 variant="soft"
                 color="info"
                 onClick={() => onReadyToServe(orderIndex)}
-                startIcon={<Iconify icon="ph:cooking-pot-light" />}
+                startIcon={<Iconify icon="dashicons:food" />}
                 loading={isPending}
                 // disabled={isSendToKitchenDisabled(orderIndex)}
               >

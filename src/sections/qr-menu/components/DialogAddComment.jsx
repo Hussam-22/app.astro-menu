@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { LoadingButton } from '@mui/lab';
-import { Stack, Dialog, TextField, Typography, DialogContent } from '@mui/material';
+import { Box, Stack, Dialog, TextField, Typography, DialogContent } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 
@@ -34,16 +34,17 @@ export default function DialogAddComment({ isOpen, onClose, addMeal }) {
             fullWidth
             inputRef={commentRef}
           />
-
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            color="success"
-            onClick={handleMealAddWithComment}
-            startIcon={<Iconify icon="mdi:hamburger-plus" />}
-          >
-            Add Meal
-          </LoadingButton>
+          <Box>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              color="success"
+              onClick={handleMealAddWithComment}
+              startIcon={<Iconify icon="mdi:hamburger-plus" />}
+            >
+              Add Meal
+            </LoadingButton>
+          </Box>
         </Stack>
       </DialogContent>
     </Dialog>
