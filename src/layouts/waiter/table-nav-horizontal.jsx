@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import { Box, Stack, useTheme, Typography } from '@mui/material';
 
+import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
@@ -14,7 +15,8 @@ function WaiterHorizontalNav() {
   const { fsUpdateWaiterInfo, setStaff } = useAuthContext();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
+      await delay(1000);
       setStaff({});
       fsUpdateWaiterInfo(userID, waiterID, { isLoggedIn: false });
       waiterUnsubscribe();

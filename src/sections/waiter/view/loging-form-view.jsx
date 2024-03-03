@@ -7,6 +7,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import { Stack, Typography } from '@mui/material';
 
+import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import { shakingAnimation } from 'src/theme/css';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
@@ -46,7 +47,10 @@ function RestaurantLoginFormView() {
   });
 
   const onSubmit = async ({ passCode }) => {
-    mutate(() => fsGetWaiterLogin(userID, waiterID, passCode));
+    mutate(async () => {
+      await delay(1000);
+      fsGetWaiterLogin(userID, waiterID, passCode);
+    });
   };
 
   return (
