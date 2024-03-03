@@ -37,8 +37,6 @@ function RestaurantLoginFormView() {
     queryKey: ['waiter', userID, waiterID],
   });
 
-  console.log(waiterInfo);
-
   const { mutate, isPending, isError } = useMutation({
     mutationFn: (mutationFn) => mutationFn(),
     onSuccess: (unsubscribeFn) => {
@@ -50,8 +48,6 @@ function RestaurantLoginFormView() {
   const onSubmit = async ({ passCode }) => {
     mutate(() => fsGetWaiterLogin(userID, waiterID, passCode));
   };
-
-  console.log(shakingAnimation());
 
   return (
     <Stack

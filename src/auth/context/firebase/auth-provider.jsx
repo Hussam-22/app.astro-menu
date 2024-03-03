@@ -1175,7 +1175,7 @@ export function AuthProvider({ children }) {
         collectionGroup(DB, 'waiters'),
         where('userID', '==', userID),
         where('docID', '==', waiterID),
-        where('passCode', '==', +passCode),
+        where('passCode', '==', passCode),
         where('isActive', '==', true)
       );
 

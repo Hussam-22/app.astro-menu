@@ -1,7 +1,8 @@
 import { useParams } from 'react-router';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
-import { Box, Stack, Button, useTheme, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Box, Stack, useTheme, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
@@ -11,9 +12,8 @@ function WaiterHorizontalNav() {
   const { waiterInfo, waiterUnsubscribe } = useWaiterContext();
   const { userID, waiterID } = useParams();
   const { fsUpdateWaiterInfo, setStaff } = useAuthContext();
-  const queryClient = useQueryClient();
 
-  const { mutate, error, isPending } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: () => {
       setStaff({});
       fsUpdateWaiterInfo(userID, waiterID, { isLoggedIn: false });
@@ -37,9 +37,14 @@ function WaiterHorizontalNav() {
         <Typography
           sx={{ fontWeight: theme.typography.fontWeightBold, color: 'info.main' }}
         >{`Hello, ${waiterInfo.fullname}`}</Typography>
-        <Button variant="contained" color="info" onClick={() => mutate()}>
+        <LoadingButton
+          variant="contained"
+          color="info"
+          onClick={() => mutate()}
+          loading={isPending}
+        >
           Logout
-        </Button>
+        </LoadingButton>
       </Stack>
     </Box>
   );
