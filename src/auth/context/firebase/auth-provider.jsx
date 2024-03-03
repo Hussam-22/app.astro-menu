@@ -1159,9 +1159,17 @@ export function AuthProvider({ children }) {
     });
   }, []);
   // ------------------ Waiter ----------------------------------
-  const fsGetWaiterLogin = useCallback(async (userID, waiterID, passCode) => {
-    let errorOccurred = false;
+  const fsGetWaiterInfo = useCallback(async (userID, waiterID) => {
+    try {
+      const docRef = doc(DB, `/users/${userID}/waiters/${waiterID}/`);
+      const docSnap = await getDoc(docRef);
 
+      return docSnap.data();
+    } catch (error) {
+      throw error;
+    }
+  }, []);
+  const fsGetWaiterLogin = useCallback(async (userID, waiterID, passCode) => {
     try {
       const docRef = query(
         collectionGroup(DB, 'waiters'),
@@ -1171,27 +1179,19 @@ export function AuthProvider({ children }) {
         where('isActive', '==', true)
       );
 
+      const length = await getCountFromServer(docRef);
+
+      if (length.data().count === 0) throw new Error('Nothing was returned!');
+
       const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
-        if (querySnapshot.empty) {
-          errorOccurred = true;
-          throw new Error('Nothing was returned!');
-        } else {
-          querySnapshot.forEach((doc) => {
-            setStaff(doc.data());
-          });
-        }
+        querySnapshot.forEach((doc) => {
+          setStaff(doc.data());
+        });
       });
 
       return unsubscribe;
     } catch (error) {
       throw error;
-    } finally {
-      if (errorOccurred) {
-        console.log('ERROR');
-        // Error occurred, do not return unsubscribe
-        // eslint-disable-next-line no-unsafe-finally
-        throw new Error('Nothing was returned!');
-      }
     }
   }, []);
   const fsGetWaitersList = useCallback(async () => {
@@ -1332,6 +1332,7 @@ export function AuthProvider({ children }) {
       // fsInitiateNewOrder,
       // // ---- Waiter ----
       fsGetWaiterLogin,
+      fsGetWaiterInfo,
       // fsWaiterTablesSnapshot,
       fsUpdateOrderStatus,
       // fsCancelOrder,
@@ -1440,6 +1441,7 @@ export function AuthProvider({ children }) {
       // fsInitiateNewOrder,
       // // ---- Waiter ----
       fsGetWaiterLogin,
+      fsGetWaiterInfo,
       // fsWaiterTablesSnapshot,
       fsUpdateOrderStatus,
       // fsCancelOrder,

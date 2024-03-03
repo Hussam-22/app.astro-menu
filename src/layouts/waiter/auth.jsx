@@ -9,7 +9,7 @@ function RestaurantLoginLayout({ children }) {
     >
       <Box
         sx={{
-          width: { xs: '80%', sm: '65%', lg: '33.33%' },
+          width: { xs: '80%', sm: '65%', lg: '50%' },
           height: 400,
           borderRadius: 2,
           boxShadow: '5px 5px 0 #000',
