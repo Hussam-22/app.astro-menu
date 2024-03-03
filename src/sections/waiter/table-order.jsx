@@ -15,6 +15,7 @@ import {
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import { blinkingBorder, blinkingElement } from 'src/theme/css';
 import { getOrderStatusStyle } from 'src/utils/get-order-status-styles';
@@ -77,7 +78,8 @@ const TableOrder = () => {
     });
 
   const onOrderStatusUpdate = () =>
-    mutate(() =>
+    mutate(async () => {
+      await delay(500);
       fsUpdateOrderStatus({
         orderID,
         userID,
@@ -86,8 +88,8 @@ const TableOrder = () => {
           isInKitchen: [...isInKitchen, updateCount],
           updateCount: updateCount + 1,
         },
-      })
-    );
+      });
+    });
 
   const onReadyToServe = (value) =>
     mutate(() =>
@@ -107,7 +109,7 @@ const TableOrder = () => {
   });
 
   return (
-    <Stack direction="column" spacing={2}>
+    <Stack direction="column-reverse" spacing={2}>
       {[...Array(updateCount + 1)].map((_, orderIndex) => (
         <Card
           key={`${orderID}${orderIndex}`}

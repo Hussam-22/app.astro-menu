@@ -48,7 +48,7 @@ function WaiterMenuMealCard({ mealInfo, isMealActive }) {
   );
 
   return (
-    <Card sx={{ bgcolor: 'background.paper', p: 1, position: 'relative' }}>
+    <Card sx={{ bgcolor: 'background.paper', p: 1, position: 'relative', width: 1 }}>
       {isNew && (
         <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
           <Label variant="filled" color="error" sx={{ fontSize: 10 }}>

@@ -7,8 +7,9 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import { Stack, Typography } from '@mui/material';
 
-import { delay } from 'src/utils/promise-delay';
+import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { delay } from 'src/utils/promise-delay';
 import { shakingAnimation } from 'src/theme/css';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
@@ -48,8 +49,8 @@ function RestaurantLoginFormView() {
 
   const onSubmit = async ({ passCode }) => {
     mutate(async () => {
-      await delay(1000);
-      fsGetWaiterLogin(userID, waiterID, passCode);
+      await delay(500);
+      await fsGetWaiterLogin(userID, waiterID, passCode);
     });
   };
 
@@ -64,7 +65,7 @@ function RestaurantLoginFormView() {
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Stack direction="column" spacing={2} sx={{ width: 500 }} justifyContent="space-between">
           <Typography>
-            Welcome back, <b>{waiterInfo?.fullname}</b>
+            Welcome back, <b>{waiterInfo?.fullname}</b> <Iconify icon="twemoji:waving-hand" />
           </Typography>
           <RHFTextField
             name="passCode"

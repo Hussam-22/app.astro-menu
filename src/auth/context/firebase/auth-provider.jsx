@@ -1181,7 +1181,7 @@ export function AuthProvider({ children }) {
 
       const length = await getCountFromServer(docRef);
 
-      if (length.data().count === 0) throw new Error('Nothing was returned!');
+      if (length.data().count === 0) throw Error('Nothing was returned!');
 
       const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
         querySnapshot.forEach((doc) => {

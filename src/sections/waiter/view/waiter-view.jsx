@@ -52,7 +52,7 @@ function WaiterView() {
         sx={{ py: 2 }}
         divider={<Divider sx={{ borderStyle: 'dashed' }} flexItem orientation="vertical" />}
       >
-        <Stack direction="column" spacing={2} sx={{ width: { sm: '40%', lg: '50%' } }}>
+        <Stack direction="column" spacing={2} sx={{ width: '55%' }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Stack direction="column">
               <Typography variant="overline">Table# {tableInfo?.index}</Typography>
@@ -67,7 +67,7 @@ function WaiterView() {
           <TableActionBar />
           <TableOrder />
         </Stack>
-        <Box flexGrow={1}>
+        <Box flexGrow={1} sx={{ maxWidth: '45%' }}>
           <FoodMenu />
         </Box>
       </Stack>

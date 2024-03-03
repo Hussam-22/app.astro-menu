@@ -16,7 +16,7 @@ function WaiterHorizontalNav() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      await delay(1000);
+      await delay(500);
       setStaff({});
       fsUpdateWaiterInfo(userID, waiterID, { isLoggedIn: false });
       waiterUnsubscribe();
