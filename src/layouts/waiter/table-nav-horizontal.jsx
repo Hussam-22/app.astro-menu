@@ -12,13 +12,13 @@ function WaiterHorizontalNav() {
   const theme = useTheme();
   const { waiterInfo, waiterUnsubscribe } = useWaiterContext();
   const { userID, waiterID } = useParams();
-  const { fsUpdateWaiterInfo, setStaff } = useAuthContext();
+  const { fsUpdateStaffInfo, setStaff } = useAuthContext();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
       await delay(500);
       setStaff({});
-      fsUpdateWaiterInfo(userID, waiterID, { isLoggedIn: false });
+      fsUpdateStaffInfo(userID, waiterID, { isLoggedIn: false });
       waiterUnsubscribe();
     },
   });

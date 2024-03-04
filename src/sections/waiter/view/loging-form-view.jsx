@@ -16,7 +16,7 @@ import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
 
 function RestaurantLoginFormView() {
   const { userID, waiterID } = useParams();
-  const { fsGetWaiterLogin, fsUpdateWaiterInfo, fsGetWaiterInfo } = useAuthContext();
+  const { fsGetStaffLogin, fsUpdateStaffInfo, fsGetStaffInfo } = useAuthContext();
   const { setWaiterUnsubscribe } = useWaiterContext();
 
   const NewMealSchema = Yup.object().shape({
@@ -35,14 +35,14 @@ function RestaurantLoginFormView() {
   const { handleSubmit } = methods;
 
   const { data: waiterInfo = {} } = useQuery({
-    queryFn: () => fsGetWaiterInfo(userID, waiterID),
+    queryFn: () => fsGetStaffInfo(userID, waiterID),
     queryKey: ['waiter', userID, waiterID],
   });
 
-  const { mutate, isPending, isError } = useMutation({
+  const { mutate, isPending, isError, error } = useMutation({
     mutationFn: (mutationFn) => mutationFn(),
     onSuccess: (unsubscribeFn) => {
-      fsUpdateWaiterInfo(userID, waiterID, { isLoggedIn: true, lastLogIn: new Date() });
+      fsUpdateStaffInfo(userID, waiterID, { isLoggedIn: true, lastLogIn: new Date() });
       setWaiterUnsubscribe(() => unsubscribeFn);
     },
   });
@@ -50,7 +50,7 @@ function RestaurantLoginFormView() {
   const onSubmit = async ({ passCode }) => {
     mutate(async () => {
       await delay(500);
-      await fsGetWaiterLogin(userID, waiterID, passCode);
+      await fsGetStaffLogin(userID, waiterID, passCode);
     });
   };
 

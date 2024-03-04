@@ -1158,10 +1158,10 @@ export function AuthProvider({ children }) {
       [`statisticsSummary.branches.${branchID}.scans.${year}.${month}`]: increment(1),
     });
   }, []);
-  // ------------------ Waiter ----------------------------------
-  const fsGetWaiterInfo = useCallback(async (userID, waiterID) => {
+  // ------------------ STAFF ----------------------------------
+  const fsGetStaffInfo = useCallback(async (userID, waiterID) => {
     try {
-      const docRef = doc(DB, `/users/${userID}/waiters/${waiterID}/`);
+      const docRef = doc(DB, `/users/${userID}/staff/${waiterID}/`);
       const docSnap = await getDoc(docRef);
 
       return docSnap.data();
@@ -1169,10 +1169,10 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-  const fsGetWaiterLogin = useCallback(async (userID, waiterID, passCode) => {
+  const fsGetStaffLogin = useCallback(async (userID, waiterID, passCode) => {
     try {
       const docRef = query(
-        collectionGroup(DB, 'waiters'),
+        collectionGroup(DB, 'staff'),
         where('userID', '==', userID),
         where('docID', '==', waiterID),
         where('passCode', '==', passCode),
@@ -1180,6 +1180,8 @@ export function AuthProvider({ children }) {
       );
 
       const length = await getCountFromServer(docRef);
+
+      console.log(length);
 
       if (length.data().count === 0) throw Error('Nothing was returned!');
 
@@ -1194,7 +1196,14 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-  const fsGetWaitersList = useCallback(async () => {
+  const fsUpdateStaffInfo = useCallback(
+    async (userID, waiterID, payload) => {
+      const waiterDocRef = doc(DB, `/users/${userID}/staff/${waiterID}`);
+      await updateDoc(waiterDocRef, payload);
+    },
+    [state]
+  );
+  const fsGetStaffList = useCallback(async () => {
     const dataArr = [];
     const docRef = query(collectionGroup(DB, 'waiters'), where('userID', '==', state.user.id));
     const querySnapshot = await getDocs(docRef);
@@ -1203,7 +1212,7 @@ export function AuthProvider({ children }) {
     });
     return dataArr;
   }, [state]);
-  const fsAddNewWaiter = useCallback(
+  const fsAddNewStaff = useCallback(
     async (newStaffInfo) => {
       const newDocRef = doc(collection(DB, `/users/${state.user.id}/waiters`));
       const userDocRef = doc(DB, `/users/${state.user.id}/`);
@@ -1218,21 +1227,13 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsUpdateWaiterInfo = useCallback(
-    async (userID, waiterID, payload) => {
-      const waiterDocRef = doc(DB, `/users/${userID}/waiters/${waiterID}`);
-      await updateDoc(waiterDocRef, payload);
-    },
-    [state]
-  );
-  const fsDeleteWaiter = useCallback(
+  const fsDeleteStaff = useCallback(
     async (payload) => {
-      const waiterDocRef = doc(DB, `/users/${state.user.id}/waiters/${payload}`);
+      const waiterDocRef = doc(DB, `/users/${state.user.id}/staff/${payload}`);
       await deleteDoc(waiterDocRef);
     },
     [state]
   );
-
   // ------------------------------------------------------------
 
   const memoizedValue = useMemo(
@@ -1331,16 +1332,16 @@ export function AuthProvider({ children }) {
       // fsOrdersSnapshot,
       // fsInitiateNewOrder,
       // // ---- Waiter ----
-      fsGetWaiterLogin,
-      fsGetWaiterInfo,
+      fsGetStaffLogin,
+      fsGetStaffInfo,
       // fsWaiterTablesSnapshot,
       fsUpdateOrderStatus,
       // fsCancelOrder,
       fsOrderIsPaid,
-      // fsAddNewWaiter,
-      // fsGetWaitersList,
-      fsUpdateWaiterInfo,
-      // fsDeleteWaiter,
+      // fsAddNewStaff,
+      // fsGetStaffList,
+      fsUpdateStaffInfo,
+      // fsDeleteStaff,
       // // ---- RTD ----
       // dataSnapshotListener,
       // docSnapshot,
@@ -1440,15 +1441,15 @@ export function AuthProvider({ children }) {
       // fsOrdersSnapshot,
       // fsInitiateNewOrder,
       // // ---- Waiter ----
-      fsGetWaiterLogin,
-      fsGetWaiterInfo,
+      fsGetStaffLogin,
+      fsGetStaffInfo,
       // fsWaiterTablesSnapshot,
       fsUpdateOrderStatus,
       // fsCancelOrder,
       fsOrderIsPaid,
-      // fsGetWaitersList,
-      fsUpdateWaiterInfo,
-      // fsDeleteWaiter,
+      // fsGetStaffList,
+      fsUpdateStaffInfo,
+      // fsDeleteStaff,
       // // ---- RTD ----
       // dataSnapshotListener,
       // docSnapshot,
