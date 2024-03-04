@@ -16,13 +16,13 @@ import {
 import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
 import TextMaxLine from 'src/components/text-max-line';
-import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
-import WaiterMenuAddMealToCart from 'src/sections/waiter/food-menu/waiter-menu-add-meal-to-cart';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import StaffMenuAddMealToCart from 'src/sections/staff/food-menu/staff-menu-add-meal-to-cart';
 
-function WaiterMenuMealCard({ mealInfo, isMealActive }) {
+function StaffMenuMealCard({ mealInfo, isMealActive }) {
   const { cover, description, isNew, portions, title } = mealInfo;
   const { activeOrders } = useAuthContext();
-  const { user, selectedTable } = useWaiterContext();
+  const { user, selectedTable } = useStaffContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
 
@@ -111,7 +111,7 @@ function WaiterMenuMealCard({ mealInfo, isMealActive }) {
               ))}
             </Select>
             <Stack direction="row" spacing={1} alignItems="center">
-              <WaiterMenuAddMealToCart
+              <StaffMenuAddMealToCart
                 portion={portions[selectedPortionIndex]}
                 mealInfo={mealInfo}
                 selectedTableID={selectedTable.docID}
@@ -127,8 +127,8 @@ function WaiterMenuMealCard({ mealInfo, isMealActive }) {
     </Card>
   );
 }
-export default WaiterMenuMealCard;
-WaiterMenuMealCard.propTypes = {
+export default StaffMenuMealCard;
+StaffMenuMealCard.propTypes = {
   mealInfo: PropTypes.shape({
     cover: PropTypes.string,
     docID: PropTypes.string,

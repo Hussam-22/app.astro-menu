@@ -7,9 +7,9 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Stack, Dialog, MenuItem, Typography, DialogContent } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
-import { useAuthContext } from 'src/auth/hooks';
 import { delay } from 'src/utils/promise-delay';
-import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
+import { useAuthContext } from 'src/auth/hooks';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 const CANCEL_REASONS = [
@@ -30,7 +30,7 @@ DialogCancelOrder.propTypes = {
 
 export default function DialogCancelOrder({ isOpen, onClose, tableNo, payload }) {
   const { fsUpdateOrderStatus } = useAuthContext();
-  const { setSelectedTable } = useWaiterContext();
+  const { setSelectedTable } = useStaffContext();
   const { orderID, userID, branchID } = payload;
   const defaultValues = useMemo(
     () => ({

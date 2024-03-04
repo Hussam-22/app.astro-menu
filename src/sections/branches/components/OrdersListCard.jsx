@@ -33,7 +33,7 @@ const TABLE_HEAD = [
   { id: 'status', label: 'Last Update', align: 'left' },
   { id: 'menuID', label: 'Menu', align: 'left' },
   { id: 'totalBill', label: 'Amount', align: 'center', width: 140 },
-  { id: 'waiterID', label: 'waiter(ess)', align: 'center', width: 140 },
+  { id: 'staffID', label: 'waiter(ess)', align: 'center', width: 140 },
   { id: 'statusName', label: 'Status', align: 'left' },
   { id: '' },
 ];

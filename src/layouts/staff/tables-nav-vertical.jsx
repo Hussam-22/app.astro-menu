@@ -4,11 +4,11 @@ import { Box, Stack, Divider, Typography } from '@mui/material';
 
 import { NAV } from 'src/layouts/config-layout';
 import Scrollbar from 'src/components/scrollbar';
-import BranchTables from 'src/sections/waiter/branch-tables';
-import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
+import BranchTables from 'src/sections/staff/branch-tables';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 function TablesNavVertical() {
-  const { branchInfo } = useWaiterContext();
+  const { branchInfo } = useStaffContext();
 
   return (
     <Box

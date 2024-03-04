@@ -19,11 +19,11 @@ import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import { blinkingBorder, blinkingElement } from 'src/theme/css';
 import { getOrderStatusStyle } from 'src/utils/get-order-status-styles';
-import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 const TableOrder = () => {
   const theme = useTheme();
-  const { selectedTable } = useWaiterContext();
+  const { selectedTable } = useStaffContext();
   const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus } = useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
 

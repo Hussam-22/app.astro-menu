@@ -6,9 +6,9 @@ import { Box, Stack, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import MealCardSkeleton from 'src/sections/qr-menu/components/meal-card-skeleton';
-import WaiterMenuMealCard from 'src/sections/waiter/food-menu/waiter-menu-meal-card';
+import StaffMenuMealCard from 'src/sections/staff/food-menu/staff-menu-meal-card';
 
-function WaiterMenuSections({ sectionInfo }) {
+function StaffMenuSections({ sectionInfo }) {
   const { userID } = useParams();
   const { title, meals: sectionMeals, docID: sectionID } = sectionInfo;
   const { fsGetSectionMeals } = useAuthContext();
@@ -45,7 +45,7 @@ function WaiterMenuSections({ sectionInfo }) {
           {meals
             .filter((meal) => meal.isActive)
             .map((meal) => (
-              <WaiterMenuMealCard
+              <StaffMenuMealCard
                 key={meal.docID}
                 mealInfo={meal}
                 isMealActive={
@@ -58,9 +58,9 @@ function WaiterMenuSections({ sectionInfo }) {
     </Box>
   );
 }
-export default WaiterMenuSections;
+export default StaffMenuSections;
 
-WaiterMenuSections.propTypes = {
+StaffMenuSections.propTypes = {
   sectionInfo: PropTypes.shape({
     title: PropTypes.string,
     meals: PropTypes.array,

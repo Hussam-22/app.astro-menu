@@ -6,16 +6,16 @@ import { useQuery, useQueries } from '@tanstack/react-query';
 import { Box, Stack, Divider, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
-import TableOrder from 'src/sections/waiter/table-order';
-import FoodMenu from 'src/sections/waiter/food-menu/food-menu';
-import TableActionBar from 'src/sections/waiter/table-action-bar';
-import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
-import TableOrderSkeleton from 'src/sections/waiter/skeleton/table-order-skeleton';
+import TableOrder from 'src/sections/staff/table-order';
+import FoodMenu from 'src/sections/staff/food-menu/food-menu';
+import TableActionBar from 'src/sections/staff/table-action-bar';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import TableOrderSkeleton from 'src/sections/staff/skeleton/table-order-skeleton';
 
-function WaiterView() {
+function StaffView() {
   const { userID } = useParams();
   const { fsGetSectionMeals, fsGetSections, activeOrders } = useAuthContext();
-  const { selectedTable: tableInfo, isLoading } = useWaiterContext();
+  const { selectedTable: tableInfo, isLoading } = useStaffContext();
 
   const selectedTableOrder = activeOrders.find((order) => order.tableID === tableInfo.docID);
 
@@ -74,5 +74,5 @@ function WaiterView() {
     )
   );
 }
-export default WaiterView;
-// WaiterView.propTypes = { tables: PropTypes.array };
+export default StaffView;
+// StaffView.propTypes = { tables: PropTypes.array };

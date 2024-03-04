@@ -7,17 +7,18 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import { Stack, Typography } from '@mui/material';
 
+import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
-import { useAuthContext } from 'src/auth/hooks';
 import { delay } from 'src/utils/promise-delay';
+import { useAuthContext } from 'src/auth/hooks';
 import { shakingAnimation } from 'src/theme/css';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
-function RestaurantLoginFormView() {
-  const { userID, waiterID } = useParams();
+function StaffLoginForm() {
+  const { userID, staffID } = useParams();
   const { fsGetStaffLogin, fsUpdateStaffInfo, fsGetStaffInfo } = useAuthContext();
-  const { setWaiterUnsubscribe } = useWaiterContext();
+  const { setWaiterUnsubscribe } = useStaffContext();
 
   const NewMealSchema = Yup.object().shape({
     passCode: Yup.string().required('Pass Code is Required'),
@@ -35,14 +36,14 @@ function RestaurantLoginFormView() {
   const { handleSubmit } = methods;
 
   const { data: waiterInfo = {} } = useQuery({
-    queryFn: () => fsGetStaffInfo(userID, waiterID),
-    queryKey: ['waiter', userID, waiterID],
+    queryFn: () => fsGetStaffInfo(userID, staffID),
+    queryKey: ['waiter', userID, staffID],
   });
 
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: (mutationFn) => mutationFn(),
     onSuccess: (unsubscribeFn) => {
-      fsUpdateStaffInfo(userID, waiterID, { isLoggedIn: true, lastLogIn: new Date() });
+      fsUpdateStaffInfo(userID, staffID, { isLoggedIn: true, lastLogIn: new Date() });
       setWaiterUnsubscribe(() => unsubscribeFn);
     },
   });
@@ -50,7 +51,7 @@ function RestaurantLoginFormView() {
   const onSubmit = async ({ passCode }) => {
     mutate(async () => {
       await delay(500);
-      await fsGetStaffLogin(userID, waiterID, passCode);
+      await fsGetStaffLogin(userID, staffID, passCode);
     });
   };
 
@@ -64,9 +65,19 @@ function RestaurantLoginFormView() {
     >
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Stack direction="column" spacing={2} sx={{ width: 500 }} justifyContent="space-between">
-          <Typography>
-            Welcome back, <b>{waiterInfo?.fullname}</b> <Iconify icon="twemoji:waving-hand" />
-          </Typography>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography>
+              Welcome back, <b>{waiterInfo?.fullname}</b> <Iconify icon="twemoji:waving-hand" />
+            </Typography>
+            <Image
+              src={
+                waiterInfo.type === 'waiter'
+                  ? '/assets/icons/staff/waiter-icon.svg'
+                  : '/assets/icons/staff/chef-icon.svg'
+              }
+              sx={{ width: 28, height: 28 }}
+            />
+          </Stack>
           <RHFTextField
             name="passCode"
             label="Pass Code"
@@ -84,4 +95,4 @@ function RestaurantLoginFormView() {
     </Stack>
   );
 }
-export default RestaurantLoginFormView;
+export default StaffLoginForm;

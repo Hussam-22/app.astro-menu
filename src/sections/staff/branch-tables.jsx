@@ -7,12 +7,12 @@ import { Box, Button, Avatar, useTheme } from '@mui/material';
 import { blinkingBorder } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
 import { getOrderStatusStyle } from 'src/utils/get-order-status-styles';
-import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 function BranchTables() {
   const theme = useTheme();
-  const { waiterID, userID } = useParams();
-  const { tables, setSelectedTable, selectedTable, branchInfo, setIsLoading } = useWaiterContext();
+  const { staffID, userID } = useParams();
+  const { tables, setSelectedTable, selectedTable, branchInfo, setIsLoading } = useStaffContext();
   const { activeOrders, fsInitiateNewOrder } = useAuthContext();
 
   const getStyle = useCallback(
@@ -73,7 +73,7 @@ function BranchTables() {
         initiatedBy: 'waiter',
         tableID,
         menuID,
-        waiterID,
+        staffID,
         userID,
         branchID,
       });

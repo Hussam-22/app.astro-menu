@@ -1,24 +1,24 @@
 import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import WaiterLayout from 'src/layouts/waiter/layout';
+import StaffLayout from 'src/layouts/staff/layout';
 import { SplashScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
-export const WaiterPage = lazy(() => import('src/pages/waiter/waiter-page'));
+export const StaffPage = lazy(() => import('src/pages/staff/staff-page'));
 
 // ----------------------------------------------------------------------
 
-export const waiterRoutes = [
+export const staffRoutes = [
   {
     element: (
-      <WaiterLayout>
+      <StaffLayout>
         <Suspense fallback={<SplashScreen />}>
           <Outlet />
         </Suspense>
-      </WaiterLayout>
+      </StaffLayout>
     ),
-    children: [{ path: 'staff/:userID/:waiterID', element: <WaiterPage /> }],
+    children: [{ path: 'staff/:userID/:staffID', element: <StaffPage /> }],
   },
 ];

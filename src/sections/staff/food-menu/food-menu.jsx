@@ -5,12 +5,12 @@ import { Stack, Typography } from '@mui/material';
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
-import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
-import WaiterMenuSections from 'src/sections/waiter/food-menu/waiter-menu-sections';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import StaffMenuSections from 'src/sections/staff/food-menu/staff-menu-sections';
 
 function FoodMenu() {
   const { userID } = useParams();
-  const { selectedTable } = useWaiterContext();
+  const { selectedTable } = useStaffContext();
   const { fsGetSections, fsGetMenu } = useAuthContext();
 
   const { data: sections = [] } = useQuery({
@@ -41,7 +41,7 @@ function FoodMenu() {
             .filter((section) => section.isActive)
             .sort((a, b) => a.order - b.order)
             .map((section) => (
-              <WaiterMenuSections key={section.docID} sectionInfo={section} />
+              <StaffMenuSections key={section.docID} sectionInfo={section} />
             ))}
         </Stack>
       </Scrollbar>

@@ -5,16 +5,16 @@ import { useMemo, useState, useContext, createContext } from 'react';
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 
-export const WaiterContext = createContext();
+export const StaffContext = createContext();
 
-export const useWaiterContext = () => {
-  const waiter = useContext(WaiterContext);
-  if (!waiter) throw Error('This is not a QR Menu Context');
+export const useStaffContext = () => {
+  const staff = useContext(StaffContext);
+  if (!staff) throw Error('This is not a Staff Context');
 
-  return waiter;
+  return staff;
 };
 
-export function WaiterContextProvider({ children }) {
+export function StaffContextProvider({ children }) {
   const { userID } = useParams();
   const {
     fsGetUser,
@@ -80,10 +80,9 @@ export function WaiterContextProvider({ children }) {
       setWaiterUnsubscribe,
     ]
   );
-  return <WaiterContext.Provider value={memoizedValue}>{children}</WaiterContext.Provider>;
+  return <StaffContext.Provider value={memoizedValue}>{children}</StaffContext.Provider>;
 }
 
-WaiterContextProvider.propTypes = {
+StaffContextProvider.propTypes = {
   children: PropTypes.node,
-  // defaultSettings: PropTypes.object,
 };

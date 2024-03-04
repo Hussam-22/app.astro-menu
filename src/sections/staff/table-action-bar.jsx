@@ -8,12 +8,12 @@ import Iconify from 'src/components/iconify';
 import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
-import DialogCancelOrder from 'src/sections/waiter/dialogs/cancel-order-dialog';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import DialogCancelOrder from 'src/sections/staff/dialogs/cancel-order-dialog';
 
 function TableActionBar() {
   const { activeOrders, fsUpdateOrderStatus } = useAuthContext();
-  const { selectedTable, setSelectedTable, user } = useWaiterContext();
+  const { selectedTable, setSelectedTable, user } = useStaffContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);

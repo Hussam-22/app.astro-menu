@@ -6,19 +6,19 @@ import { Box, Stack, useTheme, Typography } from '@mui/material';
 
 import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
-import { useWaiterContext } from 'src/sections/waiter/context/waiter-context';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 function WaiterHorizontalNav() {
   const theme = useTheme();
-  const { waiterInfo, waiterUnsubscribe } = useWaiterContext();
-  const { userID, waiterID } = useParams();
+  const { waiterInfo, waiterUnsubscribe } = useStaffContext();
+  const { userID, staffID } = useParams();
   const { fsUpdateStaffInfo, setStaff } = useAuthContext();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
       await delay(500);
       setStaff({});
-      fsUpdateStaffInfo(userID, waiterID, { isLoggedIn: false });
+      fsUpdateStaffInfo(userID, staffID, { isLoggedIn: false });
       waiterUnsubscribe();
     },
   });

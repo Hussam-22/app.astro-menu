@@ -1007,7 +1007,7 @@ export function AuthProvider({ children }) {
   );
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsInitiateNewOrder = useCallback(async (payload) => {
-    const { tableID, menuID, waiterID, userID, branchID } = payload;
+    const { tableID, menuID, staffID, userID, branchID } = payload;
 
     const existingDocRef = query(
       collectionGroup(DB, 'orders'),
@@ -1027,7 +1027,7 @@ export function AuthProvider({ children }) {
         branchID,
         tableID,
         menuID,
-        waiterID,
+        staffID,
         cart: [],
         status: [],
         isInKitchen: [],
@@ -1051,7 +1051,7 @@ export function AuthProvider({ children }) {
       initiatedBy: 'customer',
       tableID,
       menuID,
-      waiterID: '',
+      staffID: '',
       userID,
       branchID,
     });
@@ -1159,9 +1159,9 @@ export function AuthProvider({ children }) {
     });
   }, []);
   // ------------------ STAFF ----------------------------------
-  const fsGetStaffInfo = useCallback(async (userID, waiterID) => {
+  const fsGetStaffInfo = useCallback(async (userID, staffID) => {
     try {
-      const docRef = doc(DB, `/users/${userID}/staff/${waiterID}/`);
+      const docRef = doc(DB, `/users/${userID}/staff/${staffID}/`);
       const docSnap = await getDoc(docRef);
 
       return docSnap.data();
@@ -1169,12 +1169,12 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-  const fsGetStaffLogin = useCallback(async (userID, waiterID, passCode) => {
+  const fsGetStaffLogin = useCallback(async (userID, staffID, passCode) => {
     try {
       const docRef = query(
         collectionGroup(DB, 'staff'),
         where('userID', '==', userID),
-        where('docID', '==', waiterID),
+        where('docID', '==', staffID),
         where('passCode', '==', passCode),
         where('isActive', '==', true)
       );
@@ -1197,8 +1197,8 @@ export function AuthProvider({ children }) {
     }
   }, []);
   const fsUpdateStaffInfo = useCallback(
-    async (userID, waiterID, payload) => {
-      const waiterDocRef = doc(DB, `/users/${userID}/staff/${waiterID}`);
+    async (userID, staffID, payload) => {
+      const waiterDocRef = doc(DB, `/users/${userID}/staff/${staffID}`);
       await updateDoc(waiterDocRef, payload);
     },
     [state]

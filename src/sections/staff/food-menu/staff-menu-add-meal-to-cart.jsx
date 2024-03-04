@@ -8,7 +8,7 @@ import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
-function WaiterMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
+function StaffMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
   const { fsUpdateCart, activeOrders } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTableID);
@@ -71,9 +71,9 @@ function WaiterMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
     </>
   );
 }
-export default WaiterMenuAddMealToCart;
+export default StaffMenuAddMealToCart;
 
-WaiterMenuAddMealToCart.propTypes = {
+StaffMenuAddMealToCart.propTypes = {
   portion: PropTypes.object,
   mealInfo: PropTypes.object,
   selectedTableID: PropTypes.string,

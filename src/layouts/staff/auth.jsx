@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 import { Box } from '@mui/material';
 
-function RestaurantLoginLayout({ children }) {
+function StaffLoginLayout({ children }) {
   return (
     <Box
       sx={{ height: 1, width: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -24,5 +24,5 @@ function RestaurantLoginLayout({ children }) {
     </Box>
   );
 }
-export default RestaurantLoginLayout;
-RestaurantLoginLayout.propTypes = { children: PropTypes.node };
+export default StaffLoginLayout;
+StaffLoginLayout.propTypes = { children: PropTypes.node };

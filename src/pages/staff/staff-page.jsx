@@ -1,14 +1,14 @@
 import { Helmet } from 'react-helmet-async';
 
-import WaiterView from 'src/sections/waiter/view/waiter-view';
+import StaffView from 'src/sections/staff/view/staff-view';
 
-export default function WaiterPage() {
+export default function StaffPage() {
   return (
     <>
       <Helmet>
         <title>Waiter Page</title>
       </Helmet>
-      <WaiterView />
+      <StaffView />
     </>
   );
 }
