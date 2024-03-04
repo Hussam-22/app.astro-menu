@@ -19,6 +19,6 @@ export const waiterRoutes = [
         </Suspense>
       </WaiterLayout>
     ),
-    children: [{ path: 'waiter/:userID/:waiterID', element: <WaiterPage /> }],
+    children: [{ path: 'staff/:userID/:waiterID', element: <WaiterPage /> }],
   },
 ];
