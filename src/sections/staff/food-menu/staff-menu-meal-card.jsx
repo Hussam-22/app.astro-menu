@@ -17,14 +17,17 @@ import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
 import TextMaxLine from 'src/components/text-max-line';
 import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import ChefDisableMeal from 'src/sections/staff/food-menu/chef-disable-meal';
 import StaffMenuAddMealToCart from 'src/sections/staff/food-menu/staff-menu-add-meal-to-cart';
 
-function StaffMenuMealCard({ mealInfo, isMealActive }) {
+function StaffMenuMealCard({ mealInfo, isMealActive, sectionInfo }) {
   const { cover, description, isNew, portions, title } = mealInfo;
-  const { activeOrders } = useAuthContext();
+  const { activeOrders, staff } = useAuthContext();
   const { user, selectedTable } = useStaffContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
+
+  const isChef = staff?.type === 'chef';
 
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
 
@@ -61,7 +64,10 @@ function StaffMenuMealCard({ mealInfo, isMealActive }) {
         <Stack direction="row" spacing={1} alignItems="center">
           <Avatar
             src={cover}
-            sx={{ borderRadius: 1, filter: `grayscale(${isMealActive ? '0' : '100'})` }}
+            sx={{
+              borderRadius: 1,
+              filter: `grayscale(${isMealActive ? '0' : '100'})`,
+            }}
           />
           {!isReadMore && (
             <TextMaxLine line={2} variant="caption" onClick={() => setIsReadMore(true)}>
@@ -76,14 +82,23 @@ function StaffMenuMealCard({ mealInfo, isMealActive }) {
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-        {!isMealActive && (
+
+        {isChef && (
+          <ChefDisableMeal
+            mealInfo={mealInfo}
+            isMealActive={isMealActive}
+            sectionInfo={sectionInfo}
+          />
+        )}
+
+        {!isMealActive && !isChef && (
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="h6" sx={{ color: 'text.disabled' }}>
               Out of Stock
             </Typography>
           </Box>
         )}
-        {isMealActive && (
+        {isMealActive && !isChef && (
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Select
               value={selectedPortionIndex}
@@ -130,6 +145,7 @@ function StaffMenuMealCard({ mealInfo, isMealActive }) {
 export default StaffMenuMealCard;
 StaffMenuMealCard.propTypes = {
   mealInfo: PropTypes.shape({
+    isActive: PropTypes.bool,
     cover: PropTypes.string,
     docID: PropTypes.string,
     description: PropTypes.string,
@@ -141,4 +157,5 @@ StaffMenuMealCard.propTypes = {
     translationEdited: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   }),
   isMealActive: PropTypes.bool,
+  sectionInfo: PropTypes.object,
 };

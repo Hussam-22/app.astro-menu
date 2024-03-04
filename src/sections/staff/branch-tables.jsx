@@ -13,7 +13,9 @@ function BranchTables() {
   const theme = useTheme();
   const { staffID, userID } = useParams();
   const { tables, setSelectedTable, selectedTable, branchInfo, setIsLoading } = useStaffContext();
-  const { activeOrders, fsInitiateNewOrder } = useAuthContext();
+  const { activeOrders, fsInitiateNewOrder, staff } = useAuthContext();
+
+  const isChef = staff?.type === 'chef';
 
   const getStyle = useCallback(
     (tableInfo) => {
@@ -65,7 +67,7 @@ function BranchTables() {
     [activeOrders, selectedTable.docID, theme]
   );
 
-  const { mutate, error, isPending } = useMutation({
+  const { mutate } = useMutation({
     mutationKey: ['active-orders', branchInfo.docID, userID],
     mutationFn: async (table) => {
       const { docID: tableID, menuID, branchID } = table;
@@ -96,10 +98,18 @@ function BranchTables() {
     if (!tableOrder && table.isActive) mutate(table);
   };
 
+  const ordersInKitchen = activeOrders.filter((order) => order.isInKitchen.length !== 0);
+
+  const tablesWithInKitchenOrder = tables.filter((table) =>
+    ordersInKitchen.some((order) => order.tableID === table.docID)
+  );
+
+  const tablesToShow = isChef ? tablesWithInKitchenOrder : tables;
+
   return (
-    tables.length !== 0 && (
+    tablesToShow.length !== 0 && (
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 1, p: 2 }}>
-        {[...tables]
+        {[...tablesToShow]
           .sort((a, b) => a.index - b.index)
           .map((table) => (
             <Avatar

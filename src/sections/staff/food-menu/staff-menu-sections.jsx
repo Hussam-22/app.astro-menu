@@ -11,7 +11,9 @@ import StaffMenuMealCard from 'src/sections/staff/food-menu/staff-menu-meal-card
 function StaffMenuSections({ sectionInfo }) {
   const { userID } = useParams();
   const { title, meals: sectionMeals, docID: sectionID } = sectionInfo;
-  const { fsGetSectionMeals } = useAuthContext();
+  const { fsGetSectionMeals, staff } = useAuthContext();
+
+  const isChef = staff?.type === 'chef';
 
   const { data: meals = [], isLoading } = useQuery({
     queryKey: ['sectionMeals', userID, sectionID],
@@ -42,17 +44,17 @@ function StaffMenuSections({ sectionInfo }) {
       </Typography>
       <Stack spacing={2}>
         <Stack direction="column" spacing={2}>
-          {meals
-            .filter((meal) => meal.isActive)
-            .map((meal) => (
-              <StaffMenuMealCard
-                key={meal.docID}
-                mealInfo={meal}
-                isMealActive={
-                  sectionMeals.find((sectionMeal) => sectionMeal.mealID === meal.docID).isActive
-                }
-              />
-            ))}
+          {meals.map((meal) => (
+            <StaffMenuMealCard
+              sectionInfo={sectionInfo}
+              key={meal.docID}
+              mealInfo={meal}
+              isMealActive={
+                sectionMeals.find((sectionMeal) => sectionMeal.mealID === meal.docID).isActive &&
+                meal.isActive
+              }
+            />
+          ))}
         </Stack>
       </Stack>
     </Box>

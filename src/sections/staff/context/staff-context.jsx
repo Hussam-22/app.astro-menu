@@ -21,7 +21,7 @@ export function StaffContextProvider({ children }) {
     fsGetBranchTables,
     fsGetBranch,
     fsGetActiveOrdersSnapshot,
-    staff: waiterInfo,
+    staff: staffInfo,
   } = useAuthContext();
   const [selectedTable, setSelectedTable] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -30,28 +30,28 @@ export function StaffContextProvider({ children }) {
   const { data: user = {} } = useQuery({
     queryKey: ['user', userID],
     queryFn: () => fsGetUser(userID),
-    enabled: userID !== undefined && waiterInfo.isLoggedIn,
+    enabled: userID !== undefined && staffInfo.isLoggedIn,
   });
 
-  const branchID = waiterInfo?.branchID || '';
+  const branchID = staffInfo?.branchID || '';
 
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', userID, branchID],
     queryFn: () => fsGetBranch(branchID, userID),
-    enabled: waiterInfo?.branchID !== undefined,
+    enabled: staffInfo?.branchID !== undefined,
   });
 
   const { data: tables = [] } = useQuery({
     queryKey: ['branch-tables', branchID, userID],
     queryFn: () => fsGetBranchTables(branchID, userID),
-    enabled: waiterInfo.docID !== undefined,
+    enabled: staffInfo.docID !== undefined,
   });
 
   // Get Orders Snapshot
   useQuery({
     queryKey: ['active-orders', branchID, userID],
     queryFn: () => fsGetActiveOrdersSnapshot(userID, branchID),
-    enabled: waiterInfo.docID !== undefined,
+    enabled: staffInfo.docID !== undefined,
   });
 
   const memoizedValue = useMemo(
@@ -59,7 +59,6 @@ export function StaffContextProvider({ children }) {
       user,
       tables,
       branchInfo,
-      waiterInfo,
       selectedTable,
       setSelectedTable,
       isLoading,
@@ -67,18 +66,7 @@ export function StaffContextProvider({ children }) {
       waiterUnsubscribe,
       setWaiterUnsubscribe,
     }),
-    [
-      user,
-      tables,
-      branchInfo,
-      waiterInfo,
-      selectedTable,
-      setSelectedTable,
-      isLoading,
-      setIsLoading,
-      waiterUnsubscribe,
-      setWaiterUnsubscribe,
-    ]
+    [branchInfo, isLoading, selectedTable, tables, user, waiterUnsubscribe]
   );
   return <StaffContext.Provider value={memoizedValue}>{children}</StaffContext.Provider>;
 }

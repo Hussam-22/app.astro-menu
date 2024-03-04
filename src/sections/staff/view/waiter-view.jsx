@@ -12,9 +12,9 @@ import TableActionBar from 'src/sections/staff/table-action-bar';
 import { useStaffContext } from 'src/sections/staff/context/staff-context';
 import TableOrderSkeleton from 'src/sections/staff/skeleton/table-order-skeleton';
 
-function StaffView() {
+function WaiterView() {
   const { userID } = useParams();
-  const { fsGetSectionMeals, fsGetSections, activeOrders } = useAuthContext();
+  const { fsGetSectionMeals, fsGetSections, activeOrders, staff } = useAuthContext();
   const { selectedTable: tableInfo, isLoading } = useStaffContext();
 
   const selectedTableOrder = activeOrders.find((order) => order.tableID === tableInfo.docID);
@@ -64,7 +64,7 @@ function StaffView() {
               <Typography variant="caption">{selectedTableOrder?.docID}</Typography>
             </Stack>
           </Stack>
-          <TableActionBar />
+          {staff?.type === 'waiter' && <TableActionBar />}
           <TableOrder />
         </Stack>
         <Box flexGrow={1} sx={{ maxWidth: '45%' }}>
@@ -74,5 +74,5 @@ function StaffView() {
     )
   );
 }
-export default StaffView;
-// StaffView.propTypes = { tables: PropTypes.array };
+export default WaiterView;
+// WaiterView.propTypes = { tables: PropTypes.array };

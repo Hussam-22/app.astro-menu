@@ -24,8 +24,10 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 const TableOrder = () => {
   const theme = useTheme();
   const { selectedTable } = useStaffContext();
-  const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus } = useAuthContext();
+  const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus, staff } = useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
+
+  const isChef = staff?.type === 'chef';
 
   const {
     isInKitchen,
@@ -108,9 +110,13 @@ const TableOrder = () => {
     mutationFn: (mutateFn) => mutateFn(),
   });
 
+  const orderUpdateToShow = isChef
+    ? [...Array(updateCount + 1)].map((_, index) => index).filter((i) => isInKitchen.includes(i))
+    : [...Array(updateCount + 1)].map((_, index) => index);
+
   return (
     <Stack direction="column-reverse" spacing={2}>
-      {[...Array(updateCount + 1)].map((_, orderIndex) => (
+      {orderUpdateToShow.map((orderIndex) => (
         <Card
           key={`${orderID}${orderIndex}`}
           sx={{
@@ -227,20 +233,22 @@ const TableOrder = () => {
             ))}
           </Stack>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            {!isInKitchen.includes(orderIndex) && !isReadyToServe.includes(orderIndex) && (
-              <LoadingButton
-                variant="soft"
-                color="warning"
-                onClick={() => onOrderStatusUpdate()}
-                startIcon={<Iconify icon="ph:cooking-pot-light" />}
-                loading={isPending}
-                disabled={isSendToKitchenDisabled(orderIndex)}
-              >
-                Send to Kitchen
-              </LoadingButton>
-            )}
+            {!isChef &&
+              !isInKitchen.includes(orderIndex) &&
+              !isReadyToServe.includes(orderIndex) && (
+                <LoadingButton
+                  variant="soft"
+                  color="warning"
+                  onClick={() => onOrderStatusUpdate()}
+                  startIcon={<Iconify icon="ph:cooking-pot-light" />}
+                  loading={isPending}
+                  disabled={isSendToKitchenDisabled(orderIndex)}
+                >
+                  Send to Kitchen
+                </LoadingButton>
+              )}
 
-            {isInKitchen.includes(orderIndex) && (
+            {isChef && isInKitchen.includes(orderIndex) && (
               <LoadingButton
                 variant="soft"
                 color="info"
