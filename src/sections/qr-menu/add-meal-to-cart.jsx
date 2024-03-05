@@ -10,7 +10,7 @@ import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
 function AddMealToCart({ portion, mealInfo }) {
   const { fsUpdateCart, orderSnapShot } = useAuthContext();
-  const { docID, userID, branchID, cart } = orderSnapShot;
+  const { docID, userID, branchID, cart, updateCount } = orderSnapShot;
   const [isOpen, setIsOpen] = useState(false);
 
   const count = useMemo(
@@ -34,6 +34,7 @@ function AddMealToCart({ portion, mealInfo }) {
         qty: 1,
         comment,
         id: generateID(8),
+        update: updateCount,
       });
       fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
       setIsOpen(false);

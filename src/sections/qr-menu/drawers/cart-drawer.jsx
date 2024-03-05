@@ -23,6 +23,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
   const theme = useTheme();
   const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
   const { user } = useQrMenuContext();
+  const { cart, updateCount } = orderSnapShot;
 
   const queryClient = useQueryClient();
   const cachedMealLabels = queryClient.getQueriesData({ queryKey: ['sectionMeals'] }) || [];
@@ -49,12 +50,12 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
   const totalBill = orderValue + taxValue;
 
   const removeMeal = (portion) => {
-    const cart = orderSnapShot.cart.filter((cartPortion) => cartPortion.id !== portion.id);
+    const updatedCart = orderSnapShot.cart.filter((cartPortion) => cartPortion.id !== portion.id);
     fsRemoveMealFromCart({
       orderID: orderSnapShot.docID,
       userID: orderSnapShot.userID,
       branchID: orderSnapShot.branchID,
-      cart,
+      updatedCart,
     });
   };
 
@@ -81,7 +82,12 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
                           <Stack
                             direction="row"
                             spacing={1}
-                            sx={{ flexGrow: 1 }}
+                            sx={{
+                              flexGrow: 1,
+                              textDecorationLine: portion?.price === 0 ? 'line-through' : 'none',
+                              textDecorationColor: theme.palette.error.main,
+                              textDecorationThickness: 2,
+                            }}
                             alignItems="center"
                           >
                             <Typography variant="body2">- {portion.portionSize}</Typography>
@@ -96,7 +102,11 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
                             sx={{ borderStyle: 'dashed', mx: 1 }}
                           />
 
-                          <IconButton onClick={() => mutate(portion)} sx={{ p: 0.5 }}>
+                          <IconButton
+                            onClick={() => mutate(portion)}
+                            sx={{ p: 0.5 }}
+                            disabled={updateCount > 0}
+                          >
                             {isPending ? (
                               <CircularProgress color="secondary" size={20} />
                             ) : (
@@ -104,7 +114,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
                                 icon="eva:trash-2-outline"
                                 width={20}
                                 height={20}
-                                sx={{ color: 'error.main' }}
+                                sx={{ color: updateCount === 0 ? 'error.main' : 'default' }}
                               />
                             )}
                           </IconButton>

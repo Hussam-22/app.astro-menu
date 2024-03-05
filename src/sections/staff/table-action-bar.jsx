@@ -78,19 +78,19 @@ function TableActionBar() {
             <Typography variant="caption">
               Order : {orderValue}{' '}
               <Box component="span" sx={{ fontSize: 9 }}>
-                AED
+                {user?.currency}
               </Box>
             </Typography>
             <Typography variant="caption">
               Tax({user.taxValue}%) : {taxValue}{' '}
               <Box component="span" sx={{ fontSize: 9 }}>
-                AED
+                {user?.currency}
               </Box>
             </Typography>
             <Typography variant="h6" sx={{ color: 'success.main' }}>
               Total: {totalBill}{' '}
               <Box component="span" sx={{ fontSize: 9 }}>
-                AED
+                {user?.currency}
               </Box>
             </Typography>
           </Stack>

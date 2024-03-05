@@ -23,8 +23,8 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 const TableOrder = () => {
   const theme = useTheme();
-  const { selectedTable, setSelectedTable } = useStaffContext();
-  const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus, staff, user } = useAuthContext();
+  const { selectedTable, setSelectedTable, user } = useStaffContext();
+  const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus, staff } = useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
 
   const isChef = staff?.type === 'chef';
@@ -188,41 +188,47 @@ const TableOrder = () => {
                             - {portion.portionSize}
                           </Typography>
 
-                          <Typography variant="caption" sx={{ alignSelf: 'center', mx: 1 }}>
-                            {`${portion.price} 
+                          {!isChef && (
+                            <Typography variant="caption" sx={{ alignSelf: 'center', mx: 1 }}>
+                              {`${portion.price} 
                             ${user?.currency}`}
-                          </Typography>
-                          <Divider
-                            orientation="vertical"
-                            flexItem
-                            sx={{ borderStyle: 'dashed', mx: 1 }}
-                          />
+                            </Typography>
+                          )}
+                          {!isChef && (
+                            <Divider
+                              orientation="vertical"
+                              flexItem
+                              sx={{ borderStyle: 'dashed', mx: 1 }}
+                            />
+                          )}
 
-                          <IconButton
-                            onClick={() => removeMeal(portion)}
-                            sx={{ p: 0.5 }}
-                            disabled={
-                              isInKitchen.includes(orderIndex) ||
-                              isReadyToServe.includes(orderIndex)
-                            }
-                          >
-                            {isPending ? (
-                              <CircularProgress color="secondary" size={20} />
-                            ) : (
-                              <Iconify
-                                icon="eva:trash-2-outline"
-                                width={20}
-                                height={20}
-                                sx={{
-                                  color:
-                                    isInKitchen.includes(orderIndex) ||
-                                    isReadyToServe.includes(orderIndex)
-                                      ? 'default'
-                                      : 'error.main',
-                                }}
-                              />
-                            )}
-                          </IconButton>
+                          {!isChef && (
+                            <IconButton
+                              onClick={() => removeMeal(portion)}
+                              sx={{ p: 0.5 }}
+                              disabled={
+                                isInKitchen.includes(orderIndex) ||
+                                isReadyToServe.includes(orderIndex)
+                              }
+                            >
+                              {isPending ? (
+                                <CircularProgress color="primary" size={20} />
+                              ) : (
+                                <Iconify
+                                  icon="eva:trash-2-outline"
+                                  width={20}
+                                  height={20}
+                                  sx={{
+                                    color:
+                                      isInKitchen.includes(orderIndex) ||
+                                      isReadyToServe.includes(orderIndex)
+                                        ? 'default'
+                                        : 'error.main',
+                                  }}
+                                />
+                              )}
+                            </IconButton>
+                          )}
                         </Stack>
                         {portion?.comment && (
                           <Typography variant="caption" sx={{ ml: 2, color: 'error.main' }}>

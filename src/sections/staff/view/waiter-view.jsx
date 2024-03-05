@@ -52,7 +52,7 @@ function WaiterView() {
 
   if (isLoading) return <TableOrderSkeleton />;
 
-  if (!tableInfo?.docID)
+  if (!tableInfo?.docID && activeOrders.length === 0)
     return (
       <Box
         sx={{
