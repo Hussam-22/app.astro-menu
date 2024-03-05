@@ -4,7 +4,6 @@ import { useMutation } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import { Box, Stack, useTheme, Typography } from '@mui/material';
 
-import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
 import { delay } from 'src/utils/promise-delay';
 import { useStaffContext } from 'src/sections/staff/context/staff-context';
@@ -42,20 +41,14 @@ function StaffHorizontalNav() {
           px: 3,
         }}
       >
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Typography
-            sx={{
-              fontWeight: theme.typography.fontWeightBold,
-              color: 'default',
-            }}
-          >
-            {`Hello, ${staff?.fullname}`}
-          </Typography>
-          <Image
-            src={`/assets/icons/staff/${staff?.type}-icon.svg`}
-            sx={{ width: 24, height: 24 }}
-          />
-        </Stack>
+        <Typography
+          sx={{
+            fontWeight: theme.typography.fontWeightBold,
+            color: 'common.black',
+          }}
+        >
+          {`Hello, ${staff?.fullname}`}
+        </Typography>
         <LoadingButton
           variant="contained"
           color={staff.type === 'chef' ? 'warning' : 'info'}

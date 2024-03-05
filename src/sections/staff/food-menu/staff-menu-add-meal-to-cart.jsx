@@ -40,28 +40,16 @@ function StaffMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
       fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
       setIsOpen(false);
     }
-
-    if (qtyValue === -1) {
-      const index = cart.findLastIndex(
-        (cartPortion) =>
-          cartPortion.mealID === mealInfo.docID && cartPortion.portionSize === portion.portionSize
-      );
-      if (index !== -1) {
-        updatedCart.splice(index, 1);
-        fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
-      }
-    }
   };
 
   return (
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-evenly">
-        <IconButton onClick={() => onQtyChange(-1)} disabled={count === 0}>
-          <Iconify icon="zondicons:minus-solid" sx={{ color: count === 0 ? '' : 'error.main' }} />
-        </IconButton>
-        <Typography>{count}</Typography>
+        <Typography sx={{ color: count > 0 ? 'info.main' : 'grey.600', fontWeight: '700' }}>
+          {count}x
+        </Typography>
         <IconButton onClick={() => setIsOpen(true)}>
-          <Iconify icon="flat-color-icons:plus" />
+          <Iconify icon="flat-color-icons:plus" sx={{ width: 32, height: 32 }} />
         </IconButton>
       </Stack>
 

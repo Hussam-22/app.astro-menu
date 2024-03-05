@@ -98,6 +98,7 @@ const COMMON = {
 export function palette(mode) {
   const light = {
     ...COMMON,
+    common: { ...COMMON.common, alternative: '#000000' },
     mode: 'light',
     text: {
       primary: GREY[800],
@@ -119,6 +120,7 @@ export function palette(mode) {
 
   const dark = {
     ...COMMON,
+    common: { ...COMMON.common, alternative: '#FFFFFF' },
     mode: 'dark',
     text: {
       primary: '#FFFFFF',

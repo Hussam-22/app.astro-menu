@@ -128,10 +128,11 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
               {!isFirst && (
                 <Tooltip title="move up">
                   <IconButton
-                    color="secondary"
+                    // color="background.default"
                     size="small"
                     onClick={handleShiftSectionUp}
                     disabled={isPending && isError}
+                    sx={{ color: 'common.alternative' }}
                   >
                     <Iconify icon="akar-icons:circle-chevron-up" width={22} height={22} />
                   </IconButton>

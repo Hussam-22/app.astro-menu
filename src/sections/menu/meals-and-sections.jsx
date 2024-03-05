@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { m, AnimatePresence } from 'framer-motion';
@@ -13,9 +14,9 @@ import SectionMeals from 'src/sections/menu/meals-and-sections/sections/SectionM
 
 function MealsAndSections() {
   const { id: menuID } = useParams();
-  const { fsGetAllMeals, fsGetSections } = useAuthContext();
+  const { fsGetAllMeals, fsGetSections, menuSections } = useAuthContext();
 
-  const { data: sections = [], isFetching } = useQuery({
+  const { data: sectionsUnsubscribe = () => {} } = useQuery({
     queryKey: [`sections-${menuID}`],
     queryFn: () => fsGetSections(menuID),
   });
@@ -25,20 +26,29 @@ function MealsAndSections() {
     queryFn: fsGetAllMeals,
   });
 
-  const sectionsLength = sections.length;
+  useEffect(
+    () => () => {
+      if (typeof sectionsUnsubscribe === 'function') {
+        sectionsUnsubscribe();
+      }
+    },
+    [sectionsUnsubscribe]
+  );
+
+  const sectionsLength = menuSections.length;
   const noData = sectionsLength === 0;
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <AddSection sectionsLength={sectionsLength} sections={sections} />
+        <AddSection sectionsLength={sectionsLength} sections={menuSections} />
       </Grid>
 
       <Grid item xs={12}>
         <MotionViewport>
           <AnimatePresence>
             {!noData &&
-              [...sections]
+              [...menuSections]
                 .sort((a, b) => a.order - b.order)
                 .map((section, index) => (
                   <m.div {...getVariant('fadeIn')} key={section.docID} layout>
@@ -49,7 +59,7 @@ function MealsAndSections() {
                       isFirst={index === 0}
                       sectionInfo={section}
                       allMeals={allMeals}
-                      allSections={sections}
+                      allSections={menuSections}
                     />
                   </m.div>
                 ))}

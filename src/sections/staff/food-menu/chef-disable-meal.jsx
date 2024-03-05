@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 import { Stack, Switch, useTheme, Typography } from '@mui/material';
 
@@ -9,15 +9,12 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
   const theme = useTheme();
-  const queryClient = useQueryClient();
   const { fsUpdateSection, activeOrders, fsUpdateCart } = useAuthContext();
   const { selectedTable } = useStaffContext();
-  const [isActive, setIsActive] = useState(isMealActive);
+  const [isActive, _] = useState(isMealActive);
 
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
-  const { docID, userID, branchID, cart, updateCount } = orderSnapShot;
-
-  console.log(cart);
+  const { docID, userID, branchID, cart, isReadyToServe } = orderSnapShot;
 
   const { mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -30,7 +27,9 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
     updatedMeals[index].isActive = !sectionMealsInfo[index].isActive;
 
     const updatedCart = cart.map((cartMeal) => {
-      if (cartMeal.mealID === mealInfo.docID) return { ...cartMeal, price: 0 };
+      if (cartMeal.mealID === mealInfo.docID && !isReadyToServe.includes(cartMeal.update))
+        return { ...cartMeal, price: 0 };
+
       return cartMeal;
     });
     if (!sectionMealsInfo[index].isActive)

@@ -116,7 +116,7 @@ function StaffMenuMealCard({ mealInfo, isMealActive, sectionInfo }) {
                     justifyContent="space-between"
                     alignItems="center"
                   >
-                    <Typography variant="caption">{`${portion.portionSize} - ${portion.gram}gram`}</Typography>
+                    <Typography variant="body2">{`${portion.portionSize} - ${portion.gram}gram`}</Typography>
                     <Label
                       variant="soft"
                       color={getPortionOrderCount(portion.portionSize) > 0 ? 'success' : 'default'}
@@ -125,16 +125,13 @@ function StaffMenuMealCard({ mealInfo, isMealActive, sectionInfo }) {
                 </MenuItem>
               ))}
             </Select>
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack direction="row" spacing={0} alignItems="center">
               <StaffMenuAddMealToCart
                 portion={portions[selectedPortionIndex]}
                 mealInfo={mealInfo}
                 selectedTableID={selectedTable.docID}
               />
-              <Typography
-                variant="h6"
-                sx={{ pr: 2 }}
-              >{`${portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
+              <Typography variant="h6">{`${portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
             </Stack>
           </Stack>
         )}

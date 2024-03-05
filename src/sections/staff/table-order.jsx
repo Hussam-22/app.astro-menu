@@ -23,8 +23,8 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 const TableOrder = () => {
   const theme = useTheme();
-  const { selectedTable } = useStaffContext();
-  const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus, staff } = useAuthContext();
+  const { selectedTable, setSelectedTable } = useStaffContext();
+  const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus, staff, user } = useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
 
   const isChef = staff?.type === 'chef';
@@ -94,7 +94,8 @@ const TableOrder = () => {
     });
 
   const onReadyToServe = (value) =>
-    mutate(() =>
+    mutate(() => {
+      setSelectedTable({});
       fsUpdateOrderStatus({
         orderID,
         userID,
@@ -103,8 +104,8 @@ const TableOrder = () => {
           isInKitchen: isInKitchen.filter((orderIndex) => orderIndex !== value),
           isReadyToServe: [...isReadyToServe, value],
         },
-      })
-    );
+      });
+    });
 
   const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -174,18 +175,22 @@ const TableOrder = () => {
                     )
                     .map((portion) => (
                       <Stack key={portion.id}>
-                        <Stack direction="row" justifyContent="space-between">
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            sx={{ flexGrow: 1 }}
-                            alignItems="center"
-                          >
-                            <Typography variant="body2">- {portion.portionSize}</Typography>
-                          </Stack>
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          sx={{
+                            textDecorationLine: portion?.price === 0 ? 'line-through' : 'none',
+                            textDecorationColor: theme.palette.error.main,
+                            textDecorationThickness: 2,
+                          }}
+                        >
+                          <Typography variant="body2" sx={{ flexGrow: 1 }}>
+                            - {portion.portionSize}
+                          </Typography>
 
                           <Typography variant="caption" sx={{ alignSelf: 'center', mx: 1 }}>
-                            {portion.price} AED
+                            {`${portion.price} 
+                            ${user?.currency}`}
                           </Typography>
                           <Divider
                             orientation="vertical"
