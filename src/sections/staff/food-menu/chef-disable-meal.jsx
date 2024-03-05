@@ -5,18 +5,22 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Stack, Switch, useTheme, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
   const theme = useTheme();
   const queryClient = useQueryClient();
-  const { fsUpdateSection } = useAuthContext();
+  const { fsUpdateSection, activeOrders, fsUpdateCart } = useAuthContext();
+  const { selectedTable } = useStaffContext();
   const [isActive, setIsActive] = useState(isMealActive);
 
-  const { mutate, isPending, error, isError, status } = useMutation({
+  const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
+  const { docID, userID, branchID, cart, updateCount } = orderSnapShot;
+
+  console.log(cart);
+
+  const { mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
-    onSuccess: () => {
-      queryClient.invalidateQueries([`sectionMeals`, mealInfo.userID]);
-    },
   });
 
   const onMealStatusChange = () => {
@@ -25,6 +29,12 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
     const updatedMeals = sectionMealsInfo;
     updatedMeals[index].isActive = !sectionMealsInfo[index].isActive;
 
+    const updatedCart = cart.map((cartMeal) => {
+      if (cartMeal.mealID === mealInfo.docID) return { ...cartMeal, price: 0 };
+      return cartMeal;
+    });
+    if (!sectionMealsInfo[index].isActive)
+      mutate(() => fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart }));
     mutate(() => fsUpdateSection(menuID, sectionInfo.docID, { meals: updatedMeals }));
   };
 
