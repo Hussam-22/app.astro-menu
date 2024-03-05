@@ -11,16 +11,15 @@ import StaffMenuMealCard from 'src/sections/staff/food-menu/staff-menu-meal-card
 function StaffMenuSections({ sectionInfo }) {
   const { userID } = useParams();
   const { title, meals: sectionMeals, docID: sectionID } = sectionInfo;
-  const { fsGetSectionMeals, staff } = useAuthContext();
-
-  const isChef = staff?.type === 'chef';
+  const { fsGetSectionMeals } = useAuthContext();
 
   const { data: meals = [], isLoading } = useQuery({
     queryKey: ['sectionMeals', userID, sectionID],
     queryFn: () =>
       fsGetSectionMeals(
         userID,
-        sectionMeals.flatMap((meal) => meal.mealID)
+        sectionMeals.flatMap((meal) => meal.mealID),
+        '200x200'
       ),
   });
 

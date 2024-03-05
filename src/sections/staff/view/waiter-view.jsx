@@ -1,5 +1,6 @@
 // import PropTypes from 'prop-types';
 
+import { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useQuery, useQueries } from '@tanstack/react-query';
 
@@ -14,27 +15,37 @@ import TableOrderSkeleton from 'src/sections/staff/skeleton/table-order-skeleton
 
 function WaiterView() {
   const { userID } = useParams();
-  const { fsGetSectionMeals, fsGetSections, activeOrders, staff } = useAuthContext();
+  const { fsGetSectionMeals, fsGetSections, activeOrders, staff, menuSections } = useAuthContext();
   const { selectedTable: tableInfo, isLoading } = useStaffContext();
 
   const selectedTableOrder = activeOrders.find((order) => order.tableID === tableInfo.docID);
 
-  const { data: sections = [] } = useQuery({
+  const { data: sectionsUnsubscribe = () => {} } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: tableInfo.menuID ? ['sections', userID, tableInfo.menuID] : null,
     queryFn: () => fsGetSections(tableInfo.menuID, userID),
     enabled: tableInfo?.docID !== undefined,
   });
 
+  useEffect(
+    () => () => {
+      if (typeof sectionsUnsubscribe === 'function') {
+        sectionsUnsubscribe();
+      }
+    },
+    [sectionsUnsubscribe]
+  );
+
   useQueries({
-    queries: sections.map((section) => ({
+    queries: menuSections.map((section) => ({
       queryKey: ['sectionMeals', userID, section.docID],
       queryFn: () =>
         fsGetSectionMeals(
           userID,
-          section.meals.flatMap((meal) => meal.mealID)
+          section.meals.flatMap((meal) => meal.mealID),
+          '200x200'
         ),
-      enabled: sections.length !== 0,
+      enabled: menuSections.length !== 0,
     })),
   });
 
@@ -42,7 +53,7 @@ function WaiterView() {
 
   return (
     tableInfo?.docID &&
-    sections.length !== 0 &&
+    menuSections.length !== 0 &&
     selectedTableOrder &&
     !selectedTableOrder?.isCanceled &&
     !selectedTableOrder?.isPaid && (
@@ -68,7 +79,7 @@ function WaiterView() {
           <TableOrder />
         </Stack>
         <Box flexGrow={1} sx={{ maxWidth: '45%' }}>
-          <FoodMenu />
+          <FoodMenu sections={menuSections} />
         </Box>
       </Stack>
     )

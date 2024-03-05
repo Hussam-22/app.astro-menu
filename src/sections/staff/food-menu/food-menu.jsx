@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
 import { Stack, Typography } from '@mui/material';
@@ -8,17 +9,12 @@ import Scrollbar from 'src/components/scrollbar';
 import { useStaffContext } from 'src/sections/staff/context/staff-context';
 import StaffMenuSections from 'src/sections/staff/food-menu/staff-menu-sections';
 
-function FoodMenu() {
+FoodMenu.propTypes = { sections: PropTypes.array };
+
+function FoodMenu({ sections }) {
   const { userID } = useParams();
   const { selectedTable } = useStaffContext();
-  const { fsGetSections, fsGetMenu } = useAuthContext();
-
-  const { data: sections = [] } = useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: selectedTable.menuID ? ['sections', userID, selectedTable.menuID] : null,
-    queryFn: () => fsGetSections(selectedTable.menuID, userID),
-    enabled: selectedTable.isActive && selectedTable.menuID !== null,
-  });
+  const { fsGetMenu } = useAuthContext();
 
   const { data: menuInfo = {} } = useQuery({
     queryKey: ['menu', userID, selectedTable.menuID],

@@ -8,8 +8,14 @@ import MenuSection from 'src/sections/qr-menu/menu-section';
 
 function QrMenuView() {
   const { userID, branchID, tableID } = useParams();
-  const { fsGetMealLabels, fsGetBranch, fsGetTableInfo, fsGetSections, fsOrderSnapshot } =
-    useAuthContext();
+  const {
+    fsGetMealLabels,
+    fsGetBranch,
+    fsGetTableInfo,
+    fsGetSections,
+    fsOrderSnapshot,
+    menuSections,
+  } = useAuthContext();
 
   const {
     data: tableInfo = {},
@@ -32,6 +38,7 @@ function QrMenuView() {
     enabled: isTableInfoSuccess && tableInfo.isActive,
   });
 
+  console.log('//TODO: Unsubscribe from sections snapshot on unmount');
   const { data: sections = [] } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: tableInfo.menuID ? ['sections', userID, tableInfo.menuID] : null,
@@ -51,7 +58,7 @@ function QrMenuView() {
 
   return (
     <Stack direction="column" spacing={5} sx={{ py: 5 }}>
-      {sections
+      {menuSections
         .filter((section) => section.isActive)
         .sort((a, b) => a.order - b.order)
         .map((section) => (

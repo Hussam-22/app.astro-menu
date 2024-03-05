@@ -86,6 +86,7 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [orderSnapShot, setOrderSnapShot] = useState({});
   const [activeOrders, setActiveOrders] = useState([]);
+  const [menuSections, setMenuSections] = useState([]);
   const [staff, setStaff] = useState({});
 
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
@@ -626,17 +627,26 @@ export function AuthProvider({ children }) {
   );
   const fsGetSections = useCallback(
     async (menuID, userID = state.user.id) => {
-      const dataArr = [];
       const docRef = query(
         collectionGroup(DB, 'sections'),
         where('userID', '==', userID),
         where('menuID', '==', menuID)
       );
-      const querySnapshot = await getDocs(docRef);
-      querySnapshot.forEach((doc) => {
-        dataArr.push(doc.data());
+
+      const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
+        const sectionsArray = [];
+        querySnapshot.forEach((doc) => sectionsArray.push(doc.data()));
+        setMenuSections(sectionsArray);
       });
-      return dataArr;
+
+      return unsubscribe;
+
+      // const dataArr = [];
+      // const querySnapshot = await getDocs(docRef);
+      // querySnapshot.forEach((doc) => {
+      //   dataArr.push(doc.data());
+      // });
+      // return dataArr;
     },
     [state]
   );
@@ -728,7 +738,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetSectionMeals = useCallback(async (userID, sectionMeals) => {
+  const fsGetSectionMeals = useCallback(async (userID, sectionMeals, size = '800x800') => {
     const docRef = query(
       collectionGroup(DB, 'meals'),
       where('userID', '==', userID),
@@ -742,7 +752,7 @@ export function AuthProvider({ children }) {
     querySnapshot.forEach((element) => {
       const asyncOperation = async () => {
         const bucket = `menu-app-b268b/${userID}/meals/${element.data().docID}/`;
-        const cover = await fsGetImgDownloadUrl(bucket, `${element.data().docID}_800x800.webp`);
+        const cover = await fsGetImgDownloadUrl(bucket, `${element.data().docID}_${size}.webp`);
 
         dataArr.push({ ...element.data(), cover });
       };
@@ -1043,7 +1053,6 @@ export function AuthProvider({ children }) {
     }
     return null;
   }, []);
-
   const fsOrderSnapshot = useCallback(async (payload) => {
     const { userID, branchID, tableID, menuID } = payload;
 
@@ -1284,6 +1293,7 @@ export function AuthProvider({ children }) {
       activeOrders,
       // fsGetAllOrders,
       // // ---- MENU SECTIONS ----
+      menuSections,
       fsAddSection,
       fsUpdateSection,
       fsGetSections,
