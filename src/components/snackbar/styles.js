@@ -27,10 +27,24 @@ export const StyledNotistack = styled(MaterialDesignContent)(({ theme }) => {
       color: isLight ? theme.palette.common.white : theme.palette.grey[800],
       backgroundColor: isLight ? theme.palette.grey[800] : theme.palette.common.white,
     },
-    // '&.notistack-MuiContent-info': {},
-    // '&.notistack-MuiContent-success': {},
-    // '&.notistack-MuiContent-warning': {},
-    // '&.notistack-MuiContent-error': {},
+    '&.notistack-MuiContent-info': {
+      backgroundColor: theme.palette.info.lighter,
+    },
+    '&.notistack-MuiContent-success': {
+      backgroundColor: theme.palette.success.lighter,
+    },
+    '&.notistack-MuiContent-warning': {
+      backgroundColor: theme.palette.warning.lighter,
+    },
+    '&.notistack-MuiContent-error': {
+      backgroundColor: theme.palette.error.lighter,
+    },
+    '&.notistack-MuiContent-inKitchen': {
+      backgroundColor: theme.palette.error.lighter,
+    },
+    '&.notistack-MuiContent-isReadyToServe': {
+      backgroundColor: theme.palette.info.lighter,
+    },
   };
 });
 
@@ -43,7 +57,7 @@ export const StyledIcon = styled('span')(({ color, theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   marginRight: theme.spacing(1.5),
-  color: theme.palette[color].main,
+  color: theme.palette[color].dark,
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette[color].main, 0.16),
 }));

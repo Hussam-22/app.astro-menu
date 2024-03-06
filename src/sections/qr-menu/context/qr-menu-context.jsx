@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
+import { useSnackbar } from 'notistack';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState, useContext, useCallback, createContext } from 'react';
+import { useMemo, useState, useEffect, useContext, useCallback, createContext } from 'react';
 
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
@@ -15,16 +16,109 @@ export const useQrMenuContext = () => {
 };
 
 export function QrMenuContextProvider({ children }) {
-  const { userID } = useParams();
-  const { fsGetUser } = useAuthContext();
+  const { userID, branchID, tableID } = useParams();
+  const {
+    fsGetUser,
+    fsGetMealLabels,
+    fsGetBranch,
+    fsGetTableInfo,
+    fsGetSections,
+    fsOrderSnapshot,
+    orderSnapShot,
+    fsGetMenu,
+  } = useAuthContext();
   const [labels, setLabels] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [orderStatus, setOrderStatus] = useState({
+    text: 'Taking Order...',
+    icon: 'solar:pen-new-square-bold',
+    color: 'secondary',
+  });
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const { data: user = {} } = useQuery({
     queryKey: ['user', userID],
     queryFn: () => fsGetUser(userID),
     enabled: userID !== undefined,
   });
+
+  const {
+    data: tableInfo = {},
+    isSuccess: isTableInfoSuccess,
+    error: tableError,
+  } = useQuery({
+    queryKey: ['table', userID, branchID, tableID],
+    queryFn: () => fsGetTableInfo(userID, branchID, tableID),
+  });
+
+  const { data: menuInfo = {} } = useQuery({
+    queryKey: ['menu', userID, tableInfo.menuID],
+    queryFn: () => fsGetMenu(tableInfo.menuID, userID),
+    enabled: tableInfo?.docID !== undefined && tableInfo.isActive,
+  });
+
+  const { data: branchInfo = {} } = useQuery({
+    queryKey: ['branch', userID, branchID],
+    queryFn: () => fsGetBranch(branchID, userID),
+    enabled: tableInfo?.docID !== undefined && tableInfo.isActive,
+  });
+
+  const { data: mealsLabel = [] } = useQuery({
+    queryKey: ['mealsLabel', userID],
+    queryFn: () => fsGetMealLabels(userID),
+    enabled: tableInfo?.docID !== undefined && tableInfo.isActive,
+  });
+
+  const { data: sectionsUnsubscribe = () => {} } = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: tableInfo.menuID ? ['sections', userID, tableInfo.menuID] : null,
+    queryFn: () => fsGetSections(tableInfo.menuID, userID),
+    enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
+  });
+
+  const { data: orderInfo = {}, error } = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: tableInfo.menuID ? ['order', userID, branchID, tableID, tableInfo.menuID] : null,
+    queryFn: () => fsOrderSnapshot({ userID, branchID, tableID, menuID: tableInfo.menuID }),
+    enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
+  });
+
+  useEffect(() => {
+    if (orderSnapShot?.docID) {
+      if (orderSnapShot?.isReadyToServe.length !== 0) {
+        enqueueSnackbar('Ready to Serve...', {
+          anchorOrigin: { horizontal: 'center', vertical: 'top' },
+          variant: 'isReadyToServe',
+          persist: true,
+          onEnter: closeSnackbar('inKitchen'),
+        });
+        // unsubscribe from menu meal updates
+        if (typeof sectionsUnsubscribe === 'function') sectionsUnsubscribe();
+        setOrderStatus({
+          text: 'Ready to Serve...',
+          icon: 'dashicons:food',
+          color: 'info',
+        });
+      }
+
+      if (orderSnapShot?.isInKitchen?.length !== 0 && orderSnapShot?.isReadyToServe?.length === 0) {
+        enqueueSnackbar('Preparing Order...', {
+          anchorOrigin: { horizontal: 'center', vertical: 'top' },
+          variant: 'inKitchen',
+          persist: true,
+          key: 'inKitchen',
+        });
+        // unsubscribe from menu meal updates
+        if (typeof sectionsUnsubscribe === 'function') sectionsUnsubscribe();
+        setOrderStatus({
+          text: 'Preparing Order...',
+          icon: 'ph:cooking-pot-light',
+          color: 'warning',
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderSnapShot]);
 
   const [selectedLanguage, setLanguage] = useState(user?.defaultLanguage || 'en');
 
@@ -48,6 +142,7 @@ export function QrMenuContextProvider({ children }) {
 
   const memoizedValue = useMemo(
     () => ({
+      tableInfo,
       setLabel,
       labels,
       reset,
@@ -55,8 +150,22 @@ export function QrMenuContextProvider({ children }) {
       user,
       selectedLanguage,
       setLanguage,
+      sectionsUnsubscribe,
+      orderStatus,
+      menuInfo,
     }),
-    [labels, setLabel, reset, loading, user, selectedLanguage, setLanguage]
+    [
+      labels,
+      loading,
+      reset,
+      selectedLanguage,
+      setLabel,
+      tableInfo,
+      user,
+      sectionsUnsubscribe,
+      orderStatus,
+      menuInfo,
+    ]
   );
   return <QrMenuContext.Provider value={memoizedValue}>{children}</QrMenuContext.Provider>;
 }

@@ -35,8 +35,8 @@ function TableActionBar() {
     [orderSnapShot.cart, orderSnapShot?.docID]
   );
 
-  const taxValue = +(orderValue * (user.taxValue / 100)).toFixed(2);
-  const totalBill = +orderValue + taxValue;
+  const taxValue = orderValue * (user.taxValue / 100).toFixed(2);
+  const totalBill = orderValue + taxValue;
 
   if (!orderSnapShot) return null;
 

@@ -52,6 +52,16 @@ export default function SnackbarProvider({ children }) {
             <Iconify icon="solar:danger-bold" width={24} />
           </StyledIcon>
         ),
+        inKitchen: (
+          <StyledIcon color="warning">
+            <Iconify icon="ph:cooking-pot-light" width={24} />
+          </StyledIcon>
+        ),
+        isReadyToServe: (
+          <StyledIcon color="info">
+            <Iconify icon="dashicons:food" width={24} />
+          </StyledIcon>
+        ),
       }}
       Components={{
         default: StyledNotistack,
@@ -59,6 +69,8 @@ export default function SnackbarProvider({ children }) {
         success: StyledNotistack,
         warning: StyledNotistack,
         error: StyledNotistack,
+        inKitchen: StyledNotistack,
+        isReadyToServe: StyledNotistack,
       }}
       // with close as default
       action={(snackbarId) => (

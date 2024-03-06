@@ -1,59 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
-
 import { Stack, Typography } from '@mui/material';
 
-import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import MenuSection from 'src/sections/qr-menu/menu-section';
+import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 function QrMenuView() {
-  const { userID, branchID, tableID } = useParams();
-  const {
-    fsGetMealLabels,
-    fsGetBranch,
-    fsGetTableInfo,
-    fsGetSections,
-    fsOrderSnapshot,
-    menuSections,
-  } = useAuthContext();
+  const { menuSections } = useAuthContext();
+  const { tableInfo } = useQrMenuContext();
 
-  const {
-    data: tableInfo = {},
-    isSuccess: isTableInfoSuccess,
-    error: tableError,
-  } = useQuery({
-    queryKey: ['table', userID, branchID, tableID],
-    queryFn: () => fsGetTableInfo(userID, branchID, tableID),
-  });
-
-  const { data: branchInfo = {} } = useQuery({
-    queryKey: ['branch', userID, branchID],
-    queryFn: () => fsGetBranch(branchID, userID),
-    enabled: isTableInfoSuccess && tableInfo.isActive,
-  });
-
-  const { data: mealsLabel = [] } = useQuery({
-    queryKey: ['mealsLabel', userID],
-    queryFn: () => fsGetMealLabels(userID),
-    enabled: isTableInfoSuccess && tableInfo.isActive,
-  });
-
-  console.log('//TODO: Unsubscribe from sections snapshot on unmount');
-  const { data: sections = [] } = useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: tableInfo.menuID ? ['sections', userID, tableInfo.menuID] : null,
-    queryFn: () => fsGetSections(tableInfo.menuID, userID),
-    enabled: isTableInfoSuccess && tableInfo.isActive && tableInfo.menuID !== null,
-  });
-
-  const { data: orderInfo = {}, error } = useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: tableInfo.menuID ? ['order', userID, branchID, tableID, tableInfo.menuID] : null,
-    queryFn: () => fsOrderSnapshot({ userID, branchID, tableID, menuID: tableInfo.menuID }),
-    enabled: isTableInfoSuccess && tableInfo.isActive && tableInfo.menuID !== null,
-  });
-
-  if (!tableInfo?.isActive)
+  if (tableInfo?.docID && !tableInfo?.isActive)
     return <Typography variant="h1">Sorry this table is not taking orders !!</Typography>;
 
   return (

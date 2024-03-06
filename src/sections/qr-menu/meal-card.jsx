@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { Box, Card, Stack, Select, Divider, MenuItem, InputBase, Typography } from '@mui/material';
+import { Box, Card, Stack, Divider, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
 import Image from 'src/components/image';
@@ -26,7 +26,11 @@ function MealCard({ mealInfo, isMealActive }) {
     translationEdited,
   } = mealInfo;
   const { orderSnapShot } = useAuthContext();
-  const { user, selectedLanguage } = useQrMenuContext();
+  const {
+    user,
+    selectedLanguage,
+    menuInfo: { allowSelfOrder },
+  } = useQrMenuContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
   const queryClient = useQueryClient();
@@ -90,87 +94,24 @@ function MealCard({ mealInfo, isMealActive }) {
             </Box>
           )}
         </Box>
-        <Typography
-          variant="h4"
-          sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
-        >
-          {getTitle()}
-        </Typography>
-        <Stack direction="row" spacing={1} sx={{ px: 2 }}>
-          {labels.map((label) => (
-            <Label variant="soft" color="default" key={label.docID} sx={{ fontSize: 10 }}>
-              #{label.title}
-            </Label>
-          ))}
-        </Stack>
-        {!isReadMore && (
-          <TextMaxLine
-            line={2}
-            variant="body2"
-            onClick={() => setIsReadMore(true)}
-            sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
-          >
-            {getDescription()}
-          </TextMaxLine>
-        )}
-        {isReadMore && (
-          <Typography
-            variant="body2"
-            onClick={() => setIsReadMore(false)}
-            sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
-          >
-            {getDescription()}
-          </Typography>
-        )}
-
+        <Title selectedLanguage={selectedLanguage} getTitle={getTitle} />
+        <Labels labels={labels} />
+        <Description
+          isReadMore={isReadMore}
+          setIsReadMore={setIsReadMore}
+          getDescription={getDescription}
+          selectedLanguage={selectedLanguage}
+        />
         <Divider />
-        {!isMealActive && (
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ color: 'text.disabled' }}>
-              Out of Stock
-            </Typography>
-          </Box>
-        )}
-        {isMealActive && (
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Select
-              value={selectedPortionIndex}
-              onChange={onPortionChange}
-              input={<InputBase sx={{ pl: 2, borderRadius: 0.5 }} />}
-              inputProps={{
-                sx: { textTransform: 'capitalize' },
-              }}
-            >
-              {portions.map((portion, index) => (
-                <MenuItem key={index} value={index}>
-                  <Stack
-                    direction="row"
-                    spacing={2}
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <Typography variant="caption">{`${portion.portionSize} - ${portion.gram}gram`}</Typography>
-                    <Label
-                      variant="soft"
-                      color={getPortionOrderCount(portion.portionSize) > 0 ? 'success' : 'default'}
-                    >{`x${getPortionOrderCount(portion.portionSize)}`}</Label>
-                  </Stack>
-                </MenuItem>
-              ))}
-            </Select>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <AddMealToCart portion={portions[selectedPortionIndex]} mealInfo={mealInfo} />
-              <Typography
-                variant="h6"
-                sx={{ pr: 2 }}
-              >{`${portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
-            </Stack>
-          </Stack>
-        )}
+
+        <Portions
+          portions={portions}
+          selectedPortionIndex={selectedPortionIndex}
+          onPortionChange={onPortionChange}
+          getPortionOrderCount={getPortionOrderCount}
+          isMealActive={isMealActive}
+          mealInfo={mealInfo}
+        />
       </Stack>
     </Card>
   );
@@ -190,3 +131,128 @@ MealCard.propTypes = {
   }),
   isMealActive: PropTypes.bool,
 };
+// ----------------------------------------------------------------------------
+Title.propTypes = {
+  getTitle: PropTypes.func,
+  selectedLanguage: PropTypes.string,
+};
+function Title({ selectedLanguage, getTitle }) {
+  return (
+    <Typography variant="h4" sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}>
+      {getTitle()}
+    </Typography>
+  );
+}
+// ----------------------------------------------------------------------------
+Description.propTypes = {
+  setIsReadMore: PropTypes.func,
+  selectedLanguage: PropTypes.string,
+  getDescription: PropTypes.func,
+  isReadMore: PropTypes.bool,
+};
+function Description({ setIsReadMore, selectedLanguage, getDescription, isReadMore }) {
+  return (
+    <>
+      {!isReadMore && (
+        <TextMaxLine
+          line={2}
+          variant="body2"
+          onClick={() => setIsReadMore(true)}
+          sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+        >
+          {getDescription()}
+        </TextMaxLine>
+      )}
+      {isReadMore && (
+        <Typography
+          variant="body2"
+          onClick={() => setIsReadMore(false)}
+          sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+        >
+          {getDescription()}
+        </Typography>
+      )}
+    </>
+  );
+}
+
+// ----------------------------------------------------------------------------
+Labels.propTypes = {
+  labels: PropTypes.array,
+};
+
+function Labels({ labels }) {
+  return (
+    <Stack direction="row" spacing={1} sx={{ px: 2 }}>
+      {labels.map((label) => (
+        <Label variant="soft" color="default" key={label.docID} sx={{ fontSize: 10 }}>
+          #{label.title}
+        </Label>
+      ))}
+    </Stack>
+  );
+}
+
+// ----------------------------------------------------------------------------
+
+Portions.propTypes = {
+  selectedPortionIndex: PropTypes.number,
+  onPortionChange: PropTypes.func,
+  portions: PropTypes.array,
+  getPortionOrderCount: PropTypes.func,
+  isMealActive: PropTypes.bool,
+  mealInfo: PropTypes.object,
+};
+
+function Portions({
+  selectedPortionIndex,
+  onPortionChange,
+  portions,
+  getPortionOrderCount,
+  isMealActive,
+  mealInfo,
+}) {
+  const {
+    user,
+    menuInfo: { allowSelfOrder },
+  } = useQrMenuContext();
+  const {
+    orderSnapShot: { updateCount },
+  } = useAuthContext();
+  return (
+    <>
+      {!isMealActive && (
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="h6" sx={{ color: 'text.disabled' }}>
+            Out of Stock
+          </Typography>
+        </Box>
+      )}
+
+      {isMealActive && (
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Portions
+            portions={portions}
+            selectedPortionIndex={selectedPortionIndex}
+            onPortionChange={onPortionChange}
+            getPortionOrderCount={getPortionOrderCount}
+          />
+
+          <Stack direction="row" spacing={1} alignItems="center">
+            {allowSelfOrder && updateCount === 0 && (
+              <AddMealToCart portion={portions[selectedPortionIndex]} mealInfo={mealInfo} />
+            )}
+            <Typography
+              variant="h6"
+              sx={{ pr: 2 }}
+            >{`${portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
+          </Stack>
+        </Stack>
+      )}
+    </>
+  );
+}

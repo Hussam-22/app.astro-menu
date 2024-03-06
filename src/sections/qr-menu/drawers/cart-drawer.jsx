@@ -14,6 +14,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
@@ -22,8 +23,8 @@ import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 const CartDrawer = ({ openState, toggleDrawer }) => {
   const theme = useTheme();
   const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
-  const { user } = useQrMenuContext();
-  const { cart, updateCount } = orderSnapShot;
+  const { user, orderStatus } = useQrMenuContext();
+  const { updateCount } = orderSnapShot;
 
   const queryClient = useQueryClient();
   const cachedMealLabels = queryClient.getQueriesData({ queryKey: ['sectionMeals'] }) || [];
@@ -46,8 +47,8 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
     [orderSnapShot.cart, orderSnapShot?.docID]
   );
 
-  const taxValue = orderValue * (user.taxValue / 100);
-  const totalBill = orderValue + taxValue;
+  const taxValue = +(orderValue * (user.taxValue / 100)).toFixed(2);
+  const totalBill = +orderValue + taxValue;
 
   const removeMeal = (portion) => {
     const updatedCart = orderSnapShot.cart.filter((cartPortion) => cartPortion.id !== portion.id);
@@ -68,6 +69,13 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
       <Scrollbar sx={{ maxHeight: 400 }}>
         <Container maxWidth="sm">
           <Stack direction="column" spacing={1} sx={{ py: 2 }}>
+            <Label
+              color={orderStatus.color}
+              variant="filled"
+              startIcon={<Iconify icon={orderStatus.icon} />}
+            >
+              {orderStatus.text}
+            </Label>
             {cartMeals.map((meal) => (
               <React.Fragment key={meal.docID}>
                 <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
@@ -132,25 +140,27 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
               </React.Fragment>
             ))}
           </Stack>
-          <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ mb: 2 }}>
-            <Typography variant="caption">
-              Order : {orderValue}{' '}
-              <Box component="span" sx={{ typography: 'caption' }}>
-                AED
-              </Box>
-            </Typography>
-            <Typography variant="caption">
-              Tax : {taxValue}{' '}
-              <Box component="span" sx={{ typography: 'caption' }}>
-                AED
-              </Box>
-            </Typography>
-            <Typography variant="h6" sx={{ color: 'success.main' }}>
-              Total Bill : {totalBill}{' '}
-              <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
-                AED
-              </Box>
-            </Typography>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ mb: 2 }}>
+              <Typography variant="caption">
+                Order : {orderValue}{' '}
+                <Box component="span" sx={{ typography: 'caption' }}>
+                  AED
+                </Box>
+              </Typography>
+              <Typography variant="caption">
+                Tax : {taxValue}{' '}
+                <Box component="span" sx={{ typography: 'caption' }}>
+                  AED
+                </Box>
+              </Typography>
+              <Typography variant="h6" sx={{ color: 'success.main' }}>
+                Total Bill : {totalBill}{' '}
+                <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
+                  AED
+                </Box>
+              </Typography>
+            </Stack>
           </Stack>
         </Container>
       </Scrollbar>
