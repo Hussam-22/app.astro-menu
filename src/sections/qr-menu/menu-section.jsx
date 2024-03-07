@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack, Divider, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import MealCard from 'src/sections/qr-menu/meal-card';
@@ -50,22 +50,28 @@ function MenuSection({ sectionInfo }) {
   return (
     <Box>
       <Typography
-        variant="h3"
+        variant="h5"
         id={sectionID}
         sx={{
+          // color: 'common.white',
           direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr',
-          bgcolor: 'common.black',
-          color: 'common.white',
           borderRadius: 1,
-          px: 2,
           py: 1,
-          mb: 2,
+          fontWeight: '900',
         }}
       >
         {getTitle()}
       </Typography>
-      <Stack spacing={2}>
-        <Stack direction="column" spacing={4}>
+      <Stack
+        spacing={2}
+        sx={{
+          bgcolor: 'background.paper',
+          borderRadius: 2,
+          p: 1,
+          border: 'dashed 1px #D9D9D9',
+        }}
+      >
+        <Stack direction="column" spacing={1} divider={<Divider sx={{ borderStyle: 'dashed' }} />}>
           {filteredMeals
             .filter((meal) => meal.isActive)
             .map((meal) => (

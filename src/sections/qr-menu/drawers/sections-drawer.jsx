@@ -1,6 +1,4 @@
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
 import { Chip, Stack, Drawer, Button, Divider, Typography } from '@mui/material';
@@ -14,18 +12,8 @@ SectionsDrawer.propTypes = {
 };
 
 function SectionsDrawer({ openState, toggleDrawer }) {
-  const { userID } = useParams();
-  const { fsGetMealLabels } = useAuthContext();
-  const { setLabel, labels, reset, selectedLanguage, user } = useQrMenuContext();
-
-  const queryClient = useQueryClient();
-  const cachedSections = queryClient.getQueriesData({ queryKey: ['sections'] }) || [];
-  const menuSections = cachedSections[0][1];
-
-  const { data: mealsLabel = [] } = useQuery({
-    queryKey: ['mealsLabel', userID],
-    queryFn: () => fsGetMealLabels(userID),
-  });
+  const { menuSections } = useAuthContext();
+  const { setLabel, labels, reset, selectedLanguage, user, mealsLabel } = useQrMenuContext();
 
   const getTitle = (section) => {
     const { title, translation, translationEdited } = section;

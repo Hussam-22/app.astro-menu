@@ -143,6 +143,7 @@ export function QrMenuContextProvider({ children }) {
   const memoizedValue = useMemo(
     () => ({
       tableInfo,
+      mealsLabel,
       setLabel,
       labels,
       reset,
@@ -155,6 +156,7 @@ export function QrMenuContextProvider({ children }) {
       menuInfo,
     }),
     [
+      mealsLabel,
       labels,
       loading,
       reset,

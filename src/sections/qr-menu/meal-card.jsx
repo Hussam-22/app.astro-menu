@@ -2,38 +2,27 @@ import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { Box, Card, Stack, Divider, Typography } from '@mui/material';
+import { Box, Stack, Button, useTheme, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
 import Image from 'src/components/image';
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import TextMaxLine from 'src/components/text-max-line';
-import AddMealToCart from 'src/sections/qr-menu/add-meal-to-cart';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
+import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
 function MealCard({ mealInfo, isMealActive }) {
+  const theme = useTheme();
   const { userID } = useParams();
-  const {
-    cover,
-    docID,
-    description,
-    isNew,
-    mealLabels,
-    portions,
-    title,
-    translation,
-    translationEdited,
-  } = mealInfo;
+  const { cover, description, isNew, mealLabels, portions, title, translation, translationEdited } =
+    mealInfo;
   const { orderSnapShot } = useAuthContext();
-  const {
-    user,
-    selectedLanguage,
-    menuInfo: { allowSelfOrder },
-  } = useQrMenuContext();
+  const { user, selectedLanguage, menuInfo } = useQrMenuContext();
   const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
   const queryClient = useQueryClient();
+  const [isOpen, setIsOpen] = useState(false);
   const cachedMealLabels = queryClient.getQueryData(['mealsLabel', userID]) || [];
 
   const labels = cachedMealLabels.filter((cachedMealLabel) =>
@@ -74,46 +63,70 @@ function MealCard({ mealInfo, isMealActive }) {
   );
 
   return (
-    <Card sx={{ bgcolor: 'background.default', p: 0, boxShadow: 10 }}>
-      <Stack direction="column" spacing={1}>
-        <Box sx={{ position: 'relative' }}>
-          <Image
-            src={cover}
-            ratio="16/9"
-            sx={{ borderRadius: 0, filter: `grayscale(${isMealActive ? '0' : '100'})` }}
-          />
-          {isNew && (
-            <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
-              <Label
-                variant="filled"
-                color="error"
-                sx={{ fontSize: 20, p: 2, boxShadow: '5px 5px 0 0 #000' }}
-              >
-                New
-              </Label>
-            </Box>
-          )}
-        </Box>
-        <Title selectedLanguage={selectedLanguage} getTitle={getTitle} />
-        <Labels labels={labels} />
-        <Description
-          isReadMore={isReadMore}
-          setIsReadMore={setIsReadMore}
-          getDescription={getDescription}
-          selectedLanguage={selectedLanguage}
-        />
-        <Divider />
+    <Box sx={{ py: 1 }}>
+      <Stack direction="row" spacing={1} sx={{ position: 'relative' }}>
+        <Stack direction="column" spacing={1} sx={{ pt: 2, maxWidth: '65%', flexGrow: 1 }}>
+          <Title selectedLanguage={selectedLanguage} getTitle={getTitle} />
 
-        <Portions
-          portions={portions}
-          selectedPortionIndex={selectedPortionIndex}
-          onPortionChange={onPortionChange}
-          getPortionOrderCount={getPortionOrderCount}
-          isMealActive={isMealActive}
-          mealInfo={mealInfo}
+          <Description
+            isReadMore={isReadMore}
+            setIsReadMore={setIsReadMore}
+            getDescription={getDescription}
+            selectedLanguage={selectedLanguage}
+          />
+          {/* <Labels labels={labels} /> */}
+
+          {isMealActive ? (
+            <Stack
+              direction="row"
+              spacing={0}
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ pr: 1 }}
+            >
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: theme.typography.fontWeightBold, textWrap: 'nowrap' }}
+              >{`${portions[0].price} ${user?.currency}`}</Typography>
+              {menuInfo?.allowSelfOrder && orderSnapShot?.updateCount === 0 && (
+                <Button variant="soft" color="success" onClick={() => setIsOpen(true)}>
+                  Add
+                </Button>
+              )}
+            </Stack>
+          ) : (
+            <Typography variant="h6" color="error">
+              Out of Stock
+            </Typography>
+          )}
+        </Stack>
+
+        <Image
+          src={cover}
+          ratio="1/1"
+          sx={{
+            borderRadius: 2,
+            filter: `grayscale(${isMealActive ? '0' : '100'})`,
+            maxWidth: '35%',
+            p: 0,
+          }}
         />
+        {isNew && (
+          <Box sx={{ position: 'absolute', top: 4, right: 7 }}>
+            <Label
+              variant="filled"
+              color="error"
+              sx={{ fontSize: 12, p: 1, boxShadow: '2px 2px 0 0 #000', zIndex: 999 }}
+            >
+              New
+            </Label>
+          </Box>
+        )}
       </Stack>
-    </Card>
+      {isOpen && (
+        <DialogAddComment isOpen={isOpen} onClose={() => setIsOpen(false)} portions={portions} />
+      )}
+    </Box>
   );
 }
 export default MealCard;
@@ -138,7 +151,10 @@ Title.propTypes = {
 };
 function Title({ selectedLanguage, getTitle }) {
   return (
-    <Typography variant="h4" sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}>
+    <Typography
+      variant="h6"
+      sx={{ color: 'info.dark', direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+    >
       {getTitle()}
     </Typography>
   );
@@ -156,18 +172,18 @@ function Description({ setIsReadMore, selectedLanguage, getDescription, isReadMo
       {!isReadMore && (
         <TextMaxLine
           line={2}
-          variant="body2"
+          variant="caption"
           onClick={() => setIsReadMore(true)}
-          sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+          sx={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
         >
           {getDescription()}
         </TextMaxLine>
       )}
       {isReadMore && (
         <Typography
-          variant="body2"
+          variant="caption"
           onClick={() => setIsReadMore(false)}
-          sx={{ px: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+          sx={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
         >
           {getDescription()}
         </Typography>
@@ -195,64 +211,26 @@ function Labels({ labels }) {
 
 // ----------------------------------------------------------------------------
 
-Portions.propTypes = {
-  selectedPortionIndex: PropTypes.number,
-  onPortionChange: PropTypes.func,
-  portions: PropTypes.array,
-  getPortionOrderCount: PropTypes.func,
-  isMealActive: PropTypes.bool,
-  mealInfo: PropTypes.object,
-};
-
-function Portions({
-  selectedPortionIndex,
-  onPortionChange,
-  portions,
-  getPortionOrderCount,
-  isMealActive,
-  mealInfo,
-}) {
-  const {
-    user,
-    menuInfo: { allowSelfOrder },
-  } = useQrMenuContext();
-  const {
-    orderSnapShot: { updateCount },
-  } = useAuthContext();
-  return (
-    <>
-      {!isMealActive && (
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="h6" sx={{ color: 'text.disabled' }}>
-            Out of Stock
-          </Typography>
-        </Box>
-      )}
-
-      {isMealActive && (
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Portions
-            portions={portions}
-            selectedPortionIndex={selectedPortionIndex}
-            onPortionChange={onPortionChange}
-            getPortionOrderCount={getPortionOrderCount}
-          />
-
-          <Stack direction="row" spacing={1} alignItems="center">
-            {allowSelfOrder && updateCount === 0 && (
-              <AddMealToCart portion={portions[selectedPortionIndex]} mealInfo={mealInfo} />
-            )}
-            <Typography
-              variant="h6"
-              sx={{ pr: 2 }}
-            >{`${portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
-          </Stack>
-        </Stack>
-      )}
-    </>
-  );
-}
+/* <Select
+        value={selectedPortionIndex}
+        onChange={onPortionChange}
+        input={<InputBase />}
+        inputProps={{
+          sx: { textTransform: 'capitalize' },
+        }}
+      >
+        {portions.map((portion, index) => (
+          <MenuItem key={index} value={index}>
+            <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+              <Typography
+                variant="caption"
+                sx={{ textWrap: 'pretty' }}
+              >{`${portion.portionSize} - ${portion.gram}gram`}</Typography>
+              <Label
+                variant="soft"
+                color={getPortionOrderCount(portion.portionSize) > 0 ? 'success' : 'default'}
+              >{`x${getPortionOrderCount(portion.portionSize)}`}</Label>
+            </Stack>
+          </MenuItem>
+        ))}
+      </Select> */
