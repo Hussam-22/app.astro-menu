@@ -1210,15 +1210,23 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetStaffList = useCallback(async () => {
-    const dataArr = [];
-    const docRef = query(collectionGroup(DB, 'waiters'), where('userID', '==', state.user.id));
-    const querySnapshot = await getDocs(docRef);
-    querySnapshot.forEach((doc) => {
-      dataArr.push(doc.data());
-    });
-    return dataArr;
-  }, [state]);
+  const fsGetStaffList = useCallback(
+    async (branchID) => {
+      const docRef = query(
+        collectionGroup(DB, 'staff'),
+        where('userID', '==', state.user.id),
+        where('branchID', '==', branchID)
+      );
+
+      const dataArr = [];
+      const querySnapshot = await getDocs(docRef);
+      querySnapshot.forEach((doc) => {
+        dataArr.push(doc.data());
+      });
+      return dataArr;
+    },
+    [state]
+  );
   const fsAddNewStaff = useCallback(
     async (newStaffInfo) => {
       const newDocRef = doc(collection(DB, `/users/${state.user.id}/waiters`));
@@ -1347,7 +1355,7 @@ export function AuthProvider({ children }) {
       // fsCancelOrder,
       fsOrderIsPaid,
       // fsAddNewStaff,
-      // fsGetStaffList,
+      fsGetStaffList,
       fsUpdateStaffInfo,
       // fsDeleteStaff,
       // // ---- RTD ----
@@ -1455,7 +1463,7 @@ export function AuthProvider({ children }) {
       fsUpdateOrderStatus,
       // fsCancelOrder,
       fsOrderIsPaid,
-      // fsGetStaffList,
+      fsGetStaffList,
       fsUpdateStaffInfo,
       // fsDeleteStaff,
       // // ---- RTD ----

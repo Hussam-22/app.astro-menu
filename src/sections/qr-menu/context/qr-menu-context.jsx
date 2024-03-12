@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { useSnackbar } from 'notistack';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState, useEffect, useContext, useCallback, createContext } from 'react';
 
@@ -34,7 +33,6 @@ export function QrMenuContextProvider({ children }) {
     icon: 'solar:pen-new-square-bold',
     color: 'secondary',
   });
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const { data: user = {} } = useQuery({
     queryKey: ['user', userID],
@@ -85,13 +83,7 @@ export function QrMenuContextProvider({ children }) {
 
   useEffect(() => {
     if (orderSnapShot?.docID) {
-      if (orderSnapShot?.isReadyToServe.length !== 0) {
-        enqueueSnackbar('Ready to Serve...', {
-          anchorOrigin: { horizontal: 'center', vertical: 'top' },
-          variant: 'isReadyToServe',
-          persist: true,
-          onEnter: closeSnackbar('inKitchen'),
-        });
+      if (orderSnapShot?.isReadyToServe?.length !== 0) {
         // unsubscribe from menu meal updates
         if (typeof sectionsUnsubscribe === 'function') sectionsUnsubscribe();
         setOrderStatus({
@@ -102,12 +94,6 @@ export function QrMenuContextProvider({ children }) {
       }
 
       if (orderSnapShot?.isInKitchen?.length !== 0 && orderSnapShot?.isReadyToServe?.length === 0) {
-        enqueueSnackbar('Preparing Order...', {
-          anchorOrigin: { horizontal: 'center', vertical: 'top' },
-          variant: 'inKitchen',
-          persist: true,
-          key: 'inKitchen',
-        });
         // unsubscribe from menu meal updates
         if (typeof sectionsUnsubscribe === 'function') sectionsUnsubscribe();
         setOrderStatus({

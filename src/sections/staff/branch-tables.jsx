@@ -40,7 +40,7 @@ function BranchTables() {
       if (isActive && tableOrder) {
         const { isInKitchen, isReadyToServe, updateCount, cart } = tableOrder;
 
-        if (isInKitchen.length === 0 && isReadyToServe.length === 0)
+        if (isInKitchen?.length === 0 && isReadyToServe?.length === 0)
           return {
             border: `solid 2px ${theme.palette.success.main}`,
             bgcolor: 'unset',
@@ -48,12 +48,13 @@ function BranchTables() {
 
         return {
           ...blinkingBorder(
-            getOrderStatusStyle(isInKitchen.length !== 0, isReadyToServe.length !== 0, theme).color,
+            getOrderStatusStyle(isInKitchen?.length !== 0, isReadyToServe?.length !== 0, theme)
+              .color,
             tableInfo.docID
           ),
           bgcolor:
             selectedTable.docID === tableInfo.docID
-              ? getOrderStatusStyle(isInKitchen.length !== 0, isReadyToServe.length !== 0, theme)
+              ? getOrderStatusStyle(isInKitchen?.length !== 0, isReadyToServe?.length !== 0, theme)
                   .color
               : 'unset',
         };
@@ -98,7 +99,7 @@ function BranchTables() {
     if (!tableOrder && table.isActive) mutate(table);
   };
 
-  const ordersInKitchen = activeOrders.filter((order) => order.isInKitchen.length !== 0);
+  const ordersInKitchen = activeOrders.filter((order) => order?.isInKitchen?.length !== 0);
 
   const tablesWithInKitchenOrder = tables.filter((table) =>
     ordersInKitchen.some((order) => order.tableID === table.docID)

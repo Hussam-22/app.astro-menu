@@ -8,6 +8,7 @@ import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/m
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import StaffLink from 'src/sections/branches/staff-link';
 import { useSettingsContext } from 'src/components/settings';
 import BranchTables from 'src/sections/branches/BranchTables';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -52,17 +53,17 @@ function BranchManageView() {
     //   icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
     //   component: <BranchStatistics />,
     // },
-    // {
-    //   value: 'Waiters Dashboard Link',
-    //   icon: (
-    //     <Iconify
-    //       icon="streamline:food-kitchenware-chef-toque-hat-cook-gear-chef-cooking-nutrition-tools-clothes-hat-clothing-food"
-    //       width={20}
-    //       height={20}
-    //     />
-    //   ),
-    //   component: <WaitersKitchenLinks userID={user.id} />,
-    // },
+    {
+      value: 'Waiters Dashboard Link',
+      icon: (
+        <Iconify
+          icon="streamline:food-kitchenware-chef-toque-hat-cook-gear-chef-cooking-nutrition-tools-clothes-hat-clothing-food"
+          width={20}
+          height={20}
+        />
+      ),
+      component: <StaffLink />,
+    },
   ];
 
   return (
