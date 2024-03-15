@@ -1,17 +1,7 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useState, useCallback } from 'react';
 
-import {
-  Box,
-  Card,
-  Stack,
-  Avatar,
-  Select,
-  Divider,
-  MenuItem,
-  InputBase,
-  Typography,
-} from '@mui/material';
+import { Box, Stack, Avatar, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
@@ -29,29 +19,8 @@ function StaffMenuMealCard({ mealInfo, isMealActive, sectionInfo }) {
 
   const isChef = staff?.type === 'chef';
 
-  const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
-
-  const onPortionChange = (e) => {
-    setSelectedPortionIndex(e.target.value);
-  };
-
-  const getPortionOrderCount = useCallback(
-    (portionSize) => {
-      const { cart } = orderSnapShot;
-      if (cart && Array.isArray(cart)) {
-        const qty = cart.filter(
-          (cartPortion) =>
-            cartPortion.mealID === mealInfo.docID && cartPortion.portionSize === portionSize
-        ).length;
-        return qty;
-      }
-      return 0;
-    },
-    [mealInfo.docID, orderSnapShot]
-  );
-
   return (
-    <Card sx={{ bgcolor: 'background.paper', p: 1, position: 'relative', width: 1 }}>
+    <Box sx={{ bgcolor: 'background.paper', px: 1, py: 2, position: 'relative', width: 1 }}>
       {isNew && (
         <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
           <Label variant="filled" color="error" sx={{ fontSize: 10 }}>
@@ -59,16 +28,18 @@ function StaffMenuMealCard({ mealInfo, isMealActive, sectionInfo }) {
           </Label>
         </Box>
       )}
-      <Stack direction="column" spacing={1} sx={{ px: 1 }}>
-        <Typography variant="h6">{title}</Typography>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Avatar
-            src={cover}
-            sx={{
-              borderRadius: 1,
-              filter: `grayscale(${isMealActive ? '0' : '100'})`,
-            }}
-          />
+      <Stack direction="row" spacing={1} sx={{ px: 1 }}>
+        <Avatar
+          src={cover}
+          sx={{
+            borderRadius: 1,
+            filter: `grayscale(${isMealActive ? '0' : '100'})`,
+            width: 60,
+            height: 60,
+          }}
+        />
+        <Stack direction="column" spacing={0}>
+          <Typography variant="h6">{title}</Typography>
           {!isReadMore && (
             <TextMaxLine line={2} variant="caption" onClick={() => setIsReadMore(true)}>
               {description}
@@ -80,63 +51,32 @@ function StaffMenuMealCard({ mealInfo, isMealActive, sectionInfo }) {
             </Typography>
           )}
         </Stack>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        {isChef && (
-          <ChefDisableMeal
-            mealInfo={mealInfo}
-            isMealActive={isMealActive}
-            sectionInfo={sectionInfo}
-          />
-        )}
-
-        {!isMealActive && !isChef && (
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ color: 'text.disabled' }}>
-              Out of Stock
-            </Typography>
-          </Box>
-        )}
-        {isMealActive && !isChef && (
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Select
-              value={selectedPortionIndex}
-              onChange={onPortionChange}
-              input={<InputBase sx={{ pl: 2, borderRadius: 0.5 }} />}
-              inputProps={{
-                sx: { textTransform: 'capitalize' },
-              }}
-            >
-              {portions.map((portion, index) => (
-                <MenuItem key={index} value={index}>
-                  <Stack
-                    direction="row"
-                    spacing={2}
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <Typography variant="body2">{`${portion.portionSize} - ${portion.gram}gram`}</Typography>
-                    <Label
-                      variant="soft"
-                      color={getPortionOrderCount(portion.portionSize) > 0 ? 'success' : 'default'}
-                    >{`x${getPortionOrderCount(portion.portionSize)}`}</Label>
-                  </Stack>
-                </MenuItem>
-              ))}
-            </Select>
-            <Stack direction="row" spacing={0} alignItems="center">
-              <StaffMenuAddMealToCart
-                portion={portions[selectedPortionIndex]}
-                mealInfo={mealInfo}
-                selectedTableID={selectedTable.docID}
-              />
-              <Typography variant="h6">{`${portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
-            </Stack>
-          </Stack>
-        )}
       </Stack>
-    </Card>
+      {isChef && (
+        <ChefDisableMeal
+          mealInfo={mealInfo}
+          isMealActive={isMealActive}
+          sectionInfo={sectionInfo}
+        />
+      )}
+      {isMealActive && !isChef && (
+        <Stack direction="row" spacing={0} alignItems="center" justifyContent="center">
+          <StaffMenuAddMealToCart
+            portion={portions[selectedPortionIndex]}
+            mealInfo={mealInfo}
+            selectedTableID={selectedTable.docID}
+          />
+          <Typography variant="h6">{`${portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
+        </Stack>
+      )}
+      {!isMealActive && !isChef && (
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="h6" sx={{ color: 'text.disabled' }}>
+            Out of Stock
+          </Typography>
+        </Box>
+      )}
+    </Box>
   );
 }
 export default StaffMenuMealCard;

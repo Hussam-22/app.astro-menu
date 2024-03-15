@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 
 import { Box, Stack, Button, useTheme, Typography } from '@mui/material';
 
@@ -14,24 +13,12 @@ import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
 function MealCard({ mealInfo, isMealActive }) {
   const theme = useTheme();
-  const { userID } = useParams();
-  const { cover, description, isNew, mealLabels, portions, title, translation, translationEdited } =
-    mealInfo;
+  const { tableID } = useParams();
+  const { cover, description, isNew, portions, title, translation, translationEdited } = mealInfo;
   const { orderSnapShot } = useAuthContext();
   const { user, selectedLanguage, menuInfo } = useQrMenuContext();
-  const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
-  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
-  const cachedMealLabels = queryClient.getQueryData(['mealsLabel', userID]) || [];
-
-  const labels = cachedMealLabels.filter((cachedMealLabel) =>
-    mealLabels.includes(cachedMealLabel.docID)
-  );
-
-  const onPortionChange = (e) => {
-    setSelectedPortionIndex(e.target.value);
-  };
 
   const getTitle = () => {
     if (selectedLanguage === user.defaultLanguage) return title;
@@ -47,19 +34,15 @@ function MealCard({ mealInfo, isMealActive }) {
       : translation?.[selectedLanguage]?.desc;
   };
 
-  const getPortionOrderCount = useCallback(
-    (portionSize) => {
-      const { cart } = orderSnapShot;
-      if (cart && Array.isArray(cart)) {
-        const qty = cart.filter(
-          (cartPortion) =>
-            cartPortion.mealID === mealInfo.docID && cartPortion.portionSize === portionSize
-        ).length;
-        return qty;
-      }
-      return 0;
-    },
-    [mealInfo.docID, orderSnapShot]
+  const count = useMemo(
+    () =>
+      orderSnapShot?.cart?.reduce((accumulator, cartPortion) => {
+        if (cartPortion.mealID === mealInfo.docID) {
+          return cartPortion.qty + accumulator;
+        }
+        return accumulator;
+      }, 0) || 0,
+    [mealInfo.docID, orderSnapShot.cart]
   );
 
   return (
@@ -88,11 +71,14 @@ function MealCard({ mealInfo, isMealActive }) {
                 variant="body1"
                 sx={{ fontWeight: theme.typography.fontWeightBold, textWrap: 'nowrap' }}
               >{`${portions[0].price} ${user?.currency}`}</Typography>
-              {menuInfo?.allowSelfOrder && orderSnapShot?.updateCount === 0 && (
-                <Button variant="soft" color="success" onClick={() => setIsOpen(true)}>
-                  Add
-                </Button>
-              )}
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography variant="overline">{count}x</Typography>
+                {menuInfo?.allowSelfOrder && orderSnapShot?.updateCount === 0 && (
+                  <Button variant="soft" color="success" onClick={() => setIsOpen(true)}>
+                    Add
+                  </Button>
+                )}
+              </Stack>
             </Stack>
           ) : (
             <Typography variant="h6" color="error">
@@ -124,7 +110,13 @@ function MealCard({ mealInfo, isMealActive }) {
         )}
       </Stack>
       {isOpen && (
-        <DialogAddComment isOpen={isOpen} onClose={() => setIsOpen(false)} portions={portions} />
+        <DialogAddComment
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          mealInfo={mealInfo}
+          tableID={tableID}
+          orderSnapShot={orderSnapShot}
+        />
       )}
     </Box>
   );
@@ -191,46 +183,3 @@ function Description({ setIsReadMore, selectedLanguage, getDescription, isReadMo
     </>
   );
 }
-
-// ----------------------------------------------------------------------------
-Labels.propTypes = {
-  labels: PropTypes.array,
-};
-
-function Labels({ labels }) {
-  return (
-    <Stack direction="row" spacing={1} sx={{ px: 2 }}>
-      {labels.map((label) => (
-        <Label variant="soft" color="default" key={label.docID} sx={{ fontSize: 10 }}>
-          #{label.title}
-        </Label>
-      ))}
-    </Stack>
-  );
-}
-
-// ----------------------------------------------------------------------------
-
-/* <Select
-        value={selectedPortionIndex}
-        onChange={onPortionChange}
-        input={<InputBase />}
-        inputProps={{
-          sx: { textTransform: 'capitalize' },
-        }}
-      >
-        {portions.map((portion, index) => (
-          <MenuItem key={index} value={index}>
-            <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
-              <Typography
-                variant="caption"
-                sx={{ textWrap: 'pretty' }}
-              >{`${portion.portionSize} - ${portion.gram}gram`}</Typography>
-              <Label
-                variant="soft"
-                color={getPortionOrderCount(portion.portionSize) > 0 ? 'success' : 'default'}
-              >{`x${getPortionOrderCount(portion.portionSize)}`}</Label>
-            </Stack>
-          </MenuItem>
-        ))}
-      </Select> */

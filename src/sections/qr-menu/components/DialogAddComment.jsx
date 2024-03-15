@@ -6,28 +6,25 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Stack, Dialog, MenuItem, Typography, DialogContent } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
+import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
-import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 // ----------------------------------------------------------------------
 
 DialogAddComment.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
-  portions: PropTypes.array,
   mealInfo: PropTypes.object,
+  orderSnapShot: PropTypes.object,
 };
 
-export default function DialogAddComment({ isOpen, onClose, portions, mealInfo }) {
-  const { user } = useQrMenuContext();
-  const { fsUpdateCart, orderSnapShot } = useAuthContext();
+export default function DialogAddComment({ isOpen, onClose, mealInfo, orderSnapShot }) {
+  const { fsUpdateCart, user } = useAuthContext();
   const { docID, userID, branchID, cart, updateCount } = orderSnapShot;
 
-  // const handleMealAddWithComment = () => {
-  //   addMeal(+1, commentRef.current.value);
-  // };
+  console.log(orderSnapShot);
 
   const count = useMemo(
     () =>
@@ -39,35 +36,6 @@ export default function DialogAddComment({ isOpen, onClose, portions, mealInfo }
       }, 0) || 0,
     [mealInfo?.docID, orderSnapShot?.cart]
   );
-
-  const onQtyChange = (qtyValue, comment = '') => {
-    const updatedCart = cart;
-
-    // if (qtyValue === +1) {
-    //   updatedCart.push({
-    //     ...portions[selectedPortion],
-    //     mealID: mealInfo.docID,
-    //     qty: 1,
-    //     comment,
-    //     id: generateID(8),
-    //     update: updateCount,
-    //   });
-    //   fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
-    //   onClose();
-    // }
-
-    // if (qtyValue === -1) {
-    //   const index = cart.findLastIndex(
-    //     (cartPortion) =>
-    //       cartPortion.mealID === mealInfo.docID &&
-    //       cartPortion.portionSize === portions[selectedPortion].portionSize
-    //   );
-    //   if (index !== -1) {
-    //     updatedCart.splice(index, 1);
-    //     fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
-    //   }
-    // }
-  };
 
   const defaultValues = useMemo(
     () => ({
@@ -83,7 +51,35 @@ export default function DialogAddComment({ isOpen, onClose, portions, mealInfo }
 
   const { handleSubmit } = methods;
 
-  const onSubmit = async () => {};
+  const onSubmit = async ({ comment, portion }) => {
+    const updatedCart = cart;
+    updatedCart.push({
+      ...mealInfo.portions[portion],
+      mealID: mealInfo.docID,
+      qty: 1,
+      comment,
+      id: generateID(8),
+      update: updateCount,
+    });
+    fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
+    onClose();
+  };
+
+  const onQtyChange = (qtyValue, comment = '') => {
+    const updatedCart = cart;
+
+    // if (qtyValue === -1) {
+    //   const index = cart.findLastIndex(
+    //     (cartPortion) =>
+    //       cartPortion.mealID === mealInfo.docID &&
+    //       cartPortion.portionSize === portions[selectedPortion].portionSize
+    //   );
+    //   if (index !== -1) {
+    //     updatedCart.splice(index, 1);
+    //     fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
+    //   }
+    // }
+  };
 
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose} scroll="paper">
@@ -91,7 +87,7 @@ export default function DialogAddComment({ isOpen, onClose, portions, mealInfo }
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2} direction="column" sx={{ textAlign: 'center' }}>
             <RHFSelect name="portion" label="Select Meal Size/Portion">
-              {portions.map((portion, index) => (
+              {mealInfo.portions.map((portion, index) => (
                 <MenuItem key={index} value={index}>
                   <Stack
                     direction="row"
@@ -115,7 +111,6 @@ export default function DialogAddComment({ isOpen, onClose, portions, mealInfo }
                 type="submit"
                 variant="contained"
                 color="success"
-                onClick={onQtyChange}
                 startIcon={<Iconify icon="mdi:hamburger-plus" />}
               >
                 Add Meal

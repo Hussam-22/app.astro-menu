@@ -38,7 +38,7 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
   };
 
   return (
-    <Stack direction="row" justifyContent="space-between" alignItems="center">
+    <Stack direction="row" spacing={1} justifyContent="flex-end" alignItems="center">
       <Typography
         sx={{
           color: isMealActive ? 'success.main' : 'error.main',

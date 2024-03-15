@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import {
@@ -11,13 +11,15 @@ import {
   Divider,
   useTheme,
   TextField,
-  IconButton,
   Typography,
+  IconButton,
 } from '@mui/material';
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import generatePassCode from 'src/utils/generate-passcode';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 
 function StaffLink() {
   const theme = useTheme();
@@ -149,14 +151,61 @@ export default StaffLink;
 ActionButtons.propTypes = { staffID: PropTypes.string, status: PropTypes.bool };
 
 function ActionButtons({ staffID, status }) {
+  const queryClient = useQueryClient();
+  const { fsUpdateStaffInfo, user } = useAuthContext();
+  const [isOpen, setIsOpen] = useState(false);
+  const [newPassCode, setNewPassCode] = useState('');
+
+  const PASSWORD_RESET_TEXT = (
+    <Typography variant="h1" sx={{ textAlign: 'center' }}>
+      {[...newPassCode].join('-')}
+    </Typography>
+  );
+
+  const onStatusChange = async () => fsUpdateStaffInfo(user.id, staffID, { isActive: !status });
+  const onPassCodeReset = async () => {
+    const passCode = generatePassCode();
+    setNewPassCode(passCode);
+    fsUpdateStaffInfo(user.id, staffID, { isLoggedIn: false, passCode });
+    setIsOpen(true);
+  };
+
+  const { mutate, error, isPending } = useMutation({
+    mutationFn: (mutateFn) => mutateFn(),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['staffs'] }),
+  });
+
+  console.log(error);
+
   return (
-    <Stack direction="row" spacing={1} justifyContent="space-between">
-      <LoadingButton variant="soft" size="small" color="info">
-        Reset Password
-      </LoadingButton>
-      <LoadingButton variant="soft" size="small" color={status ? 'error' : 'success'}>
-        {status ? 'Disabled & Revoke Access' : 'Enable Access'}
-      </LoadingButton>
-    </Stack>
+    <>
+      <Stack direction="row" spacing={1} justifyContent="space-between">
+        <LoadingButton
+          variant="soft"
+          size="small"
+          color="info"
+          onClick={() => mutate(onPassCodeReset)}
+          loading={isPending}
+        >
+          Reset PassCode
+        </LoadingButton>
+        <LoadingButton
+          variant="soft"
+          size="small"
+          color={status ? 'error' : 'success'}
+          onClick={() => mutate(onStatusChange)}
+          loading={isPending}
+        >
+          {status ? 'Disabled & Revoke Access' : 'Enable Access'}
+        </LoadingButton>
+      </Stack>
+
+      <ConfirmDialog
+        title="New Pass Code is"
+        content={PASSWORD_RESET_TEXT}
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
+    </>
   );
 }

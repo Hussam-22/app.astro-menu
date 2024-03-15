@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import { Stack, Typography, IconButton } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
-import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
@@ -25,23 +24,6 @@ function StaffMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
     [mealInfo.docID, orderSnapShot.cart]
   );
 
-  const onQtyChange = (qtyValue, comment = '') => {
-    const updatedCart = cart;
-
-    if (qtyValue === +1) {
-      updatedCart.push({
-        ...portion,
-        mealID: mealInfo.docID,
-        qty: 1,
-        comment,
-        id: generateID(8),
-        update: updateCount,
-      });
-      fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
-      setIsOpen(false);
-    }
-  };
-
   return (
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-evenly">
@@ -54,7 +36,12 @@ function StaffMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
       </Stack>
 
       {isOpen && (
-        <DialogAddComment isOpen={isOpen} onClose={() => setIsOpen(false)} addMeal={onQtyChange} />
+        <DialogAddComment
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          mealInfo={mealInfo}
+          orderSnapShot={orderSnapShot}
+        />
       )}
     </>
   );

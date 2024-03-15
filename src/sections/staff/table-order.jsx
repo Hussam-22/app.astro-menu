@@ -110,7 +110,6 @@ const TableOrder = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
   });
-
   const orderUpdateToShow = isChef
     ? [...Array(updateCount + 1)].map((_, index) => index).filter((i) => isInKitchen.includes(i))
     : [...Array(updateCount + 1)].map((_, index) => index);

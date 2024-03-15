@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack, Divider, useTheme, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import MealCardSkeleton from 'src/sections/qr-menu/components/meal-card-skeleton';
@@ -12,6 +12,7 @@ function StaffMenuSections({ sectionInfo }) {
   const { userID } = useParams();
   const { title, meals: sectionMeals, docID: sectionID } = sectionInfo;
   const { fsGetSectionMeals } = useAuthContext();
+  const theme = useTheme();
 
   const { data: meals = [], isLoading } = useQuery({
     queryKey: ['sectionMeals', userID, sectionID],
@@ -31,30 +32,27 @@ function StaffMenuSections({ sectionInfo }) {
         // variant="caption"
         id={sectionID}
         sx={{
-          bgcolor: 'common.black',
-          color: 'common.white',
-          borderRadius: 1,
-          px: 2,
-          py: 0.5,
-          mb: 2,
+          fontWeight: theme.typography.fontWeightBold,
         }}
       >
         {title}
       </Typography>
-      <Stack spacing={2}>
-        <Stack direction="column" spacing={2}>
-          {meals.map((meal) => (
-            <StaffMenuMealCard
-              sectionInfo={sectionInfo}
-              key={meal.docID}
-              mealInfo={meal}
-              isMealActive={
-                sectionMeals.find((sectionMeal) => sectionMeal.mealID === meal.docID).isActive &&
-                meal.isActive
-              }
-            />
-          ))}
-        </Stack>
+      <Stack
+        direction="column"
+        // sx={{ borderRadius: 1, border: `dashed 1px ${theme.palette.divider}` }}
+        divider={<Divider sx={{ borderStyle: 'dashed', mx: 2 }} />}
+      >
+        {meals.map((meal) => (
+          <StaffMenuMealCard
+            sectionInfo={sectionInfo}
+            key={meal.docID}
+            mealInfo={meal}
+            isMealActive={
+              sectionMeals.find((sectionMeal) => sectionMeal.mealID === meal.docID).isActive &&
+              meal.isActive
+            }
+          />
+        ))}
       </Stack>
     </Box>
   );

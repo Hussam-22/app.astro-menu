@@ -14,7 +14,9 @@ import { StaffContextProvider } from 'src/sections/staff/context/staff-context';
 function StaffLayout({ children }) {
   const { staff } = useAuthContext();
 
-  if (!staff?.docID || !staff?.isActive || !staff?.isLoggedIn)
+  console.log(staff?.isLoggedIn);
+
+  if (!staff?.docID && (!staff?.isActive || !staff?.isLoggedIn))
     return (
       <StaffContextProvider>
         <StaffLoginLayout>

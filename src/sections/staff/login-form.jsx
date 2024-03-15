@@ -35,7 +35,7 @@ function StaffLoginForm() {
 
   const { handleSubmit } = methods;
 
-  const { data: waiterInfo = {} } = useQuery({
+  const { data: staffInfo = {} } = useQuery({
     queryFn: () => fsGetStaffInfo(userID, staffID),
     queryKey: ['waiter', userID, staffID],
   });
@@ -67,11 +67,11 @@ function StaffLoginForm() {
         <Stack direction="column" spacing={2} sx={{ width: 500 }} justifyContent="space-between">
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography>
-              Welcome back, <b>{waiterInfo?.fullname}</b> <Iconify icon="twemoji:waving-hand" />
+              Welcome back, <b>{staffInfo?.fullname}</b> <Iconify icon="twemoji:waving-hand" />
             </Typography>
             <Image
               src={
-                waiterInfo.type === 'waiter'
+                staffInfo.type === 'waiter'
                   ? '/assets/icons/staff/waiter-icon.svg'
                   : '/assets/icons/staff/chef-icon.svg'
               }
