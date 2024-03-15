@@ -16,7 +16,7 @@ function StaffLayout({ children }) {
 
   console.log(staff?.isLoggedIn);
 
-  if (!staff?.docID && (!staff?.isActive || !staff?.isLoggedIn))
+  if (!staff?.docID || !staff?.isActive || !staff?.isLoggedIn)
     return (
       <StaffContextProvider>
         <StaffLoginLayout>

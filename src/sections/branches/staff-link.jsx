@@ -166,7 +166,8 @@ function ActionButtons({ staffID, status }) {
   const onPassCodeReset = async () => {
     const passCode = generatePassCode();
     setNewPassCode(passCode);
-    fsUpdateStaffInfo(user.id, staffID, { isLoggedIn: false, passCode });
+    fsUpdateStaffInfo(user.id, staffID, { isLoggedIn: false });
+    fsUpdateStaffInfo(user.id, staffID, { passCode });
     setIsOpen(true);
   };
 
