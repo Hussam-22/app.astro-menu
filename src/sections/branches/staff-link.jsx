@@ -162,7 +162,11 @@ function ActionButtons({ staffID, status }) {
     </Typography>
   );
 
-  const onStatusChange = async () => fsUpdateStaffInfo(user.id, staffID, { isActive: !status });
+  const onStatusChange = async () => {
+    fsUpdateStaffInfo(user.id, staffID, { isLoggedIn: false });
+    fsUpdateStaffInfo(user.id, staffID, { isActive: !status });
+  };
+
   const onPassCodeReset = async () => {
     const passCode = generatePassCode();
     setNewPassCode(passCode);
