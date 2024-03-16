@@ -1,7 +1,7 @@
 import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Stack } from '@mui/system';
 import {
@@ -31,12 +31,12 @@ AddMealDialog.propTypes = {
 
 function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
   const { id: menuID } = useParams();
-  const { fsGetSections } = useAuthContext();
+  const { menuSections } = useAuthContext();
 
-  const { data: menuSections = [] } = useQuery({
-    queryKey: [`sections-${menuID}`],
-    queryFn: () => fsGetSections(menuID),
-  });
+  // const { data: menuSections = [] } = useQuery({
+  //   queryKey: [`sections-${menuID}`],
+  //   queryFn: () => fsGetSections(menuID),
+  // });
 
   const currentSectionInfo = menuSections.filter((section) => section.docID === sectionID)[0];
   const currentSectionMeals = currentSectionInfo?.meals;
@@ -111,7 +111,6 @@ MealRow.propTypes = {
 };
 
 function MealRow({ mealInfo, currentSectionMeals, menuID, sectionID }) {
-  console.log(currentSectionMeals);
   const { fsUpdateSection } = useAuthContext();
   const queryClient = useQueryClient();
 
