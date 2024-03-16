@@ -6,7 +6,7 @@ import Main from 'src/layouts/staff/main';
 import { useAuthContext } from 'src/auth/hooks';
 import StaffLoginLayout from 'src/layouts/staff/auth';
 import StaffLoginForm from 'src/sections/staff/login-form';
-import WaiterView from 'src/sections/staff/view/waiter-view';
+import StaffView from 'src/sections/staff/view/staff-view';
 import TablesNavVertical from 'src/layouts/staff/tables-nav-vertical';
 import StaffHorizontalNav from 'src/layouts/staff/table-nav-horizontal';
 import { StaffContextProvider } from 'src/sections/staff/context/staff-context';
@@ -38,7 +38,7 @@ function StaffLayout({ children }) {
           <TablesNavVertical />
           <Main>
             <StaffHorizontalNav />
-            <WaiterView>{children}</WaiterView>
+            <StaffView>{children}</StaffView>
           </Main>
         </Box>
       </StaffContextProvider>

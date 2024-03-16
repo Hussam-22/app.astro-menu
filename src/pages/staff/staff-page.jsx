@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import StaffView from 'src/sections/staff/view/waiter-view';
+import StaffView from 'src/sections/staff/view/staff-view';
 
 export default function StaffPage() {
   return (

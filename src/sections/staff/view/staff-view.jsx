@@ -14,7 +14,7 @@ import TableActionBar from 'src/sections/staff/table-action-bar';
 import { useStaffContext } from 'src/sections/staff/context/staff-context';
 import TableOrderSkeleton from 'src/sections/staff/skeleton/table-order-skeleton';
 
-function WaiterView() {
+function StaffView() {
   const { userID } = useParams();
   const { fsGetSectionMeals, fsGetSections, activeOrders, staff, menuSections } = useAuthContext();
   const { selectedTable: tableInfo, isLoading } = useStaffContext();
@@ -107,5 +107,5 @@ function WaiterView() {
     )
   );
 }
-export default WaiterView;
-// WaiterView.propTypes = { tables: PropTypes.array };
+export default StaffView;
+// StaffView.propTypes = { tables: PropTypes.array };
