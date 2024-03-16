@@ -33,11 +33,6 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
   const { id: menuID } = useParams();
   const { menuSections } = useAuthContext();
 
-  // const { data: menuSections = [] } = useQuery({
-  //   queryKey: [`sections-${menuID}`],
-  //   queryFn: () => fsGetSections(menuID),
-  // });
-
   const currentSectionInfo = menuSections.filter((section) => section.docID === sectionID)[0];
   const currentSectionMeals = currentSectionInfo?.meals;
   const otherSectionsMeals = menuSections
