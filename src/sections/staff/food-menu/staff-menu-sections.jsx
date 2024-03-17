@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 
 import { Box, Stack, Divider, useTheme, Typography } from '@mui/material';
 
@@ -11,20 +11,33 @@ import StaffMenuMealCard from 'src/sections/staff/food-menu/staff-menu-meal-card
 function StaffMenuSections({ sectionInfo }) {
   const { userID } = useParams();
   const { title, meals: sectionMeals, docID: sectionID } = sectionInfo;
-  const { fsGetSectionMeals } = useAuthContext();
+  const { fsGetSectionMeals, fsGetMeal } = useAuthContext();
   const theme = useTheme();
 
-  const { data: meals = [], isLoading } = useQuery({
-    queryKey: ['sectionMeals', userID, sectionID],
-    queryFn: () =>
-      fsGetSectionMeals(
-        userID,
-        sectionMeals.flatMap((meal) => meal.mealID),
-        '200x200'
-      ),
+  // const { data: meals = [], isLoading } = useQuery({
+  //   queryKey: ['sectionMeals', userID, sectionID],
+  //   queryFn: () =>
+  //     fsGetSectionMeals(
+  //       userID,
+  //       sectionMeals.flatMap((meal) => meal.mealID),
+  //       '200x200'
+  //     ),
+  // });
+
+  console.log(sectionInfo);
+
+  const meals = useQueries({
+    queries: sectionInfo.meals
+      .flatMap((mealInfo) => mealInfo.mealID)
+      .map((mealID) => ({
+        queryKey: ['meal', mealID],
+        queryFn: () => fsGetMeal(mealID, '200x200'),
+      })),
   });
 
-  if (isLoading) return <MealCardSkeleton />;
+  console.log(meals);
+
+  if (meals === undefined) return <MealCardSkeleton />;
 
   return (
     <Box>

@@ -16,7 +16,8 @@ import TableOrderSkeleton from 'src/sections/staff/skeleton/table-order-skeleton
 
 function StaffView() {
   const { userID } = useParams();
-  const { fsGetSectionMeals, fsGetSections, activeOrders, staff, menuSections } = useAuthContext();
+  const { fsGetSectionMeals, fsGetSections, activeOrders, staff, menuSections, fsGetMeal } =
+    useAuthContext();
   const { selectedTable: tableInfo, isLoading } = useStaffContext();
 
   const selectedTableOrder = activeOrders.find((order) => order.tableID === tableInfo.docID);
@@ -38,17 +39,26 @@ function StaffView() {
   );
 
   useQueries({
-    queries: menuSections.map((section) => ({
-      queryKey: ['sectionMeals', userID, section.docID],
-      queryFn: () =>
-        fsGetSectionMeals(
-          userID,
-          section.meals.flatMap((meal) => meal.mealID),
-          '200x200'
-        ),
-      enabled: menuSections.length !== 0,
-    })),
+    queries: menuSections.flatMap((section) =>
+      section.meals.map((meal) => ({
+        queryKey: ['meal', meal.mealID],
+        queryFn: () => fsGetMeal(meal.mealID, '200x200'),
+      }))
+    ),
   });
+
+  // useQueries({
+  //   queries: menuSections.map((section) => ({
+  //     queryKey: ['sectionMeals', userID, section.docID],
+  //     queryFn: () =>
+  //       fsGetSectionMeals(
+  //         userID,
+  //         section.meals.flatMap((meal) => meal.mealID),
+  //         '200x200'
+  //       ),
+  //     enabled: menuSections.length !== 0,
+  //   })),
+  // });
 
   if (isLoading) return <TableOrderSkeleton />;
 

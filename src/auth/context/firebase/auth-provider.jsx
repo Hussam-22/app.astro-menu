@@ -901,13 +901,13 @@ export function AuthProvider({ children }) {
     return dataArr;
   }, [state]);
   const fsGetMeal = useCallback(
-    async (mealID) => {
+    async (mealID, size = '800x800') => {
       try {
         const docRef = doc(DB, `/users/${state.user.id}/meals/${mealID}/`);
         const docSnap = await getDoc(docRef);
 
         const bucketPath = `${BUCKET}/${state.user.id}/meals/${mealID}/`;
-        const imgUrl = await fsGetImgDownloadUrl(bucketPath, `${mealID}_800x800.webp`);
+        const imgUrl = await fsGetImgDownloadUrl(bucketPath, `${mealID}_${size}.webp`);
 
         if (docSnap.data().translation === '' || docSnap?.data()?.translation === undefined)
           throw new Error('NO Translation Found!!');
