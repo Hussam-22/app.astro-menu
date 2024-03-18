@@ -51,9 +51,11 @@ const TableOrder = () => {
     );
 
   const queryClient = useQueryClient();
-  const cachedSectionMeals = queryClient.getQueriesData({ queryKey: ['sectionMeals'] }) || [];
+  const cachedSectionMeals = queryClient.getQueriesData({ queryKey: ['meal'] }) || [];
 
-  const availableMeals = cachedSectionMeals.flatMap((item) => item[1]);
+  console.log(cachedSectionMeals);
+
+  const availableMeals = cachedSectionMeals.map((meal) => meal[1]);
 
   const cartMeals = useMemo(
     () => (updateNo) =>
@@ -113,6 +115,8 @@ const TableOrder = () => {
   const orderUpdateToShow = isChef
     ? [...Array(updateCount + 1)].map((_, index) => index).filter((i) => isInKitchen.includes(i))
     : [...Array(updateCount + 1)].map((_, index) => index);
+
+  if (cachedSectionMeals.length === 0) return null;
 
   return (
     <Stack direction="column-reverse" spacing={2}>
