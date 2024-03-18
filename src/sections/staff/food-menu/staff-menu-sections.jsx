@@ -1,43 +1,16 @@
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router';
-import { useQueries } from '@tanstack/react-query';
 
 import { Box, Stack, Divider, useTheme, Typography } from '@mui/material';
 
-import { useAuthContext } from 'src/auth/hooks';
 import MealCardSkeleton from 'src/sections/qr-menu/components/meal-card-skeleton';
 import StaffMenuMealCard from 'src/sections/staff/food-menu/staff-menu-meal-card';
 
 function StaffMenuSections({ sectionInfo }) {
-  const { userID } = useParams();
   const { title, meals: sectionMeals, docID: sectionID } = sectionInfo;
-  const { fsGetSectionMeals, fsGetMeal } = useAuthContext();
   const theme = useTheme();
 
-  // const { data: meals = [], isLoading } = useQuery({
-  //   queryKey: ['sectionMeals', userID, sectionID],
-  //   queryFn: () =>
-  //     fsGetSectionMeals(
-  //       userID,
-  //       sectionMeals.flatMap((meal) => meal.mealID),
-  //       '200x200'
-  //     ),
-  // });
-
-  console.log(sectionInfo);
-
-  const meals = useQueries({
-    queries: sectionInfo.meals
-      .flatMap((mealInfo) => mealInfo.mealID)
-      .map((mealID) => ({
-        queryKey: ['meal', mealID],
-        queryFn: () => fsGetMeal(mealID, '200x200'),
-      })),
-  });
-
-  console.log(meals);
-
-  if (meals === undefined) return <MealCardSkeleton />;
+  if (sectionMeals.flatMap((mealItem) => mealItem.mealID) === undefined)
+    return <MealCardSkeleton />;
 
   return (
     <Box>
@@ -55,17 +28,18 @@ function StaffMenuSections({ sectionInfo }) {
         // sx={{ borderRadius: 1, border: `dashed 1px ${theme.palette.divider}` }}
         divider={<Divider sx={{ borderStyle: 'dashed', mx: 2 }} />}
       >
-        {meals.map((meal) => (
-          <StaffMenuMealCard
-            sectionInfo={sectionInfo}
-            key={meal.docID}
-            mealInfo={meal}
-            isMealActive={
-              sectionMeals.find((sectionMeal) => sectionMeal.mealID === meal.docID).isActive &&
-              meal.isActive
-            }
-          />
-        ))}
+        {sectionMeals
+          .flatMap((mealItem) => mealItem.mealID)
+          .map((mealID) => (
+            <StaffMenuMealCard
+              sectionInfo={sectionInfo}
+              key={mealID}
+              mealID={mealID}
+              isMealActive={
+                sectionMeals.find((sectionMeal) => sectionMeal.mealID === mealID)?.isActive
+              }
+            />
+          ))}
       </Stack>
     </Box>
   );

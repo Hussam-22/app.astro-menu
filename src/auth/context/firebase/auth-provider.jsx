@@ -627,11 +627,14 @@ export function AuthProvider({ children }) {
   );
   const fsGetSections = useCallback(
     async (menuID, userID = state.user.id) => {
+      console.log(menuID);
       const docRef = query(
         collectionGroup(DB, 'sections'),
         where('userID', '==', userID),
         where('menuID', '==', menuID)
       );
+
+      console.log(menuSections);
 
       const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
         const sectionsArray = [];
@@ -640,13 +643,6 @@ export function AuthProvider({ children }) {
       });
 
       return unsubscribe;
-
-      // const dataArr = [];
-      // const querySnapshot = await getDocs(docRef);
-      // querySnapshot.forEach((doc) => {
-      //   dataArr.push(doc.data());
-      // });
-      // return dataArr;
     },
     [state]
   );
@@ -1302,6 +1298,7 @@ export function AuthProvider({ children }) {
       // fsGetAllOrders,
       // // ---- MENU SECTIONS ----
       menuSections,
+      setMenuSections,
       fsAddSection,
       fsUpdateSection,
       fsGetSections,

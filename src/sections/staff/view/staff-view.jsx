@@ -1,9 +1,5 @@
 // import PropTypes from 'prop-types';
 
-import { useEffect } from 'react';
-import { useParams } from 'react-router';
-import { useQuery, useQueries } from '@tanstack/react-query';
-
 import { Box, Stack, Divider, Typography } from '@mui/material';
 
 import Image from 'src/components/image';
@@ -15,37 +11,19 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 import TableOrderSkeleton from 'src/sections/staff/skeleton/table-order-skeleton';
 
 function StaffView() {
-  const { userID } = useParams();
-  const { fsGetSectionMeals, fsGetSections, activeOrders, staff, menuSections, fsGetMeal } =
-    useAuthContext();
+  const { activeOrders, staff, menuSections } = useAuthContext();
   const { selectedTable: tableInfo, isLoading } = useStaffContext();
 
   const selectedTableOrder = activeOrders.find((order) => order.tableID === tableInfo.docID);
 
-  const { data: sectionsUnsubscribe = () => {} } = useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: tableInfo.menuID ? ['sections', userID, tableInfo.menuID] : null,
-    queryFn: () => fsGetSections(tableInfo.menuID, userID),
-    enabled: tableInfo?.docID !== undefined,
-  });
-
-  useEffect(
-    () => () => {
-      if (typeof sectionsUnsubscribe === 'function') {
-        sectionsUnsubscribe();
-      }
-    },
-    [sectionsUnsubscribe]
-  );
-
-  useQueries({
-    queries: menuSections.flatMap((section) =>
-      section.meals.map((meal) => ({
-        queryKey: ['meal', meal.mealID],
-        queryFn: () => fsGetMeal(meal.mealID, '200x200'),
-      }))
-    ),
-  });
+  // useQueries({
+  //   queries: menuSections.flatMap((section) =>
+  //     section.meals.map((meal) => ({
+  //       queryKey: ['meal', meal.mealID],
+  //       queryFn: () => fsGetMeal(meal.mealID, '200x200'),
+  //     }))
+  //   ),
+  // });
 
   // useQueries({
   //   queries: menuSections.map((section) => ({
@@ -85,7 +63,6 @@ function StaffView() {
 
   return (
     tableInfo?.docID &&
-    menuSections.length !== 0 &&
     selectedTableOrder &&
     !selectedTableOrder?.isCanceled &&
     !selectedTableOrder?.isPaid && (
@@ -111,7 +88,7 @@ function StaffView() {
           <TableOrder />
         </Stack>
         <Box flexGrow={1} sx={{ maxWidth: '50%' }}>
-          <FoodMenu sections={menuSections} />
+          <FoodMenu menuID={selectedTableOrder.menuID} />
         </Box>
       </Stack>
     )

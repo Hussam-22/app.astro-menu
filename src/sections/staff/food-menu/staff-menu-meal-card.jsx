@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useQuery } from '@tanstack/react-query';
 
 import { Box, Stack, Avatar, Typography } from '@mui/material';
 
@@ -10,18 +11,30 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 import ChefDisableMeal from 'src/sections/staff/food-menu/chef-disable-meal';
 import StaffMenuAddMealToCart from 'src/sections/staff/food-menu/staff-menu-add-meal-to-cart';
 
-function StaffMenuMealCard({ mealInfo, isMealActive, sectionInfo }) {
-  const { cover, description, isNew, portions, title } = mealInfo;
-  const { activeOrders, staff } = useAuthContext();
+StaffMenuMealCard.propTypes = {
+  mealID: PropTypes.string,
+  isMealActive: PropTypes.bool,
+  sectionInfo: PropTypes.object,
+};
+
+function StaffMenuMealCard({ mealID, isMealActive, sectionInfo }) {
+  const { staff, fsGetMeal } = useAuthContext();
   const { user, selectedTable } = useStaffContext();
-  const [selectedPortionIndex, setSelectedPortionIndex] = useState(0);
+  const [selectedPortionIndex, _] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
+
+  const { data: mealInfo = {} } = useQuery({
+    queryKey: ['meal', mealID],
+    queryFn: () => fsGetMeal(mealID, '200x200'),
+  });
 
   const isChef = staff?.type === 'chef';
 
+  if (!mealInfo?.docID) return null;
+
   return (
     <Box sx={{ bgcolor: 'background.paper', px: 1, py: 2, position: 'relative', width: 1 }}>
-      {isNew && (
+      {mealInfo.isNew && (
         <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
           <Label variant="filled" color="error" sx={{ fontSize: 10 }}>
             New
@@ -30,7 +43,7 @@ function StaffMenuMealCard({ mealInfo, isMealActive, sectionInfo }) {
       )}
       <Stack direction="row" spacing={1} sx={{ px: 1 }}>
         <Avatar
-          src={cover}
+          src={mealInfo.cover}
           sx={{
             borderRadius: 1,
             filter: `grayscale(${isMealActive ? '0' : '100'})`,
@@ -39,15 +52,15 @@ function StaffMenuMealCard({ mealInfo, isMealActive, sectionInfo }) {
           }}
         />
         <Stack direction="column" spacing={0}>
-          <Typography variant="h6">{title}</Typography>
+          <Typography variant="h6">{mealInfo.title}</Typography>
           {!isReadMore && (
             <TextMaxLine line={2} variant="caption" onClick={() => setIsReadMore(true)}>
-              {description}
+              {mealInfo.description}
             </TextMaxLine>
           )}
           {isReadMore && (
             <Typography variant="caption" onClick={() => setIsReadMore(false)}>
-              {description}
+              {mealInfo.description}
             </Typography>
           )}
         </Stack>
@@ -62,11 +75,11 @@ function StaffMenuMealCard({ mealInfo, isMealActive, sectionInfo }) {
       {isMealActive && !isChef && (
         <Stack direction="row" spacing={0} alignItems="center" justifyContent="center">
           <StaffMenuAddMealToCart
-            portion={portions[selectedPortionIndex]}
+            portion={mealInfo.portions[selectedPortionIndex]}
             mealInfo={mealInfo}
             selectedTableID={selectedTable.docID}
           />
-          <Typography variant="h6">{`${portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
+          <Typography variant="h6">{`${mealInfo.portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
         </Stack>
       )}
       {!isMealActive && !isChef && (
@@ -80,19 +93,3 @@ function StaffMenuMealCard({ mealInfo, isMealActive, sectionInfo }) {
   );
 }
 export default StaffMenuMealCard;
-StaffMenuMealCard.propTypes = {
-  mealInfo: PropTypes.shape({
-    isActive: PropTypes.bool,
-    cover: PropTypes.string,
-    docID: PropTypes.string,
-    description: PropTypes.string,
-    isNew: PropTypes.bool,
-    mealLabels: PropTypes.array,
-    portions: PropTypes.array,
-    title: PropTypes.string,
-    translation: PropTypes.object,
-    translationEdited: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-  }),
-  isMealActive: PropTypes.bool,
-  sectionInfo: PropTypes.object,
-};

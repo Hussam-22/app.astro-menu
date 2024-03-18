@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
@@ -9,20 +10,32 @@ import Scrollbar from 'src/components/scrollbar';
 import { useStaffContext } from 'src/sections/staff/context/staff-context';
 import StaffMenuSections from 'src/sections/staff/food-menu/staff-menu-sections';
 
-FoodMenu.propTypes = { sections: PropTypes.array };
+FoodMenu.propTypes = { menuID: PropTypes.string };
 
-function FoodMenu({ sections }) {
+function FoodMenu({ menuID }) {
   const { userID } = useParams();
+  const { fsGetMenu, fsGetSections, menuSections } = useAuthContext();
   const { selectedTable } = useStaffContext();
-  const { fsGetMenu } = useAuthContext();
-
-  console.log(sections);
 
   const { data: menuInfo = {} } = useQuery({
-    queryKey: ['menu', userID, selectedTable.menuID],
-    queryFn: () => fsGetMenu(selectedTable.menuID, userID),
-    enabled: selectedTable.isActive && selectedTable.menuID !== null,
+    queryKey: ['menu', userID, menuID],
+    queryFn: () => fsGetMenu(menuID, userID),
   });
+
+  const { data: sectionsUnsubscribe = () => {}, isFetchedAfterMount } = useQuery({
+    queryKey: ['sections', userID, menuID],
+    queryFn: () => fsGetSections(menuID, userID),
+    refetchOnMount: 'always',
+  });
+
+  useEffect(
+    () => () => {
+      if (typeof sectionsUnsubscribe === 'function') {
+        sectionsUnsubscribe();
+      }
+    },
+    [sectionsUnsubscribe]
+  );
 
   if (!selectedTable?.isActive)
     return <Typography variant="h6">Sorry this table is not taking orders !!</Typography>;
@@ -35,7 +48,7 @@ function FoodMenu({ sections }) {
       </Stack>
       <Scrollbar sx={{ height: '100dvh' }}>
         <Stack direction="column" spacing={3}>
-          {sections
+          {menuSections
             .filter((section) => section.isActive)
             .sort((a, b) => a.order - b.order)
             .map((section) => (
