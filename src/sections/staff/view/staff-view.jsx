@@ -11,32 +11,10 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 import TableOrderSkeleton from 'src/sections/staff/skeleton/table-order-skeleton';
 
 function StaffView() {
-  const { activeOrders, staff, menuSections } = useAuthContext();
+  const { activeOrders, staff } = useAuthContext();
   const { selectedTable: tableInfo, isLoading } = useStaffContext();
 
   const selectedTableOrder = activeOrders.find((order) => order.tableID === tableInfo.docID);
-
-  // useQueries({
-  //   queries: menuSections.flatMap((section) =>
-  //     section.meals.map((meal) => ({
-  //       queryKey: ['meal', meal.mealID],
-  //       queryFn: () => fsGetMeal(meal.mealID, '200x200'),
-  //     }))
-  //   ),
-  // });
-
-  // useQueries({
-  //   queries: menuSections.map((section) => ({
-  //     queryKey: ['sectionMeals', userID, section.docID],
-  //     queryFn: () =>
-  //       fsGetSectionMeals(
-  //         userID,
-  //         section.meals.flatMap((meal) => meal.mealID),
-  //         '200x200'
-  //       ),
-  //     enabled: menuSections.length !== 0,
-  //   })),
-  // });
 
   if (isLoading) return <TableOrderSkeleton />;
 

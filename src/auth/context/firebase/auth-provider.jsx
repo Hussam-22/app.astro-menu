@@ -894,12 +894,12 @@ export function AuthProvider({ children }) {
     return dataArr;
   }, [state]);
   const fsGetMeal = useCallback(
-    async (mealID, size = '800x800') => {
+    async (mealID, size = '800x800', userID = state.user.id) => {
       try {
-        const docRef = doc(DB, `/users/${state.user.id}/meals/${mealID}/`);
+        const docRef = doc(DB, `/users/${userID}/meals/${mealID}/`);
         const docSnap = await getDoc(docRef);
 
-        const bucketPath = `${BUCKET}/${state.user.id}/meals/${mealID}/`;
+        const bucketPath = `${BUCKET}/${userID}/meals/${mealID}/`;
         const imgUrl = await fsGetImgDownloadUrl(bucketPath, `${mealID}_${size}.webp`);
 
         if (docSnap.data().translation === '' || docSnap?.data()?.translation === undefined)

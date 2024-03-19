@@ -55,8 +55,8 @@ const TableOrder = () => {
     queries: orderSnapShot.cart
       .flatMap((cartItem) => cartItem.mealID)
       .map((mealID) => ({
-        queryKey: ['meal', mealID],
-        queryFn: () => fsGetMeal(mealID, '200x200'),
+        queryKey: ['meal', mealID, userID],
+        queryFn: () => fsGetMeal(mealID, '200x200', userID),
       })),
   });
 

@@ -24,8 +24,8 @@ function StaffMenuMealCard({ mealID, isMealActive, sectionInfo }) {
   const [isReadMore, setIsReadMore] = useState(false);
 
   const { data: mealInfo = {} } = useQuery({
-    queryKey: ['meal', mealID],
-    queryFn: () => fsGetMeal(mealID, '200x200'),
+    queryKey: ['meal', mealID, user.uid],
+    queryFn: () => fsGetMeal(mealID, '200x200', user.uid),
   });
 
   const isChef = staff?.type === 'chef';
