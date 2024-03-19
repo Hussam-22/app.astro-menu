@@ -9,6 +9,7 @@ import { SplashScreen } from 'src/components/loading-screen';
 // ----------------------------------------------------------------------
 
 export const QrMenuPage = lazy(() => import('src/pages/qr-menu/qr-menu'));
+export const QrMenuHomePage = lazy(() => import('src/pages/qr-menu/home-page'));
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +22,9 @@ export const qrMenuRoutes = [
         </Suspense>
       </QrMenuLayout>
     ),
-    children: [{ path: 'qr-menu/:userID/:branchID/:tableID', element: <QrMenuPage /> }],
+    children: [
+      { path: 'qr-menu/:userID/:branchID/:tableID/home', element: <QrMenuHomePage /> },
+      { path: 'qr-menu/:userID/:branchID/:tableID/menu', element: <QrMenuPage /> },
+    ],
   },
 ];

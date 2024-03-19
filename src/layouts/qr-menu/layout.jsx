@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useLocation } from 'react-router';
 
 import { Box, Container } from '@mui/material';
 
@@ -7,6 +8,10 @@ import BottomNavBar from 'src/layouts/qr-menu/bottom-nav-bar';
 import { QrMenuContextProvider } from 'src/sections/qr-menu/context/qr-menu-context';
 
 function QrMenuLayout({ children }) {
+  const { pathname } = useLocation();
+
+  const isMenu = pathname.endsWith('menu');
+
   return (
     <Box
       component="main"
@@ -19,7 +24,7 @@ function QrMenuLayout({ children }) {
         {/* <QrMenuHeader /> */}
         <Container maxWidth="sm" component="main" sx={{ pt: 0, pb: 5 }}>
           {children}
-          <BottomNavBar containerWidth={380} />
+          {isMenu && <BottomNavBar containerWidth={380} />}
         </Container>
       </QrMenuContextProvider>
     </Box>

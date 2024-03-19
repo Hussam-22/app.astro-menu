@@ -3,7 +3,9 @@ import { useMemo, useState } from 'react';
 
 import { Stack, Paper, Divider } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
 import { useAuthContext } from 'src/auth/hooks';
+import { useParams, useRouter } from 'src/routes/hook';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import CartDrawer from 'src/sections/qr-menu/drawers/cart-drawer';
 import ActionButton from 'src/sections/qr-menu/components/ActionButton';
@@ -16,6 +18,8 @@ BottomNavModern.propTypes = {
 };
 
 function BottomNavModern({ containerWidth }) {
+  const { userID, branchID } = useParams();
+  const router = useRouter();
   const { orderSnapShot } = useAuthContext();
   const { labels, selectedLanguage } = useQrMenuContext();
   const [drawerStates, setDrawerStates] = useState({
@@ -70,7 +74,7 @@ function BottomNavModern({ containerWidth }) {
           }
         >
           <ActionButton
-            clickAction={() => {}}
+            clickAction={() => router.push(paths.qrMenu.home(userID, branchID))}
             icon="ph:arrow-fat-left-fill"
             label="Home"
             sx={{ color: '#FFF' }}

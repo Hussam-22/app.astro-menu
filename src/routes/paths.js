@@ -12,6 +12,7 @@ const ROOTS = {
   AUTH: '/auth',
   AUTH_DEMO: '/auth-demo',
   DASHBOARD: '/dashboard',
+  QR_MENU: '/qr-menu',
 };
 
 // ----------------------------------------------------------------------
@@ -195,5 +196,10 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}/edit`,
       },
     },
+  },
+  // QR-MENU
+  qrMenu: {
+    home: (userID, branchID, tableID) => `${ROOTS.QR_MENU}/${userID}/${branchID}/home`,
+    menu: (userID, branchID, tableID) => `${ROOTS.QR_MENU}/${userID}/${branchID}/${tableID}/menu`,
   },
 };

@@ -668,8 +668,8 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateSection = useCallback(
-    async (menuID, sectionID, payload) => {
-      const docRef = doc(DB, `/users/${state.user.id}/menus/${menuID}/sections/${sectionID}/`);
+    async (menuID, sectionID, payload, userID = state.user.id) => {
+      const docRef = doc(DB, `/users/${userID}/menus/${menuID}/sections/${sectionID}/`);
       await updateDoc(docRef, payload);
     },
     [state]
