@@ -627,7 +627,6 @@ export function AuthProvider({ children }) {
   );
   const fsGetSections = useCallback(
     async (menuID, userID = state.user.id) => {
-      console.log(menuID);
       const docRef = query(
         collectionGroup(DB, 'sections'),
         where('userID', '==', userID),

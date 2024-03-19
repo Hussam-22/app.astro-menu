@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
 import { LoadingButton } from '@mui/lab';
@@ -24,7 +24,8 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 const TableOrder = () => {
   const theme = useTheme();
   const { selectedTable, setSelectedTable, user } = useStaffContext();
-  const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus, staff } = useAuthContext();
+  const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus, staff, fsGetMenu, fsGetMeal } =
+    useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
 
   const isChef = staff?.type === 'chef';
@@ -50,11 +51,17 @@ const TableOrder = () => {
       theme
     );
 
+  useQueries({
+    queries: orderSnapShot.cart
+      .flatMap((cartItem) => cartItem.mealID)
+      .map((mealID) => ({
+        queryKey: ['meal', mealID],
+        queryFn: () => fsGetMeal(mealID, '200x200'),
+      })),
+  });
+
   const queryClient = useQueryClient();
   const cachedSectionMeals = queryClient.getQueriesData({ queryKey: ['meal'] }) || [];
-
-  console.log(cachedSectionMeals);
-
   const availableMeals = cachedSectionMeals.map((meal) => meal[1]);
 
   const cartMeals = useMemo(

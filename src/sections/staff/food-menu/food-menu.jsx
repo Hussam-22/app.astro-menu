@@ -22,7 +22,7 @@ function FoodMenu({ menuID }) {
     queryFn: () => fsGetMenu(menuID, userID),
   });
 
-  const { data: sectionsUnsubscribe = () => {}, isFetchedAfterMount } = useQuery({
+  const { data: sectionsUnsubscribe = () => {} } = useQuery({
     queryKey: ['sections', userID, menuID],
     queryFn: () => fsGetSections(menuID, userID),
     refetchOnMount: 'always',
