@@ -633,8 +633,6 @@ export function AuthProvider({ children }) {
         where('menuID', '==', menuID)
       );
 
-      console.log(menuSections);
-
       const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
         const sectionsArray = [];
         querySnapshot.forEach((doc) => sectionsArray.push(doc.data()));

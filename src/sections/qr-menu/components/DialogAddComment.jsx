@@ -10,6 +10,7 @@ import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 // ----------------------------------------------------------------------
 
@@ -21,21 +22,9 @@ DialogAddComment.propTypes = {
 };
 
 export default function DialogAddComment({ isOpen, onClose, mealInfo, orderSnapShot }) {
-  const { fsUpdateCart, user } = useAuthContext();
+  const { fsUpdateCart } = useAuthContext();
+  const { user } = useQrMenuContext();
   const { docID, userID, branchID, cart, updateCount } = orderSnapShot;
-
-  console.log(orderSnapShot);
-
-  const count = useMemo(
-    () =>
-      orderSnapShot?.cart?.reduce((accumulator, cartPortion) => {
-        if (cartPortion?.mealID === mealInfo?.docID) {
-          return cartPortion.qty + accumulator;
-        }
-        return accumulator;
-      }, 0) || 0,
-    [mealInfo?.docID, orderSnapShot?.cart]
-  );
 
   const defaultValues = useMemo(
     () => ({
@@ -63,22 +52,6 @@ export default function DialogAddComment({ isOpen, onClose, mealInfo, orderSnapS
     });
     fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
     onClose();
-  };
-
-  const onQtyChange = (qtyValue, comment = '') => {
-    const updatedCart = cart;
-
-    // if (qtyValue === -1) {
-    //   const index = cart.findLastIndex(
-    //     (cartPortion) =>
-    //       cartPortion.mealID === mealInfo.docID &&
-    //       cartPortion.portionSize === portions[selectedPortion].portionSize
-    //   );
-    //   if (index !== -1) {
-    //     updatedCart.splice(index, 1);
-    //     fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
-    //   }
-    // }
   };
 
   return (

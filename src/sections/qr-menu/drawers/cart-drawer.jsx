@@ -56,7 +56,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
       orderID: orderSnapShot.docID,
       userID: orderSnapShot.userID,
       branchID: orderSnapShot.branchID,
-      updatedCart,
+      cart: updatedCart,
     });
   };
 
@@ -66,9 +66,78 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
 
   return (
     <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('cart')}>
-      <Scrollbar sx={{ maxHeight: 400 }}>
-        <Container maxWidth="sm">
-          <Stack direction="column" spacing={1} sx={{ py: 2 }}>
+      <Container maxWidth="sm">
+        <Stack direction="column" spacing={1} sx={{ py: 2 }}>
+          <Scrollbar sx={{ maxHeight: 300 }}>
+            <Box sx={{ bgcolor: 'background.paper', borderRadius: 2, p: 1, border: 'dashed 1px' }}>
+              {cartMeals.map((meal) => (
+                <Box key={meal.docID}>
+                  <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                    {meal.title}
+                  </Typography>
+                  <Box>
+                    {orderSnapShot.cart
+                      .filter((cartPortion) => cartPortion.mealID === meal.docID)
+                      .map((portion) => (
+                        <Stack key={portion.id}>
+                          <Stack direction="row" justifyContent="space-between">
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              sx={{
+                                flexGrow: 1,
+                                textDecorationLine: portion?.price === 0 ? 'line-through' : 'none',
+                                textDecorationColor: theme.palette.error.main,
+                                textDecorationThickness: 2,
+                              }}
+                              alignItems="center"
+                            >
+                              <Typography variant="body2">- {portion.portionSize}</Typography>
+                            </Stack>
+
+                            <Typography variant="caption" sx={{ alignSelf: 'center', mx: 1 }}>
+                              {portion.price} AED
+                            </Typography>
+                            <Divider
+                              orientation="vertical"
+                              flexItem
+                              sx={{ borderStyle: 'dashed', mx: 1 }}
+                            />
+
+                            <IconButton
+                              onClick={() => mutate(portion)}
+                              sx={{ p: 0.5 }}
+                              disabled={updateCount > 0}
+                            >
+                              {isPending ? (
+                                <CircularProgress color="secondary" size={20} />
+                              ) : (
+                                <Iconify
+                                  icon="eva:trash-2-outline"
+                                  width={20}
+                                  height={20}
+                                  sx={{ color: updateCount === 0 ? 'error.main' : 'default' }}
+                                />
+                              )}
+                            </IconButton>
+                          </Stack>
+                          {portion?.comment && (
+                            <Typography variant="caption" sx={{ ml: 2, color: 'error.main' }}>
+                              *{portion.comment}
+                            </Typography>
+                          )}
+                        </Stack>
+                      ))}
+                  </Box>
+
+                  <Divider flexItem sx={{ borderStyle: 'dashed' }} />
+                </Box>
+              ))}
+            </Box>
+          </Scrollbar>
+        </Stack>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Box>
             <Label
               color={orderStatus.color}
               variant="filled"
@@ -76,94 +145,29 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
             >
               {orderStatus.text}
             </Label>
-            {cartMeals.map((meal) => (
-              <React.Fragment key={meal.docID}>
-                <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                  {meal.title}
-                </Typography>
-                <Box>
-                  {orderSnapShot.cart
-                    .filter((cartPortion) => cartPortion.mealID === meal.docID)
-                    .map((portion) => (
-                      <Stack key={portion.id}>
-                        <Stack direction="row" justifyContent="space-between">
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            sx={{
-                              flexGrow: 1,
-                              textDecorationLine: portion?.price === 0 ? 'line-through' : 'none',
-                              textDecorationColor: theme.palette.error.main,
-                              textDecorationThickness: 2,
-                            }}
-                            alignItems="center"
-                          >
-                            <Typography variant="body2">- {portion.portionSize}</Typography>
-                          </Stack>
-
-                          <Typography variant="caption" sx={{ alignSelf: 'center', mx: 1 }}>
-                            {portion.price} AED
-                          </Typography>
-                          <Divider
-                            orientation="vertical"
-                            flexItem
-                            sx={{ borderStyle: 'dashed', mx: 1 }}
-                          />
-
-                          <IconButton
-                            onClick={() => mutate(portion)}
-                            sx={{ p: 0.5 }}
-                            disabled={updateCount > 0}
-                          >
-                            {isPending ? (
-                              <CircularProgress color="secondary" size={20} />
-                            ) : (
-                              <Iconify
-                                icon="eva:trash-2-outline"
-                                width={20}
-                                height={20}
-                                sx={{ color: updateCount === 0 ? 'error.main' : 'default' }}
-                              />
-                            )}
-                          </IconButton>
-                        </Stack>
-                        {portion?.comment && (
-                          <Typography variant="caption" sx={{ ml: 2, color: 'error.main' }}>
-                            *{portion.comment}
-                          </Typography>
-                        )}
-                      </Stack>
-                    ))}
-                </Box>
-
-                <Divider flexItem sx={{ borderStyle: 'dashed' }} />
-              </React.Fragment>
-            ))}
+          </Box>
+          <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ mb: 2 }}>
+            <Typography variant="caption">
+              Order : {orderValue}{' '}
+              <Box component="span" sx={{ typography: 'caption' }}>
+                AED
+              </Box>
+            </Typography>
+            <Typography variant="caption">
+              Tax : {taxValue}{' '}
+              <Box component="span" sx={{ typography: 'caption' }}>
+                AED
+              </Box>
+            </Typography>
+            <Typography variant="h6" sx={{ color: 'success.main' }}>
+              Total Bill : {totalBill}{' '}
+              <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
+                AED
+              </Box>
+            </Typography>
           </Stack>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ mb: 2 }}>
-              <Typography variant="caption">
-                Order : {orderValue}{' '}
-                <Box component="span" sx={{ typography: 'caption' }}>
-                  AED
-                </Box>
-              </Typography>
-              <Typography variant="caption">
-                Tax : {taxValue}{' '}
-                <Box component="span" sx={{ typography: 'caption' }}>
-                  AED
-                </Box>
-              </Typography>
-              <Typography variant="h6" sx={{ color: 'success.main' }}>
-                Total Bill : {totalBill}{' '}
-                <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
-                  AED
-                </Box>
-              </Typography>
-            </Stack>
-          </Stack>
-        </Container>
-      </Scrollbar>
+        </Stack>
+      </Container>
     </Drawer>
   );
 };
