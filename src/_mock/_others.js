@@ -141,8 +141,22 @@ export const _socials = [
   {
     value: 'twitter',
     name: 'Twitter',
-    icon: 'eva:twitter-fill',
+    icon: 'pajamas:twitter',
     color: '#00AAEC',
+    path: 'https://www.twitter.com/caitlyn.kerluke',
+  },
+  {
+    value: 'website',
+    name: 'Website',
+    icon: 'ph:globe',
+    color: '#000000',
+    path: 'https://www.twitter.com/caitlyn.kerluke',
+  },
+  {
+    value: 'other',
+    name: 'Other',
+    icon: 'uil:external-link-alt',
+    color: '#000000',
     path: 'https://www.twitter.com/caitlyn.kerluke',
   },
 ];

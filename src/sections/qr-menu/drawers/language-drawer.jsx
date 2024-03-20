@@ -28,7 +28,7 @@ function LanguageDrawer({ openState, toggleDrawer }) {
           minHeight: '20%',
         },
       }}
-      onClose={() => toggleDrawer('cart')}
+      onClose={() => toggleDrawer('language')}
     >
       <Stack
         direction="column"

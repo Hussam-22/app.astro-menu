@@ -3,18 +3,19 @@ import { Outlet } from 'react-router-dom';
 
 // layouts
 import QrMenuLayout from 'src/layouts/qr-menu/layout';
+import QrMenuHomePage from 'src/pages/qr-menu/home-page';
 // components
 import { SplashScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
 export const QrMenuPage = lazy(() => import('src/pages/qr-menu/qr-menu'));
-export const QrMenuHomePage = lazy(() => import('src/pages/qr-menu/home-page'));
 
 // ----------------------------------------------------------------------
 
 export const qrMenuRoutes = [
   {
+    path: 'qr-menu/:userID/:branchID/:tableID',
     element: (
       <QrMenuLayout>
         <Suspense fallback={<SplashScreen />}>
@@ -23,8 +24,8 @@ export const qrMenuRoutes = [
       </QrMenuLayout>
     ),
     children: [
-      { path: 'qr-menu/:userID/:branchID/:tableID/home', element: <QrMenuHomePage /> },
-      { path: 'qr-menu/:userID/:branchID/:tableID/menu', element: <QrMenuPage /> },
+      { element: <QrMenuHomePage />, index: true },
+      { path: 'menu', element: <QrMenuPage /> },
     ],
   },
 ];

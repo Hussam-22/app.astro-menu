@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react';
 
 import { Stack, Paper, Divider } from '@mui/material';
 
-import { paths } from 'src/routes/paths';
 import { useAuthContext } from 'src/auth/hooks';
 import { useParams, useRouter } from 'src/routes/hook';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
@@ -74,7 +73,7 @@ function BottomNavModern({ containerWidth }) {
           }
         >
           <ActionButton
-            clickAction={() => router.push(paths.qrMenu.home(userID, branchID))}
+            clickAction={() => router.push('.')}
             icon="ph:arrow-fat-left-fill"
             label="Home"
             sx={{ color: '#FFF' }}

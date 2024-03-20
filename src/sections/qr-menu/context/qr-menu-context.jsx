@@ -140,6 +140,7 @@ export function QrMenuContextProvider({ children }) {
       sectionsUnsubscribe,
       orderStatus,
       menuInfo,
+      branchInfo,
     }),
     [
       mealsLabel,
@@ -153,6 +154,7 @@ export function QrMenuContextProvider({ children }) {
       sectionsUnsubscribe,
       orderStatus,
       menuInfo,
+      branchInfo,
     ]
   );
   return <QrMenuContext.Provider value={memoizedValue}>{children}</QrMenuContext.Provider>;
