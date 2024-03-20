@@ -15,10 +15,10 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // staleTime: Infinity,
-      staleTime: 3 * 60000,
+      staleTime: Infinity,
+      // staleTime: 3 * 60000,
       retryDelay: 3 * 1000,
-      retry: 5,
+      retry: 3,
     },
   },
 });
