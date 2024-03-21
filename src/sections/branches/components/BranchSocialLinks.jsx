@@ -26,7 +26,6 @@ function BranchSocialLinks() {
         <RHFTextField name="socialLinks.tiktok" label="Tiktok" />
         <RHFTextField name="socialLinks.linkedin" label="LinkedIn" />
         <RHFTextField name="socialLinks.website" label="Website" />
-        <RHFTextField name="socialLinks.other" label="Other" />
       </Box>
     </Box>
   );

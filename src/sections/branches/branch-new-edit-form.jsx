@@ -10,13 +10,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Card, Stack, Divider, useTheme, MenuItem, Typography } from '@mui/material';
+import { Box, Card, Stack, Divider, MenuItem, useTheme, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { fetcher } from 'src/utils/axios';
 import { useRouter } from 'src/routes/hook';
 import { fData } from 'src/utils/format-number';
 import { useAuthContext } from 'src/auth/hooks';
+import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import BranchSocialLinks from 'src/sections/branches/components/BranchSocialLinks';
 import FormProvider, {
   RHFSelect,
@@ -84,9 +85,9 @@ export default function BranchNewEditForm({ branchInfo }) {
       createdAt: branchInfo?.createdAt || '',
       cover: branchInfo?.cover || '',
       imgUrl: branchInfo?.cover || '',
-      defaultLanguage: branchInfo?.defaultLanguage || '',
+      defaultLanguage: branchInfo?.defaultLanguage || 'English',
       currency: branchInfo?.currency || '',
-      taxValue: branchInfo?.taxValue || '',
+      taxValue: branchInfo?.taxValue || 0,
 
       socialLinks: {
         facebook: branchInfo?.socialLinks?.facebook || '',
@@ -237,12 +238,24 @@ export default function BranchNewEditForm({ branchInfo }) {
             </Stack>
             <RHFTextField name="title" label="Name" />
             <RHFTextField name="description" label="About" multiline rows={3} />
-            <RHFTextField name="wifiPassword" label="Wifi Password" />
-            <RHFSelect name="currency" label="Currency">
-              <MenuItem value="">None</MenuItem>
-              <Divider sx={{ borderStyle: 'dashed' }} />
-              {!isLoading && currencies}
-            </RHFSelect>
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
+              <RHFTextField name="wifiPassword" label="Wifi Password" />
+              <RHFTextField name="taxValue" label="Tax Value" type="number" />
+            </Box>
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
+              <RHFSelect name="currency" label="Currency">
+                <MenuItem value="">None</MenuItem>
+                <Divider sx={{ borderStyle: 'dashed' }} />
+                {!isLoading && currencies}
+              </RHFSelect>
+              <RHFSelect name="defaultLanguage" label="Default Language">
+                {Object.values(LANGUAGE_CODES).map((code) => (
+                  <MenuItem key={code.name} value={code.name}>
+                    {code.value}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            </Box>
           </Stack>
         </Card>
 
