@@ -148,7 +148,7 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
         {!isFetching && (
           <Stack direction="column" spacing={1} sx={{ mt: 1 }}>
             {languageKeys
-              .sort((a, b) => LANGUAGE_CODES[a].localeCompare(LANGUAGE_CODES[b]))
+              .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
               .map((key) => (
                 <LanguageCard
                   languageKey={key}

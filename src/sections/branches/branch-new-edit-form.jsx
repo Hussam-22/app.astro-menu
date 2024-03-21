@@ -1,3 +1,4 @@
+import useSWR from 'swr';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
@@ -9,14 +10,20 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Card, Stack, Typography } from '@mui/material';
+import { Card, Stack, Divider, useTheme, MenuItem, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
+import { fetcher } from 'src/utils/axios';
 import { useRouter } from 'src/routes/hook';
 import { fData } from 'src/utils/format-number';
 import { useAuthContext } from 'src/auth/hooks';
 import BranchSocialLinks from 'src/sections/branches/components/BranchSocialLinks';
-import FormProvider, { RHFUpload, RHFSwitch, RHFTextField } from 'src/components/hook-form';
+import FormProvider, {
+  RHFSelect,
+  RHFSwitch,
+  RHFUpload,
+  RHFTextField,
+} from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 BranchNewEditForm.propTypes = {
@@ -24,10 +31,43 @@ BranchNewEditForm.propTypes = {
 };
 
 export default function BranchNewEditForm({ branchInfo }) {
+  const theme = useTheme();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { fsAddNewBranch, fsDeleteBranch, fsUpdateBranch } = useAuthContext();
   const queryClient = useQueryClient();
+
+  const { data, isLoading } = useSWR(`https://restcountries.com/v3.1/all`, fetcher);
+
+  const currencies = useMemo(
+    () =>
+      !isLoading &&
+      data
+        .filter((item) => item?.currencies && Object.values(item?.currencies))
+        .sort((a, b) => a.name.official.localeCompare(b.name.official))
+        .map((item) => (
+          <MenuItem
+            key={`${item.name.official} - ${
+              Object.values(item?.currencies || {})[0]?.symbol || ''
+            }`}
+            value={`${item.name.official} - ${
+              Object.values(item?.currencies || {})[0]?.symbol || ''
+            }`}
+          >
+            <Stack
+              direction="row"
+              spacing={1}
+              divider={<Divider orientation="vertical" flexItem />}
+            >
+              <Typography>{item.name.official}</Typography>
+              <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                {Object.values(item?.currencies)[0]?.symbol}
+              </Typography>
+            </Stack>
+          </MenuItem>
+        )),
+    [data, isLoading, theme]
+  );
 
   const NewUserSchema = Yup.object().shape({
     title: Yup.string().required('Menu title is required'),
@@ -39,16 +79,14 @@ export default function BranchNewEditForm({ branchInfo }) {
       title: branchInfo?.title || '',
       description: branchInfo?.description || '',
       wifiPassword: branchInfo?.wifiPassword || '',
-      activeMenuID: branchInfo?.activeMenuID || '',
       isActive: !!branchInfo?.isActive,
       isDeleted: branchInfo?.isDeleted || false,
       createdAt: branchInfo?.createdAt || '',
-      scanLimits: branchInfo?.scanLimits || '',
       cover: branchInfo?.cover || '',
       imgUrl: branchInfo?.cover || '',
-
-      mealVisual: branchInfo?.mealVisual || '',
-      menuVisual: branchInfo?.menuVisual || '',
+      defaultLanguage: branchInfo?.defaultLanguage || '',
+      currency: branchInfo?.currency || '',
+      taxValue: branchInfo?.taxValue || '',
 
       socialLinks: {
         facebook: branchInfo?.socialLinks?.facebook || '',
@@ -59,7 +97,6 @@ export default function BranchNewEditForm({ branchInfo }) {
         tiktok: branchInfo?.socialLinks?.tiktok || '',
         linkedin: branchInfo?.socialLinks?.linkedin || '',
         website: branchInfo?.socialLinks?.website || '',
-        other: branchInfo?.socialLinks?.other || '',
         // useMasterLinks: branchInfo?.socialLinks?.useMasterLinks || false,
       },
     }),
@@ -201,6 +238,11 @@ export default function BranchNewEditForm({ branchInfo }) {
             <RHFTextField name="title" label="Name" />
             <RHFTextField name="description" label="About" multiline rows={3} />
             <RHFTextField name="wifiPassword" label="Wifi Password" />
+            <RHFSelect name="currency" label="Currency">
+              <MenuItem value="">None</MenuItem>
+              <Divider sx={{ borderStyle: 'dashed' }} />
+              {!isLoading && currencies}
+            </RHFSelect>
           </Stack>
         </Card>
 

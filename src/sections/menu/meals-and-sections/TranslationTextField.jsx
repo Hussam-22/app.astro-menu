@@ -108,7 +108,7 @@ function TranslationTextField({ languageKey, sectionInfo, isLoading }) {
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <RHFTextField
         name="translation"
-        label={LANGUAGE_CODES[languageKey]}
+        label={LANGUAGE_CODES[languageKey].value}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">

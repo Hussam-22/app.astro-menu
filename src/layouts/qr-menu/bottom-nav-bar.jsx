@@ -95,7 +95,7 @@ function BottomNavModern({ containerWidth }) {
           <ActionButton
             clickAction={() => toggleDrawer('language')}
             icon="material-symbols:language"
-            label={LANGUAGE_CODES[selectedLanguage]}
+            label={LANGUAGE_CODES[selectedLanguage].value}
             sx={{ color: '#FFF' }}
           />
         </Stack>

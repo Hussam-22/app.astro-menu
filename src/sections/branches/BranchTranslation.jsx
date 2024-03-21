@@ -41,7 +41,7 @@ function BranchTranslation({ branchInfo, isFetching }) {
       </Card>
       {!isFetching &&
         languageKeys
-          .sort((a, b) => LANGUAGE_CODES[a].localeCompare(LANGUAGE_CODES[b]))
+          .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
           .map((key) => (
             <LanguageCard
               languageKey={key}

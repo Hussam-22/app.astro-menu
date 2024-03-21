@@ -42,7 +42,7 @@ export default function MealTranslation({ mealInfo, isFetching }) {
           </Card>
 
           {languageKeys
-            .sort((a, b) => LANGUAGE_CODES[a].localeCompare(LANGUAGE_CODES[b]))
+            .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
             .map((key) => (
               <LanguageCard languageKey={key} key={key} data={mealInfo} />
             ))}

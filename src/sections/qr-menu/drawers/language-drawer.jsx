@@ -55,7 +55,7 @@ function LanguageButton({ code, toggleDrawer }) {
   const [loading, setLoading] = useState(false);
 
   const { data, isValidating } = useSWR(
-    `https://restcountries.com/v3.1/lang/${LANGUAGE_CODES[code]}?fields=languages,flags`,
+    `https://restcountries.com/v3.1/lang/${LANGUAGE_CODES[code].name}?fields=languages,flags`,
     fetcher
   );
 
@@ -86,7 +86,7 @@ function LanguageButton({ code, toggleDrawer }) {
           minWidth: 200,
         }}
       >
-        {LANGUAGE_CODES[code]}
+        {LANGUAGE_CODES[code].value}
       </LoadingButton>
     </Stack>
   );

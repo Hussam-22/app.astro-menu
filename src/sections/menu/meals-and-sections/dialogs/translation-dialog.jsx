@@ -64,7 +64,7 @@ function TranslationDialog({ sectionID, isOpen, onClose, languagesLength }) {
           {sectionInfo?.translation !== undefined &&
             !formIsSubmitting &&
             Object.keys(sectionInfo.translation)
-              .sort((a, b) => LANGUAGE_CODES[a].localeCompare(LANGUAGE_CODES[b]))
+              .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
               .map((langKey) => (
                 <TranslationTextField
                   key={langKey}
