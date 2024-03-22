@@ -16,19 +16,19 @@ function MealCard({ mealInfo, isMealActive }) {
   const { tableID } = useParams();
   const { cover, description, isNew, portions, title, translation, translationEdited } = mealInfo;
   const { orderSnapShot } = useAuthContext();
-  const { user, selectedLanguage, menuInfo } = useQrMenuContext();
+  const { branchInfo, selectedLanguage, menuInfo } = useQrMenuContext();
   const [isReadMore, setIsReadMore] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const getTitle = () => {
-    if (selectedLanguage === user.defaultLanguage) return title;
+    if (selectedLanguage === branchInfo.defaultLanguage) return title;
     return translationEdited?.[selectedLanguage]?.title
       ? translationEdited?.[selectedLanguage]?.title
       : translation?.[selectedLanguage]?.title;
   };
 
   const getDescription = () => {
-    if (selectedLanguage === user.defaultLanguage) return description;
+    if (selectedLanguage === branchInfo.defaultLanguage) return description;
     return translationEdited?.[selectedLanguage]?.desc
       ? translationEdited?.[selectedLanguage]?.desc
       : translation?.[selectedLanguage]?.desc;
@@ -67,10 +67,6 @@ function MealCard({ mealInfo, isMealActive }) {
               justifyContent="space-between"
               sx={{ pr: 1 }}
             >
-              <Typography
-                variant="body1"
-                sx={{ fontWeight: theme.typography.fontWeightBold, textWrap: 'nowrap' }}
-              >{`${portions[0].price} ${user?.currency}`}</Typography>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Typography variant="overline">{count}x</Typography>
                 {menuInfo?.allowSelfOrder && orderSnapShot?.updateCount === 0 && (
@@ -78,6 +74,12 @@ function MealCard({ mealInfo, isMealActive }) {
                     Add
                   </Button>
                 )}
+              </Stack>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography variant="h4">{portions[0].price}</Typography>
+                <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
+                  {branchInfo?.currency}
+                </Typography>
               </Stack>
             </Stack>
           ) : (

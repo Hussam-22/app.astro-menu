@@ -277,8 +277,8 @@ export function AuthProvider({ children }) {
     await updateDoc(docRef, payload);
   }, []);
   const fsAddBatchTablesToBranch = useCallback(
-    async (branchID, menuID) => {
-      const MAX_ALLOWED_USER_TABLES = 5;
+    async (branchID) => {
+      const MAX_ALLOWED_USER_TABLES = 50;
       const batch = writeBatch(DB);
 
       for (let index = 1; index <= MAX_ALLOWED_USER_TABLES; index += 1) {
@@ -288,7 +288,6 @@ export function AuthProvider({ children }) {
         batch.set(newDocRef, {
           docID: newDocRef.id,
           userID: state.user.id,
-          menuID,
           branchID,
           isActive: true,
           title: `Table ${index}`,
@@ -403,8 +402,8 @@ export function AuthProvider({ children }) {
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
       collectionGroup(DB, 'branches'),
-      where('userID', '==', state.user.id)
-      // where('isDeleted', '==', false)
+      where('userID', '==', state.user.id),
+      where('isDeleted', '==', false)
     );
     const querySnapshot = await getDocs(docRef);
     const dataArr = [];
@@ -454,9 +453,12 @@ export function AuthProvider({ children }) {
         ...documentData,
         docID: newDocRef.id,
         userID: state.user.id,
+        isDeleted: false,
         lastUpdatedBy: state.user.id,
         lastUpdatedAt: new Date(),
       });
+
+      await fsAddBatchTablesToBranch(newDocRef.id);
 
       fbTranslateBranchDesc({
         branchRef: newDocRef.path,
@@ -1278,7 +1280,7 @@ export function AuthProvider({ children }) {
       fsUpdateBranch,
       fsDeleteBranch,
       // ---- TABLES ----
-      fsAddBatchTablesToBranch,
+      // fsAddBatchTablesToBranch,
       fsGetBranchTablesCount,
       fsGetBranchTables,
       fsUpdateBranchTable,
@@ -1389,7 +1391,7 @@ export function AuthProvider({ children }) {
       fsUpdateBranch,
       fsDeleteBranch,
       // ---- TABLES ----
-      fsAddBatchTablesToBranch,
+      // fsAddBatchTablesToBranch,
       // fsDeleteTable,
       fsGetBranchTablesCount,
       fsGetBranchTables,

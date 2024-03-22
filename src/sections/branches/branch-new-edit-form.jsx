@@ -51,9 +51,7 @@ export default function BranchNewEditForm({ branchInfo }) {
             key={`${item.name.official} - ${
               Object.values(item?.currencies || {})[0]?.symbol || ''
             }`}
-            value={`${item.name.official} - ${
-              Object.values(item?.currencies || {})[0]?.symbol || ''
-            }`}
+            value={Object.values(item?.currencies || {})[0]?.symbol || ''}
           >
             <Stack
               direction="row"
@@ -72,7 +70,9 @@ export default function BranchNewEditForm({ branchInfo }) {
 
   const NewUserSchema = Yup.object().shape({
     title: Yup.string().required('Menu title is required'),
-    cover: Yup.mixed().required('imgURL is required'),
+    imgUrl: Yup.mixed().required('Cover Image is required'),
+    defaultLanguage: Yup.string().required('Menu Default Language is required'),
+    currency: Yup.string().required('Menu Default Language is required'),
   });
 
   const defaultValues = useMemo(
@@ -81,11 +81,9 @@ export default function BranchNewEditForm({ branchInfo }) {
       description: branchInfo?.description || '',
       wifiPassword: branchInfo?.wifiPassword || '',
       isActive: !!branchInfo?.isActive,
-      isDeleted: branchInfo?.isDeleted || false,
-      createdAt: branchInfo?.createdAt || '',
       cover: branchInfo?.cover || '',
-      imgUrl: branchInfo?.cover || '',
-      defaultLanguage: branchInfo?.defaultLanguage || 'English',
+      imgUrl: branchInfo?.cover || null,
+      defaultLanguage: branchInfo?.defaultLanguage || 'en',
       currency: branchInfo?.currency || '',
       taxValue: branchInfo?.taxValue || 0,
 
@@ -180,6 +178,7 @@ export default function BranchNewEditForm({ branchInfo }) {
   const handleDeleteBranch = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     fsDeleteBranch(branchInfo?.docID);
+    queryClient.invalidateQueries({ queryKey: ['branches'] });
     router.push(paths.dashboard.branches.list);
   };
 
@@ -243,15 +242,15 @@ export default function BranchNewEditForm({ branchInfo }) {
               <RHFTextField name="taxValue" label="Tax Value" type="number" />
             </Box>
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
-              <RHFSelect name="currency" label="Currency">
-                <MenuItem value="">None</MenuItem>
-                <Divider sx={{ borderStyle: 'dashed' }} />
-                {!isLoading && currencies}
-              </RHFSelect>
-              <RHFSelect name="defaultLanguage" label="Default Language">
-                {Object.values(LANGUAGE_CODES).map((code) => (
-                  <MenuItem key={code.name} value={code.name}>
-                    {code.value}
+              {!isLoading && (
+                <RHFSelect name="currency" label="Currency">
+                  {currencies}
+                </RHFSelect>
+              )}
+              <RHFSelect name="defaultLanguage" label="Default Menu Language">
+                {Object.entries(LANGUAGE_CODES).map((code) => (
+                  <MenuItem key={code[1].name} value={code[0]}>
+                    {code[1].value}
                   </MenuItem>
                 ))}
               </RHFSelect>

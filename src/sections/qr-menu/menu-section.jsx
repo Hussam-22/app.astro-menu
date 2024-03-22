@@ -19,10 +19,10 @@ function MenuSection({ sectionInfo }) {
     translation,
   } = sectionInfo;
   const { fsGetSectionMeals } = useAuthContext();
-  const { labels, loading, selectedLanguage, user } = useQrMenuContext();
+  const { labels, loading, selectedLanguage, branchInfo } = useQrMenuContext();
 
   const getTitle = () => {
-    if (selectedLanguage === user.defaultLanguage) return title;
+    if (selectedLanguage === branchInfo.defaultLanguage) return title;
     return translationEdited?.[selectedLanguage]?.title
       ? translationEdited?.[selectedLanguage]?.title
       : translation?.[selectedLanguage]?.title;

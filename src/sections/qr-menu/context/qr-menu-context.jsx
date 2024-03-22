@@ -106,7 +106,7 @@ export function QrMenuContextProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderSnapShot]);
 
-  const [selectedLanguage, setLanguage] = useState(user?.defaultLanguage || 'en');
+  const [selectedLanguage, setLanguage] = useState(branchInfo?.defaultLanguage || 'en');
 
   const setLabel = useCallback(
     (labelID) => {
