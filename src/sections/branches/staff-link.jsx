@@ -76,7 +76,7 @@ function StaffLink() {
           onChange={(event) => onSearchInputChange(event)}
         />
       </Card>
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 2 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
         {filteredStaffList.map((staff) => (
           <Card sx={{ p: 3 }} key={staff.docID}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -175,12 +175,10 @@ function ActionButtons({ staffID, status }) {
     setIsOpen(true);
   };
 
-  const { mutate, error, isPending } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['staffs'] }),
   });
-
-  console.log(error);
 
   return (
     <>

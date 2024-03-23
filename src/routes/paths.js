@@ -127,6 +127,12 @@ export const paths = {
       manage: (id) => `${ROOTS.DASHBOARD}/meal/${id}/manage`,
       labels: `${ROOTS.DASHBOARD}/meal/labels`,
     },
+    staffs: {
+      root: `${ROOTS.DASHBOARD}/staffs`,
+      list: `${ROOTS.DASHBOARD}/staffs/list`,
+      new: `${ROOTS.DASHBOARD}/staffs/new`,
+      manage: (id) => `${ROOTS.DASHBOARD}/staffs/${id}/manage`,
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,

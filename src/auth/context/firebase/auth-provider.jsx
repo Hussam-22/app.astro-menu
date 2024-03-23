@@ -1163,16 +1163,19 @@ export function AuthProvider({ children }) {
     });
   }, []);
   // ------------------ STAFF ----------------------------------
-  const fsGetStaffInfo = useCallback(async (userID, staffID) => {
-    try {
-      const docRef = doc(DB, `/users/${userID}/staff/${staffID}/`);
-      const docSnap = await getDoc(docRef);
+  const fsGetStaffInfo = useCallback(
+    async (staffID, userID = state.user.id) => {
+      try {
+        const docRef = doc(DB, `/users/${userID}/staff/${staffID}/`);
+        const docSnap = await getDoc(docRef);
 
-      return docSnap.data();
-    } catch (error) {
-      throw error;
-    }
-  }, []);
+        return docSnap.data();
+      } catch (error) {
+        throw error;
+      }
+    },
+    [state]
+  );
   const fsGetStaffLogin = useCallback(async (userID, staffID, passCode) => {
     try {
       const docRef = query(
@@ -1199,25 +1202,27 @@ export function AuthProvider({ children }) {
     }
   }, []);
   const fsUpdateStaffInfo = useCallback(
-    async (userID, staffID, payload) => {
+    async (payload, staffID, userID = state.user.id) => {
       const waiterDocRef = doc(DB, `/users/${userID}/staff/${staffID}`);
       await updateDoc(waiterDocRef, payload);
     },
     [state]
   );
   const fsGetStaffList = useCallback(
-    async (branchID) => {
-      const docRef = query(
-        collectionGroup(DB, 'staff'),
-        where('userID', '==', state.user.id),
-        where('branchID', '==', branchID)
-      );
+    async (branchID = '') => {
+      let docRef = query(collectionGroup(DB, 'staff'), where('userID', '==', state.user.id));
+
+      // Conditionally add branchID to where clause if provided
+      if (branchID !== '') {
+        docRef = query(docRef, where('branchID', '==', branchID));
+      }
 
       const dataArr = [];
       const querySnapshot = await getDocs(docRef);
       querySnapshot.forEach((doc) => {
         dataArr.push(doc.data());
       });
+
       return dataArr;
     },
     [state]

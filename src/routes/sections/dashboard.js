@@ -80,6 +80,11 @@ const MealManagePage = lazy(() => import('src/pages/dashboard/meal/meal-manage-p
 const MealNewPage = lazy(() => import('src/pages/dashboard/meal/meal-new-page'));
 const MealLabelsPage = lazy(() => import('src/pages/dashboard/meal/meal-labels-page'));
 
+// STAFFS
+const StaffsListPage = lazy(() => import('src/pages/dashboard/staffs/staffs-list-page'));
+const StaffsManagePage = lazy(() => import('src/pages/dashboard/staffs/staffs-manage-page'));
+const StaffsNewPage = lazy(() => import('src/pages/dashboard/staffs/staffs-new-page'));
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -129,6 +134,15 @@ export const dashboardRoutes = [
           { path: 'new', element: <MealNewPage /> },
           { path: ':id/manage', element: <MealManagePage /> },
           { path: 'labels', element: <MealLabelsPage /> },
+        ],
+      },
+      {
+        path: 'staffs',
+        children: [
+          { element: <StaffsListPage />, index: true },
+          { path: 'list', element: <StaffsListPage /> },
+          { path: 'new', element: <StaffsNewPage /> },
+          { path: ':id/manage', element: <StaffsManagePage /> },
         ],
       },
 

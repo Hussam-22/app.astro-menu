@@ -149,7 +149,7 @@ export default function BranchNewEditForm({ branchInfo }) {
     onSuccess: () => {
       queryClient.invalidateQueries(['branches']);
       setTimeout(() => {
-        queryClient.invalidateQueries([`branch-${branchInfo?.docID}`]);
+        queryClient.invalidateQueries(['branch', branchInfo?.docID]);
       }, 1000);
       enqueueSnackbar('Update success!');
       if (!branchInfo?.docID) router.push(paths.dashboard.branches.list);

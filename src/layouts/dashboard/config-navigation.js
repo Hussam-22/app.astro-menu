@@ -47,7 +47,7 @@ const ICONS = {
   branch: icon('ic_branch'),
   menu: icon('ic_menu'),
   meal: icon('ic_meal'),
-  waiters: icon('ic_waiter'),
+  staffs: icon('ic_staffs'),
 };
 
 // ----------------------------------------------------------------------
@@ -101,6 +101,14 @@ export function useNavData() {
               { title: t('list'), path: paths.dashboard.meal.list },
               { title: t('labels'), path: paths.dashboard.meal.labels },
             ],
+          },
+
+          // Staffs
+          {
+            title: t('staffs'),
+            path: paths.dashboard.staffs.root,
+            icon: ICONS.staffs,
+            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
 
           // USER

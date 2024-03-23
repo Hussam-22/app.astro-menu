@@ -28,7 +28,7 @@ function BranchManageView() {
     error,
     isFetching,
   } = useQuery({
-    queryKey: [`branch-${branchID}`],
+    queryKey: ['branch', branchID],
     queryFn: () => fsGetBranch(branchID),
   });
 

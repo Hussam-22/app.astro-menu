@@ -47,8 +47,8 @@ function MealCard({ mealInfo, isMealActive }) {
 
   return (
     <Box sx={{ py: 1 }}>
-      <Stack direction="row" spacing={1} sx={{ position: 'relative' }}>
-        <Stack direction="column" spacing={1} sx={{ pt: 2, maxWidth: '65%', flexGrow: 1 }}>
+      <Stack direction="row" spacing={1}>
+        <Stack direction="column" spacing={1} sx={{ pt: 2, width: '70%', flexGrow: 1 }}>
           <Title selectedLanguage={selectedLanguage} getTitle={getTitle} />
 
           <Description
@@ -57,59 +57,78 @@ function MealCard({ mealInfo, isMealActive }) {
             getDescription={getDescription}
             selectedLanguage={selectedLanguage}
           />
-          {/* <Labels labels={labels} /> */}
 
-          {isMealActive ? (
-            <Stack
-              direction="row"
-              spacing={0}
-              alignItems="center"
-              justifyContent="space-between"
-              sx={{ pr: 1 }}
-            >
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography variant="overline">{count}x</Typography>
-                {menuInfo?.allowSelfOrder && orderSnapShot?.updateCount === 0 && (
-                  <Button variant="soft" color="success" onClick={() => setIsOpen(true)}>
-                    Add
-                  </Button>
-                )}
-              </Stack>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography variant="h4">{portions[0].price}</Typography>
-                <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
-                  {branchInfo?.currency}
-                </Typography>
-              </Stack>
-            </Stack>
-          ) : (
-            <Typography variant="h6" color="error">
-              Out of Stock
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
+            <Typography variant="h4">{portions[0].price}</Typography>
+            <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
+              {branchInfo?.currency}
             </Typography>
-          )}
+          </Stack>
         </Stack>
-
-        <Image
-          src={cover}
-          ratio="1/1"
+        <Box
           sx={{
-            borderRadius: 2,
-            filter: `grayscale(${isMealActive ? '0' : '100'})`,
-            maxWidth: '35%',
-            p: 0,
+            position: 'relative',
+            width: '30%',
+            height: 1,
+            textAlign: 'center',
           }}
-        />
-        {isNew && (
-          <Box sx={{ position: 'absolute', top: 4, right: 7 }}>
+        >
+          <Image
+            src={cover}
+            ratio="1/1"
+            sx={{
+              borderRadius: 1,
+              filter: `grayscale(${isMealActive ? '0' : '100'})`,
+              maxWidth: '85%',
+              p: 0,
+            }}
+          />
+          {isNew && (
+            <Box sx={{ position: 'absolute', top: 4, right: 7 }}>
+              <Label
+                variant="filled"
+                color="error"
+                sx={{ fontSize: 12, p: 1, boxShadow: '2px 2px 0 0 #000', zIndex: 999 }}
+              >
+                New
+              </Label>
+            </Box>
+          )}
+
+          {isMealActive && menuInfo?.allowSelfOrder && orderSnapShot?.updateCount === 0 && (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => setIsOpen(true)}
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: '50%',
+                transform: 'translate(-50%, 30%)',
+                width: '65%',
+              }}
+            >
+              Add
+              {count !== 0 && (
+                <Box component="span" sx={{ color: 'common.black', pl: 1 }}>{`| x${count}`}</Box>
+              )}
+            </Button>
+          )}
+          {!isMealActive && (
             <Label
               variant="filled"
-              color="error"
-              sx={{ fontSize: 12, p: 1, boxShadow: '2px 2px 0 0 #000', zIndex: 999 }}
+              color="warning"
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: '50%',
+                transform: 'translate(-50%, 30%)',
+              }}
             >
-              New
+              Out of Stock
             </Label>
-          </Box>
-        )}
+          )}
+        </Box>
       </Stack>
       {isOpen && (
         <DialogAddComment
