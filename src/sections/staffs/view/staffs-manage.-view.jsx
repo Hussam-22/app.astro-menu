@@ -1,7 +1,8 @@
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { useTheme, Container, Typography } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2/Grid2';
+import { Card, useTheme, Skeleton, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useAuthContext } from 'src/auth/hooks';
@@ -24,8 +25,6 @@ function BranchManageView() {
     queryFn: () => fsGetStaffInfo(staffID),
   });
 
-  console.log(staffInfo);
-
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -41,10 +40,24 @@ function BranchManageView() {
           </Typography>
         }
       />
-      <StaffsNewEditForm staffInfo={staffInfo} />
+      {!isFetching && <StaffsNewEditForm staffInfo={staffInfo} />}
+      {isFetching && <StaffsSkeleton />}
     </Container>
   );
 }
 export default BranchManageView;
 
-// BranchManageView.propTypes = { tables: PropTypes.array };
+function StaffsSkeleton() {
+  <Grid container spacing={2}>
+    <Grid sx={4}>
+      <Card>
+        <Skeleton variant="rectangular" sx={{ width: 100, height: 250 }} />
+      </Card>
+    </Grid>
+    <Grid sx={6}>
+      <Card>
+        <Skeleton variant="rectangular" sx={{ width: 100, height: 250 }} />
+      </Card>
+    </Grid>
+  </Grid>;
+}

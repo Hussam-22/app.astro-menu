@@ -20,6 +20,7 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import generatePassCode from 'src/utils/generate-passcode';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import StaffManageActionButtons from 'src/sections/staffs/components/staff-manage-action-buttons';
 
 function StaffLink() {
   const theme = useTheme();
@@ -137,7 +138,8 @@ function StaffLink() {
               </Stack>
             </Stack>
             <Divider sx={{ borderStyle: 'dashed', mt: 1, mb: 2 }} />
-            <ActionButtons staffID={staff.docID} status={staff.isActive} />
+            <StaffManageActionButtons staffID={staff.docID} status={staff.isActive} />
+            {/* <ActionButtons staffID={staff.docID} status={staff.isActive} /> */}
           </Card>
         ))}
       </Box>

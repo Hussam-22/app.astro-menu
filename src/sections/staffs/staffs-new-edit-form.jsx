@@ -7,15 +7,17 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { Box } from '@mui/system';
+import Grid from '@mui/material/Unstable_Grid2/Grid2';
 // @mui
-import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, MenuItem, Typography } from '@mui/material';
+import { Card, Stack, Button, MenuItem } from '@mui/material';
 
+import Image from 'src/components/image';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
-import BranchSocialLinks from 'src/sections/branches/components/BranchSocialLinks';
-import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFSelect, RHFTextField, RHFRadioGroup } from 'src/components/hook-form';
+import StaffManageActionButtons from 'src/sections/staffs/components/staff-manage-action-buttons';
 // ----------------------------------------------------------------------
 
 StaffsNewEditForm.propTypes = {
@@ -33,8 +35,6 @@ export default function StaffsNewEditForm({ staffInfo }) {
     queryFn: fsGetAllBranches,
   });
 
-  console.log(branchesList);
-
   const NewUserSchema = Yup.object().shape({
     fullname: Yup.string().required('Full Name is required'),
     type: Yup.mixed().required('Type is required'),
@@ -43,8 +43,8 @@ export default function StaffsNewEditForm({ staffInfo }) {
   const defaultValues = useMemo(
     () => ({
       fullname: staffInfo?.fullname || '',
-      type: staffInfo?.type || '',
-      branchID: staffInfo?.branchID || '',
+      type: staffInfo?.type || 'waiter',
+      branchID: staffInfo?.branchID || null,
       isActive: !!staffInfo?.isActive,
       passCode: staffInfo?.cover || '',
     }),
@@ -104,67 +104,73 @@ export default function StaffsNewEditForm({ staffInfo }) {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={2} direction="row" sx={{ justifyContent: 'flex-end', mb: 2 }}>
-        {staffInfo?.docID && (
-          <LoadingButton
-            variant="contained"
-            loading={isPending}
-            color="error"
-            onClick={handleDeleteBranch}
-          >
-            Delete Branch
-          </LoadingButton>
-        )}
+      <Grid container spacing={2}>
+        <Grid xs={4}>
+          <Card sx={{ p: 3, position: 'relative' }}>
+            <Box
+              sx={{
+                width: 18,
+                height: 18,
+                bgcolor: values.isActive ? 'success.main' : 'error.main',
+                borderRadius: '50%',
+                position: 'absolute',
+                top: 15,
+                right: 15,
+              }}
+            />
+            <Stack direction="column" spacing={2} justifyContent="center" alignItems="center">
+              <Image
+                disabledEffect
+                src={`/assets/icons/staff/${values.type}-body.svg`}
+                sx={{
+                  borderRadius: '50%',
+                  border: 'solid 3px #000000',
+                  width: 175,
+                  height: 175,
+                  mr: 2,
+                  p: 1,
+                }}
+              />
+              <StaffManageActionButtons staffID={staffInfo.docID} status={staffInfo.isActive} />
+            </Stack>
+          </Card>
+        </Grid>
+        <Grid xs={8}>
+          <Card sx={{ p: 3 }}>
+            <Stack direction="column" spacing={2}>
+              <RHFRadioGroup
+                row
+                spacing={4}
+                name="type"
+                options={[
+                  { label: 'Chef', value: 'chef' },
+                  { label: 'Waiter/ess', value: 'waiter' },
+                ]}
+              />
+              <RHFTextField name="fullname" label="Full Name" />
 
-        <LoadingButton
-          type="submit"
-          variant="contained"
-          color="success"
-          loading={isPending}
-          disabled={!isDirty}
-        >
-          Save
-        </LoadingButton>
-      </Stack>
-      <Stack direction="column" spacing={2}>
-        <Card sx={{ p: 3 }}>
-          <Stack spacing={2}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="h3">Branch Info</Typography>
-              <Stack direction="column" alignItems="flex-end">
-                <RHFSwitch
-                  name="isActive"
-                  labelPlacement="start"
-                  label={values.isActive ? `Branch is Active` : `Branch is Inactive`}
-                  sx={{ alignItems: 'center' }}
-                />
-                <Typography variant="caption" sx={{ color: 'error.main' }}>
-                  When branch is inactive, customers cant view menu and waiters cant take orders
-                </Typography>
+              {!isLoading && (
+                <RHFSelect name="branchID" label="Branch">
+                  <MenuItem value={null} />
+                  {branchesList.map((branch) => (
+                    <MenuItem key={branch.docID} value={branch.docID}>
+                      {branch.title}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
+              )}
+              <Stack direction="row" spacing={1} justifyContent="flex-end">
+                <Button variant="contained" color="error" sx={{ alignSelf: 'flex-end' }}>
+                  Delete
+                </Button>
+                <Button type="submit" variant="contained" sx={{ alignSelf: 'flex-end' }}>
+                  Save Changes
+                </Button>
               </Stack>
             </Stack>
-            <RHFTextField name="title" label="Name" />
-            <RHFTextField name="description" label="About" multiline rows={3} />
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
-              <RHFTextField name="wifiPassword" label="Wifi Password" />
-              <RHFTextField name="taxValue" label="Tax Value" type="number" />
-            </Box>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
-              <RHFSelect name="defaultLanguage" label="Default Menu Language">
-                {branchesList.map((branch) => (
-                  <MenuItem key={branch.docID} value={branch.docID}>
-                    {branch.title}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-            </Box>
-          </Stack>
-        </Card>
-
-        <Card sx={{ p: 3 }}>
-          <BranchSocialLinks />
-        </Card>
-      </Stack>
+          </Card>
+        </Grid>
+      </Grid>
     </FormProvider>
   );
 }
