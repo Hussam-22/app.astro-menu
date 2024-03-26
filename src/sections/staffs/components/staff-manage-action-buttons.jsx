@@ -22,8 +22,6 @@ function StaffManageActionButtons({ staffID, status }) {
   const { fsUpdateStaffInfo, user } = useAuthContext();
   const { isOpen, passCode } = useSelector((state) => state.global);
 
-  console.log(isOpen);
-
   const PASSWORD_RESET_TEXT = (
     <Typography variant="h1" sx={{ textAlign: 'center' }}>
       {[...passCode].join('-')}

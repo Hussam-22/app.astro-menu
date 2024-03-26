@@ -109,7 +109,7 @@ export default function StaffsListView() {
 
         <Scrollbar>
           <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
-            <Table size={dense ? 'small' : 'medium'}>
+            <Table size="small">
               <TableHeadCustom
                 disableSelectAllRows
                 order={order}

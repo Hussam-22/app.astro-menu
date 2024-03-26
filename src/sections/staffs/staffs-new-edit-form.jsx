@@ -7,17 +7,21 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { Box } from '@mui/system';
-import Grid from '@mui/material/Unstable_Grid2/Grid2';
+import { LoadingButton } from '@mui/lab';
 // @mui
-import { Card, Stack, Button, MenuItem } from '@mui/material';
+import { Card, Stack, Button, MenuItem, InputAdornment } from '@mui/material';
 
-import Image from 'src/components/image';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
+import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import FormProvider, { RHFSelect, RHFTextField, RHFRadioGroup } from 'src/components/hook-form';
-import StaffManageActionButtons from 'src/sections/staffs/components/staff-manage-action-buttons';
+import generatePassCode from 'src/utils/generate-passcode';
+import FormProvider, {
+  RHFSwitch,
+  RHFSelect,
+  RHFTextField,
+  RHFRadioGroup,
+} from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 StaffsNewEditForm.propTypes = {
@@ -27,7 +31,7 @@ StaffsNewEditForm.propTypes = {
 export default function StaffsNewEditForm({ staffInfo }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const { fsAddNewBranch, fsDeleteBranch, fsUpdateStaffInfo, fsGetAllBranches } = useAuthContext();
+  const { fsAddNewStaff, fsDeleteBranch, fsUpdateStaffInfo, fsGetAllBranches } = useAuthContext();
   const queryClient = useQueryClient();
 
   const { data: branchesList = [], isLoading } = useQuery({
@@ -37,16 +41,16 @@ export default function StaffsNewEditForm({ staffInfo }) {
 
   const NewUserSchema = Yup.object().shape({
     fullname: Yup.string().required('Full Name is required'),
-    type: Yup.mixed().required('Type is required'),
+    branchID: Yup.string().required('Branch is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
       fullname: staffInfo?.fullname || '',
       type: staffInfo?.type || 'waiter',
-      branchID: staffInfo?.branchID || null,
+      branchID: staffInfo?.branchID || '',
       isActive: !!staffInfo?.isActive,
-      passCode: staffInfo?.cover || '',
+      passCode: staffInfo?.passCode || generatePassCode(),
     }),
     [staffInfo]
   );
@@ -57,41 +61,30 @@ export default function StaffsNewEditForm({ staffInfo }) {
   });
 
   const {
-    reset,
     watch,
-    setValue,
     handleSubmit,
-    getFieldState,
     formState: { isDirty, dirtyFields },
   } = methods;
 
   const values = watch();
 
-  const { isPending, mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       queryClient.invalidateQueries(['staffs']);
-      setTimeout(() => {
-        queryClient.invalidateQueries(['staffs', staffInfo?.docID]);
-      }, 1000);
       enqueueSnackbar('Update success!');
-      if (!staffInfo?.docID) router.push(paths.dashboard.branches.list);
+      if (!staffInfo?.docID) router.push(paths.dashboard.staffs.list);
     },
   });
 
   const onSubmit = async (formData) => {
     if (staffInfo?.docID)
-      mutate(() =>
-        fsUpdateStaffInfo(
-          {
-            ...formData,
-            docID: staffInfo?.docID,
-          },
-          staffInfo.docID
-        )
-      );
+      mutate(() => {
+        if (!formData.isActive) fsUpdateStaffInfo({ isLoggedIn: false }, staffInfo?.docID);
+        fsUpdateStaffInfo(formData, staffInfo.docID);
+      });
     if (!staffInfo?.docID) {
-      mutate(() => fsAddNewBranch(formData));
+      mutate(() => fsAddNewStaff({ formData, isLoggedIn: false }));
     }
   };
 
@@ -102,75 +95,78 @@ export default function StaffsNewEditForm({ staffInfo }) {
     router.push(paths.dashboard.branches.list);
   };
 
+  const onPassCodeReset = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const newPassCode = generatePassCode();
+    fsUpdateStaffInfo({ isLoggedIn: false }, staffInfo?.docID);
+    fsUpdateStaffInfo({ passCode: newPassCode }, staffInfo?.docID);
+  };
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={2}>
-        <Grid xs={4}>
-          <Card sx={{ p: 3, position: 'relative' }}>
-            <Box
-              sx={{
-                width: 18,
-                height: 18,
-                bgcolor: values.isActive ? 'success.main' : 'error.main',
-                borderRadius: '50%',
-                position: 'absolute',
-                top: 15,
-                right: 15,
-              }}
+      <Card sx={{ p: 3 }}>
+        <Stack direction="column" spacing={2}>
+          <Stack direction="row" justifyContent="space-between">
+            <RHFRadioGroup
+              row
+              spacing={4}
+              name="type"
+              options={[
+                { label: 'Chef', value: 'chef' },
+                { label: 'Waiter/ess', value: 'waiter' },
+              ]}
             />
-            <Stack direction="column" spacing={2} justifyContent="center" alignItems="center">
-              <Image
-                disabledEffect
-                src={`/assets/icons/staff/${values.type}-body.svg`}
-                sx={{
-                  borderRadius: '50%',
-                  border: 'solid 3px #000000',
-                  width: 175,
-                  height: 175,
-                  mr: 2,
-                  p: 1,
-                }}
-              />
-              <StaffManageActionButtons staffID={staffInfo.docID} status={staffInfo.isActive} />
-            </Stack>
-          </Card>
-        </Grid>
-        <Grid xs={8}>
-          <Card sx={{ p: 3 }}>
-            <Stack direction="column" spacing={2}>
-              <RHFRadioGroup
-                row
-                spacing={4}
-                name="type"
-                options={[
-                  { label: 'Chef', value: 'chef' },
-                  { label: 'Waiter/ess', value: 'waiter' },
-                ]}
-              />
-              <RHFTextField name="fullname" label="Full Name" />
+            <RHFSwitch name="isActive" label="Status" />
+          </Stack>
+          <RHFTextField name="fullname" label="Full Name" />
 
-              {!isLoading && (
-                <RHFSelect name="branchID" label="Branch">
-                  <MenuItem value={null} />
-                  {branchesList.map((branch) => (
-                    <MenuItem key={branch.docID} value={branch.docID}>
-                      {branch.title}
-                    </MenuItem>
-                  ))}
-                </RHFSelect>
-              )}
-              <Stack direction="row" spacing={1} justifyContent="flex-end">
-                <Button variant="contained" color="error" sx={{ alignSelf: 'flex-end' }}>
-                  Delete
-                </Button>
-                <Button type="submit" variant="contained" sx={{ alignSelf: 'flex-end' }}>
-                  Save Changes
-                </Button>
-              </Stack>
-            </Stack>
-          </Card>
-        </Grid>
-      </Grid>
+          {!isLoading && (
+            <RHFSelect name="branchID" label="Branch">
+              <MenuItem value={null} />
+              {branchesList.map((branch) => (
+                <MenuItem key={branch.docID} value={branch.docID}>
+                  {branch.title}
+                </MenuItem>
+              ))}
+            </RHFSelect>
+          )}
+          <RHFTextField
+            name="passCode"
+            label="Pass Code"
+            disabled
+            InputProps={{
+              endAdornment: staffInfo?.docID && (
+                <InputAdornment position="end">
+                  <LoadingButton
+                    type="reset"
+                    variant="soft"
+                    loading={isPending}
+                    onClick={() => mutate(onPassCodeReset)}
+                    color="warning"
+                  >
+                    Reset Pass Code
+                    <Iconify
+                      icon="grommet-icons:power-reset"
+                      width={20}
+                      height={20}
+                      sx={{ ml: 1 }}
+                    />
+                  </LoadingButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <Stack direction="row" spacing={1} justifyContent="flex-end">
+            <Button variant="contained" color="error" sx={{ alignSelf: 'flex-end' }}>
+              Delete
+            </Button>
+            <Button type="submit" variant="contained" sx={{ alignSelf: 'flex-end' }}>
+              Save Changes
+            </Button>
+          </Stack>
+        </Stack>
+      </Card>
     </FormProvider>
   );
 }

@@ -1228,16 +1228,13 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsAddNewStaff = useCallback(
-    async (newStaffInfo) => {
-      const newDocRef = doc(collection(DB, `/users/${state.user.id}/waiters`));
-      const userDocRef = doc(DB, `/users/${state.user.id}/`);
+    async (payload) => {
+      const newDocRef = doc(collection(DB, `/users/${state.user.id}/staff`));
       await setDoc(newDocRef, {
-        ...newStaffInfo,
-        id: newDocRef.id,
+        ...payload,
+        docID: newDocRef.id,
         userID: state.user.id,
-        passCode: newStaffInfo.accessCode,
       });
-      await updateDoc(userDocRef, { lastStaffAccessCodeID: increment(1) });
       return newDocRef.id;
     },
     [state]
@@ -1355,7 +1352,7 @@ export function AuthProvider({ children }) {
       fsUpdateOrderStatus,
       // fsCancelOrder,
       fsOrderIsPaid,
-      // fsAddNewStaff,
+      fsAddNewStaff,
       fsGetStaffList,
       fsUpdateStaffInfo,
       // fsDeleteStaff,
@@ -1464,6 +1461,7 @@ export function AuthProvider({ children }) {
       fsUpdateOrderStatus,
       // fsCancelOrder,
       fsOrderIsPaid,
+      fsAddNewStaff,
       fsGetStaffList,
       fsUpdateStaffInfo,
       // fsDeleteStaff,

@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import StaffsManageView from 'src/sections/staffs/view/staffs-manage.-view';
 
-function BranchListPage() {
+function StaffsManagePage() {
   return (
     <>
       <Helmet>
@@ -12,4 +12,4 @@ function BranchListPage() {
     </>
   );
 }
-export default BranchListPage;
+export default StaffsManagePage;

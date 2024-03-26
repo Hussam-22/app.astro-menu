@@ -10,7 +10,7 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import StaffsNewEditForm from 'src/sections/staffs/staffs-new-edit-form';
 
-function BranchManageView() {
+function StaffsManageView() {
   const { id: staffID } = useParams();
   const theme = useTheme();
   const { themeStretch } = useSettingsContext();
@@ -45,16 +45,16 @@ function BranchManageView() {
     </Container>
   );
 }
-export default BranchManageView;
+export default StaffsManageView;
 
 function StaffsSkeleton() {
   <Grid container spacing={2}>
-    <Grid sx={4}>
+    <Grid xs={4}>
       <Card>
         <Skeleton variant="rectangular" sx={{ width: 100, height: 250 }} />
       </Card>
     </Grid>
-    <Grid sx={6}>
+    <Grid xs={6}>
       <Card>
         <Skeleton variant="rectangular" sx={{ width: 100, height: 250 }} />
       </Card>
