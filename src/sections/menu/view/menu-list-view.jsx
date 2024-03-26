@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -69,9 +68,8 @@ function MenuListView() {
   const [filterName, setFilterName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [menuData, setMenuData] = useState({});
-  const { newMenuID, menus, isLoading } = useSelector((state) => state.menu);
 
-  const { data = [] } = useQuery({
+  const { data = [], isLoading } = useQuery({
     queryKey: ['menus'],
     queryFn: fsGetAllMenus,
   });
@@ -147,7 +145,6 @@ function MenuListView() {
                   .map((row, index) =>
                     row ? (
                       <MenusTableRow
-                        newMenuID={newMenuID}
                         key={row.docID}
                         row={row}
                         onEditRow={() => handleEditRow(row.docID)}
