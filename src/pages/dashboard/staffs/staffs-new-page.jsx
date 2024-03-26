@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import StaffsManageView from 'src/sections/staffs/view/staffs-manage.-view';
+import StaffsNewView from 'src/sections/staffs/view/staffs-new-view';
 
 function StaffsNewPage() {
   return (
@@ -8,7 +8,7 @@ function StaffsNewPage() {
       <Helmet>
         <title> Staffs: New</title>
       </Helmet>
-      <StaffsManageView />
+      <StaffsNewView />
     </>
   );
 }

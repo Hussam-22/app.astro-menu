@@ -20,7 +20,6 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import generatePassCode from 'src/utils/generate-passcode';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import StaffManageActionButtons from 'src/sections/staffs/components/staff-manage-action-buttons';
 
 function StaffLink() {
   const theme = useTheme();
@@ -132,20 +131,24 @@ function StaffLink() {
                 <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightBold }}>
                   LastLogin:
                 </Typography>
-                <Typography variant="caption">{`${new Date(
-                  staff.lastLogIn.seconds * 1000
-                )}`}</Typography>
+                {staff?.lastLogIn?.seconds ? (
+                  <Typography variant="caption">{`${new Date(
+                    staff.lastLogIn.seconds * 1000
+                  ).toDateString()}`}</Typography>
+                ) : (
+                  ''
+                )}
               </Stack>
             </Stack>
             <Divider sx={{ borderStyle: 'dashed', mt: 1, mb: 2 }} />
-            <StaffManageActionButtons staffID={staff.docID} status={staff.isActive} />
-            {/* <ActionButtons staffID={staff.docID} status={staff.isActive} /> */}
+            <ActionButtons staffID={staff.docID} status={staff.isActive} />
           </Card>
         ))}
       </Box>
     </>
   );
 }
+
 export default StaffLink;
 
 // ----------------------------------------------------------------------------

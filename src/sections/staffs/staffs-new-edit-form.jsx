@@ -1,15 +1,15 @@
 import * as Yup from 'yup';
-import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 // form
 import { useForm } from 'react-hook-form';
+import { useMemo, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 // @mui
-import { Card, Stack, Button, MenuItem, InputAdornment } from '@mui/material';
+import { Card, Stack, MenuItem, InputAdornment } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -31,7 +31,7 @@ StaffsNewEditForm.propTypes = {
 export default function StaffsNewEditForm({ staffInfo }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const { fsAddNewStaff, fsDeleteBranch, fsUpdateStaffInfo, fsGetAllBranches } = useAuthContext();
+  const { fsAddNewStaff, fsDeleteStaff, fsUpdateStaffInfo, fsGetAllBranches } = useAuthContext();
   const queryClient = useQueryClient();
 
   const { data: branchesList = [], isLoading } = useQuery({
@@ -61,6 +61,7 @@ export default function StaffsNewEditForm({ staffInfo }) {
   });
 
   const {
+    reset,
     watch,
     handleSubmit,
     formState: { isDirty, dirtyFields },
@@ -68,10 +69,16 @@ export default function StaffsNewEditForm({ staffInfo }) {
 
   const values = watch();
 
+  useEffect(() => {
+    if (staffInfo) {
+      reset(defaultValues);
+    }
+  }, [defaultValues, reset, staffInfo]);
+
   const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      queryClient.invalidateQueries(['staffs']);
+      queryClient.invalidateQueries({ queryKey: ['staffs'] });
       enqueueSnackbar('Update success!');
       if (!staffInfo?.docID) router.push(paths.dashboard.staffs.list);
     },
@@ -79,20 +86,23 @@ export default function StaffsNewEditForm({ staffInfo }) {
 
   const onSubmit = async (formData) => {
     if (staffInfo?.docID)
-      mutate(() => {
+      mutate(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         if (!formData.isActive) fsUpdateStaffInfo({ isLoggedIn: false }, staffInfo?.docID);
-        fsUpdateStaffInfo(formData, staffInfo.docID);
+        fsUpdateStaffInfo({ ...formData }, staffInfo.docID);
       });
     if (!staffInfo?.docID) {
-      mutate(() => fsAddNewStaff({ formData, isLoggedIn: false }));
+      mutate(() => fsAddNewStaff({ ...formData, isLoggedIn: false }));
     }
+
+    reset(formData);
   };
 
-  const handleDeleteBranch = async () => {
+  const handleDeleteStaff = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    fsDeleteBranch(staffInfo?.docID);
-    queryClient.invalidateQueries({ queryKey: ['branches'] });
-    router.push(paths.dashboard.branches.list);
+    fsDeleteStaff(staffInfo?.docID);
+    queryClient.invalidateQueries({ queryKey: ['staffs'], exact: true });
+    router.push(paths.dashboard.staffs.list);
   };
 
   const onPassCodeReset = async () => {
@@ -158,12 +168,24 @@ export default function StaffsNewEditForm({ staffInfo }) {
           />
 
           <Stack direction="row" spacing={1} justifyContent="flex-end">
-            <Button variant="contained" color="error" sx={{ alignSelf: 'flex-end' }}>
+            <LoadingButton
+              variant="contained"
+              color="error"
+              sx={{ alignSelf: 'flex-end' }}
+              loading={isPending}
+              onClick={() => mutate(handleDeleteStaff)}
+            >
               Delete
-            </Button>
-            <Button type="submit" variant="contained" sx={{ alignSelf: 'flex-end' }}>
+            </LoadingButton>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              sx={{ alignSelf: 'flex-end' }}
+              loading={isPending}
+              disabled={!isDirty}
+            >
               Save Changes
-            </Button>
+            </LoadingButton>
           </Stack>
         </Stack>
       </Card>

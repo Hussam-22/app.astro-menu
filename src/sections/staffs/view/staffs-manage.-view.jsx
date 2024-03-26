@@ -1,8 +1,7 @@
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { Card, useTheme, Skeleton, Container, Typography } from '@mui/material';
+import { useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useAuthContext } from 'src/auth/hooks';
@@ -40,24 +39,8 @@ function StaffsManageView() {
           </Typography>
         }
       />
-      {!isFetching && <StaffsNewEditForm staffInfo={staffInfo} />}
-      {isFetching && <StaffsSkeleton />}
+      <StaffsNewEditForm staffInfo={staffInfo} />
     </Container>
   );
 }
 export default StaffsManageView;
-
-function StaffsSkeleton() {
-  <Grid container spacing={2}>
-    <Grid xs={4}>
-      <Card>
-        <Skeleton variant="rectangular" sx={{ width: 100, height: 250 }} />
-      </Card>
-    </Grid>
-    <Grid xs={6}>
-      <Card>
-        <Skeleton variant="rectangular" sx={{ width: 100, height: 250 }} />
-      </Card>
-    </Grid>
-  </Grid>;
-}

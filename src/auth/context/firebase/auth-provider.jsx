@@ -1240,9 +1240,10 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsDeleteStaff = useCallback(
-    async (payload) => {
-      const waiterDocRef = doc(DB, `/users/${state.user.id}/staff/${payload}`);
-      await deleteDoc(waiterDocRef);
+    async (staffID) => {
+      const docRef = doc(DB, `/users/${state.user.id}/staff/${staffID}`);
+      await updateDoc(docRef, { isLoggedIn: false });
+      await deleteDoc(docRef);
     },
     [state]
   );
@@ -1355,7 +1356,7 @@ export function AuthProvider({ children }) {
       fsAddNewStaff,
       fsGetStaffList,
       fsUpdateStaffInfo,
-      // fsDeleteStaff,
+      fsDeleteStaff,
       // // ---- RTD ----
       // dataSnapshotListener,
       // docSnapshot,
@@ -1464,7 +1465,7 @@ export function AuthProvider({ children }) {
       fsAddNewStaff,
       fsGetStaffList,
       fsUpdateStaffInfo,
-      // fsDeleteStaff,
+      fsDeleteStaff,
       // // ---- RTD ----
       // dataSnapshotListener,
       // docSnapshot,

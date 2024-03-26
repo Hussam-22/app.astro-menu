@@ -36,14 +36,14 @@ function StaffLoginForm() {
   const { handleSubmit } = methods;
 
   const { data: staffInfo = {} } = useQuery({
-    queryFn: () => fsGetStaffInfo(userID, staffID),
-    queryKey: ['waiter', userID, staffID],
+    queryFn: () => fsGetStaffInfo(staffID, userID),
+    queryKey: ['staff', userID, staffID],
   });
 
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: (mutationFn) => mutationFn(),
     onSuccess: (unsubscribeFn) => {
-      fsUpdateStaffInfo(userID, staffID, { isLoggedIn: true, lastLogIn: new Date() });
+      fsUpdateStaffInfo({ isLoggedIn: true, lastLogIn: new Date() }, staffID, userID);
       setWaiterUnsubscribe(() => unsubscribeFn);
     },
   });

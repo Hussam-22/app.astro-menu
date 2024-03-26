@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, TableRow, TableCell, Typography, ListItemText } from '@mui/material';
 
 import Label from 'src/components/label';
-import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
@@ -19,7 +18,7 @@ export default function TableDataRows({ row, onEditRow }) {
   const { fsGetBranch } = useAuthContext();
   const { docID, fullname, branchID, type, isActive, lastLogIn } = row;
 
-  const loginInfo = new Date(lastLogIn.seconds * 1000).toDateString();
+  const loginInfo = lastLogIn?.seconds ? new Date(lastLogIn.seconds * 1000).toDateString() : '';
 
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', branchID],
@@ -40,12 +39,6 @@ export default function TableDataRows({ row, onEditRow }) {
   return (
     <TableRow hover>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Image
-          disabledEffect
-          src={`/assets/icons/staff/${type}-body.svg`}
-          sx={{ borderRadius: 1.5, width: 34, height: 34, mr: 2 }}
-        />
-
         <ListItemText
           primary={
             <Link onClick={onEditRow} sx={{ cursor: 'pointer' }}>
@@ -67,7 +60,9 @@ export default function TableDataRows({ row, onEditRow }) {
 
       <TableCell align="center">{branchInfo.title}</TableCell>
       <TableCell align="center">
-        <Typography sx={{ textTransform: 'capitalize' }}>{type}</Typography>
+        <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+          {type}
+        </Typography>
       </TableCell>
       <TableCell align="center">{loginInfo}</TableCell>
       <TableCell align="center">{statusLabel}</TableCell>
