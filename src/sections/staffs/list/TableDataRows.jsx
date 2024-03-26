@@ -27,12 +27,12 @@ export default function TableDataRows({ row, onEditRow }) {
   });
 
   const statusLabel = isActive ? (
-    <Label color="success" varint="fill">
-      Active
+    <Label color="success">
+      <Typography variant="caption">Active</Typography>
     </Label>
   ) : (
-    <Label color="error" varint="fill">
-      Disabled
+    <Label color="error">
+      <Typography variant="caption">Disabled</Typography>
     </Label>
   );
 
