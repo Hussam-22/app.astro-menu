@@ -17,6 +17,8 @@ function FoodMenu({ menuID }) {
   const { fsGetMenu, fsGetSections, menuSections } = useAuthContext();
   const { selectedTable } = useStaffContext();
 
+  console.log(menuSections);
+
   const { data: menuInfo = {} } = useQuery({
     queryKey: ['menu', userID, menuID],
     queryFn: () => fsGetMenu(menuID, userID),

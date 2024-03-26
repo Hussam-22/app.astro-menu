@@ -5,13 +5,14 @@ import { Stack, Typography, IconButton } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { useStaffContext } from 'src/sections/staff/context/staff-context';
 import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
-function StaffMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
-  const { fsUpdateCart, activeOrders } = useAuthContext();
+function StaffMenuAddMealToCart({ mealInfo, selectedTableID }) {
+  const { branchInfo } = useStaffContext();
+  const { activeOrders } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTableID);
-  const { docID, userID, branchID, cart, updateCount } = orderSnapShot;
 
   const count = useMemo(
     () =>
@@ -41,6 +42,7 @@ function StaffMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
           onClose={() => setIsOpen(false)}
           mealInfo={mealInfo}
           orderSnapShot={orderSnapShot}
+          branchInfo={branchInfo}
         />
       )}
     </>
@@ -49,7 +51,6 @@ function StaffMenuAddMealToCart({ portion, mealInfo, selectedTableID }) {
 export default StaffMenuAddMealToCart;
 
 StaffMenuAddMealToCart.propTypes = {
-  portion: PropTypes.object,
   mealInfo: PropTypes.object,
   selectedTableID: PropTypes.string,
 };

@@ -23,7 +23,7 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 const TableOrder = () => {
   const theme = useTheme();
-  const { selectedTable, setSelectedTable, user } = useStaffContext();
+  const { selectedTable, setSelectedTable, branchInfo } = useStaffContext();
   const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus, staff, fsGetMenu, fsGetMeal } =
     useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
@@ -201,7 +201,7 @@ const TableOrder = () => {
                           {!isChef && (
                             <Typography variant="caption" sx={{ alignSelf: 'center', mx: 1 }}>
                               {`${portion.price} 
-                            ${user?.currency}`}
+                            ${branchInfo?.currency}`}
                             </Typography>
                           )}
                           {!isChef && (

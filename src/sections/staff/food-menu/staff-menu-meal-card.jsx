@@ -19,7 +19,7 @@ StaffMenuMealCard.propTypes = {
 
 function StaffMenuMealCard({ mealID, isMealActive, sectionInfo }) {
   const { staff, fsGetMeal } = useAuthContext();
-  const { user, selectedTable } = useStaffContext();
+  const { user, branchInfo, selectedTable } = useStaffContext();
   const [selectedPortionIndex, _] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
 
@@ -79,7 +79,7 @@ function StaffMenuMealCard({ mealID, isMealActive, sectionInfo }) {
             mealInfo={mealInfo}
             selectedTableID={selectedTable.docID}
           />
-          <Typography variant="h6">{`${mealInfo.portions[selectedPortionIndex].price} ${user?.currency}`}</Typography>
+          <Typography variant="h6">{`${mealInfo.portions[selectedPortionIndex].price} ${branchInfo?.currency}`}</Typography>
         </Stack>
       )}
       {!isMealActive && !isChef && (

@@ -49,7 +49,15 @@ function MealCard({ mealInfo, isMealActive }) {
     <Box sx={{ py: 1 }}>
       <Stack direction="row" spacing={1}>
         <Stack direction="column" spacing={1} sx={{ pt: 2, width: '70%', flexGrow: 1 }}>
-          <Title selectedLanguage={selectedLanguage} getTitle={getTitle} />
+          <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
+            <Title selectedLanguage={selectedLanguage} getTitle={getTitle} />
+            <Stack direction="row" spacing={1}>
+              <Typography variant="h4">{portions[0].price}</Typography>
+              <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
+                {branchInfo?.currency}
+              </Typography>
+            </Stack>
+          </Stack>
 
           <Description
             isReadMore={isReadMore}
@@ -58,12 +66,19 @@ function MealCard({ mealInfo, isMealActive }) {
             selectedLanguage={selectedLanguage}
           />
 
-          <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
-            <Typography variant="h4">{portions[0].price}</Typography>
-            <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
-              {branchInfo?.currency}
-            </Typography>
-          </Stack>
+          {isMealActive && menuInfo?.allowSelfOrder && orderSnapShot?.updateCount === 0 && (
+            <Button
+              variant="soft"
+              color="success"
+              sx={{ alignSelf: 'flex-start' }}
+              onClick={() => setIsOpen(true)}
+            >
+              Add
+              {count !== 0 && (
+                <Box component="span" sx={{ color: 'common.black', pl: 1 }}>{`| x${count}`}</Box>
+              )}
+            </Button>
+          )}
         </Stack>
         <Box
           sx={{
@@ -95,25 +110,6 @@ function MealCard({ mealInfo, isMealActive }) {
             </Box>
           )}
 
-          {isMealActive && menuInfo?.allowSelfOrder && orderSnapShot?.updateCount === 0 && (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => setIsOpen(true)}
-              sx={{
-                position: 'absolute',
-                bottom: 0,
-                left: '50%',
-                transform: 'translate(-50%, 30%)',
-                width: '65%',
-              }}
-            >
-              Add
-              {count !== 0 && (
-                <Box component="span" sx={{ color: 'common.black', pl: 1 }}>{`| x${count}`}</Box>
-              )}
-            </Button>
-          )}
           {!isMealActive && (
             <Label
               variant="filled"
@@ -137,6 +133,7 @@ function MealCard({ mealInfo, isMealActive }) {
           mealInfo={mealInfo}
           tableID={tableID}
           orderSnapShot={orderSnapShot}
+          branchInfo={branchInfo}
         />
       )}
     </Box>

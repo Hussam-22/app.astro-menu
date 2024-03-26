@@ -23,7 +23,7 @@ import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 const CartDrawer = ({ openState, toggleDrawer }) => {
   const theme = useTheme();
   const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
-  const { user, orderStatus } = useQrMenuContext();
+  const { branchInfo, orderStatus } = useQrMenuContext();
   const { updateCount } = orderSnapShot;
 
   const queryClient = useQueryClient();
@@ -47,7 +47,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
     [orderSnapShot.cart, orderSnapShot?.docID]
   );
 
-  const taxValue = +(orderValue * (user.taxValue / 100)).toFixed(2);
+  const taxValue = +(orderValue * (branchInfo.taxValue / 100)).toFixed(2);
   const totalBill = +orderValue + taxValue;
 
   const removeMeal = (portion) => {
@@ -69,7 +69,14 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
       <Container maxWidth="sm">
         <Stack direction="column" spacing={1} sx={{ py: 2 }}>
           <Scrollbar sx={{ maxHeight: 300 }}>
-            <Box sx={{ bgcolor: 'background.paper', borderRadius: 2, p: 1, border: 'dashed 1px' }}>
+            <Box
+              sx={{
+                bgcolor: 'background.paper',
+                borderRadius: 2,
+                p: 1,
+                border: `dashed 1px ${theme.palette.divider}`,
+              }}
+            >
               {cartMeals.map((meal) => (
                 <Box key={meal.docID}>
                   <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>

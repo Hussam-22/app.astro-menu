@@ -13,7 +13,7 @@ import DialogCancelOrder from 'src/sections/staff/dialogs/cancel-order-dialog';
 
 function TableActionBar() {
   const { activeOrders, fsUpdateOrderStatus } = useAuthContext();
-  const { selectedTable, setSelectedTable, user } = useStaffContext();
+  const { selectedTable, setSelectedTable, branchInfo } = useStaffContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
@@ -35,7 +35,7 @@ function TableActionBar() {
     [orderSnapShot.cart, orderSnapShot?.docID]
   );
 
-  const taxValue = +(orderValue * (user.taxValue / 100)).toFixed(2);
+  const taxValue = +(orderValue * (branchInfo.taxValue / 100)).toFixed(2);
   const totalBill = orderValue + taxValue;
 
   if (!orderSnapShot) return null;
@@ -78,19 +78,19 @@ function TableActionBar() {
             <Typography variant="caption">
               Order : {orderValue}{' '}
               <Box component="span" sx={{ fontSize: 9 }}>
-                {user?.currency}
+                {branchInfo?.currency}
               </Box>
             </Typography>
             <Typography variant="caption">
-              Tax({user.taxValue}%) : {taxValue}{' '}
+              Tax({branchInfo?.taxValue}%) : {taxValue}{' '}
               <Box component="span" sx={{ fontSize: 9 }}>
-                {user?.currency}
+                {branchInfo?.currency}
               </Box>
             </Typography>
             <Typography variant="h6" sx={{ color: 'success.main' }}>
               Total: {totalBill}{' '}
               <Box component="span" sx={{ fontSize: 9 }}>
-                {user?.currency}
+                {branchInfo?.currency}
               </Box>
             </Typography>
           </Stack>

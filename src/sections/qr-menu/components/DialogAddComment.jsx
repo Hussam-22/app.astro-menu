@@ -10,7 +10,6 @@ import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
-import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 // ----------------------------------------------------------------------
 
@@ -19,11 +18,11 @@ DialogAddComment.propTypes = {
   onClose: PropTypes.func,
   mealInfo: PropTypes.object,
   orderSnapShot: PropTypes.object,
+  branchInfo: PropTypes.object,
 };
 
-export default function DialogAddComment({ isOpen, onClose, mealInfo, orderSnapShot }) {
+export default function DialogAddComment({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo }) {
   const { fsUpdateCart } = useAuthContext();
-  const { user } = useQrMenuContext();
   const { docID, userID, branchID, cart, updateCount } = orderSnapShot;
 
   const defaultValues = useMemo(
@@ -71,7 +70,7 @@ export default function DialogAddComment({ isOpen, onClose, mealInfo, orderSnapS
                     <Typography
                       variant="caption"
                       sx={{ textWrap: 'pretty' }}
-                    >{`${portion.portionSize} - ${portion.gram}gram - ${portion.price} ${user.currency}`}</Typography>
+                    >{`${portion.portionSize} - ${portion.gram}gram - ${portion.price} ${branchInfo.currency}`}</Typography>
                   </Stack>
                 </MenuItem>
               ))}
