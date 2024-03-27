@@ -281,7 +281,7 @@ export function AuthProvider({ children }) {
       const MAX_ALLOWED_USER_TABLES = 50;
       const batch = writeBatch(DB);
 
-      for (let index = 1; index <= MAX_ALLOWED_USER_TABLES; index += 1) {
+      for (let index = 0; index <= MAX_ALLOWED_USER_TABLES; index += 1) {
         const newDocRef = doc(
           collection(DB, `/users/${state.user.id}/branches/${branchID}/tables`)
         );

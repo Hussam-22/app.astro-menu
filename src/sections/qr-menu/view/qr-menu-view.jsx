@@ -8,8 +8,6 @@ function QrMenuView() {
   const { menuSections } = useAuthContext();
   const { tableInfo } = useQrMenuContext();
 
-  console.log(menuSections);
-
   if (tableInfo?.docID && !tableInfo?.isActive)
     return <Typography variant="h1">Sorry this table is not taking orders !!</Typography>;
 

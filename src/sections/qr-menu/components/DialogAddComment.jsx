@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 
 import { LoadingButton } from '@mui/lab';
-import { Box, Stack, Dialog, MenuItem, Typography, DialogContent } from '@mui/material';
+import { Stack, Button, Dialog, MenuItem, Typography, DialogContent } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
+import Image from 'src/components/image/image';
 import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider from 'src/components/hook-form/form-provider';
@@ -19,9 +20,17 @@ DialogAddComment.propTypes = {
   mealInfo: PropTypes.object,
   orderSnapShot: PropTypes.object,
   branchInfo: PropTypes.object,
+  mealTitle: PropTypes.string,
 };
 
-export default function DialogAddComment({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo }) {
+export default function DialogAddComment({
+  isOpen,
+  onClose,
+  mealInfo,
+  orderSnapShot,
+  branchInfo,
+  mealTitle,
+}) {
   const { fsUpdateCart } = useAuthContext();
   const { docID, userID, branchID, cart, updateCount } = orderSnapShot;
 
@@ -37,9 +46,13 @@ export default function DialogAddComment({ isOpen, onClose, mealInfo, orderSnapS
     defaultValues,
   });
 
-  const { handleSubmit } = methods;
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
 
   const onSubmit = async ({ comment, portion }) => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
     const updatedCart = cart;
     updatedCart.push({
       ...mealInfo.portions[portion],
@@ -57,7 +70,9 @@ export default function DialogAddComment({ isOpen, onClose, mealInfo, orderSnapS
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose} scroll="paper">
       <DialogContent sx={{ p: 3 }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={2} direction="column" sx={{ textAlign: 'center' }}>
+          <Stack spacing={1} direction="column" sx={{ textAlign: 'center' }}>
+            <Typography variant="h5">{mealTitle}</Typography>
+            <Image src={mealInfo.cover} sx={{ borderRadius: 1, mb: 2 }} ratio="4/3" />
             <RHFSelect name="portion" label="Select Meal Size/Portion">
               {mealInfo.portions.map((portion, index) => (
                 <MenuItem key={index} value={index}>
@@ -78,16 +93,20 @@ export default function DialogAddComment({ isOpen, onClose, mealInfo, orderSnapS
 
             <RHFTextField rows={3} multiline name="comment" label="Any Special Requests?" />
 
-            <Box>
+            <Stack direction="row" spacing={1} justifyContent="flex-end">
+              <Button variant="soft" onClick={onClose}>
+                Close
+              </Button>
               <LoadingButton
                 type="submit"
                 variant="contained"
                 color="success"
                 startIcon={<Iconify icon="mdi:hamburger-plus" />}
+                loading={isSubmitting}
               >
                 Add Meal
               </LoadingButton>
-            </Box>
+            </Stack>
           </Stack>
         </FormProvider>
       </DialogContent>

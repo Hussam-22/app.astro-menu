@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import { useMemo, useState } from 'react';
 
-import { Box, Stack, Button, useTheme, Typography } from '@mui/material';
+import { Box, Stack, useTheme, IconButton, Typography } from '@mui/material';
 
-import Label from 'src/components/label';
 import Image from 'src/components/image';
+import Label from 'src/components/label';
 import { useParams } from 'src/routes/hook';
+import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import TextMaxLine from 'src/components/text-max-line';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
@@ -19,8 +20,6 @@ function MealCard({ mealInfo, isMealActive }) {
   const { branchInfo, selectedLanguage, menuInfo } = useQrMenuContext();
   const [isReadMore, setIsReadMore] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
-  console.log(branchInfo);
 
   const getTitle = () => {
     if (selectedLanguage === branchInfo.defaultLanguage) return title;
@@ -49,15 +48,15 @@ function MealCard({ mealInfo, isMealActive }) {
 
   return (
     <Box sx={{ py: 1 }}>
-      <Stack direction="row" spacing={1}>
-        <Stack direction="column" spacing={1} sx={{ pt: 2, width: '70%', flexGrow: 1 }}>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="column" spacing={0} sx={{ width: '70%', flexGrow: 1 }}>
           <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
             <Title selectedLanguage={selectedLanguage} getTitle={getTitle} />
-            <Stack direction="row" spacing={1}>
-              <Typography variant="h4">{portions[0].price}</Typography>
+            <Stack direction="row" spacing={0}>
               <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
                 {branchInfo?.currency}
               </Typography>
+              <Typography variant="h4">{portions[0].price}</Typography>
             </Stack>
           </Stack>
 
@@ -67,20 +66,6 @@ function MealCard({ mealInfo, isMealActive }) {
             getDescription={getDescription}
             selectedLanguage={selectedLanguage}
           />
-
-          {isMealActive && branchInfo?.allowSelfOrder && orderSnapShot?.updateCount === 0 && (
-            <Button
-              variant="soft"
-              color="success"
-              sx={{ alignSelf: 'flex-start' }}
-              onClick={() => setIsOpen(true)}
-            >
-              Add
-              {count !== 0 && (
-                <Box component="span" sx={{ color: 'common.black', pl: 1 }}>{`| x${count}`}</Box>
-              )}
-            </Button>
-          )}
         </Stack>
         <Box
           sx={{
@@ -100,8 +85,45 @@ function MealCard({ mealInfo, isMealActive }) {
               p: 0,
             }}
           />
+          {isMealActive &&
+            branchInfo?.allowSelfOrder &&
+            orderSnapShot?.updateCount === 0 &&
+            (count === 0 ? (
+              <IconButton
+                variant="contained"
+                color="success"
+                sx={{
+                  position: 'absolute',
+                  bottom: -15,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  bgcolor: 'common.white',
+                  p: 0.25,
+                }}
+                onClick={() => setIsOpen(true)}
+              >
+                <Iconify icon="carbon:add-filled" sx={{ width: 32, height: 32 }} />
+              </IconButton>
+            ) : (
+              <Box
+                sx={{
+                  borderRadius: 1,
+                  position: 'absolute',
+                  bottom: -12,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  bgcolor: 'info.main',
+                  color: 'common.white',
+                  py: 0.4,
+                  px: 1.4,
+                }}
+                onClick={() => setIsOpen(true)}
+              >
+                <Typography variant="h6">x{count}</Typography>
+              </Box>
+            ))}
           {isNew && (
-            <Box sx={{ position: 'absolute', top: 4, right: 7 }}>
+            <Box sx={{ position: 'absolute', top: 4, right: 1 }}>
               <Label
                 variant="filled"
                 color="error"
@@ -136,6 +158,7 @@ function MealCard({ mealInfo, isMealActive }) {
           tableID={tableID}
           orderSnapShot={orderSnapShot}
           branchInfo={branchInfo}
+          mealTitle={getTitle()}
         />
       )}
     </Box>
@@ -186,7 +209,7 @@ function Description({ setIsReadMore, selectedLanguage, getDescription, isReadMo
           line={2}
           variant="caption"
           onClick={() => setIsReadMore(true)}
-          sx={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+          sx={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr', color: 'grey.600' }}
         >
           {getDescription()}
         </TextMaxLine>
