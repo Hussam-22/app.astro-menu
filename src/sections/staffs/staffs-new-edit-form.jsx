@@ -114,6 +114,26 @@ export default function StaffsNewEditForm({ staffInfo }) {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+      <Stack direction="row" spacing={1} justifyContent="flex-end" sx={{ mb: 2 }}>
+        <LoadingButton
+          variant="contained"
+          color="error"
+          sx={{ alignSelf: 'flex-end' }}
+          loading={isPending}
+          onClick={() => mutate(handleDeleteStaff)}
+        >
+          Delete
+        </LoadingButton>
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          sx={{ alignSelf: 'flex-end' }}
+          loading={isPending}
+          disabled={!isDirty}
+        >
+          Save Changes
+        </LoadingButton>
+      </Stack>
       <Card sx={{ p: 3 }}>
         <Stack direction="column" spacing={2}>
           <Stack direction="row" justifyContent="space-between">
@@ -166,27 +186,6 @@ export default function StaffsNewEditForm({ staffInfo }) {
               ),
             }}
           />
-
-          <Stack direction="row" spacing={1} justifyContent="flex-end">
-            <LoadingButton
-              variant="contained"
-              color="error"
-              sx={{ alignSelf: 'flex-end' }}
-              loading={isPending}
-              onClick={() => mutate(handleDeleteStaff)}
-            >
-              Delete
-            </LoadingButton>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              sx={{ alignSelf: 'flex-end' }}
-              loading={isPending}
-              disabled={!isDirty}
-            >
-              Save Changes
-            </LoadingButton>
-          </Stack>
         </Stack>
       </Card>
     </FormProvider>

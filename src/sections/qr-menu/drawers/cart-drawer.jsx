@@ -47,7 +47,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
     [orderSnapShot.cart, orderSnapShot?.docID]
   );
 
-  const taxValue = +(orderValue * (branchInfo.taxValue / 100)).toFixed(2);
+  const taxValue = +(orderValue * (branchInfo.taxValue / 100)).toFixed(2) || 0;
   const totalBill = +orderValue + taxValue;
 
   const removeMeal = (portion) => {
@@ -72,7 +72,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
             <Box
               sx={{
                 bgcolor: 'background.paper',
-                borderRadius: 2,
+                borderRadius: 1,
                 p: 1,
                 border: `dashed 1px ${theme.palette.divider}`,
               }}
@@ -102,31 +102,27 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
                               <Typography variant="body2">- {portion.portionSize}</Typography>
                             </Stack>
 
-                            <Typography variant="caption" sx={{ alignSelf: 'center', mx: 1 }}>
-                              {portion.price} AED
+                            <Typography variant="overline" sx={{ alignSelf: 'center', mx: 1 }}>
+                              {portion.price} {branchInfo.currency}
                             </Typography>
-                            <Divider
-                              orientation="vertical"
-                              flexItem
-                              sx={{ borderStyle: 'dashed', mx: 1 }}
-                            />
-
-                            <IconButton
-                              onClick={() => mutate(portion)}
-                              sx={{ p: 0.5 }}
-                              disabled={updateCount > 0}
-                            >
-                              {isPending ? (
-                                <CircularProgress color="secondary" size={20} />
-                              ) : (
-                                <Iconify
-                                  icon="eva:trash-2-outline"
-                                  width={20}
-                                  height={20}
-                                  sx={{ color: updateCount === 0 ? 'error.main' : 'default' }}
-                                />
-                              )}
-                            </IconButton>
+                            {branchInfo.allowSelfOrder && (
+                              <IconButton
+                                onClick={() => mutate(portion)}
+                                sx={{ p: 0.5 }}
+                                disabled={updateCount > 0}
+                              >
+                                {isPending ? (
+                                  <CircularProgress color="secondary" size={20} />
+                                ) : (
+                                  <Iconify
+                                    icon="eva:trash-2-outline"
+                                    width={20}
+                                    height={20}
+                                    sx={{ color: updateCount === 0 ? 'error.main' : 'default' }}
+                                  />
+                                )}
+                              </IconButton>
+                            )}
                           </Stack>
                           {portion?.comment && (
                             <Typography variant="caption" sx={{ ml: 2, color: 'error.main' }}>
@@ -147,8 +143,9 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
           <Box>
             <Label
               color={orderStatus.color}
-              variant="filled"
+              variant="soft"
               startIcon={<Iconify icon={orderStatus.icon} />}
+              sx={{ fontSize: '16px', p: 2.5 }}
             >
               {orderStatus.text}
             </Label>
@@ -157,19 +154,21 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
             <Typography variant="caption">
               Order : {orderValue}{' '}
               <Box component="span" sx={{ typography: 'caption' }}>
-                AED
+                {branchInfo.currency}
               </Box>
             </Typography>
-            <Typography variant="caption">
-              Tax : {taxValue}{' '}
-              <Box component="span" sx={{ typography: 'caption' }}>
-                AED
-              </Box>
-            </Typography>
+            {taxValue !== 0 && (
+              <Typography variant="caption">
+                Tax ({branchInfo.taxValue}%) : {taxValue}{' '}
+                <Box component="span" sx={{ typography: 'caption' }}>
+                  {branchInfo.currency}
+                </Box>
+              </Typography>
+            )}
             <Typography variant="h6" sx={{ color: 'success.main' }}>
               Total Bill : {totalBill}{' '}
               <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
-                AED
+                {branchInfo.currency}
               </Box>
             </Typography>
           </Stack>

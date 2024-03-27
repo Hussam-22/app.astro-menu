@@ -81,6 +81,7 @@ export default function BranchNewEditForm({ branchInfo }) {
       description: branchInfo?.description || '',
       wifiPassword: branchInfo?.wifiPassword || '',
       isActive: !!branchInfo?.isActive,
+      allowSelfOrder: !!branchInfo?.allowSelfOrder,
       cover: branchInfo?.cover || '',
       imgUrl: branchInfo?.cover || null,
       defaultLanguage: branchInfo?.defaultLanguage || 'en',
@@ -159,7 +160,7 @@ export default function BranchNewEditForm({ branchInfo }) {
   const onSubmit = async (formData) => {
     const shouldUpdateCover = getFieldState('cover').isDirty;
     if (branchInfo?.docID)
-      mutate(() =>
+      mutate(() => {
         fsUpdateBranch(
           {
             ...formData,
@@ -168,8 +169,9 @@ export default function BranchNewEditForm({ branchInfo }) {
             translationEdited: dirtyFields.description ? '' : branchInfo.translationEdited,
           },
           shouldUpdateCover
-        )
-      );
+        );
+        reset(formData);
+      });
     if (!branchInfo?.docID) {
       mutate(() => fsAddNewBranch(formData));
     }
@@ -223,17 +225,6 @@ export default function BranchNewEditForm({ branchInfo }) {
           <Stack spacing={2}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Typography variant="h3">Branch Info</Typography>
-              <Stack direction="column" alignItems="flex-end">
-                <RHFSwitch
-                  name="isActive"
-                  labelPlacement="start"
-                  label={values.isActive ? `Branch is Active` : `Branch is Inactive`}
-                  sx={{ alignItems: 'center' }}
-                />
-                <Typography variant="caption" sx={{ color: 'error.main' }}>
-                  When branch is inactive, customers cant view menu and waiters cant take orders
-                </Typography>
-              </Stack>
             </Stack>
             <RHFTextField name="title" label="Name" />
             <RHFTextField name="description" label="About" multiline rows={3} />
@@ -255,6 +246,52 @@ export default function BranchNewEditForm({ branchInfo }) {
                 ))}
               </RHFSelect>
             </Box>
+          </Stack>
+        </Card>
+
+        <Card sx={{ p: 3 }}>
+          <Typography variant="h3" sx={{ mb: 1 }}>
+            Branch Settings
+          </Typography>
+          <Stack
+            direction="column"
+            spacing={1}
+            divider={<Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />}
+          >
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Stack direction="column" spacing={0}>
+                <Typography sx={{ fontWeight: theme.typography.fontWeightBold }} color="error">
+                  Allow Self Order
+                </Typography>
+                <Typography variant="caption">
+                  Allow restaurant customers to place orders directly from their devices without
+                  waiter/ess attendance
+                </Typography>
+              </Stack>
+              <RHFSwitch
+                name="allowSelfOrder"
+                labelPlacement="start"
+                label={values.allowSelfOrder ? `Allow Self Order` : `View Menu Only`}
+                sx={{ alignItems: 'center' }}
+              />
+            </Stack>
+
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Stack direction="column" spacing={0}>
+                <Typography sx={{ fontWeight: theme.typography.fontWeightBold }} color="error">
+                  Branch Status
+                </Typography>
+                <Typography variant="caption">
+                  When branch is inactive, customers cant view menu and waiters cant take orders
+                </Typography>
+              </Stack>
+              <RHFSwitch
+                name="isActive"
+                labelPlacement="start"
+                label={values.isActive ? `Branch is Active` : `Branch is Inactive`}
+                sx={{ alignItems: 'center' }}
+              />
+            </Stack>
           </Stack>
         </Card>
 

@@ -20,6 +20,8 @@ function MealCard({ mealInfo, isMealActive }) {
   const [isReadMore, setIsReadMore] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log(branchInfo);
+
   const getTitle = () => {
     if (selectedLanguage === branchInfo.defaultLanguage) return title;
     return translationEdited?.[selectedLanguage]?.title
@@ -66,7 +68,7 @@ function MealCard({ mealInfo, isMealActive }) {
             selectedLanguage={selectedLanguage}
           />
 
-          {isMealActive && menuInfo?.allowSelfOrder && orderSnapShot?.updateCount === 0 && (
+          {isMealActive && branchInfo?.allowSelfOrder && orderSnapShot?.updateCount === 0 && (
             <Button
               variant="soft"
               color="success"
