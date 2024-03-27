@@ -38,6 +38,10 @@ function SectionsDrawer({ openState, toggleDrawer }) {
 
   const resetHandler = () => reset();
 
+  console.log(
+    menuSections.filter((section) => section.meals.filter((meal) => meal.isActive).length !== 0)
+  );
+
   return (
     <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('menu')}>
       <Container maxWidth="sm" sx={{ py: 3 }}>
@@ -117,6 +121,9 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                   disabled={labels.length === 0}
                 >
                   Reset
+                </Button>
+                <Button variant="soft" size="small" onClick={() => toggleDrawer('menu')}>
+                  Close
                 </Button>
               </Box>
             )}
