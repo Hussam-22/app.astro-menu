@@ -61,8 +61,8 @@ function SectionsDrawer({ openState, toggleDrawer }) {
     .map((meal) => meal.docID);
 
   console.log(
-    menuSections.filter((section) =>
-      section.meals.every((meal) => !inActiveMeals.includes(meal.mealID))
+    menuSections.filter(
+      (section) => !section.meals.every((meal) => inActiveMeals.includes(meal.mealID))
     )
   );
 
@@ -97,7 +97,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                         section.isActive &&
                         section.meals.length !== 0 &&
                         section.meals.filter((meal) => meal.isActive).length !== 0 &&
-                        section.meals.every((meal) => !inActiveMeals.includes(meal.mealID))
+                        !section.meals.every((meal) => inActiveMeals.includes(meal.mealID))
                     )
                     .sort((a, b) => a.order - b.order)
                     .map((section) => (
