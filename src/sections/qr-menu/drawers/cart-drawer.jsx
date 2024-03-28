@@ -27,9 +27,11 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
   const { updateCount } = orderSnapShot;
 
   const queryClient = useQueryClient();
-  const cachedMealLabels = queryClient.getQueriesData({ queryKey: ['sectionMeals'] }) || [];
+  const cachedMeals = queryClient.getQueriesData({ queryKey: ['meal'] }) || [];
 
-  const availableMeals = cachedMealLabels.flatMap((item) => item[1]);
+  const availableMeals = cachedMeals.flatMap((item) => item[1]);
+
+  console.log(availableMeals);
 
   const cartMeals = useMemo(
     () =>
