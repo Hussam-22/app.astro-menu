@@ -31,8 +31,6 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
 
   const availableMeals = cachedMeals.flatMap((item) => item[1]);
 
-  console.log(availableMeals);
-
   const cartMeals = useMemo(
     () =>
       availableMeals.length !== 0 &&

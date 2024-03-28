@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
@@ -16,7 +15,6 @@ MostOrderedMeals.propTypes = {
 };
 
 export default function MostOrderedMeals({ userData, branch, month, year }) {
-  const { meals } = useSelector((state) => state.meal);
   const [mealsStatisticsData, setMealsStatisticsData] = useState({});
   const [mealsIDs, setMealsIDs] = useState([]);
   const [nonZeroMeals, setNonZeroMeals] = useState([]);
@@ -28,9 +26,9 @@ export default function MostOrderedMeals({ userData, branch, month, year }) {
 
   useEffect(() => {
     setMealsStatisticsData(
-      userData?.statisticsSummary?.branches[branch.id]?.meals?.[year]?.[month]
+      userData?.statisticsSummary?.branches[branch.docID]?.meals?.[year]?.[month]
     );
-  }, [branch.id, month, userData, year]);
+  }, [branch.docID, month, userData, year]);
 
   useEffect(() => {
     if (

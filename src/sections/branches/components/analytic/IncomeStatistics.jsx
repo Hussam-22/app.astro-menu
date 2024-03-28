@@ -1,12 +1,9 @@
 import PropTypes from 'prop-types';
-// @mui
-import { Card, CardHeader, Typography, Box, Select, MenuItem, useTheme, Stack, Divider, Chip } from '@mui/material';
-// utils
-import { fCurrency } from 'src/utils/formatNumber';
-// components
-import { useChart } from 'src/components/chart';
 import ReactApexChart from 'react-apexcharts';
-import { useState } from 'react';
+
+import { Box, Chip, Card, Stack, useTheme, Typography, CardHeader } from '@mui/material';
+
+import { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +23,8 @@ export default function IncomeStatistics({ branchID, userData, year, month }) {
 
   const ordersCount = userData.statisticsSummary?.branches[branchID]?.orders?.[year]?.[month] || 0;
   const monthsIncome = userData?.statisticsSummary?.branches[branchID]?.income || {};
-  const thisMonthIncome = userData?.statisticsSummary?.branches[branchID]?.income?.[year]?.[month] || 0;
+  const thisMonthIncome =
+    userData?.statisticsSummary?.branches[branchID]?.income?.[year]?.[month] || 0;
   const avg = (+thisMonthIncome / +ordersCount).toFixed(2) || 0;
 
   return (
@@ -42,7 +40,9 @@ export default function IncomeStatistics({ branchID, userData, year, month }) {
           <Typography variant="caption">Avg ${avg} per Orders</Typography>
         </Stack>
 
-        {Object.keys(monthsIncome).length !== 0 && <IncomeYearStatistics incomeData={monthsIncome} year={year} />}
+        {Object.keys(monthsIncome).length !== 0 && (
+          <IncomeYearStatistics incomeData={monthsIncome} year={year} />
+        )}
       </Box>
     </Card>
   );
@@ -64,7 +64,20 @@ function IncomeYearStatistics({ incomeData, year }) {
   //   data: [{ name: 'Income', data: income }],
   // };
 
-  const chartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const chartLabels = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   const chartOptions = useChart({
     stroke: {
       show: true,
@@ -81,6 +94,8 @@ function IncomeYearStatistics({ incomeData, year }) {
     },
   });
 
-  return <ReactApexChart type="bar" series={[{ data: income }]} options={chartOptions} height={200} />;
+  return (
+    <ReactApexChart type="bar" series={[{ data: income }]} options={chartOptions} height={200} />
+  );
   // return <ReactApexChart type="bar" series={chartData.data} options={chartOptions} height={200} />;
 }

@@ -12,6 +12,7 @@ import StaffLink from 'src/sections/branches/staff-link';
 import { useSettingsContext } from 'src/components/settings';
 import BranchTables from 'src/sections/branches/BranchTables';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import BranchStatistics from 'src/sections/branches/BranchStatistics';
 import BranchTranslation from 'src/sections/branches/BranchTranslation';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
@@ -48,13 +49,13 @@ function BranchManageView() {
       icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
       component: <BranchTables branchInfo={branchInfo} />,
     },
-    // {
-    //   value: 'Statistics',
-    //   icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
-    //   component: <BranchStatistics />,
-    // },
     {
-      value: 'Waiters Dashboard Link',
+      value: 'Statistics',
+      icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
+      component: <BranchStatistics />,
+    },
+    {
+      value: 'Staffs Dashboard Link',
       icon: (
         <Iconify
           icon="streamline:food-kitchenware-chef-toque-hat-cook-gear-chef-cooking-nutrition-tools-clothes-hat-clothing-food"

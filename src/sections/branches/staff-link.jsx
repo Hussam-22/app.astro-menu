@@ -168,15 +168,15 @@ function ActionButtons({ staffID, status }) {
   );
 
   const onStatusChange = async () => {
-    fsUpdateStaffInfo(user.id, staffID, { isLoggedIn: false });
-    fsUpdateStaffInfo(user.id, staffID, { isActive: !status });
+    fsUpdateStaffInfo({ isLoggedIn: false }, staffID, user.id);
+    fsUpdateStaffInfo({ isActive: !status }, staffID, user.id);
   };
 
   const onPassCodeReset = async () => {
     const passCode = generatePassCode();
     setNewPassCode(passCode);
-    fsUpdateStaffInfo(user.id, staffID, { isLoggedIn: false });
-    fsUpdateStaffInfo(user.id, staffID, { passCode });
+    fsUpdateStaffInfo({ isLoggedIn: false }, staffID, user.id);
+    fsUpdateStaffInfo({ passCode }, staffID, user.id);
     setIsOpen(true);
   };
 
@@ -187,24 +187,30 @@ function ActionButtons({ staffID, status }) {
 
   return (
     <>
-      <Stack direction="row" spacing={1} justifyContent="space-between">
-        <LoadingButton
-          variant="soft"
-          size="small"
-          color="info"
-          onClick={() => mutate(onPassCodeReset)}
-          loading={isPending}
-        >
-          Reset PassCode
-        </LoadingButton>
+      <Stack direction="row" spacing={1} justifyContent="flex-end">
         <LoadingButton
           variant="soft"
           size="small"
           color={status ? 'error' : 'success'}
           onClick={() => mutate(onStatusChange)}
           loading={isPending}
+          startIcon={
+            <Iconify
+              icon={status ? 'solar:user-block-rounded-broken' : 'solar:user-check-broken'}
+            />
+          }
         >
-          {status ? 'Disabled & Revoke Access' : 'Enable Access'}
+          {status ? 'Revoke Access' : 'Enable Access'}
+        </LoadingButton>
+        <LoadingButton
+          variant="soft"
+          size="small"
+          color="warning"
+          onClick={() => mutate(onPassCodeReset)}
+          loading={isPending}
+          startIcon={<Iconify icon="fluent:key-reset-20-filled" />}
+        >
+          Reset PassCode
         </LoadingButton>
       </Stack>
 

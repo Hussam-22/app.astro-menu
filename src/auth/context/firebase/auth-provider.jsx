@@ -934,7 +934,7 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsGetMealLabels = useCallback(
-    async (userID = state?.user?.id) => {
+    async (userID = state.user.id) => {
       try {
         const dataArr = [];
         const docRef = query(collectionGroup(DB, 'meal-labels'), where('userID', '==', userID));
@@ -1268,7 +1268,6 @@ export function AuthProvider({ children }) {
       // fsAddToDB,
       // fsRemoveFromDB,
       // Timestamp,
-      // fsGetUserData,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
@@ -1380,7 +1379,6 @@ export function AuthProvider({ children }) {
       // fsQueryDoc,
       // fsAddToDB,
       // fsRemoveFromDB,
-      // fsGetUserData,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,

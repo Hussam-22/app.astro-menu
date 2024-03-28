@@ -8,6 +8,7 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2';
 
 import { useAuthContext } from 'src/auth/hooks';
 import TablesCard from 'src/sections/branches/components/TablesCard';
+import OrdersListCard from 'src/sections/branches/components/OrdersListCard';
 import SelectedTableInfoCard from 'src/sections/branches/components/SelectedTableInfoCard';
 
 BranchTables.propTypes = { branchInfo: PropTypes.object };
@@ -34,7 +35,7 @@ function BranchTables({ branchInfo }) {
         selectedTableID={selectedTable?.docID}
       />
       {selectedTable && <SelectedTableInfoCard tableInfo={selectedTable} />}
-      {/* {selectedTable && <OrdersListCard table={selectedTable} />} */}
+      {selectedTable && <OrdersListCard table={selectedTable} />}
 
       {/* {selectedTable && <StatisticsOverviewCard tableID={selectedTable.id} branchID={selectedTable.branchID} />} */}
     </Grid>

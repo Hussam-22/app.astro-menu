@@ -57,7 +57,7 @@ function MealListView() {
 
   const { data: mealLabelsList = [] } = useQuery({
     queryKey: ['meal-labels'],
-    queryFn: fsGetMealLabels,
+    queryFn: () => fsGetMealLabels(),
   });
 
   const handleFilterName = (filteredName) => {

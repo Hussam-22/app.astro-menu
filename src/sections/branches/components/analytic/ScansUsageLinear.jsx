@@ -1,4 +1,3 @@
-// @mui
 import PropTypes from 'prop-types';
 import ReactApexChart from 'react-apexcharts';
 

@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import {
@@ -16,7 +16,6 @@ import {
 
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
-import { rdxGetOrderByID, rdxGetOrdersList } from 'src/redux/slices/orders';
 import TableOrdersTableRow from 'src/sections/branches/components/table/TableOrdersTableRow';
 import ShowOrderDetailsDialog from 'src/sections/branches/components/dialogs/ShowOrderDetailsDialog';
 import {
@@ -47,10 +46,8 @@ OrdersListCard.propTypes = {
 // TODO: FIX TABLE ORDER, ADD FILTER BY STATUS OPTION
 
 export default function OrdersListCard({ table }) {
-  const dispatch = useDispatch();
   const { fsGetAllTableOrders } = useAuthContext();
   const [openDialog, setOpenDialog] = useState(false);
-  const { orders } = useSelector((state) => state.orders);
 
   const {
     dense,
@@ -71,23 +68,23 @@ export default function OrdersListCard({ table }) {
     onChangeRowsPerPage,
   } = useTable({ defaultOrderBy: 'LastUpdate', defaultOrder: 'desc', defaultRowsPerPage: 10 });
 
-  const [tableData, setTableData] = useState([]);
-  // const { currentTab: filterStatus, onChangeTab: onFilterStatus } = useTabs('all');
+  const {
+    data: tableData = [],
+    error,
+    isFetching,
+  } = useQuery({
+    queryKey: ['tableOrders', table.docID],
+    queryFn: () => fsGetAllTableOrders(table.docID),
+  });
 
-  useEffect(() => {
-    (async function getOrders() {
-      dispatch(rdxGetOrdersList(await fsGetAllTableOrders(table.id)));
-    })();
-  }, [dispatch, fsGetAllTableOrders, table]);
-
-  useEffect(() => {
-    setTableData(orders);
-  }, [orders]);
+  // useEffect(() => {
+  //   setTableData(orders);
+  // }, [orders]);
 
   const onDialogClose = () => setOpenDialog(false);
 
   const handleViewRow = (id) => {
-    dispatch(rdxGetOrderByID(id));
+    // dispatch(rdxGetOrderByID(id));
     setOpenDialog(true);
   };
 
@@ -96,7 +93,7 @@ export default function OrdersListCard({ table }) {
     comparator: getComparator(order, orderBy),
   });
 
-  const isNotFound = !tableData.length;
+  const isNotFound = !tableData?.length;
 
   const denseHeight = 56;
 
@@ -130,11 +127,11 @@ export default function OrdersListCard({ table }) {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <TableOrdersTableRow
-                      key={row.id}
+                      key={row.docID}
                       row={row}
-                      selected={selected.includes(row.id)}
-                      onSelectRow={() => onSelectRow(row.id)}
-                      onViewRow={() => handleViewRow(row.id)}
+                      selected={selected.includes(row.docID)}
+                      onSelectRow={() => onSelectRow(row.docID)}
+                      onViewRow={() => handleViewRow(row.docID)}
                     />
                   ))}
 
