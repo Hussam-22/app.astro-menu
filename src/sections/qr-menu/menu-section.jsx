@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 
 import { Box, Stack, Divider, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import MealCard from 'src/sections/qr-menu/meal-card';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
-import MealCardSkeleton from 'src/sections/qr-menu/components/meal-card-skeleton';
 
 function MenuSection({ sectionInfo }) {
   const { userID } = useParams();
@@ -18,7 +17,7 @@ function MenuSection({ sectionInfo }) {
     translationEdited,
     translation,
   } = sectionInfo;
-  const { fsGetSectionMeals } = useAuthContext();
+  const { fsGetSectionMeals, fsGetMeal } = useAuthContext();
   const { labels, loading, selectedLanguage, branchInfo } = useQrMenuContext();
 
   const getTitle = () => {
@@ -28,24 +27,34 @@ function MenuSection({ sectionInfo }) {
       : translation?.[selectedLanguage]?.title;
   };
 
-  const { data: meals = [] } = useQuery({
-    queryKey: ['sectionMeals', userID, sectionID],
-    queryFn: () =>
-      fsGetSectionMeals(
-        userID,
-        sectionMeals.flatMap((meal) => meal.mealID)
-      ),
+  // const { data: meals = [] } = useQuery({
+  //   queryKey: ['sectionMeals', userID, sectionID],
+  //   queryFn: () =>
+  //     fsGetSectionMeals(
+  //       userID,
+  //       sectionMeals.flatMap((meal) => meal.mealID)
+  //     ),
+  // });
+
+  const mealsData = useQueries({
+    queries: sectionMeals
+      .flatMap((meal) => meal.mealID)
+      .map((mealID) => ({
+        queryKey: ['meal', mealID, userID],
+        queryFn: () => fsGetMeal(mealID, '800x800', userID),
+        staleTime: Infinity,
+      })),
   });
 
   const filteredMeals =
     labels.length === 0
-      ? meals
-      : meals.filter((meal) => meal.mealLabels.some((mealLabelID) => labels.includes(mealLabelID)));
+      ? mealsData
+      : mealsData.filter((meal) =>
+          meal.data.mealLabels.some((mealLabelID) => labels.includes(mealLabelID))
+        );
 
   // hide sections without meals
-  if (filteredMeals.filter((meal) => meal.isActive).length === 0) return null;
-
-  if (loading) return <MealCardSkeleton />;
+  if (filteredMeals.filter((meal) => meal?.data?.isActive).length === 0) return null;
 
   return (
     <Box>
@@ -73,13 +82,14 @@ function MenuSection({ sectionInfo }) {
       >
         <Stack direction="column" spacing={1} divider={<Divider sx={{ borderStyle: 'dashed' }} />}>
           {filteredMeals
-            .filter((meal) => meal.isActive)
+            .filter((meal) => meal.data?.isActive)
             .map((meal) => (
               <MealCard
-                key={meal.docID}
-                mealInfo={meal}
+                key={meal.data.docID}
+                mealInfo={meal.data}
                 isMealActive={
-                  sectionMeals.find((sectionMeal) => sectionMeal.mealID === meal.docID).isActive
+                  sectionMeals.find((sectionMeal) => sectionMeal.mealID === meal.data.docID)
+                    ?.isActive
                 }
               />
             ))}

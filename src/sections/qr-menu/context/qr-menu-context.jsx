@@ -52,7 +52,7 @@ export function QrMenuContextProvider({ children }) {
   const { data: menuInfo = {} } = useQuery({
     queryKey: ['menu', userID, tableInfo.menuID],
     queryFn: () => fsGetMenu(tableInfo.menuID, userID),
-    enabled: tableInfo?.docID !== undefined && tableInfo.isActive,
+    enabled: isTableInfoSuccess,
   });
 
   const { data: branchInfo = {} } = useQuery({

@@ -1,4 +1,7 @@
+import { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useParams } from 'react-router';
+import { useQueries } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
 import { Chip, Stack, Button, Drawer, Divider, Container, Typography } from '@mui/material';
@@ -13,7 +16,8 @@ SectionsDrawer.propTypes = {
 };
 
 function SectionsDrawer({ openState, toggleDrawer }) {
-  const { menuSections } = useAuthContext();
+  const { userID } = useParams();
+  const { menuSections, fsGetMeal } = useAuthContext();
   const { setLabel, labels, reset, selectedLanguage, branchInfo, mealsLabel } = useQrMenuContext();
 
   const getTitle = (section) => {
@@ -38,8 +42,28 @@ function SectionsDrawer({ openState, toggleDrawer }) {
 
   const resetHandler = () => reset();
 
+  const sectionsMealsID = useMemo(
+    () => menuSections.flatMap((section) => section.meals.map((meal) => meal.mealID)),
+    [menuSections]
+  );
+
+  const mealsData = useQueries({
+    queries: sectionsMealsID.map((mealID) => ({
+      queryKey: ['meal', mealID, userID],
+      queryFn: () => fsGetMeal(mealID, '800x800', userID),
+      staleTime: Infinity,
+    })),
+  });
+
+  const inActiveMeals = mealsData
+    .map((meal) => meal.data)
+    .filter((meal) => !meal.isActive)
+    .map((meal) => meal.docID);
+
   console.log(
-    menuSections.filter((section) => section.meals.filter((meal) => meal.isActive).length !== 0)
+    menuSections.filter((section) =>
+      section.meals.every((meal) => !inActiveMeals.includes(meal.mealID))
+    )
   );
 
   return (
@@ -65,11 +89,15 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                   }}
                 >
                   {[...menuSections]
+                    .filter((section) =>
+                      section.meals.every((mealID) => !inActiveMeals.includes(mealID))
+                    )
                     .filter(
                       (section) =>
                         section.isActive &&
                         section.meals.length !== 0 &&
-                        section.meals.filter((meal) => meal.isActive).length !== 0
+                        section.meals.filter((meal) => meal.isActive).length !== 0 &&
+                        section.meals.every((meal) => !inActiveMeals.includes(meal.mealID))
                     )
                     .sort((a, b) => a.order - b.order)
                     .map((section) => (
