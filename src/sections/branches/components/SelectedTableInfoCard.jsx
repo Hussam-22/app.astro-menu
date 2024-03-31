@@ -39,7 +39,7 @@ function SelectedTableInfoCard({ tableInfo }) {
 
   const { data: menusList = [] } = useQuery({
     queryKey: ['menus'],
-    queryFn: fsGetAllMenus,
+    queryFn: () => fsGetAllMenus(),
   });
 
   const { mutate, isPending } = useMutation({

@@ -36,7 +36,7 @@ export default function StaffsNewEditForm({ staffInfo }) {
 
   const { data: branchesList = [], isLoading } = useQuery({
     queryKey: ['branches'],
-    queryFn: fsGetAllBranches,
+    queryFn: () => fsGetAllBranches(),
   });
 
   const NewUserSchema = Yup.object().shape({

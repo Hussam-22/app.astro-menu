@@ -71,7 +71,7 @@ function MenuListView() {
 
   const { data = [], isLoading } = useQuery({
     queryKey: ['menus'],
-    queryFn: fsGetAllMenus,
+    queryFn: () => fsGetAllMenus(),
   });
 
   useEffect(() => {

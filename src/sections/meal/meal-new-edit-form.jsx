@@ -44,7 +44,7 @@ function MealNewEditForm({ mealInfo }) {
 
   const { data: mealLabelsList = [] } = useQuery({
     queryKey: ['meal-labels'],
-    queryFn: fsGetMealLabels,
+    queryFn: () => fsGetMealLabels(),
   });
 
   const NewMealSchema = Yup.object().shape({
@@ -133,8 +133,8 @@ function MealNewEditForm({ mealInfo }) {
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      queryClient.invalidateQueries(['meals', `meal-${mealInfo.docID}`]);
       queryClient.invalidateQueries(['meals']);
+      // queryClient.invalidateQueries(['meals', `meal-${mealInfo.docID}`]);
     },
   });
 

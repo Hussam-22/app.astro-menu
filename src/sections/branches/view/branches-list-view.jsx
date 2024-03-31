@@ -67,7 +67,7 @@ export default function BranchesListView() {
 
   const { data: tableData = [] } = useQuery({
     queryKey: ['branches'],
-    queryFn: fsGetAllBranches,
+    queryFn: () => fsGetAllBranches(),
   });
 
   const handleFilterName = (filteredName) => {

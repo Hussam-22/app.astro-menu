@@ -23,7 +23,7 @@ function MealsAndSections() {
 
   const { data: allMeals = [] } = useQuery({
     queryKey: [`meals`],
-    queryFn: fsGetAllMeals,
+    queryFn: () => fsGetAllMeals(),
   });
 
   useEffect(

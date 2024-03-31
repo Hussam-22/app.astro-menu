@@ -872,11 +872,7 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsGetAllMeals = useCallback(async () => {
-    const docRef = query(
-      collectionGroup(DB, 'meals'),
-      where('userID', '==', state.user.id)
-      // where('isDeleted', '==', false)
-    );
+    const docRef = query(collectionGroup(DB, 'meals'), where('userID', '==', state.user.id));
     const querySnapshot = await getDocs(docRef);
     const dataArr = [];
     const asyncOperations = [];
@@ -890,7 +886,6 @@ export function AuthProvider({ children }) {
       };
       asyncOperations.push(asyncOperation());
     });
-
     await Promise.all(asyncOperations);
 
     return dataArr;

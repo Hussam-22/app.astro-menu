@@ -24,7 +24,7 @@ export default function MealLabelNewEditForm({ onClose, mealID }) {
 
   const { data: mealLabelsList = [], error } = useQuery({
     queryKey: ['meal-labels'],
-    queryFn: fsGetMealLabels,
+    queryFn: () => fsGetMealLabels(),
   });
 
   console.log(error);

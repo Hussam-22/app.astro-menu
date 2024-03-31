@@ -52,7 +52,7 @@ function MealListView() {
 
   const { data: allMeals = [] } = useQuery({
     queryKey: [`meals`],
-    queryFn: fsGetAllMeals,
+    queryFn: () => fsGetAllMeals(),
   });
 
   const { data: mealLabelsList = [] } = useQuery({
