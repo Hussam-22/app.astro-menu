@@ -880,9 +880,13 @@ export function AuthProvider({ children }) {
     querySnapshot.forEach((element) => {
       const asyncOperation = async () => {
         const bucket = `menu-app-b268b/${state.user.id}/meals/${element.data().docID}/`;
-        const cover = await fsGetImgDownloadUrl(bucket, `${element.data().docID}_200x200.webp`);
-
-        dataArr.push({ ...element.data(), cover });
+        try {
+          const cover = await fsGetImgDownloadUrl(bucket, `${element.data().docID}_200x200.webp`);
+          dataArr.push({ ...element.data(), cover });
+        } catch (error) {
+          // Handle the case where cover is not available
+          throw new Error(`Cover not available for meal with ID: ${element.data().docID}`);
+        }
       };
       asyncOperations.push(asyncOperation());
     });

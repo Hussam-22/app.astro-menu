@@ -50,10 +50,19 @@ function MealListView() {
   const { fsGetAllMeals, fsGetMealLabels } = useAuthContext();
   const [filterName, setFilterName] = useState('');
 
-  const { data: allMeals = [] } = useQuery({
+  const {
+    data: allMeals = [],
+    isLoading,
+    isError,
+    isLoadingError,
+    failureCount,
+    isFetching,
+  } = useQuery({
     queryKey: [`meals`],
     queryFn: () => fsGetAllMeals(),
   });
+
+  console.log({ isLoading, isError, isLoadingError, failureCount, isFetching });
 
   const { data: mealLabelsList = [] } = useQuery({
     queryKey: ['meal-labels'],
@@ -111,6 +120,13 @@ function MealListView() {
                 rowCount={allMeals.length}
                 onSort={onSort}
               />
+              {failureCount !== 0 && (
+                <TableBody>
+                  {[...Array(rowsPerPage)].map((_, index) => (
+                    <TableSkeleton key={index} sx={{ height: 60 }} />
+                  ))}
+                </TableBody>
+              )}
 
               <TableBody>
                 {(allMeals.length === 0 ? [...Array(rowsPerPage)] : dataFiltered)
