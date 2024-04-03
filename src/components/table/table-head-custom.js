@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 
 // @mui
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
@@ -37,7 +36,7 @@ export default function TableHeadCustom({
   return (
     <TableHead sx={{ ...sx, bgcolor: 'background.default' }}>
       <TableRow>
-        {onSelectAllRows && (
+        {/* {onSelectAllRows && (
           <TableCell padding="checkbox">
             <Checkbox
               indeterminate={!!numSelected && numSelected < rowCount}
@@ -45,7 +44,7 @@ export default function TableHeadCustom({
               onChange={(event) => onSelectAllRows(event.target.checked)}
             />
           </TableCell>
-        )}
+        )} */}
 
         {headLabel.map((headCell) => (
           <TableCell

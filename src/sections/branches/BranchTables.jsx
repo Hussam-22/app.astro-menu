@@ -35,7 +35,7 @@ function BranchTables({ branchInfo }) {
         selectedTableID={selectedTable?.docID}
       />
       {selectedTable && <SelectedTableInfoCard tableInfo={selectedTable} />}
-      {selectedTable && <OrdersListCard table={selectedTable} />}
+      {selectedTable && selectedTable.index !== 0 && <OrdersListCard table={selectedTable} />}
 
       {/* {selectedTable && <StatisticsOverviewCard tableID={selectedTable.id} branchID={selectedTable.branchID} />} */}
     </Grid>

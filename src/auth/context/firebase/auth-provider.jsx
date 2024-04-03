@@ -278,7 +278,7 @@ export function AuthProvider({ children }) {
   }, []);
   const fsAddBatchTablesToBranch = useCallback(
     async (branchID) => {
-      const MAX_ALLOWED_USER_TABLES = 50;
+      const MAX_ALLOWED_USER_TABLES = 5;
       const batch = writeBatch(DB);
 
       for (let index = 0; index <= MAX_ALLOWED_USER_TABLES; index += 1) {
@@ -290,8 +290,11 @@ export function AuthProvider({ children }) {
           userID: state.user.id,
           branchID,
           isActive: true,
-          title: `Table ${index}`,
-          note: '',
+          title: index === 0 ? `Menu View only` : `Table ${index}`,
+          note:
+            index === 0
+              ? `This virtual table offers a QR-Menu that exclusively displays your menu. You can utilize this QR menu by showcasing it on your restaurant's front door, allowing customers to easily view your offerings. `
+              : '',
           index,
         });
       }

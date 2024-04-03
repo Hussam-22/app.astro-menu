@@ -98,6 +98,7 @@ const TableOrder = () => {
         toUpdateFields: {
           isInKitchen: [...isInKitchen, updateCount],
           updateCount: updateCount + 1,
+          staffID: staff.docID,
         },
       });
     });

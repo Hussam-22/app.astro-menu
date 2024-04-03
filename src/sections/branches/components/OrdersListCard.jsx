@@ -28,11 +28,11 @@ import {
 } from 'src/components/table';
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'Order #', align: 'left' },
-  { id: 'status', label: 'Last Update', align: 'left' },
-  { id: 'menuID', label: 'Menu', align: 'left' },
-  { id: 'totalBill', label: 'Amount', align: 'center', width: 140 },
-  { id: 'staffID', label: 'waiter(ess)', align: 'center', width: 140 },
+  { id: 'id', label: 'Order #', align: 'left', width: '10%' },
+  { id: 'status', label: 'Last Update', align: 'left', width: '15%' },
+  { id: 'menuID', label: 'Menu', align: 'left', width: '20%' },
+  { id: 'totalBill', label: 'Amount', align: 'center', width: '7%' },
+  { id: 'staffID', label: 'waiter(ess)', align: 'center', width: '25%' },
   { id: 'statusName', label: 'Status', align: 'left' },
   { id: '' },
 ];
@@ -68,13 +68,10 @@ export default function OrdersListCard({ table }) {
     onChangeRowsPerPage,
   } = useTable({ defaultOrderBy: 'LastUpdate', defaultOrder: 'desc', defaultRowsPerPage: 10 });
 
-  const {
-    data: tableData = [],
-    error,
-    isFetching,
-  } = useQuery({
+  const { data: tableData = [], isFetching } = useQuery({
     queryKey: ['tableOrders', table.docID],
     queryFn: () => fsGetAllTableOrders(table.docID),
+    refetchInterval: 60 * 1000,
   });
 
   // useEffect(() => {
