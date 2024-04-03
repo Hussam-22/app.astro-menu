@@ -25,6 +25,8 @@ export default function MealTableRow({ row, onEditRow, mealLabelsList }) {
     return null;
   };
 
+  // TODO: get image download-URL from her to speedup the loading of the record, instead of retrying the whole meals-list query for just one new meal with image.
+
   return (
     <TableRow hover>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
