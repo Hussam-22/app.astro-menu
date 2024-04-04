@@ -11,11 +11,9 @@ import { fCurrency } from 'src/utils/format-number';
 
 TableOrdersTableRow.propTypes = {
   row: PropTypes.object.isRequired,
-  selected: PropTypes.bool,
-  onViewRow: PropTypes.func,
 };
 
-export default function TableOrdersTableRow({ row, selected, onViewRow }) {
+export default function TableOrdersTableRow({ row }) {
   const { fsGetMenu, fsGetStaffInfo } = useAuthContext();
   const {
     docID,
@@ -53,12 +51,12 @@ export default function TableOrdersTableRow({ row, selected, onViewRow }) {
   };
 
   return (
-    <TableRow hover selected={selected}>
+    <TableRow hover>
       <TableCell>
         <Link
           noWrap
           variant="caption"
-          onClick={onViewRow}
+          onClick={() => {}}
           sx={{ color: 'text.disabled', cursor: 'pointer' }}
         >
           {docID}

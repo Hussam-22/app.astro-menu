@@ -6,14 +6,17 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import {
   Box,
   Card,
+  Stack,
   Table,
   Switch,
   TableBody,
+  Typography,
   TableContainer,
   TablePagination,
   FormControlLabel,
 } from '@mui/material';
 
+import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import TableOrdersTableRow from 'src/sections/branches/components/table/TableOrdersTableRow';
@@ -22,6 +25,7 @@ import {
   useTable,
   emptyRows,
   TableNoData,
+  TableSkeleton,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
@@ -71,7 +75,7 @@ export default function OrdersListCard({ table }) {
   const { data: tableData = [], isFetching } = useQuery({
     queryKey: ['tableOrders', table.docID],
     queryFn: () => fsGetAllTableOrders(table.docID),
-    refetchInterval: 60 * 1000,
+    refetchInterval: 6 * 1000,
   });
 
   // useEffect(() => {
@@ -97,6 +101,10 @@ export default function OrdersListCard({ table }) {
   return (
     <Grid xs={12}>
       <Card sx={{ p: 3 }}>
+        <Stack direction="row" spacing={0.5} alignItems="center" sx={{ mb: 1 }}>
+          <Iconify icon="solar:refresh-line-duotone" />
+          <Typography variant="caption">Orders auto refreshes every 1 minutes</Typography>
+        </Stack>
         <Scrollbar>
           <TableContainer sx={{ minWidth: 800, position: 'relative', pt: 1 }}>
             <Table size={!dense ? 'small' : 'medium'}>
@@ -116,21 +124,16 @@ export default function OrdersListCard({ table }) {
               />
 
               <TableBody>
-                {dataFiltered
-                  .sort(
-                    (a, b) =>
-                      new Date(b.lastUpdate.seconds * 1000) - new Date(a.lastUpdate.seconds * 1000)
-                  )
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <TableOrdersTableRow
-                      key={row.docID}
-                      row={row}
-                      selected={selected.includes(row.docID)}
-                      onSelectRow={() => onSelectRow(row.docID)}
-                      onViewRow={() => handleViewRow(row.docID)}
-                    />
-                  ))}
+                {isFetching && <TableSkeleton />}
+                {!isFetching &&
+                  dataFiltered
+                    .sort(
+                      (a, b) =>
+                        new Date(b.lastUpdate.seconds * 1000) -
+                        new Date(a.lastUpdate.seconds * 1000)
+                    )
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row) => <TableOrdersTableRow key={row.docID} row={row} />)}
 
                 <TableEmptyRows
                   height={denseHeight}
