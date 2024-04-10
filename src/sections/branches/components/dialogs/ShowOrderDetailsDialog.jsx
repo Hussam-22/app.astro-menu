@@ -1,46 +1,69 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import React, { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import {
   Box,
   Stack,
   Dialog,
   Divider,
-  Typography,
+  useTheme,
   IconButton,
+  Typography,
   DialogTitle,
   DialogContent,
 } from '@mui/material';
 
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-import { fDate } from 'src/utils/format-time';
+import { useAuthContext } from 'src/auth/hooks';
+import Scrollbar from 'src/components/scrollbar';
+import { fDateTime } from 'src/utils/format-time';
 
 ShowOrderDetailsDialog.propTypes = {
   onClose: PropTypes.func,
   isOpen: PropTypes.bool,
+  orderInfo: PropTypes.object,
 };
 
-function ShowOrderDetailsDialog({ isOpen, onClose }) {
-  const { cart, id, lastUpdate } = useSelector((state) => state.orders.order);
-  const mealsList = useSelector((state) => state.meal.meals);
+function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
+  const { cart, lastUpdate, docID } = orderInfo;
+  const theme = useTheme();
+  const { fsGetAllMeals, fsGetBranch } = useAuthContext();
 
-  const mealsArr = mealsList.filter((meal) => cart.some((cartItem) => cartItem.mealID === meal.id));
-  const orderMeal = mealsArr.map((meal) => ({
-    ...meal,
-    portions: cart
-      .filter((cartMeal) => cartMeal.mealID === meal.id)
-      .map((cartMeal) => ({
-        comment: cartMeal.comment,
-        portionSize: cartMeal.portionSize,
-        price: cartMeal.price,
-        qty: 1,
-        id: cartMeal.id,
-      })),
-  }));
+  const { data: branchInfo = {} } = useQuery({
+    queryKey: ['branch', orderInfo.branchID],
+    queryFn: () => fsGetBranch(orderInfo.branchID),
+  });
+
+  const { data: mealsList = [] } = useQuery({
+    queryKey: [`meals`],
+    queryFn: () => fsGetAllMeals(),
+  });
+
+  const allMeals = mealsList.filter((meal) =>
+    cart.some((cartItem) => cartItem.mealID === meal.docID)
+  );
+
+  const cartMeals = useMemo(
+    () =>
+      allMeals.length !== 0 &&
+      allMeals.filter((meal) => orderInfo.cart.some((portion) => portion.mealID === meal?.docID)),
+    [allMeals, orderInfo.cart]
+  );
+
   const totalBill = cart.reduce((sum, item) => sum + item.price, 0);
 
   const orderDate = new Date(lastUpdate.seconds * 1000);
+
+  const orderStatus = () => {
+    if (orderInfo.isPaid) return ['Paid', 'success'];
+    if (orderInfo.isCanceled) return ['Canceled', 'error'];
+    if (orderInfo.isReadyToServe.length !== 0) return ['Ready to Serve', 'info'];
+    if (orderInfo.isInKitchen.length !== 0) return ['Sent to Kitchen', 'warning'];
+    if (orderInfo.isCanceled) return ['Canceled', 'error'];
+    return ['In Progress', 'default'];
+  };
 
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose}>
@@ -53,46 +76,81 @@ function ShowOrderDetailsDialog({ isOpen, onClose }) {
             position: 'absolute',
             right: 18,
             top: 18,
-            color: (theme) => theme.palette.grey[500],
+            color: theme.palette.grey[500],
           }}
         >
           <Iconify icon="material-symbols:close" />
         </IconButton>
-        <Typography variant="caption" component="div">
-          {id} - {fDate(orderDate)}
-        </Typography>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="caption" component="div">
+            {docID}
+          </Typography>
+          <Label variant="soft" color={orderStatus()[1]} sx={{ textTransform: 'capitalize' }}>
+            {orderStatus()[0]}
+          </Label>
+
+          <Typography variant="caption" component="div">
+            {fDateTime(orderDate)}
+          </Typography>
+        </Stack>
       </DialogTitle>
-      <DialogContent sx={{ borderTop: 'dashed 1px #F0F0F0', mt: 1 }}>
-        <Box sx={{ p: 1 }}>
-          {orderMeal.map((meal) => (
-            <React.Fragment key={meal.id}>
-              <Typography sx={{ fontWeight: 700 }}>{meal.title}</Typography>
-              {meal.portions.map((portion) => (
-                <Stack key={portion.id} sx={{ display: 'flex' }}>
-                  <Stack direction="row">
-                    <Typography sx={{ flexGrow: 1, alignSelf: 'center' }} variant="body2">
-                      - {portion.portionSize}
-                    </Typography>
+      <DialogContent>
+        <Scrollbar sx={{ maxHeight: 300 }}>
+          <Box
+            sx={{
+              bgcolor: 'background.paper',
+              borderRadius: 1,
+              p: 2,
+              border: `dashed 1px ${theme.palette.grey[300]}`,
+            }}
+          >
+            {mealsList.length !== 0 &&
+              cartMeals.map((meal) => (
+                <Box key={meal.docID}>
+                  <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                    {meal.title}
+                  </Typography>
+                  <Box>
+                    {orderInfo.cart
+                      .filter((cartPortion) => cartPortion.mealID === meal.docID)
+                      .map((portion) => (
+                        <Stack key={portion.id}>
+                          <Stack direction="row" justifyContent="space-between">
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              sx={{
+                                flexGrow: 1,
+                                textDecorationLine: portion?.price === 0 ? 'line-through' : 'none',
+                                textDecorationColor: theme.palette.error.main,
+                                textDecorationThickness: 2,
+                              }}
+                              alignItems="center"
+                            >
+                              <Typography variant="body2">- {portion.portionSize}</Typography>
+                            </Stack>
 
-                    <Typography variant="caption" sx={{ alignSelf: 'center', mx: 1 }}>
-                      {portion.price} AED
-                    </Typography>
-                  </Stack>
-                  {portion.comment !== '' && (
-                    <Typography variant="caption" color="secondary" sx={{ ml: 2 }}>
-                      *{portion.comment}
-                    </Typography>
-                  )}
-                </Stack>
+                            <Typography variant="overline" sx={{ alignSelf: 'center', mx: 1 }}>
+                              {portion.price} {branchInfo?.currency}
+                            </Typography>
+                          </Stack>
+                          {portion?.comment && (
+                            <Typography variant="caption" sx={{ ml: 2, color: 'error.main' }}>
+                              *{portion.comment}
+                            </Typography>
+                          )}
+                        </Stack>
+                      ))}
+                  </Box>
+
+                  <Divider flexItem sx={{ borderStyle: 'dashed' }} />
+                </Box>
               ))}
-
-              <Divider flexItem sx={{ borderStyle: 'dashed' }} />
-            </React.Fragment>
-          ))}
-        </Box>
-        <Stack sx={{ py: 3, display: 'flex', justifyContent: 'right' }} direction="row" spacing={2}>
+          </Box>
+        </Scrollbar>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ py: 2 }}>
           <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-            Total Bill : {totalBill} AED
+            Total Bill : {totalBill} {branchInfo?.currency}
           </Typography>
         </Stack>
       </DialogContent>

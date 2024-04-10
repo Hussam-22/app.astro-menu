@@ -11,9 +11,10 @@ import { fCurrency } from 'src/utils/format-number';
 
 TableOrdersTableRow.propTypes = {
   row: PropTypes.object.isRequired,
+  onOrderClick: PropTypes.func,
 };
 
-export default function TableOrdersTableRow({ row }) {
+export default function TableOrdersTableRow({ row, onOrderClick }) {
   const { fsGetMenu, fsGetStaffInfo } = useAuthContext();
   const {
     docID,
@@ -39,8 +40,6 @@ export default function TableOrdersTableRow({ row }) {
     enabled: staffID !== '' || staffID !== undefined,
   });
 
-  console.log(staffInfo);
-
   const orderStatus = () => {
     if (isPaid) return ['Paid', 'success'];
     if (isCanceled) return ['Canceled', 'error'];
@@ -56,7 +55,7 @@ export default function TableOrdersTableRow({ row }) {
         <Link
           noWrap
           variant="caption"
-          onClick={() => {}}
+          onClick={onOrderClick}
           sx={{ color: 'text.disabled', cursor: 'pointer' }}
         >
           {docID}

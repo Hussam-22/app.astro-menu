@@ -51,7 +51,7 @@ OrdersListCard.propTypes = {
 
 export default function OrdersListCard({ table }) {
   const { fsGetAllTableOrders } = useAuthContext();
-  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogState, setDialogState] = useState({ isOpen: false, orderInfo: {} });
 
   const {
     dense,
@@ -75,18 +75,13 @@ export default function OrdersListCard({ table }) {
   const { data: tableData = [], isFetching } = useQuery({
     queryKey: ['tableOrders', table.docID],
     queryFn: () => fsGetAllTableOrders(table.docID),
-    refetchInterval: 6 * 1000,
+    refetchInterval: 60 * 1000,
   });
 
-  // useEffect(() => {
-  //   setTableData(orders);
-  // }, [orders]);
+  const onDialogClose = () => setDialogState({ isOpen: false, orderInfo: {} });
 
-  const onDialogClose = () => setOpenDialog(false);
-
-  const handleViewRow = (id) => {
-    // dispatch(rdxGetOrderByID(id));
-    setOpenDialog(true);
+  const handleViewRow = (orderInfo) => {
+    setDialogState({ isOpen: true, orderInfo });
   };
 
   const dataFiltered = applySortFilter({
@@ -133,7 +128,13 @@ export default function OrdersListCard({ table }) {
                         new Date(a.lastUpdate.seconds * 1000)
                     )
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => <TableOrdersTableRow key={row.docID} row={row} />)}
+                    .map((row) => (
+                      <TableOrdersTableRow
+                        key={row.docID}
+                        row={row}
+                        onOrderClick={() => handleViewRow(row)}
+                      />
+                    ))}
 
                 <TableEmptyRows
                   height={denseHeight}
@@ -164,7 +165,13 @@ export default function OrdersListCard({ table }) {
           />
         </Box>
       </Card>
-      {openDialog && <ShowOrderDetailsDialog isOpen={openDialog} onClose={onDialogClose} />}
+      {dialogState.isOpen && (
+        <ShowOrderDetailsDialog
+          isOpen={dialogState.isOpen}
+          onClose={onDialogClose}
+          orderInfo={dialogState.orderInfo}
+        />
+      )}
     </Grid>
   );
 }
