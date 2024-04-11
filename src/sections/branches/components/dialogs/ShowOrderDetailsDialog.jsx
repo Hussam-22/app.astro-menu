@@ -66,7 +66,15 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
   };
 
   return (
-    <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose}>
+    <Dialog
+      fullWidth
+      maxWidth="sm"
+      open={isOpen}
+      onClose={onClose}
+      PaperProps={{
+        sx: { bgcolor: 'background.neutral' },
+      }}
+    >
       <DialogTitle>
         Order Details
         <IconButton
@@ -82,16 +90,21 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
           <Iconify icon="material-symbols:close" />
         </IconButton>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="caption" component="div">
-            {docID}
-          </Typography>
-          <Label variant="soft" color={orderStatus()[1]} sx={{ textTransform: 'capitalize' }}>
+          <Stack direction="column">
+            <Typography
+              variant="caption"
+              component="div"
+              sx={{ color: theme.palette.text.disabled }}
+            >
+              {docID}
+            </Typography>
+            <Typography variant="caption" component="div">
+              {fDateTime(orderDate)}
+            </Typography>
+          </Stack>
+          <Label variant="filled" color={orderStatus()[1]} sx={{ textTransform: 'capitalize' }}>
             {orderStatus()[0]}
           </Label>
-
-          <Typography variant="caption" component="div">
-            {fDateTime(orderDate)}
-          </Typography>
         </Stack>
       </DialogTitle>
       <DialogContent>
@@ -148,8 +161,8 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
               ))}
           </Box>
         </Scrollbar>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ py: 2 }}>
-          <Typography variant="h6" sx={{ alignSelf: 'center' }}>
+        <Stack direction="row" justifyContent="flex-end" alignItems="center" sx={{ py: 2, px: 1 }}>
+          <Typography variant="h6">
             Total Bill : {totalBill} {branchInfo?.currency}
           </Typography>
         </Stack>

@@ -74,7 +74,14 @@ export default function OrdersListCard({ table }) {
 
   const { data: tableData = [], isFetching } = useQuery({
     queryKey: ['tableOrders', table.docID],
-    queryFn: () => fsGetAllTableOrders(table.docID),
+    queryFn: async () => {
+      await new Promise((resolve) =>
+        setTimeout(() => {
+          resolve();
+        }, 1000)
+      );
+      return fsGetAllTableOrders(table.docID);
+    },
     refetchInterval: 60 * 1000,
   });
 
