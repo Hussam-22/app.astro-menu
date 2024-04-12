@@ -1,16 +1,30 @@
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useLocation } from 'react-router';
+import { useMutation } from '@tanstack/react-query';
+import { useParams, useLocation } from 'react-router';
 
 import { Box, Container } from '@mui/material';
 
+import { useAuthContext } from 'src/auth/hooks';
 // import QrMenuHeader from 'src/layouts/qr-menu/header';
 import BottomNavBar from 'src/layouts/qr-menu/bottom-nav-bar';
 import { QrMenuContextProvider } from 'src/sections/qr-menu/context/qr-menu-context';
 
 function QrMenuLayout({ children }) {
   const { pathname } = useLocation();
+  const { userID, branchID, tableID } = useParams();
+  const { fsUpdateScanLog } = useAuthContext();
 
   const isMenu = pathname.endsWith('menu');
+
+  const { mutate } = useMutation({
+    mutationFn: () => fsUpdateScanLog(branchID, userID, tableID),
+  });
+
+  useEffect(() => {
+    if (branchID && userID && tableID) mutate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box

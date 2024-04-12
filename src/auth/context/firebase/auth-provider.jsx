@@ -1107,32 +1107,33 @@ export function AuthProvider({ children }) {
     updateDoc(docRef, { cart });
     // if (resetStatus) updateDoc(docRef, { status: { ...status, ready: '', collected: '', kitchen: '' } });
   }, []);
-  const fsConfirmCartOrder = useCallback(async (dataObj) => {
-    const { userID, branchID, cart } = dataObj;
-    const totalBill = cart.reduce((sum, item) => sum + item.price, 0);
-    const userRef = doc(DB, `/users/${userID}`);
+  const fsConfirmCartOrder = useCallback(
+    async (cart, totalBill, branchID, userID = state.user.id) => {
+      const userRef = doc(DB, `/users/${userID}`);
 
-    await updateDoc(userRef, {
-      [`statisticsSummary.branches.${branchID}.income.${THIS_YEAR}.${THIS_MONTH}`]:
-        increment(totalBill),
-      [`statisticsSummary.branches.${branchID}.orders.${THIS_YEAR}.${THIS_MONTH}`]: increment(1),
-    });
+      await updateDoc(userRef, {
+        [`statisticsSummary.branches.${branchID}.income.${THIS_YEAR}.${THIS_MONTH}`]:
+          increment(totalBill),
+        [`statisticsSummary.branches.${branchID}.orders.${THIS_YEAR}.${THIS_MONTH}`]: increment(1),
+      });
 
-    const branchMealsOrderUsage = cart.map((cartItem) =>
-      updateDoc(userRef, {
-        [`statisticsSummary.branches.${branchID}.meals.${THIS_YEAR}.${THIS_MONTH}.${cartItem.mealID}`]:
-          increment(1),
-      })
-    );
+      const branchMealsOrderUsage = cart.map((cartItem) =>
+        updateDoc(userRef, {
+          [`statisticsSummary.branches.${branchID}.meals.${THIS_YEAR}.${THIS_MONTH}.${cartItem.mealID}`]:
+            increment(1),
+        })
+      );
 
-    const toResolveUser = cart.map((cartItem) =>
-      updateDoc(userRef, {
-        [`statisticsSummary.meals.${THIS_YEAR}.${THIS_MONTH}.${cartItem.mealID}`]: increment(1),
-      })
-    );
+      const toResolveUser = cart.map((cartItem) =>
+        updateDoc(userRef, {
+          [`statisticsSummary.meals.${THIS_YEAR}.${THIS_MONTH}.${cartItem.mealID}`]: increment(1),
+        })
+      );
 
-    await Promise.all([...toResolveUser, ...branchMealsOrderUsage]);
-  }, []);
+      await Promise.all([...toResolveUser, ...branchMealsOrderUsage]);
+    },
+    []
+  );
   const fsRemoveMealFromCart = useCallback(async (payload) => {
     const { orderID, userID, branchID, cart } = payload;
     const docRef = doc(DB, `/users/${userID}/branches/${branchID}/orders/${orderID}`);
@@ -1149,21 +1150,30 @@ export function AuthProvider({ children }) {
 
     await updateDoc(docRef, { isPaid: true, status });
   }, []);
-  const fsUpdateScanLog = useCallback(async (payload) => {
-    const month = new Date().getMonth();
-    const year = new Date().getFullYear();
-    const { userID, branchID } = payload;
+  const fsUpdateScanLog = useCallback(
+    async (branchID, userID = state.user.id, tableID = undefined) => {
+      const month = new Date().getMonth();
+      const year = new Date().getFullYear();
 
-    // TODO: SPAM Prevention : allow max # of scans coming from the same table every 5 mins
-    // like maximum 20 scans can be preformed for the same table QR every 5 mins
-    // allow viewing menu but dont charge scan count on restaurant
+      // TODO: SPAM Prevention : allow max # of scans coming from the same table every 5 mins
+      // like maximum 20 scans can be preformed for the same table QR every 5 mins
+      // allow viewing menu but dont charge scan count on restaurant
 
-    // UPDATE statisticsSummary (User Account Level)
-    const userDocRef = doc(DB, `/users/${userID}`);
-    await updateDoc(userDocRef, {
-      [`statisticsSummary.branches.${branchID}.scans.${year}.${month}`]: increment(1),
-    });
-  }, []);
+      // UPDATE statisticsSummary (User Account Level)
+      const userDocRef = doc(DB, `/users/${userID}`);
+      await updateDoc(userDocRef, {
+        [`statisticsSummary.branches.${branchID}.scans.${year}.${month}`]: increment(1),
+      });
+
+      if (tableID) {
+        const tableRef = doc(DB, `/users/${userID}/branches/${branchID}/tables/${tableID}/`);
+        await updateDoc(tableRef, {
+          [`statisticsSummary.scans.${year}.${month}`]: increment(1),
+        });
+      }
+    },
+    []
+  );
   // ------------------ STAFF ----------------------------------
   const fsGetStaffInfo = useCallback(
     async (staffID, userID = state.user.id) => {
@@ -1341,8 +1351,8 @@ export function AuthProvider({ children }) {
       // fsUpdateMealMetaTags,
       // fsRemoveTagFromAllMeals,
       // // ---- QR Menu ----
-      // fsConfirmCartOrder,
-      // fsUpdateScanLog,
+      fsConfirmCartOrder,
+      fsUpdateScanLog,
       fsUpdateCart,
       fsRemoveMealFromCart,
       // fsOrdersSnapshot,
@@ -1449,8 +1459,8 @@ export function AuthProvider({ children }) {
       // fsUpdateMealMetaTags,
       // fsRemoveTagFromAllMeals,
       // // ---- QR Menu ----
-      // fsConfirmCartOrder,
-      // fsUpdateScanLog,
+      fsConfirmCartOrder,
+      fsUpdateScanLog,
       fsUpdateCart,
       fsRemoveMealFromCart,
       // fsOrdersSnapshot,

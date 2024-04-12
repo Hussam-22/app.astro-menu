@@ -12,21 +12,11 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 import DialogCancelOrder from 'src/sections/staff/dialogs/cancel-order-dialog';
 
 function TableActionBar() {
-  const { activeOrders, fsUpdateOrderStatus } = useAuthContext();
+  const { activeOrders, fsUpdateOrderStatus, fsConfirmCartOrder } = useAuthContext();
   const { selectedTable, setSelectedTable, branchInfo } = useStaffContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (value) => {
-      await delay(500);
-      fsUpdateOrderStatus({ orderID, userID, branchID, toUpdateFields: { isPaid: true } });
-    },
-    onSuccess: () => {
-      setSelectedTable({});
-    },
-  });
 
   const orderValue = useMemo(
     () =>
@@ -37,6 +27,24 @@ function TableActionBar() {
 
   const taxValue = +(orderValue * (branchInfo.taxValue / 100)).toFixed(2);
   const totalBill = orderValue + taxValue;
+
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: async () => {
+      await delay(500);
+      await fsConfirmCartOrder(orderSnapShot.cart, totalBill, branchID, userID);
+      await fsUpdateOrderStatus({
+        orderID,
+        userID,
+        branchID,
+        toUpdateFields: { isPaid: true, totalBill, lastUpdate: new Date() },
+      });
+    },
+    onSuccess: () => {
+      setSelectedTable({});
+    },
+  });
+
+  console.log(error);
 
   if (!orderSnapShot) return null;
 

@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
+import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import TableOrdersTableRow from 'src/sections/branches/components/table/TableOrdersTableRow';
@@ -44,12 +45,12 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 OrdersListCard.propTypes = {
-  table: PropTypes.object,
+  tableInfo: PropTypes.object,
 };
 
 // TODO: FIX TABLE ORDER, ADD FILTER BY STATUS OPTION
 
-export default function OrdersListCard({ table }) {
+export default function OrdersListCard({ tableInfo }) {
   const { fsGetAllTableOrders } = useAuthContext();
   const [dialogState, setDialogState] = useState({ isOpen: false, orderInfo: {} });
 
@@ -73,14 +74,10 @@ export default function OrdersListCard({ table }) {
   } = useTable({ defaultOrderBy: 'LastUpdate', defaultOrder: 'desc', defaultRowsPerPage: 10 });
 
   const { data: tableData = [], isFetching } = useQuery({
-    queryKey: ['tableOrders', table.docID],
+    queryKey: ['tableOrders', tableInfo.docID],
     queryFn: async () => {
-      await new Promise((resolve) =>
-        setTimeout(() => {
-          resolve();
-        }, 1000)
-      );
-      return fsGetAllTableOrders(table.docID);
+      await delay(1000);
+      return fsGetAllTableOrders(tableInfo.docID);
     },
     refetchInterval: 60 * 1000,
   });

@@ -10,6 +10,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import TablesCard from 'src/sections/branches/components/TablesCard';
 import OrdersListCard from 'src/sections/branches/components/OrdersListCard';
 import SelectedTableInfoCard from 'src/sections/branches/components/SelectedTableInfoCard';
+import StatisticsOverviewCard from 'src/sections/branches/components/StatisticsOverviewCard';
 
 BranchTables.propTypes = { branchInfo: PropTypes.object };
 
@@ -35,9 +36,9 @@ function BranchTables({ branchInfo }) {
         selectedTableID={selectedTable?.docID}
       />
       {selectedTable && <SelectedTableInfoCard tableInfo={selectedTable} />}
-      {selectedTable && selectedTable.index !== 0 && <OrdersListCard table={selectedTable} />}
+      {selectedTable && selectedTable.index !== 0 && <OrdersListCard tableInfo={selectedTable} />}
 
-      {/* {selectedTable && <StatisticsOverviewCard tableID={selectedTable.id} branchID={selectedTable.branchID} />} */}
+      {selectedTable && <StatisticsOverviewCard tableInfo={selectedTable} />}
     </Grid>
   );
 }

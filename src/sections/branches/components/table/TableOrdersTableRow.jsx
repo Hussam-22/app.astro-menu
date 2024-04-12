@@ -26,8 +26,8 @@ export default function TableOrdersTableRow({ row, onOrderClick }) {
     isInKitchen,
     isReadyToServe,
     staffID,
+    totalBill,
   } = row;
-  const totalBill = cart.reduce((sum, meal) => sum + meal.price, 0);
 
   const { data: menuInfo } = useQuery({
     queryKey: ['menu', menuID],
