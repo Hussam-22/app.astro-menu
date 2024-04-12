@@ -21,14 +21,10 @@ function BranchManageView() {
   const { id: branchID } = useParams();
   const theme = useTheme();
   const { themeStretch } = useSettingsContext();
-  const { fsGetBranch, fsGetBranchTables, fsGetAllBranches } = useAuthContext();
+  const { fsGetBranch } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
 
-  const {
-    data: branchInfo = {},
-    error,
-    isFetching,
-  } = useQuery({
+  const { data: branchInfo = {}, isFetching } = useQuery({
     queryKey: ['branch', branchID],
     queryFn: () => fsGetBranch(branchID),
   });

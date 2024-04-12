@@ -3,20 +3,8 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import {
-  Box,
-  Card,
-  Stack,
-  Table,
-  Switch,
-  TableBody,
-  Typography,
-  TableContainer,
-  TablePagination,
-  FormControlLabel,
-} from '@mui/material';
+import { Box, Card, Table, TableBody, TableContainer, TablePagination } from '@mui/material';
 
-import Iconify from 'src/components/iconify';
 import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
@@ -36,7 +24,7 @@ const TABLE_HEAD = [
   { id: 'id', label: 'Order #', align: 'left', width: '10%' },
   { id: 'status', label: 'Last Update', align: 'left', width: '15%' },
   { id: 'menuID', label: 'Menu', align: 'left', width: '20%' },
-  { id: 'totalBill', label: 'Amount', align: 'center', width: '7%' },
+  { id: 'totalBill', label: 'Amount', align: 'center', width: '10%' },
   { id: 'staffID', label: 'waiter(ess)', align: 'center', width: '25%' },
   { id: 'statusName', label: 'Status', align: 'left' },
   { id: '' },
@@ -60,15 +48,11 @@ export default function OrdersListCard({ tableInfo }) {
     order,
     orderBy,
     rowsPerPage,
-    setPage,
     //
     selected,
-    setSelected,
-    onSelectRow,
     onSelectAllRows,
     //
     onSort,
-    onChangeDense,
     onChangePage,
     onChangeRowsPerPage,
   } = useTable({ defaultOrderBy: 'LastUpdate', defaultOrder: 'desc', defaultRowsPerPage: 10 });
@@ -79,7 +63,7 @@ export default function OrdersListCard({ tableInfo }) {
       await delay(1000);
       return fsGetAllTableOrders(tableInfo.docID);
     },
-    refetchInterval: 60 * 1000,
+    // refetchInterval: 60 * 1000,
   });
 
   const onDialogClose = () => setDialogState({ isOpen: false, orderInfo: {} });
@@ -100,10 +84,6 @@ export default function OrdersListCard({ tableInfo }) {
   return (
     <Grid xs={12}>
       <Card sx={{ p: 3 }}>
-        <Stack direction="row" spacing={0.5} alignItems="center" sx={{ mb: 1 }}>
-          <Iconify icon="solar:refresh-line-duotone" />
-          <Typography variant="caption">Orders auto refreshes every 1 minutes</Typography>
-        </Stack>
         <Scrollbar>
           <TableContainer sx={{ minWidth: 800, position: 'relative', pt: 1 }}>
             <Table size={!dense ? 'small' : 'medium'}>
@@ -137,6 +117,7 @@ export default function OrdersListCard({ tableInfo }) {
                         key={row.docID}
                         row={row}
                         onOrderClick={() => handleViewRow(row)}
+                        branchID={tableInfo.branchID}
                       />
                     ))}
 
@@ -162,11 +143,11 @@ export default function OrdersListCard({ tableInfo }) {
             onRowsPerPageChange={onChangeRowsPerPage}
           />
 
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Switch checked={dense} onChange={onChangeDense} />}
             label="Dense"
             sx={{ px: 3, py: 1.5, top: 0, position: { md: 'absolute' } }}
-          />
+          /> */}
         </Box>
       </Card>
       {dialogState.isOpen && (

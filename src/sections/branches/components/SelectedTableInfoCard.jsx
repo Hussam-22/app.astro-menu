@@ -25,6 +25,7 @@ import {
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
+import StatisticsOverviewCard from 'src/sections/branches/components/StatisticsOverviewCard';
 
 SelectedTableInfoCard.propTypes = {
   tableInfo: PropTypes.object,
@@ -105,8 +106,8 @@ function SelectedTableInfoCard({ tableInfo }) {
   };
 
   return (
-    <>
-      <Grid xs={12} md={8} lg={8}>
+    <Grid container spacing={3}>
+      <Grid xs={12} sm={5}>
         <Card sx={{ p: 3, height: 1 }}>
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack direction="column" spacing={2}>
@@ -124,7 +125,7 @@ function SelectedTableInfoCard({ tableInfo }) {
                   sx={{ m: 0 }}
                 />
               </Stack>
-              <Stack direction="row" spacing={2}>
+              <Stack direction="column" spacing={2}>
                 <RHFTextField name="title" label="Table Nickname" />
                 {menusList?.length !== 0 && menusList !== undefined && (
                   <RHFSelect
@@ -157,8 +158,10 @@ function SelectedTableInfoCard({ tableInfo }) {
           </FormProvider>
         </Card>
       </Grid>
-
-      <Grid xs={12} md={4} lg={4}>
+      <Grid xs={12} sm={3}>
+        <StatisticsOverviewCard tableInfo={tableInfo} />
+      </Grid>
+      <Grid xs={12} sm={4}>
         <Card sx={{ p: 3, height: '100%' }}>
           <Box
             sx={{
@@ -203,7 +206,7 @@ function SelectedTableInfoCard({ tableInfo }) {
           </Box>
         </Card>
       </Grid>
-    </>
+    </Grid>
   );
 }
 

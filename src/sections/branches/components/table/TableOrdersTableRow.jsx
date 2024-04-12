@@ -6,16 +6,16 @@ import { Link, TableRow, TableCell } from '@mui/material';
 import Label from 'src/components/label';
 import { fDate } from 'src/utils/format-time';
 import { useAuthContext } from 'src/auth/hooks';
-import { fCurrency } from 'src/utils/format-number';
 // ----------------------------------------------------------------------
 
 TableOrdersTableRow.propTypes = {
   row: PropTypes.object.isRequired,
   onOrderClick: PropTypes.func,
+  branchID: PropTypes.string,
 };
 
-export default function TableOrdersTableRow({ row, onOrderClick }) {
-  const { fsGetMenu, fsGetStaffInfo } = useAuthContext();
+export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
+  const { fsGetMenu, fsGetStaffInfo, fsGetBranch } = useAuthContext();
   const {
     docID,
     menuID,
@@ -38,6 +38,11 @@ export default function TableOrdersTableRow({ row, onOrderClick }) {
     queryKey: ['staff', staffID],
     queryFn: () => fsGetStaffInfo(staffID),
     enabled: staffID !== '' || staffID !== undefined,
+  });
+
+  const { data: branchInfo = {} } = useQuery({
+    queryKey: ['branch', branchID],
+    queryFn: () => fsGetBranch(branchID),
   });
 
   const orderStatus = () => {
@@ -63,7 +68,10 @@ export default function TableOrdersTableRow({ row, onOrderClick }) {
       </TableCell>
       <TableCell align="left">{fDate(new Date(lastUpdate.seconds * 1000))}</TableCell>
       <TableCell align="left">{menuInfo?.title}</TableCell>
-      <TableCell align="center">{fCurrency(totalBill)}</TableCell>
+      <TableCell align="center">
+        {`${totalBill || 0} 
+        ${branchInfo.currency}`}
+      </TableCell>
       <TableCell align="center" sx={{ textTransform: 'capitalize' }}>
         {staffInfo?.fullname || ''}
       </TableCell>

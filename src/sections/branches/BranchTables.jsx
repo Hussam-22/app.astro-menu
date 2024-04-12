@@ -1,20 +1,15 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { useTheme } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2/Grid2';
+import { Stack, useTheme } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import TablesCard from 'src/sections/branches/components/TablesCard';
 import OrdersListCard from 'src/sections/branches/components/OrdersListCard';
 import SelectedTableInfoCard from 'src/sections/branches/components/SelectedTableInfoCard';
-import StatisticsOverviewCard from 'src/sections/branches/components/StatisticsOverviewCard';
 
-BranchTables.propTypes = { branchInfo: PropTypes.object };
-
-function BranchTables({ branchInfo }) {
+function BranchTables() {
   const theme = useTheme();
   const { id: branchID } = useParams();
   const { fsGetBranchTables } = useAuthContext();
@@ -28,7 +23,7 @@ function BranchTables({ branchInfo }) {
   const handleOnTableClick = (table) => setSelectedTable(table);
 
   return (
-    <Grid container spacing={3}>
+    <Stack direction="column" spacing={2}>
       <TablesCard
         theme={theme}
         tables={tables}
@@ -37,9 +32,7 @@ function BranchTables({ branchInfo }) {
       />
       {selectedTable && <SelectedTableInfoCard tableInfo={selectedTable} />}
       {selectedTable && selectedTable.index !== 0 && <OrdersListCard tableInfo={selectedTable} />}
-
-      {selectedTable && <StatisticsOverviewCard tableInfo={selectedTable} />}
-    </Grid>
+    </Stack>
   );
 }
 

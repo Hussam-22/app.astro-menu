@@ -14,12 +14,17 @@ StatisticsOverviewCard.propTypes = {
 
 const thisMonth = new Date().getMonth();
 const thisYear = new Date().getFullYear();
-const dateShort = new Date().toLocaleDateString('en-US', { month: 'numeric', year: 'numeric' });
+const dateShort = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
 function StatisticsOverviewCard({ tableInfo }) {
   const theme = useTheme();
   const isMobile = useResponsive('down', 'sm');
-  const { fsGetAllTableOrders } = useAuthContext();
+  const { fsGetAllTableOrders, fsGetBranch } = useAuthContext();
+
+  const { data: branchInfo = {} } = useQuery({
+    queryKey: ['branch', tableInfo.branchID],
+    queryFn: () => fsGetBranch(tableInfo.branchID),
+  });
 
   const { data: orders = [] } = useQuery({
     queryKey: ['tableOrders', tableInfo.docID],
@@ -37,7 +42,7 @@ function StatisticsOverviewCard({ tableInfo }) {
       )
       .reduce((accumulator, currentOrder) => accumulator + currentOrder.totalBill, 0) || 0;
 
-  const totalOrdersCountThisMonth = orders.filter((order) => order.isPaid).length;
+  const totalOrdersCountThisMonth = orders?.filter((order) => order.isPaid)?.length || 0;
   const totalScans = tableInfo?.statisticsSummary?.scans?.[thisYear]?.[thisMonth] || 0;
   // // ----------------------------- Month Top 3 Meals -----------------------------------------
   // const thisMonthOrders = orders.filter(
@@ -56,16 +61,19 @@ function StatisticsOverviewCard({ tableInfo }) {
   // ----------------------------------------------------------------------------
 
   return (
-    <Card sx={{ mb: 2, py: 2, display: 'flex' }}>
+    <Card sx={{ p: 3, height: '100%' }}>
       <Stack
-        direction={isMobile ? 'column' : 'row'}
+        direction="column"
+        spacing={2}
         divider={
           <Divider
-            orientation={isMobile ? 'horizontal' : 'vertical'}
+            orientation="horizontal"
             flexItem
             sx={{ borderStyle: 'dashed', my: isMobile && 1 }}
           />
         }
+        justifyContent="center"
+        sx={{ height: '100%' }}
       >
         <TotalOrders
           title="Total Orders"
@@ -73,6 +81,7 @@ function StatisticsOverviewCard({ tableInfo }) {
           price={totalOrdersThisMonth}
           icon="fluent-emoji-high-contrast:money-bag"
           color={theme.palette.success.main}
+          currency={branchInfo?.currency}
         />
         {/* <TopOrderedMeals
           title="Most 3 Ordered Meals"
@@ -91,7 +100,7 @@ function StatisticsOverviewCard({ tableInfo }) {
           color={theme.palette.info.main}
         />
       </Stack>
-      <Chip label={dateShort} sx={{ position: 'absolute', right: 10, top: 5 }} />
+      <Chip label={dateShort} sx={{ position: 'absolute', right: 15, top: 15 }} />
     </Card>
   );
 }
