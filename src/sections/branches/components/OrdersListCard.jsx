@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Box, Card, Table, TableBody, TableContainer, TablePagination } from '@mui/material';
 
-import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import TableOrdersTableRow from 'src/sections/branches/components/table/TableOrdersTableRow';
@@ -39,7 +38,7 @@ OrdersListCard.propTypes = {
 // TODO: FIX TABLE ORDER, ADD FILTER BY STATUS OPTION
 
 export default function OrdersListCard({ tableInfo }) {
-  const { fsGetAllTableOrders } = useAuthContext();
+  const { fsGetAllTableOrders, fsGetTableOrdersByPeriod } = useAuthContext();
   const [dialogState, setDialogState] = useState({ isOpen: false, orderInfo: {} });
 
   const {
@@ -57,14 +56,22 @@ export default function OrdersListCard({ tableInfo }) {
     onChangeRowsPerPage,
   } = useTable({ defaultOrderBy: 'LastUpdate', defaultOrder: 'desc', defaultRowsPerPage: 10 });
 
-  const { data: tableData = [], isFetching } = useQuery({
-    queryKey: ['tableOrders', tableInfo.docID],
-    queryFn: async () => {
-      await delay(1000);
-      return fsGetAllTableOrders(tableInfo.docID);
-    },
+  const {
+    data: tableData = [],
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: ['tableOrders', tableInfo.docID, tableInfo.branchID],
+    queryFn: () => fsGetTableOrdersByPeriod(tableInfo.docID, tableInfo.branchID),
+    // queryFn: async () => {
+    //   await delay(1000);
+    //   // return fsGetAllTableOrders(tableInfo.docID);
+    //   return fsGetTableOrdersByPeriod(tableInfo.docID, tableInfo.branchID);
+    // },
     // refetchInterval: 60 * 1000,
   });
+
+  console.log(error);
 
   const onDialogClose = () => setDialogState({ isOpen: false, orderInfo: {} });
 
