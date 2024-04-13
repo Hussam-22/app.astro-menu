@@ -29,9 +29,11 @@ import StatisticsOverviewCard from 'src/sections/branches/components/StatisticsO
 
 SelectedTableInfoCard.propTypes = {
   tableInfo: PropTypes.object,
+  month: PropTypes.number,
+  year: PropTypes.number,
 };
 
-function SelectedTableInfoCard({ tableInfo }) {
+function SelectedTableInfoCard({ tableInfo, month, year }) {
   const theme = useTheme();
   const { id: branchID } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -159,7 +161,7 @@ function SelectedTableInfoCard({ tableInfo }) {
         </Card>
       </Grid>
       <Grid xs={12} sm={3}>
-        <StatisticsOverviewCard tableInfo={tableInfo} />
+        <StatisticsOverviewCard tableInfo={tableInfo} month={month} year={year} />
       </Grid>
       <Grid xs={12} sm={4}>
         <Card sx={{ p: 3, height: '100%' }}>

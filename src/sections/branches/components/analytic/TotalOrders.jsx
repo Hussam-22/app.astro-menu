@@ -17,7 +17,6 @@ TotalOrders.propTypes = {
 };
 
 export default function TotalOrders({ title, total, icon, color, price, currency }) {
-  console.log(price);
   return (
     <Stack direction="row" alignItems="center" justifyContent="flex-start">
       <Stack alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>

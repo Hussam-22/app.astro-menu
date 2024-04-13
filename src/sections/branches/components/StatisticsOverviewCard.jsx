@@ -10,16 +10,19 @@ import TotalOrders from 'src/sections/branches/components/analytic/TotalOrders';
 
 StatisticsOverviewCard.propTypes = {
   tableInfo: PropTypes.object,
+  month: PropTypes.number,
+  year: PropTypes.number,
 };
 
-const thisMonth = new Date().getMonth();
-const thisYear = new Date().getFullYear();
-const dateShort = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-
-function StatisticsOverviewCard({ tableInfo }) {
+function StatisticsOverviewCard({ tableInfo, month, year }) {
   const theme = useTheme();
   const isMobile = useResponsive('down', 'sm');
   const { fsGetAllTableOrders, fsGetBranch } = useAuthContext();
+
+  const dateShort = new Date(Date.UTC(year, month)).toLocaleDateString('en-US', {
+    month: 'short',
+    year: 'numeric',
+  });
 
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', tableInfo.branchID],
@@ -37,13 +40,13 @@ function StatisticsOverviewCard({ tableInfo }) {
       ?.filter(
         (order) =>
           order.isPaid &&
-          new Date(order.lastUpdate.seconds * 1000).getMonth() === thisMonth &&
-          new Date(order.lastUpdate.seconds * 1000).getFullYear() === thisYear
+          new Date(order.lastUpdate.seconds * 1000).getMonth() === month &&
+          new Date(order.lastUpdate.seconds * 1000).getFullYear() === year
       )
       .reduce((accumulator, currentOrder) => accumulator + currentOrder.totalBill, 0) || 0;
 
   const totalOrdersCountThisMonth = orders?.filter((order) => order.isPaid)?.length || 0;
-  const totalScans = tableInfo?.statisticsSummary?.scans?.[thisYear]?.[thisMonth] || 0;
+  const totalScans = tableInfo?.statisticsSummary?.scans?.[year]?.[month] || 0;
   // // ----------------------------- Month Top 3 Meals -----------------------------------------
   // const thisMonthOrders = orders.filter(
   //   (order) => fDate(new Date(order.confirmTime.seconds * 1000).getMonth()) === fDate(new Date().getMonth())

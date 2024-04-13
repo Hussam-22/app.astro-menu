@@ -388,8 +388,10 @@ export function AuthProvider({ children }) {
   );
   const fsGetTableOrdersByPeriod = useCallback(
     async (tableID, branchID, targetMonth = THIS_MONTH, targetYear = THIS_YEAR) => {
-      const startDate = new Date(targetYear, targetMonth - 1, 1); // Start of the month
-      const endDate = new Date(targetYear, targetMonth, 0); // End of the month
+      const startDate = new Date(Date.UTC(targetYear, targetMonth, 1)); // Start of the month
+      const endDate = new Date(Date.UTC(targetYear, targetMonth + 1, 0)); // End of the month
+
+      console.log({ startDate, endDate });
 
       const docRef = query(
         collectionGroup(DB, 'orders'),
