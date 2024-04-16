@@ -19,26 +19,23 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
   const isMobile = useResponsive('down', 'sm');
   const { fsGetTableOrdersByPeriod, fsGetBranch } = useAuthContext();
 
-  const { data: branchInfo = {}, isFetching } = useQuery({
+  const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', tableInfo.branchID],
     queryFn: () => fsGetBranch(tableInfo.branchID),
-    notifyOnChangeProps: [month, year],
   });
 
   const { data: orders = [] } = useQuery({
-    queryKey: ['tableOrders', tableInfo.docID, tableInfo.branchID],
-    queryFn: () => fsGetTableOrdersByPeriod(tableInfo.docID, tableInfo.branchID),
+    queryKey: ['tableOrders', tableInfo.docID, tableInfo.branchID, month, year],
+    queryFn: () => fsGetTableOrdersByPeriod(tableInfo.docID, tableInfo.branchID, month, year),
   });
-
-  console.log(isFetching);
 
   const totalOrdersThisMonth =
     orders
       ?.filter(
         (order) =>
           order.isPaid &&
-          new Date(order.lastUpdate.seconds * 1000).getMonth() === month &&
-          new Date(order.lastUpdate.seconds * 1000).getFullYear() === year
+          new Date(order.initiationTime.seconds * 1000).getMonth() === month &&
+          new Date(order.initiationTime.seconds * 1000).getFullYear() === year
       )
       .reduce((accumulator, currentOrder) => accumulator + currentOrder.totalBill, 0) || 0;
 
@@ -62,7 +59,7 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
         <TotalOrders
           title="Total Orders"
           total={totalOrdersCountThisMonth}
-          price={totalOrdersThisMonth}
+          price={+totalOrdersThisMonth.toFixed(2)}
           icon="fluent-emoji-high-contrast:money-bag"
           color={theme.palette.success.main}
           currency={branchInfo?.currency}

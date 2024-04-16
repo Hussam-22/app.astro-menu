@@ -47,12 +47,12 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
 
   const cartMeals = useMemo(
     () =>
-      allMeals.length !== 0 &&
-      allMeals.filter((meal) => orderInfo.cart.some((portion) => portion.mealID === meal?.docID)),
+      allMeals.filter((meal) => orderInfo.cart.some((portion) => portion.mealID === meal?.docID)) ||
+      [],
     [allMeals, orderInfo.cart]
   );
 
-  const totalBill = cart.reduce((sum, item) => sum + item.price, 0);
+  const { totalBill } = orderInfo;
 
   const orderDate = new Date(lastUpdate.seconds * 1000);
 
@@ -64,6 +64,8 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
     if (orderInfo.isCanceled) return ['Canceled', 'error'];
     return ['In Progress', 'default'];
   };
+
+  console.log(cartMeals);
 
   return (
     <Dialog
@@ -118,6 +120,7 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
             }}
           >
             {mealsList.length !== 0 &&
+              cartMeals.length !== 0 &&
               cartMeals.map((meal) => (
                 <Box key={meal.docID}>
                   <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>

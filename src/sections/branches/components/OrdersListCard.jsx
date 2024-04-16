@@ -61,8 +61,8 @@ export default function OrdersListCard({ tableInfo, month, year }) {
     isFetching,
     error,
   } = useQuery({
-    queryKey: ['tableOrders', tableInfo.docID, tableInfo.branchID],
-    queryFn: () => fsGetTableOrdersByPeriod(tableInfo.docID, tableInfo.branchID),
+    queryKey: ['tableOrders', tableInfo.docID, tableInfo.branchID, month, year],
+    queryFn: () => fsGetTableOrdersByPeriod(tableInfo.docID, tableInfo.branchID, month, year),
     // refetchInterval: 60 * 1000,
   });
 

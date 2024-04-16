@@ -42,7 +42,6 @@ function BranchTables() {
     }, 1000);
     queryClient.invalidateQueries({
       queryKey: ['tableOrders', selectedTable.docID, branchID],
-      exact: true,
     });
   };
 
