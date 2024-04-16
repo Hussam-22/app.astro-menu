@@ -7,6 +7,7 @@ import { Box, Card, Table, TableBody, TableContainer, TablePagination } from '@m
 
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
+import StatisticsOverviewCard from 'src/sections/branches/components/StatisticsOverviewCard';
 import TableOrdersTableRow from 'src/sections/branches/components/table/TableOrdersTableRow';
 import ShowOrderDetailsDialog from 'src/sections/branches/components/dialogs/ShowOrderDetailsDialog';
 import {
@@ -20,25 +21,24 @@ import {
 } from 'src/components/table';
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'Order #', align: 'left', width: '10%' },
-  { id: 'status', label: 'Last Update', align: 'left', width: '15%' },
-  { id: 'menuID', label: 'Menu', align: 'left', width: '20%' },
-  { id: 'totalBill', label: 'Amount', align: 'center', width: '10%' },
-  { id: 'staffID', label: 'waiter(ess)', align: 'center', width: '25%' },
+  { id: 'id', label: 'Order #', align: 'left', width: '22%' },
+  { id: 'totalBill', label: 'Amount', align: 'left', width: '22%' },
+  { id: 'staff', label: 'Waiter/ess', align: 'left' },
   { id: 'statusName', label: 'Status', align: 'left' },
-  { id: '' },
 ];
 
 // ----------------------------------------------------------------------
 
 OrdersListCard.propTypes = {
   tableInfo: PropTypes.object,
+  month: PropTypes.number,
+  year: PropTypes.number,
 };
 
 // TODO: FIX TABLE ORDER, ADD FILTER BY STATUS OPTION
 
-export default function OrdersListCard({ tableInfo }) {
-  const { fsGetAllTableOrders, fsGetTableOrdersByPeriod } = useAuthContext();
+export default function OrdersListCard({ tableInfo, month, year }) {
+  const { fsGetTableOrdersByPeriod } = useAuthContext();
   const [dialogState, setDialogState] = useState({ isOpen: false, orderInfo: {} });
 
   const {
@@ -63,15 +63,8 @@ export default function OrdersListCard({ tableInfo }) {
   } = useQuery({
     queryKey: ['tableOrders', tableInfo.docID, tableInfo.branchID],
     queryFn: () => fsGetTableOrdersByPeriod(tableInfo.docID, tableInfo.branchID),
-    // queryFn: async () => {
-    //   await delay(1000);
-    //   // return fsGetAllTableOrders(tableInfo.docID);
-    //   return fsGetTableOrdersByPeriod(tableInfo.docID, tableInfo.branchID);
-    // },
     // refetchInterval: 60 * 1000,
   });
-
-  console.log(error);
 
   const onDialogClose = () => setDialogState({ isOpen: false, orderInfo: {} });
 
@@ -88,82 +81,92 @@ export default function OrdersListCard({ tableInfo }) {
 
   const denseHeight = 56;
 
+  const dateShort = new Date(Date.UTC(year, month)).toLocaleDateString('en-US', {
+    month: 'short',
+    year: 'numeric',
+  });
+
   return (
-    <Grid xs={12}>
-      <Card sx={{ p: 3 }}>
-        <Scrollbar>
-          <TableContainer sx={{ minWidth: 800, position: 'relative', pt: 1 }}>
-            <Table size={!dense ? 'small' : 'medium'}>
-              <TableHeadCustom
-                order={order}
-                orderBy={orderBy}
-                headLabel={TABLE_HEAD}
-                rowCount={dataFiltered.length}
-                numSelected={selected.length}
-                onSort={onSort}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    dataFiltered.map((row) => row.id)
-                  )
-                }
-              />
-
-              <TableBody>
-                {isFetching && <TableSkeleton />}
-                {!isFetching &&
-                  dataFiltered
-                    .sort(
-                      (a, b) =>
-                        new Date(b.lastUpdate.seconds * 1000) -
-                        new Date(a.lastUpdate.seconds * 1000)
+    <Grid container spacing={2}>
+      <Grid sm={9}>
+        <Card sx={{ p: 3 }}>
+          <Scrollbar>
+            <TableContainer sx={{ minWidth: 800, position: 'relative', pt: 1 }}>
+              <Table size={!dense ? 'small' : 'medium'}>
+                <TableHeadCustom
+                  order={order}
+                  orderBy={orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={dataFiltered.length}
+                  numSelected={selected.length}
+                  onSort={onSort}
+                  onSelectAllRows={(checked) =>
+                    onSelectAllRows(
+                      checked,
+                      dataFiltered.map((row) => row.id)
                     )
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => (
-                      <TableOrdersTableRow
-                        key={row.docID}
-                        row={row}
-                        onOrderClick={() => handleViewRow(row)}
-                        branchID={tableInfo.branchID}
-                      />
-                    ))}
-
-                <TableEmptyRows
-                  height={denseHeight}
-                  emptyRows={emptyRows(page, rowsPerPage, dataFiltered.length)}
+                  }
                 />
 
-                <TableNoData isNotFound={isNotFound} />
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+                <TableBody>
+                  {isFetching && <TableSkeleton />}
+                  {!isFetching &&
+                    dataFiltered
+                      .sort(
+                        (a, b) =>
+                          new Date(b.lastUpdate.seconds * 1000) -
+                          new Date(a.lastUpdate.seconds * 1000)
+                      )
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row) => (
+                        <TableOrdersTableRow
+                          key={row.docID}
+                          row={row}
+                          onOrderClick={() => handleViewRow(row)}
+                          branchID={tableInfo.branchID}
+                        />
+                      ))}
 
-        <Box sx={{ position: 'relative' }}>
-          <TablePagination
-            rowsPerPageOptions={[10, 50, 100]}
-            component="div"
-            count={dataFiltered.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
-          />
+                  <TableEmptyRows
+                    height={denseHeight}
+                    emptyRows={emptyRows(page, rowsPerPage, dataFiltered.length)}
+                  />
 
-          {/* <FormControlLabel
+                  <TableNoData isNotFound={isNotFound} />
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+
+          <Box sx={{ position: 'relative' }}>
+            <TablePagination
+              rowsPerPageOptions={[10, 50, 100]}
+              component="div"
+              count={dataFiltered.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={onChangePage}
+              onRowsPerPageChange={onChangeRowsPerPage}
+            />
+
+            {/* <FormControlLabel
             control={<Switch checked={dense} onChange={onChangeDense} />}
             label="Dense"
             sx={{ px: 3, py: 1.5, top: 0, position: { md: 'absolute' } }}
           /> */}
-        </Box>
-      </Card>
-      {dialogState.isOpen && (
-        <ShowOrderDetailsDialog
-          isOpen={dialogState.isOpen}
-          onClose={onDialogClose}
-          orderInfo={dialogState.orderInfo}
-        />
-      )}
+          </Box>
+        </Card>
+        {dialogState.isOpen && (
+          <ShowOrderDetailsDialog
+            isOpen={dialogState.isOpen}
+            onClose={onDialogClose}
+            orderInfo={dialogState.orderInfo}
+          />
+        )}
+      </Grid>
+      <Grid sm={3}>
+        <StatisticsOverviewCard tableInfo={tableInfo} month={month} year={year} />
+      </Grid>
     </Grid>
   );
 }

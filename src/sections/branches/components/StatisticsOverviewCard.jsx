@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
-import { Chip, Card, Stack, Divider, useTheme } from '@mui/material';
+import { Card, Stack, Divider, useTheme } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -17,24 +17,21 @@ StatisticsOverviewCard.propTypes = {
 function StatisticsOverviewCard({ tableInfo, month, year }) {
   const theme = useTheme();
   const isMobile = useResponsive('down', 'sm');
-  const { fsGetAllTableOrders, fsGetBranch } = useAuthContext();
+  const { fsGetTableOrdersByPeriod, fsGetBranch } = useAuthContext();
 
-  const dateShort = new Date(Date.UTC(year, month)).toLocaleDateString('en-US', {
-    month: 'short',
-    year: 'numeric',
-  });
-
-  const { data: branchInfo = {} } = useQuery({
+  const { data: branchInfo = {}, isFetching } = useQuery({
     queryKey: ['branch', tableInfo.branchID],
     queryFn: () => fsGetBranch(tableInfo.branchID),
+    notifyOnChangeProps: [month, year],
   });
 
   const { data: orders = [] } = useQuery({
-    queryKey: ['tableOrders', tableInfo.docID],
-    queryFn: () => fsGetAllTableOrders(tableInfo.docID),
+    queryKey: ['tableOrders', tableInfo.docID, tableInfo.branchID],
+    queryFn: () => fsGetTableOrdersByPeriod(tableInfo.docID, tableInfo.branchID),
   });
 
-  // ----------------------------- Month Total Orders -----------------------------------------
+  console.log(isFetching);
+
   const totalOrdersThisMonth =
     orders
       ?.filter(
@@ -47,22 +44,6 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
 
   const totalOrdersCountThisMonth = orders?.filter((order) => order.isPaid)?.length || 0;
   const totalScans = tableInfo?.statisticsSummary?.scans?.[year]?.[month] || 0;
-  // // ----------------------------- Month Top 3 Meals -----------------------------------------
-  // const thisMonthOrders = orders.filter(
-  //   (order) => fDate(new Date(order.confirmTime.seconds * 1000).getMonth()) === fDate(new Date().getMonth())
-  // );
-  // const flatMeals = thisMonthOrders.flatMap((order) => order.cart.map((cart) => cart.title));
-  // const uniqueMeals = [...new Set(flatMeals)];
-  // const duplicate = uniqueMeals
-  //   .map((value) => [value, flatMeals.filter((str) => str === value).length])
-  //   .sort((a, b) => a[1] - b[1])
-  //   .reverse();
-
-  // ----------------------------- Month Total Scans -----------------------------------------
-
-  // branch?.statisticsSummary?.tables?.[tableID]?.scans?.[thisYear]?.[thisMonth] || 0;
-  // ----------------------------------------------------------------------------
-
   return (
     <Card sx={{ p: 3, height: '100%' }}>
       <Stack
@@ -86,14 +67,6 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
           color={theme.palette.success.main}
           currency={branchInfo?.currency}
         />
-        {/* <TopOrderedMeals
-          title="Most 3 Ordered Meals"
-          price={25}
-          icon="game-icons:hot-meal"
-          color={theme.palette.secondary.main}
-          totalMealsToDisplay={3}
-          topMealsArray={duplicate}
-        /> */}
         <TotalScans
           title="Total Scans"
           total={totalScans}
@@ -103,7 +76,6 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
           color={theme.palette.info.main}
         />
       </Stack>
-      <Chip label={dateShort} sx={{ position: 'absolute', right: 15, top: 15 }} />
     </Card>
   );
 }

@@ -25,15 +25,12 @@ import {
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
-import StatisticsOverviewCard from 'src/sections/branches/components/StatisticsOverviewCard';
 
 SelectedTableInfoCard.propTypes = {
   tableInfo: PropTypes.object,
-  month: PropTypes.number,
-  year: PropTypes.number,
 };
 
-function SelectedTableInfoCard({ tableInfo, month, year }) {
+function SelectedTableInfoCard({ tableInfo }) {
   const theme = useTheme();
   const { id: branchID } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -108,8 +105,8 @@ function SelectedTableInfoCard({ tableInfo, month, year }) {
   };
 
   return (
-    <Grid container spacing={3}>
-      <Grid xs={12} sm={5}>
+    <Grid container spacing={2}>
+      <Grid xs={12} sm={8}>
         <Card sx={{ p: 3, height: 1 }}>
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack direction="column" spacing={2}>
@@ -159,9 +156,6 @@ function SelectedTableInfoCard({ tableInfo, month, year }) {
             </Stack>
           </FormProvider>
         </Card>
-      </Grid>
-      <Grid xs={12} sm={3}>
-        <StatisticsOverviewCard tableInfo={tableInfo} month={month} year={year} />
       </Grid>
       <Grid xs={12} sm={4}>
         <Card sx={{ p: 3, height: '100%' }}>

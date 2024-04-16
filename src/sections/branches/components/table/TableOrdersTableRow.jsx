@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
-import { Link, TableRow, TableCell } from '@mui/material';
+import { Link, TableRow, TableCell, ListItemText } from '@mui/material';
 
 import Label from 'src/components/label';
 import { fDate } from 'src/utils/format-time';
@@ -63,21 +63,35 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
           onClick={onOrderClick}
           sx={{ color: 'text.disabled', cursor: 'pointer' }}
         >
-          {docID}
+          <ListItemText
+            primary={fDate(new Date(lastUpdate.seconds * 1000))}
+            secondary={docID}
+            primaryTypographyProps={{ typography: 'body2', color: 'text.primary' }}
+            secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
+          />
         </Link>
       </TableCell>
-      <TableCell align="left">{fDate(new Date(lastUpdate.seconds * 1000))}</TableCell>
-      <TableCell align="left">{menuInfo?.title}</TableCell>
-      <TableCell align="center">
-        {`${totalBill || 0} 
-        ${branchInfo.currency}`}
-      </TableCell>
-      <TableCell align="center" sx={{ textTransform: 'capitalize' }}>
-        {staffInfo?.fullname || ''}
+      <TableCell>
+        <Link
+          noWrap
+          variant="caption"
+          onClick={onOrderClick}
+          sx={{ color: 'text.disabled', cursor: 'pointer' }}
+        >
+          <ListItemText
+            primary={`${totalBill || 0} 
+            ${branchInfo.currency}`}
+            secondary={menuInfo?.title}
+            primaryTypographyProps={{ typography: 'body2', color: 'text.primary' }}
+            secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
+          />
+        </Link>
       </TableCell>
 
+      <TableCell align="left">{staffInfo?.fullname || 'Self Order'} </TableCell>
       <TableCell align="left">
-        <Label variant="filled" color={orderStatus()[1]} sx={{ textTransform: 'capitalize' }}>
+        {' '}
+        <Label variant="soft" color={orderStatus()[1]} sx={{ textTransform: 'capitalize' }}>
           {orderStatus()[0]}
         </Label>
       </TableCell>

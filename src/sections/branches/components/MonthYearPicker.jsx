@@ -8,13 +8,14 @@ MonthYearPicker.propTypes = {
   updateMonth: PropTypes.func,
   updateYear: PropTypes.func,
   availableYears: PropTypes.array,
+  sx: PropTypes.object,
 };
 
-function MonthYearPicker({ month, year, updateMonth, updateYear, availableYears }) {
+function MonthYearPicker({ month, year, updateMonth, updateYear, availableYears, sx }) {
   // const availableYears = [...new Set(usageData.map((table) => Object.keys(table?.scans || year)).flat())];
 
   return (
-    <Stack direction="row" spacing={1}>
+    <Stack direction="row" spacing={1} sx={{ ...sx }}>
       <Select
         value={
           year === new Date().getFullYear() && month > new Date().getMonth()

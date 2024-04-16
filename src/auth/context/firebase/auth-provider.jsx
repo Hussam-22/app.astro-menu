@@ -372,26 +372,10 @@ export function AuthProvider({ children }) {
     [state]
   );
   // ------------------------ Orders -----------------------------
-  const fsGetAllTableOrders = useCallback(
-    async (tableID) => {
-      const docRef = query(
-        collectionGroup(DB, 'orders'),
-        where('userID', '==', state.user.id),
-        where('tableID', '==', tableID)
-      );
-      const querySnapshot = await getDocs(docRef);
-      const dataArr = [];
-      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
-      return dataArr;
-    },
-    [state]
-  );
   const fsGetTableOrdersByPeriod = useCallback(
     async (tableID, branchID, targetMonth = THIS_MONTH, targetYear = THIS_YEAR) => {
       const startDate = new Date(Date.UTC(targetYear, targetMonth, 1)); // Start of the month
       const endDate = new Date(Date.UTC(targetYear, targetMonth + 1, 0)); // End of the month
-
-      console.log({ startDate, endDate });
 
       const docRef = query(
         collectionGroup(DB, 'orders'),
@@ -1321,7 +1305,6 @@ export function AuthProvider({ children }) {
       fsGetBranchTables,
       fsUpdateBranchTable,
       fsChangeMenuForAllTables,
-      fsGetAllTableOrders,
       fsGetTableOrdersByPeriod,
       // fsDeleteTable,
       fsGetTableInfo,
@@ -1441,7 +1424,6 @@ export function AuthProvider({ children }) {
       orderSnapShot,
       activeOrders,
       // fsGetAllOrders,
-      fsGetAllTableOrders,
       fsGetTableOrdersByPeriod,
       // // ---- MENU SECTIONS ----
       fsAddSection,
