@@ -17,11 +17,17 @@ StatisticsOverviewCard.propTypes = {
 function StatisticsOverviewCard({ tableInfo, month, year }) {
   const theme = useTheme();
   const isMobile = useResponsive('down', 'sm');
-  const { fsGetTableOrdersByPeriod, fsGetBranch } = useAuthContext();
+  const { fsGetTableOrdersByPeriod, fsGetBranch, fsGetTableInfo } = useAuthContext();
 
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', tableInfo.branchID],
     queryFn: () => fsGetBranch(tableInfo.branchID),
+  });
+
+  const { data: tableData = {} } = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: ['table', tableInfo.docID, month, year],
+    queryFn: () => fsGetTableInfo(tableInfo.userID, branchInfo.docID, tableInfo.docID),
   });
 
   const { data: orders = [] } = useQuery({
@@ -40,7 +46,7 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
       .reduce((accumulator, currentOrder) => accumulator + currentOrder.totalBill, 0) || 0;
 
   const totalOrdersCountThisMonth = orders?.filter((order) => order.isPaid)?.length || 0;
-  const totalScans = tableInfo?.statisticsSummary?.scans?.[year]?.[month] || 0;
+  const totalScans = tableData?.statisticsSummary?.scans?.[year]?.[month] || 0;
   return (
     <Card sx={{ p: 3, height: '100%' }}>
       <Stack

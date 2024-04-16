@@ -43,6 +43,9 @@ function BranchTables() {
     queryClient.invalidateQueries({
       queryKey: ['tableOrders', selectedTable.docID, branchID],
     });
+    queryClient.invalidateQueries({
+      queryKey: ['table', selectedTable.docID],
+    });
   };
 
   return (
