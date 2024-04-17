@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, TableRow, TableCell, ListItemText } from '@mui/material';
 
 import Label from 'src/components/label';
-import { fDate } from 'src/utils/format-time';
 import { useAuthContext } from 'src/auth/hooks';
+import { fDateTime } from 'src/utils/format-time';
 // ----------------------------------------------------------------------
 
 TableOrdersTableRow.propTypes = {
@@ -64,7 +64,7 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
           sx={{ color: 'text.disabled', cursor: 'pointer' }}
         >
           <ListItemText
-            primary={fDate(new Date(lastUpdate.seconds * 1000))}
+            primary={fDateTime(new Date(lastUpdate.seconds * 1000))}
             secondary={docID}
             primaryTypographyProps={{ typography: 'body2', color: 'text.primary' }}
             secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}

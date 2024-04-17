@@ -48,10 +48,9 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
   const totalOrdersCountThisMonth = orders?.filter((order) => order.isPaid)?.length || 0;
   const totalScans = tableData?.statisticsSummary?.scans?.[year]?.[month] || 0;
   return (
-    <Card sx={{ p: 3, height: '100%' }}>
+    <Card sx={{ py: 1 }}>
       <Stack
-        direction="column"
-        spacing={2}
+        direction="row"
         divider={
           <Divider
             orientation="horizontal"
@@ -59,17 +58,18 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
             sx={{ borderStyle: 'dashed', my: isMobile && 1 }}
           />
         }
-        justifyContent="center"
-        sx={{ height: '100%' }}
+        justifyContent="space-evenly"
       >
-        <TotalOrders
-          title="Total Orders"
-          total={totalOrdersCountThisMonth}
-          price={+totalOrdersThisMonth.toFixed(2)}
-          icon="fluent-emoji-high-contrast:money-bag"
-          color={theme.palette.success.main}
-          currency={branchInfo?.currency}
-        />
+        {tableData?.index !== 0 && (
+          <TotalOrders
+            title="Total Orders"
+            total={totalOrdersCountThisMonth}
+            price={+totalOrdersThisMonth.toFixed(2)}
+            icon="fluent-emoji-high-contrast:money-bag"
+            color={theme.palette.success.main}
+            currency={branchInfo?.currency}
+          />
+        )}
         <TotalScans
           title="Total Scans"
           total={totalScans}

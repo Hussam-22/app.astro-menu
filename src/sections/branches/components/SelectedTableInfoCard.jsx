@@ -39,8 +39,6 @@ function SelectedTableInfoCard({ tableInfo }) {
 
   const isQrMenuOnly = tableInfo?.index === 0;
 
-  console.log(isQrMenuOnly);
-
   const { data: menusList = [] } = useQuery({
     queryKey: ['menus'],
     queryFn: () => fsGetAllMenus(),
