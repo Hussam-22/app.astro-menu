@@ -142,7 +142,7 @@ export default function useChart(options) {
       // Bar
       bar: {
         borderRadius: 4,
-        columnWidth: '28%',
+        columnWidth: '35%',
         borderRadiusApplication: 'end',
         borderRadiusWhenStacked: 'last',
       },

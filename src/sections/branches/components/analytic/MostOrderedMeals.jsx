@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
-import ReactApexChart from 'react-apexcharts';
+import { useQuery } from '@tanstack/react-query';
 
-import { useChart } from 'src/components/chart';
+import { Chip, Card, Stack, useTheme, Typography, CircularProgress } from '@mui/material';
+
+import Iconify from 'src/components/iconify';
+import { useAuthContext } from 'src/auth/hooks';
+import AnalyticsConversionRates from 'src/sections/overview/analytics/analytics-conversion-rates';
 // import { AnalyticsConversionRates } from 'src/sections/@dashboard/general/analytics';
 
 // ----------------------------------------------------------------------
@@ -15,81 +18,72 @@ MostOrderedMeals.propTypes = {
 };
 
 export default function MostOrderedMeals({ userData, branch, month, year }) {
-  const [mealsStatisticsData, setMealsStatisticsData] = useState({});
-  const [mealsIDs, setMealsIDs] = useState([]);
-  const [nonZeroMeals, setNonZeroMeals] = useState([]);
+  const theme = useTheme();
+  const { fsGetAllMeals } = useAuthContext();
 
   const monthLong = new Date(`${month + 1}/01/${year}`).toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric',
   });
 
-  useEffect(() => {
-    setMealsStatisticsData(
-      userData?.statisticsSummary?.branches[branch.docID]?.meals?.[year]?.[month]
-    );
-  }, [branch.docID, month, userData, year]);
-
-  useEffect(() => {
-    if (
-      typeof mealsStatisticsData !== 'undefined' &&
-      Object.keys(mealsStatisticsData).length !== 0
-    ) {
-      setMealsIDs(Object.keys(mealsStatisticsData));
-    } else setMealsIDs([]);
-  }, [mealsStatisticsData, month, userData, year]);
-
-  useEffect(() => {
-    if (mealsIDs.length !== 0) {
-      setNonZeroMeals(() => meals.filter((meal) => mealsIDs.includes(meal.id)));
-    } else setNonZeroMeals([]);
-  }, [meals, mealsIDs]);
-
-  const data = nonZeroMeals
-    .map((meal) => ({ label: meal.title, value: mealsStatisticsData?.[meal.id] || 0 }))
-    .sort((a, b) => b.value - a.value);
-
-  return (
-    // <AnalyticsConversionRates
-    //   title="Most Ordered Meals"
-    //   subheader={`The chart represents orders for the current month : ${monthLong}`}
-    //   chart={{
-    //     series: data,
-    //   }}
-    // />
-    null
-  );
-}
-
-// -------------------------------------------------------------------
-
-ScanUsageOverTheYear.propTypes = {
-  incomeData: PropTypes.array,
-  year: PropTypes.number,
-};
-
-function ScanUsageOverTheYear({ incomeData, year }) {
-  const initialArrayOfZeroes = Array(12).fill(0);
-  const income = initialArrayOfZeroes.map((_, index) => incomeData?.[year]?.[index] || 1);
-
-  const chartLabels = incomeData.map((meal) => meal.title);
-  const chartOptions = useChart({
-    stroke: {
-      show: true,
-      width: 2,
-      colors: ['transparent'],
-    },
-    xaxis: {
-      categories: chartLabels,
-    },
-    tooltip: {
-      y: {
-        formatter: (val) => `${val}`,
-      },
-    },
+  const { data: allMeals = [], isLoading } = useQuery({
+    queryKey: [`meals`],
+    queryFn: () => fsGetAllMeals(),
   });
 
+  const mealsStats =
+    userData?.statisticsSummary?.branches[branch.docID]?.meals?.[year]?.[month] || {};
+
+  const mealsUsage =
+    !isLoading &&
+    Object.entries(mealsStats)
+      .map((item) => ({
+        label: allMeals.find((meal) => meal.docID === item[0]).title,
+        value: item[1],
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10);
+
+  if (isLoading)
+    return (
+      <Card
+        sx={{
+          p: 3,
+          height: 100,
+        }}
+      >
+        <Stack alignItems="center">
+          <CircularProgress />
+        </Stack>
+      </Card>
+    );
+
+  if (mealsUsage.length === 0)
+    return (
+      <Card sx={{ p: 3 }}>
+        <Stack alignItems="center" justifyContent="center" direction="row" spacing={1}>
+          <Iconify
+            icon="ph:warning-circle-light"
+            sx={{ width: 28, height: 28, color: theme.palette.text.disabled }}
+          />
+          <Typography variant="h4" sx={{ color: theme.palette.text.disabled }}>
+            No Statistics Available
+          </Typography>
+        </Stack>
+      </Card>
+    );
+
   return (
-    <ReactApexChart type="bar" series={[{ data: income }]} options={chartOptions} height={200} />
+    !isLoading &&
+    mealsUsage.length !== 0 && (
+      <AnalyticsConversionRates
+        title="Most Ordered Meals"
+        subheader="The chart represents top 10 most ordered meals"
+        action={<Chip label={monthLong} />}
+        chart={{
+          series: mealsUsage,
+        }}
+      />
+    )
   );
 }

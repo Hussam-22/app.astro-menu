@@ -3,6 +3,7 @@ import ReactApexChart from 'react-apexcharts';
 
 import { Box, Chip, Card, Stack, useTheme, Typography, CardHeader } from '@mui/material';
 
+import Iconify from 'src/components/iconify';
 import { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
@@ -26,6 +27,27 @@ export default function IncomeStatistics({ branchID, userData, year, month }) {
   const thisMonthIncome =
     userData?.statisticsSummary?.branches[branchID]?.income?.[year]?.[month] || 0;
   const avg = (+thisMonthIncome / +ordersCount).toFixed(2) || 0;
+
+  if (ordersCount === 0)
+    return (
+      <Card sx={{ p: 3, height: 1 }}>
+        <Stack
+          alignItems="center"
+          justifyContent="center"
+          direction="row"
+          spacing={1}
+          sx={{ my: 'auto', height: 1 }}
+        >
+          <Iconify
+            icon="ph:warning-circle-light"
+            sx={{ width: 28, height: 28, color: theme.palette.text.disabled }}
+          />
+          <Typography variant="h4" sx={{ color: theme.palette.text.disabled }}>
+            No Statistics Available
+          </Typography>
+        </Stack>
+      </Card>
+    );
 
   return (
     <Card>

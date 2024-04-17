@@ -12,7 +12,7 @@ import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-export default function AnalyticsConversionRates({ title, subheader, chart, ...other }) {
+export default function AnalyticsConversionRates({ title, subheader, chart, action, ...other }) {
   const { colors, series, options } = chart;
 
   const chartSeries = series.map((i) => i.value);
@@ -43,7 +43,7 @@ export default function AnalyticsConversionRates({ title, subheader, chart, ...o
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
+      <CardHeader title={title} subheader={subheader} action={action} />
 
       <Box sx={{ mx: 3 }}>
         <Chart
@@ -62,4 +62,5 @@ AnalyticsConversionRates.propTypes = {
   chart: PropTypes.object,
   subheader: PropTypes.string,
   title: PropTypes.string,
+  action: PropTypes.node,
 };

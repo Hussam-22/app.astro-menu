@@ -3,6 +3,7 @@ import ReactApexChart from 'react-apexcharts';
 
 import { Box, Chip, Card, Stack, useTheme, Typography, CardHeader } from '@mui/material';
 
+import Iconify from 'src/components/iconify';
 import { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
@@ -21,11 +22,33 @@ export default function ScansUsageLinear({ userData, branch, month, year }) {
     year: 'numeric',
   });
 
-  const scanData = userData?.statisticsSummary?.branches[branch.id]?.scans || {};
-  const totalScans = userData?.statisticsSummary?.branches[branch.id]?.scans?.[year]?.[month] || 0;
+  const scanData = userData?.statisticsSummary?.branches[branch.docID]?.scans || {};
+  const totalScans =
+    userData?.statisticsSummary?.branches[branch.docID]?.scans?.[year]?.[month] || 0;
   const totalOrders =
-    userData?.statisticsSummary?.branches[branch.id]?.orders?.[year]?.[month] || 0;
+    userData?.statisticsSummary?.branches[branch.docID]?.orders?.[year]?.[month] || 0;
   const avg = (+totalScans / +totalOrders).toFixed(2) || 0;
+
+  if (totalScans === 0)
+    return (
+      <Card sx={{ p: 3, height: 1 }}>
+        <Stack
+          alignItems="center"
+          justifyContent="center"
+          direction="row"
+          spacing={1}
+          sx={{ my: 'auto', height: 1 }}
+        >
+          <Iconify
+            icon="ph:warning-circle-light"
+            sx={{ width: 28, height: 28, color: theme.palette.text.disabled }}
+          />
+          <Typography variant="h4" sx={{ color: theme.palette.text.disabled }}>
+            No Statistics Available
+          </Typography>
+        </Stack>
+      </Card>
+    );
 
   return (
     <Card>
