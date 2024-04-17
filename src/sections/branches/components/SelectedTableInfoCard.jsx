@@ -37,6 +37,10 @@ function SelectedTableInfoCard({ tableInfo }) {
   const { fsUpdateBranchTable, user, fsGetAllMenus } = useAuthContext();
   const queryClient = useQueryClient();
 
+  const isQrMenuOnly = tableInfo?.index === 0;
+
+  console.log(isQrMenuOnly);
+
   const { data: menusList = [] } = useQuery({
     queryKey: ['menus'],
     queryFn: () => fsGetAllMenus(),
@@ -103,6 +107,107 @@ function SelectedTableInfoCard({ tableInfo }) {
     downloadLink.click();
     document.body.removeChild(downloadLink);
   };
+
+  if (isQrMenuOnly)
+    return (
+      <Grid container spacing={2}>
+        <Grid xs={12} sm={8}>
+          <Card sx={{ p: 3, height: 1 }}>
+            <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+              <Stack direction="column" spacing={2}>
+                <Stack direction="row" alignItems="self-end" justifyContent="space-between">
+                  <Stack direction="column">
+                    <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+                      {tableInfo?.docID}
+                    </Typography>
+                    <Typography variant="h4">Menu Only</Typography>
+                  </Stack>
+                  <RHFSwitch
+                    name="isActive"
+                    label={`Table is ${values.isActive ? 'Active' : 'Disabled'}`}
+                    labelPlacement="end"
+                    sx={{ m: 0 }}
+                  />
+                </Stack>
+                <Stack direction="column" spacing={2}>
+                  {menusList?.length !== 0 && menusList !== undefined && (
+                    <RHFSelect
+                      name="menuID"
+                      label="Default Menu"
+                      placeholder="Default Menu"
+                      defaultValue={tableInfo?.menuID}
+                    >
+                      {menusList.map((menu) => (
+                        <MenuItem key={menu.docID} value={menu.docID}>
+                          {menu.title}
+                        </MenuItem>
+                      ))}
+                    </RHFSelect>
+                  )}
+                </Stack>
+                <TextField value="This table is to show your menu only" disabled />
+                <Stack spacing={2} direction="row" justifyContent="flex-end" alignItems="center">
+                  <LoadingButton
+                    loading={isPending}
+                    type="submit"
+                    variant="contained"
+                    color="success"
+                    startIcon={<Iconify icon="ion:save-sharp" />}
+                  >
+                    Save
+                  </LoadingButton>
+                </Stack>
+              </Stack>
+            </FormProvider>
+          </Card>
+        </Grid>
+        <Grid xs={12} sm={4}>
+          <Card sx={{ p: 3, height: '100%' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1.5,
+                alignItems: 'center',
+                mt: 2,
+              }}
+            >
+              <QRCodeCanvas
+                value={qrURL}
+                size={200}
+                id={tableInfo?.index}
+                style={{
+                  border: `solid 5px ${theme.palette.primary.main}`,
+                  borderRadius: 5,
+                  padding: 10,
+                }}
+              />
+              <Button
+                variant="text"
+                onClick={downloadQR}
+                startIcon={<Iconify icon="uil:image-download" />}
+              >
+                Download QR
+              </Button>
+              <TextField
+                name="URL"
+                value={qrURL}
+                size="small"
+                fullWidth
+                aria-readonly
+                InputProps={{
+                  endAdornment: (
+                    <IconButton size="small" sx={{ p: 0, m: 0 }} onClick={copUrlHandler}>
+                      <Iconify icon="mdi:clipboard-multiple-outline" />
+                    </IconButton>
+                  ),
+                }}
+              />
+            </Box>
+          </Card>
+        </Grid>
+      </Grid>
+    );
 
   return (
     <Grid container spacing={2}>

@@ -65,8 +65,6 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
     return ['In Progress', 'default'];
   };
 
-  console.log(cartMeals);
-
   return (
     <Dialog
       fullWidth

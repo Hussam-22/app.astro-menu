@@ -61,9 +61,11 @@ function BranchTables() {
         <SelectedTableInfoCard tableInfo={selectedTable} month={month} year={year} />
       )}
 
-      <Divider sx={{ borderStyle: 'dashed', borderColor: theme.palette.divider }} />
+      {selectedTable && selectedTable.index !== 0 && (
+        <Divider sx={{ borderStyle: 'dashed', borderColor: theme.palette.divider }} />
+      )}
 
-      {selectedTable && (
+      {selectedTable && selectedTable.index !== 0 && (
         <Card sx={{ p: 2 }}>
           <Stack direction="row" spacing={2} justifyContent="flex-end" alignItems="center">
             <LoadingButton
