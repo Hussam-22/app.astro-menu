@@ -9,6 +9,7 @@ import MonthYearPicker from 'src/sections/branches/components/MonthYearPicker';
 import IncomeStatistics from 'src/sections/branches/components/analytic/IncomeStatistics';
 import ScansUsageLinear from 'src/sections/branches/components/analytic/ScansUsageLinear';
 import MostOrderedMeals from 'src/sections/branches/components/analytic/MostOrderedMeals';
+import TablesOccupation from 'src/sections/branches/components/analytic/TablesOccupation';
 
 const yearsSince2023 = new Date().getFullYear() - 2023;
 const availableYears = [...Array(yearsSince2023 + 1)].map((value, index) => 2023 + index);
@@ -53,12 +54,12 @@ function BranchStatistics() {
       <Grid item xs={12} md={6}>
         <IncomeStatistics userData={user} branchID={branchInfo.docID} month={month} year={year} />
       </Grid>
-      <Grid item xs={12} md={12}>
+      <Grid item sm={12}>
         <MostOrderedMeals userData={user} branch={branchInfo} month={month} year={year} />
       </Grid>
-      {/* <Grid item xs={12} md={6}>
-        <TablesOccupation userData={userData} branch={branch} month={month} year={year} />
-      </Grid> */}
+      <Grid item sm={12}>
+        <TablesOccupation userData={user} branch={branchInfo} month={month} year={year} />
+      </Grid>
     </Grid>
   );
 }
