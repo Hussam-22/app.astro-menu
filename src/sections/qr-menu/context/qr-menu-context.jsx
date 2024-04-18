@@ -58,7 +58,7 @@ export function QrMenuContextProvider({ children }) {
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', userID, branchID],
     queryFn: () => fsGetBranch(branchID, userID),
-    enabled: tableInfo?.docID !== undefined && tableInfo.isActive,
+    enabled: tableInfo?.docID !== undefined,
   });
 
   const { data: mealsLabel = [] } = useQuery({

@@ -44,8 +44,6 @@ function TableActionBar() {
     },
   });
 
-  console.log(error);
-
   if (!orderSnapShot) return null;
 
   const { docID: orderID, userID, branchID, isInKitchen, cart, updateCount } = orderSnapShot;

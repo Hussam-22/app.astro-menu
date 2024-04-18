@@ -105,7 +105,9 @@ function BranchTables() {
     ordersInKitchen.some((order) => order.tableID === table.docID)
   );
 
-  const tablesToShow = isChef ? tablesWithInKitchenOrder : tables;
+  const tablesToShow = isChef
+    ? tablesWithInKitchenOrder
+    : tables.filter((table) => table.index !== 0);
 
   return (
     tablesToShow.length !== 0 && (

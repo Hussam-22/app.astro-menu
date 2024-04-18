@@ -1,12 +1,9 @@
-import useSWR from 'swr';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { Stack, Drawer } from '@mui/material';
 
-import Image from 'src/components/image';
-import { fetcher } from 'src/utils/axios';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
@@ -54,10 +51,10 @@ function LanguageButton({ code, toggleDrawer }) {
   const { setLanguage, selectedLanguage } = useQrMenuContext();
   const [loading, setLoading] = useState(false);
 
-  const { data, isValidating } = useSWR(
-    `https://restcountries.com/v3.1/lang/${LANGUAGE_CODES[code].name}?fields=languages,flags`,
-    fetcher
-  );
+  // const { data, isValidating } = useSWR(
+  //   `https://restcountries.com/v3.1/lang/${LANGUAGE_CODES[code].name}?fields=languages,flags`,
+  //   fetcher
+  // );
 
   const onlanguagechange = () => {
     setLoading(true);
@@ -71,13 +68,13 @@ function LanguageButton({ code, toggleDrawer }) {
 
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      {!isValidating && data.length !== 0 && (
+      {/* {!isValidating && data.length !== 0 && (
         <Image
           src={`${data.filter((item) => Object.keys(item.languages).length === 1)[0].flags.svg}`}
           sx={{ width: 44, height: 28, borderRadius: 1 }}
           onClick={() => onlanguagechange(code)}
         />
-      )}
+      )} */}
       <LoadingButton
         variant={selectedLanguage === code ? 'contained' : 'outlined'}
         onClick={() => onlanguagechange(code)}

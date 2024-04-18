@@ -75,6 +75,8 @@ const TableOrder = () => {
     [availableMeals, orderSnapShot]
   );
 
+  console.log(cartMeals(0));
+
   const removeMeal = (portion) =>
     mutate(() => {
       const removedMealCart = orderSnapShot.cart.filter(
@@ -175,9 +177,21 @@ const TableOrder = () => {
           <Stack direction="column" spacing={0.25}>
             {cartMeals(orderIndex).map((meal) => (
               <React.Fragment key={meal.docID}>
-                <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                  {meal.title}
-                </Typography>
+                <Stack direction="row" spacing={1}>
+                  <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                    {meal.title}
+                  </Typography>
+                  <Box sx={{ color: 'text.disabled' }}>
+                    x(
+                    {
+                      orderSnapShot.cart.filter(
+                        (cartPortion) =>
+                          cartPortion.mealID === meal.docID && cartPortion.update === orderIndex
+                      ).length
+                    }
+                    )
+                  </Box>
+                </Stack>
                 <Box sx={{ ml: 3 }}>
                   {orderSnapShot.cart
                     .filter(

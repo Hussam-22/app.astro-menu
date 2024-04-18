@@ -3,16 +3,17 @@ import PropTypes from 'prop-types';
 
 import {
   Box,
-  Card,
   Link,
-  alpha,
+  Card,
   Stack,
+  alpha,
+  Avatar,
   Button,
   Divider,
   useTheme,
   TextField,
-  IconButton,
   Typography,
+  IconButton,
 } from '@mui/material';
 
 import { _socials } from 'src/_mock';
@@ -29,11 +30,21 @@ function QRMenuHomeView() {
   const [isWifiOpen, setIsWifiOpen] = useState(false);
   const {
     user,
-    branchInfo: { title, description, translationEdited, translation, cover, wifiPassword },
-    tableInfo: { title: tableTitle },
+    branchInfo: {
+      title,
+      description,
+      translationEdited,
+      translation,
+      cover,
+      wifiPassword,
+      isActive,
+    },
+    tableInfo: { title: tableTitle, isActive: isTableActive, index },
     selectedLanguage,
   } = useQrMenuContext();
   const router = useRouter();
+
+  console.log(isTableActive);
 
   const getDescription = () => {
     if (selectedLanguage === user.defaultLanguage) return description;
@@ -46,19 +57,36 @@ function QRMenuHomeView() {
     <Box sx={{ py: 2 }}>
       <Card sx={{ p: 1 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightBold }}>
-            {tableTitle}
-          </Typography>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Avatar
+              variant="rounded"
+              sx={{
+                // width: 16,
+                // height: 16,
+                border: `1px solid ${theme.palette.divider}`,
+                bgcolor: 'background.paper',
+              }}
+              color="default"
+            >
+              {index}
+            </Avatar>
+            <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightBold }}>
+              {tableTitle}
+            </Typography>
+          </Stack>
           <Stack direction="row">
             {wifiPassword && (
               <IconButton onClick={() => setIsWifiOpen(true)}>
-                <Iconify icon="tabler:wifi" sx={{ color: '#000000', width: 28, height: 28 }} />
+                <Iconify
+                  icon="tabler:wifi"
+                  sx={{ color: 'common.alternative', width: 28, height: 28 }}
+                />
               </IconButton>
             )}
             <IconButton onClick={() => setIsLangOpen(true)}>
               <Iconify
                 icon="clarity:language-solid"
-                sx={{ color: '#000000', width: 28, height: 28 }}
+                sx={{ color: 'common.alternative', width: 28, height: 28 }}
               />
             </IconButton>
           </Stack>
@@ -73,10 +101,11 @@ function QRMenuHomeView() {
           </Box>
           <Button
             variant="contained"
-            endIcon={<Iconify icon="game-icons:meal" />}
+            endIcon={<Iconify icon={isTableActive ? 'game-icons:meal' : 'zondicons:close-solid'} />}
             onClick={() => router.replace('menu')}
+            disabled={!isTableActive}
           >
-            Go to Menu
+            {isTableActive ? 'Go to Menu' : 'Table is not accepting orders'}
           </Button>
           <SocialLinks />
           <Box>
