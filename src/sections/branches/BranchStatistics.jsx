@@ -52,7 +52,13 @@ function BranchStatistics() {
         <ScansUsageLinear userData={user} branch={branchInfo} month={month} year={year} />
       </Grid>
       <Grid item xs={12} md={6}>
-        <IncomeStatistics userData={user} branchID={branchInfo.docID} month={month} year={year} />
+        <IncomeStatistics
+          userData={user}
+          branchID={branchInfo.docID}
+          month={month}
+          year={year}
+          currency={branchInfo.currency}
+        />
       </Grid>
       <Grid item sm={12}>
         <MostOrderedMeals userData={user} branch={branchInfo} month={month} year={year} />
