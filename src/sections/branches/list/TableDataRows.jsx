@@ -1,8 +1,6 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 // @mui
-import { useTheme } from '@mui/material/styles';
 import { Link, TableRow, TableCell, Typography, ListItemText } from '@mui/material';
 
 import Label from 'src/components/label';
@@ -20,10 +18,8 @@ const THIS_YEAR = new Date().getFullYear();
 const THIS_MONTH = new Date().getMonth();
 
 export default function TableDataRows({ row, onEditRow }) {
-  const theme = useTheme();
-  const { user, fsGetBranchTablesCount } = useAuthContext();
+  const { user } = useAuthContext();
   const { title, imgUrl, isActive, docID } = row;
-  const [tablesCount, setTablesCount] = useState(0);
 
   const ordersCount =
     user.statisticsSummary?.branches[docID]?.orders?.[THIS_YEAR]?.[THIS_MONTH] || 0;
@@ -31,17 +27,6 @@ export default function TableDataRows({ row, onEditRow }) {
     user?.statisticsSummary?.branches[docID]?.income?.[THIS_YEAR]?.[THIS_MONTH] || 0;
   const thisMonthScans =
     user?.statisticsSummary?.branches[docID]?.scans?.[THIS_YEAR]?.[THIS_MONTH] || 0;
-
-  const textColor =
-    theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.primary.light;
-
-  // useEffect(() => {
-  //   const getTablesCount = async () => {
-  //     const count = await fsGetBranchTablesCount(row.id);
-  //     return setTablesCount(count);
-  //   };
-  //   getTablesCount();
-  // }, [fsGetBranchTablesCount, row.docId]);
 
   return (
     <TableRow hover>
@@ -74,7 +59,6 @@ export default function TableDataRows({ row, onEditRow }) {
 
       <TableCell align="center">{ordersCount}</TableCell>
       <TableCell align="center">{fCurrency(thisMonthIncome)}</TableCell>
-      <TableCell align="center">{tablesCount}</TableCell>
       <TableCell align="center">{thisMonthScans}</TableCell>
       <TableCell align="center">
         <Label variant="soft" color={isActive ? 'success' : 'error'}>

@@ -50,7 +50,6 @@ const TABLE_HEAD = [
   { id: 'title', label: 'Branch Name', align: 'left', width: '40%' },
   { id: 'orders', label: `(${monthLong}) Orders`, align: 'center', width: '15%' },
   { id: 'income', label: `(${monthLong}) Income`, align: 'center', width: '15%' },
-  { id: 'tables', label: 'tables', align: 'center', width: '15%' },
   { id: 'scans', label: `(${monthLong}) Scans`, align: 'center', width: '15%' },
   { id: 'status', label: 'Status', align: 'center', width: '15%' },
 ];
