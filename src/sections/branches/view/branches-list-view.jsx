@@ -8,10 +8,13 @@ import {
   Card,
   Table,
   Button,
+  TableRow,
   TableBody,
   Container,
+  TableCell,
   TableContainer,
   TablePagination,
+  CircularProgress,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -65,7 +68,11 @@ export default function BranchesListView() {
   const { fsGetAllBranches } = useAuthContext();
   const [filterName, setFilterName] = useState('');
 
-  const { data: tableData = [] } = useQuery({
+  const {
+    data: tableData = [],
+    isFetching,
+    failureCount,
+  } = useQuery({
     queryKey: ['branches'],
     queryFn: () => fsGetAllBranches(),
   });
@@ -127,19 +134,28 @@ export default function BranchesListView() {
               />
 
               <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) =>
-                    row ? (
-                      <TableDataRows
-                        key={row.docID}
-                        row={row}
-                        onEditRow={() => handleEditRow(row.docID)}
-                      />
-                    ) : (
-                      !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
-                    )
-                  )}
+                {(isFetching || failureCount !== 0) && (
+                  <TableRow>
+                    <TableCell colSpan={6} align="center">
+                      <CircularProgress />
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!isFetching &&
+                  failureCount === 0 &&
+                  dataFiltered
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) =>
+                      row ? (
+                        <TableDataRows
+                          key={row.docID}
+                          row={row}
+                          onEditRow={() => handleEditRow(row.docID)}
+                        />
+                      ) : (
+                        !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
+                      )
+                    )}
 
                 <TableEmptyRows
                   height={60}
