@@ -114,7 +114,7 @@ function QRMenuHomeView() {
           <Box>
             <Typography variant="overline">Welcome to</Typography>
             <Typography variant="h3">{title}</Typography>
-            <Typography variant="body2">{getDescription()}</Typography>
+            <Typography variant="body2">{getDescription() || description}</Typography>
           </Box>
           <Button
             variant="contained"
