@@ -87,6 +87,8 @@ export default function BranchNewEditForm({ branchInfo }) {
       defaultLanguage: branchInfo?.defaultLanguage || 'en',
       currency: branchInfo?.currency || '',
       taxValue: branchInfo?.taxValue || 0,
+      email: branchInfo.email || '',
+      number: branchInfo.number || '',
 
       socialLinks: {
         facebook: branchInfo?.socialLinks?.facebook || '',
@@ -136,10 +138,6 @@ export default function BranchNewEditForm({ branchInfo }) {
     },
     [setValue]
   );
-
-  // useEffect(() => {
-  //   if (branchInfo?.docID) reset(defaultValues);
-  // }, [branchInfo?.docID, defaultValues, reset, branchInfo?.cover]);
 
   const handelRemove = () => {
     setValue('cover', '');
@@ -231,8 +229,7 @@ export default function BranchNewEditForm({ branchInfo }) {
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
               <RHFTextField name="wifiPassword" label="Wifi Password" />
               <RHFTextField name="taxValue" label="Tax Value" type="number" />
-            </Box>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
+
               {!isLoading && (
                 <RHFSelect name="currency" label="Currency">
                   {currencies}
@@ -245,6 +242,9 @@ export default function BranchNewEditForm({ branchInfo }) {
                   </MenuItem>
                 ))}
               </RHFSelect>
+
+              <RHFTextField type="email" name="email" label="Contact Email" />
+              <RHFTextField type="number" name="number" label="Contact Number" />
             </Box>
           </Stack>
         </Card>

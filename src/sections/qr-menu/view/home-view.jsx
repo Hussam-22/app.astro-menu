@@ -38,6 +38,8 @@ function QRMenuHomeView() {
       cover,
       wifiPassword,
       isActive: isBranchActive,
+      email,
+      number,
     },
     tableInfo: { title: tableTitle, isActive: isTableActive, index },
     selectedLanguage,
@@ -109,7 +111,7 @@ function QRMenuHomeView() {
           </Stack>
         </Stack>
         <Divider sx={{ borderStyle: 'dashed', my: 1 }} />
-        <Stack direction="column" spacing={2}>
+        <Stack direction="column" spacing={1}>
           <Image src={cover} sx={{ borderRadius: 1 }} ratio="16/9" />
           <Box>
             <Typography variant="overline">Welcome to</Typography>
@@ -121,10 +123,21 @@ function QRMenuHomeView() {
             endIcon={<Iconify icon={isTableActive ? 'game-icons:meal' : 'zondicons:close-solid'} />}
             onClick={() => router.replace('menu')}
             disabled={!isTableActive}
+            sx={{ my: 2 }}
           >
             {isTableActive ? 'Go to Menu' : 'Table is not accepting orders'}
           </Button>
-          <SocialLinks />
+          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mx: 1 }}>
+            <Stack direction="row" spacing={1}>
+              <Iconify icon="entypo:email" />
+              <Typography variant="caption">{email}</Typography>
+            </Stack>
+            <Stack direction="row" spacing={1}>
+              <Iconify icon="ph:phone" />
+              <Typography variant="caption">{number}</Typography>
+            </Stack>
+            <SocialLinks />
+          </Stack>
           <Box>
             <Divider sx={{ borderStyle: 'dashed', mb: 1 }} />
             <Typography variant="caption" component="div" sx={{ textAlign: 'center' }}>
