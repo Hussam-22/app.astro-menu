@@ -1,10 +1,9 @@
-import PropTypes from 'prop-types';
 import { useMemo, useState } from 'react';
 
 import { Box, Stack } from '@mui/material';
 
+import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
-import { useParams, useRouter } from 'src/routes/hook';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import CartDrawer from 'src/sections/qr-menu/drawers/cart-drawer';
 import ActionButton from 'src/sections/qr-menu/components/ActionButton';
@@ -12,15 +11,14 @@ import LanguageDrawer from 'src/sections/qr-menu/drawers/language-drawer';
 import SectionsDrawer from 'src/sections/qr-menu/drawers/sections-drawer';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
-BottomNavModern.propTypes = {
-  containerWidth: PropTypes.number,
-};
+// BottomNavModern.propTypes = {
+//   containerWidth: PropTypes.number,
+// };
 
-function BottomNavModern({ containerWidth }) {
-  const { userID, branchID } = useParams();
+function BottomNavModern() {
   const router = useRouter();
   const { orderSnapShot } = useAuthContext();
-  const { labels, selectedLanguage } = useQrMenuContext();
+  const { labels, selectedLanguage, branchInfo } = useQrMenuContext();
   const [drawerStates, setDrawerStates] = useState({
     menu: false,
     cart: false,
@@ -38,6 +36,8 @@ function BottomNavModern({ containerWidth }) {
   };
 
   if (orderSnapShot?.docID === undefined) return null;
+
+  if (!branchInfo.isActive) return null;
 
   return (
     <Box

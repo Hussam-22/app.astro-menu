@@ -37,14 +37,12 @@ function QRMenuHomeView() {
       translation,
       cover,
       wifiPassword,
-      isActive,
+      isActive: isBranchActive,
     },
     tableInfo: { title: tableTitle, isActive: isTableActive, index },
     selectedLanguage,
   } = useQrMenuContext();
   const router = useRouter();
-
-  console.log(isTableActive);
 
   const getDescription = () => {
     if (selectedLanguage === user.defaultLanguage) return description;
@@ -52,6 +50,25 @@ function QRMenuHomeView() {
       ? translationEdited?.[selectedLanguage]?.desc
       : translation?.[selectedLanguage]?.desc;
   };
+
+  if (!isBranchActive)
+    return (
+      <Box
+        sx={{
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          textAlign: 'center',
+          px: 1,
+          gap: 2,
+        }}
+      >
+        <Iconify icon="zondicons:close-solid" sx={{ width: 64, height: 64 }} />
+        <Typography variant="h1">Sorry this branch is not open !!</Typography>
+      </Box>
+    );
 
   return (
     <Box sx={{ py: 2 }}>
