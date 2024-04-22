@@ -29,7 +29,9 @@ export default function IncomeStatistics({ branchID, userData, year, month, curr
     userData?.statisticsSummary?.branches[branchID]?.income?.[year]?.[month] || 0;
   const avg = (+selectedMonthIncome / +ordersCount).toFixed(2) || 0;
 
-  if (ordersCount === 0)
+  const income = +selectedMonthIncome;
+
+  if (ordersCount === 0 && (selectedMonthIncome === 0 || selectedMonthIncome === undefined))
     return (
       <Card sx={{ p: 3, height: 1 }}>
         <Stack
@@ -50,13 +52,15 @@ export default function IncomeStatistics({ branchID, userData, year, month, curr
       </Card>
     );
 
+  console.log(+income.toFixed(0));
+
   return (
     <Card>
       <CardHeader title="Total Income" action={<Chip label={monthLong} />} />
       <Box sx={{ p: 3 }}>
         <Typography variant="h3" sx={{ color: theme.palette.success.main }}>
           {`${currency} 
-          ${selectedMonthIncome.toFixed(2)}`}
+          ${+income.toFixed(2)}`}
         </Typography>
         <Stack direction="row" spacing={1} sx={{ color: theme.palette.grey[500] }}>
           <Typography variant="caption">from {ordersCount} Orders</Typography>
@@ -81,10 +85,14 @@ IncomeYearStatistics.propTypes = {
 
 function IncomeYearStatistics({ incomeData, year }) {
   const initialArrayOfZeroes = Array(12).fill(0);
-  const income = initialArrayOfZeroes.map(
-    // eslint-disable-next-line no-unsafe-optional-chaining
-    (_, index) => incomeData?.[year]?.[index]?.toFixed(0) || 0
-  );
+  // const income = initialArrayOfZeroes.map((_, index) => {
+  //   // eslint-disable-next-line no-unsafe-optional-chaining
+  //   if (Number.isNaN(+incomeData?.[year]?.[index]) && incomeData?.[year]?.[index] !== undefined)
+  //     return incomeData[year][index].toFixed(0);
+  //   return 0;
+  // });
+
+  const income = initialArrayOfZeroes.map((_, index) => incomeData?.[year]?.[index] || 0);
 
   // const chartData = {
   //   year: 'Year',
