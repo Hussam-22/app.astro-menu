@@ -11,7 +11,7 @@ function QrMenuView() {
   const { tableInfo, branchInfo } = useQrMenuContext();
   const router = useRouter();
 
-  if (!branchInfo.isActive)
+  if (!branchInfo.isActive && branchInfo.isActive !== undefined)
     return (
       <Box
         sx={{

@@ -17,7 +17,7 @@ function MealCard({ mealInfo, isMealActive }) {
   const { tableID } = useParams();
   const { cover, description, isNew, portions, title, translation, translationEdited } = mealInfo;
   const { orderSnapShot } = useAuthContext();
-  const { branchInfo, selectedLanguage, menuInfo } = useQrMenuContext();
+  const { branchInfo, selectedLanguage, tableInfo } = useQrMenuContext();
   const [isReadMore, setIsReadMore] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -49,14 +49,32 @@ function MealCard({ mealInfo, isMealActive }) {
   return (
     <Box sx={{ py: 1 }}>
       <Stack direction="row" spacing={1} alignItems="center">
+        {count !== 0 && (
+          <Box sx={{ bgcolor: 'success.main', width: 5, height: 100, borderRadius: 5 }} />
+        )}
         <Stack direction="column" spacing={0} sx={{ width: '70%', flexGrow: 1 }}>
           <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
             <Title selectedLanguage={selectedLanguage} getTitle={getTitle} />
-            <Stack direction="row" spacing={0}>
-              <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
-                {branchInfo?.currency}
-              </Typography>
-              <Typography variant="h4">{portions[0].price}</Typography>
+            <Stack direction="row" spacing={1} alignItems="center">
+              {count !== 0 && (
+                <Box
+                  sx={{
+                    borderRadius: 1,
+                    bgcolor: 'success.lighter',
+                    color: 'common.black',
+                    px: 0.75,
+                  }}
+                  onClick={() => setIsOpen(true)}
+                >
+                  <Typography variant="overline">x{count}</Typography>
+                </Box>
+              )}
+              <Stack direction="row" spacing={0.5}>
+                <Typography variant="h4">{portions[0].price}</Typography>
+                <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
+                  {branchInfo?.currency}
+                </Typography>
+              </Stack>
             </Stack>
           </Stack>
 
@@ -80,6 +98,7 @@ function MealCard({ mealInfo, isMealActive }) {
             ratio="1/1"
             sx={{
               borderRadius: 1,
+              border: `dashed 1px ${theme.palette.divider}`,
               filter: `grayscale(${isMealActive ? '0' : '100'})`,
               maxWidth: '85%',
               p: 0,
@@ -87,8 +106,8 @@ function MealCard({ mealInfo, isMealActive }) {
           />
           {isMealActive &&
             branchInfo?.allowSelfOrder &&
-            orderSnapShot?.updateCount === 0 &&
-            (count === 0 ? (
+            tableInfo.index !== 0 &&
+            orderSnapShot?.updateCount === 0 && (
               <IconButton
                 variant="contained"
                 color="success"
@@ -104,24 +123,7 @@ function MealCard({ mealInfo, isMealActive }) {
               >
                 <Iconify icon="carbon:add-filled" sx={{ width: 32, height: 32 }} />
               </IconButton>
-            ) : (
-              <Box
-                sx={{
-                  borderRadius: 1,
-                  position: 'absolute',
-                  bottom: -12,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  bgcolor: 'info.main',
-                  color: 'common.white',
-                  py: 0.4,
-                  px: 1.4,
-                }}
-                onClick={() => setIsOpen(true)}
-              >
-                <Typography variant="h6">x{count}</Typography>
-              </Box>
-            ))}
+            )}
           {isNew && (
             <Box sx={{ position: 'absolute', top: 4, right: 1 }}>
               <Label

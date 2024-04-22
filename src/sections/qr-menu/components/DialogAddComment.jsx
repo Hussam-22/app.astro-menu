@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 
 import { LoadingButton } from '@mui/lab';
-import { Stack, Button, Dialog, MenuItem, Typography, DialogContent } from '@mui/material';
+import { Stack, Button, Dialog, Typography, DialogContent } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
 import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider from 'src/components/hook-form/form-provider';
-import { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import { RHFTextField, RHFRadioGroup } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -72,24 +72,15 @@ export default function DialogAddComment({
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={1} direction="column" sx={{ textAlign: 'center' }}>
             <Typography variant="h5">{mealTitle}</Typography>
-            <Image src={mealInfo.cover} sx={{ borderRadius: 1, mb: 2 }} ratio="4/3" />
-            <RHFSelect name="portion" label="Select Meal Size/Portion">
-              {mealInfo.portions.map((portion, index) => (
-                <MenuItem key={index} value={index}>
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{ textWrap: 'pretty' }}
-                    >{`${portion.portionSize} - ${portion.gram}gram - ${portion.price} ${branchInfo.currency}`}</Typography>
-                  </Stack>
-                </MenuItem>
-              ))}
-            </RHFSelect>
+            <Image src={mealInfo.cover} sx={{ borderRadius: 1, mb: 2, height: 300 }} ratio="21/9" />
+            <RHFRadioGroup
+              name="portion"
+              // label="Select Meal Size/Portion"
+              options={mealInfo.portions.map((portion, index) => ({
+                value: index,
+                label: `${portion.portionSize} - ${portion.gram}gram - ${portion.price} ${branchInfo.currency}`,
+              }))}
+            />
 
             <RHFTextField rows={3} multiline name="comment" label="Any Special Requests?" />
 

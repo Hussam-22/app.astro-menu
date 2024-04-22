@@ -53,7 +53,9 @@ function QRMenuHomeView() {
       : translation?.[selectedLanguage]?.desc;
   };
 
-  if (!isBranchActive)
+  console.log(isBranchActive);
+
+  if (!isBranchActive && isBranchActive !== undefined)
     return (
       <Box
         sx={{
@@ -127,15 +129,9 @@ function QRMenuHomeView() {
           >
             {isTableActive ? 'Go to Menu' : 'Table is not accepting orders'}
           </Button>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mx: 1 }}>
-            <Stack direction="row" spacing={1}>
-              <Iconify icon="entypo:email" />
-              <Typography variant="caption">{email}</Typography>
-            </Stack>
-            <Stack direction="row" spacing={1}>
-              <Iconify icon="ph:phone" />
-              <Typography variant="caption">{number}</Typography>
-            </Stack>
+          <Stack direction="column" alignItems="center" sx={{ mx: 1 }}>
+            {email && <Typography variant="caption">{email}</Typography>}
+            {number && <Typography variant="caption">{number}</Typography>}
             <SocialLinks />
           </Stack>
           <Box>
