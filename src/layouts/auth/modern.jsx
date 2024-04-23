@@ -27,7 +27,7 @@ export default function AuthModernLayout({ children, image }) {
       <Logo
         sx={{
           mt: { xs: 2, md: 8 },
-          mb: { xs: 10, md: 8 },
+          mb: { xs: 2, md: 2 },
         }}
       />
 
@@ -50,7 +50,7 @@ export default function AuthModernLayout({ children, image }) {
       <Box
         component="img"
         alt="auth"
-        src={image || '/assets/background/overlay_3.jpg'}
+        src={image || '/assets/background/bg_register.jpg'}
         sx={{
           top: 16,
           left: 16,

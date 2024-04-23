@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Link from '@mui/material/Link';
-import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -14,8 +14,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Box, Card, Button, MenuItem, useTheme } from '@mui/material';
 
-import Image from 'src/components/image';
 import Label from 'src/components/label';
+import Image from 'src/components/image';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -24,6 +24,7 @@ import Iconify from 'src/components/iconify';
 import { PLANS_INFO } from 'src/_mock/_planes';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
+import { COUNTRIES } from 'src/_mock/_countries';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -45,6 +46,9 @@ export default function FirebaseRegisterView() {
     lastName: Yup.string().required('Last name required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
+    country: Yup.string().required('Country is required'),
+    plan: Yup.string().required('Plan is required'),
+    businessName: Yup.string().required('Plan is required'),
   });
 
   const defaultValues = {
@@ -52,6 +56,10 @@ export default function FirebaseRegisterView() {
     lastName: '',
     email: '',
     password: '',
+    businessName: '',
+    address: '',
+    country: '',
+    plan: '',
   };
 
   const methods = useForm({
@@ -67,12 +75,13 @@ export default function FirebaseRegisterView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await register?.(data.email, data.password, data.firstName, data.lastName);
-      const searchParams = new URLSearchParams({ email: data.email }).toString();
+      console.log(data);
+      // await register?.(data.email, data.password, data.firstName, data.lastName);
+      // const searchParams = new URLSearchParams({ email: data.email }).toString();
 
-      const href = `${paths.auth.firebase.verify}?${searchParams}`;
+      // const href = `${paths.auth.firebase.verify}?${searchParams}`;
 
-      router.push(href);
+      // router.push(href);
     } catch (error) {
       console.error(error);
       reset();
@@ -105,16 +114,16 @@ export default function FirebaseRegisterView() {
   };
 
   const renderHead = (
-    <Stack spacing={1} sx={{ mb: 5, position: 'relative' }}>
-      <Typography variant="overline">All plans come with 1 month free trial</Typography>
+    <Stack spacing={1} sx={{ mb: 4, position: 'relative' }}>
+      {/* <Typography variant="overline">All plans come with 1 month free trial</Typography> */}
       <Typography variant="h4" sx={{ mt: -1 }}>
         Get started absolutely free
       </Typography>
 
-      <Stack direction="row" spacing={0.5}>
+      <Stack direction="row" spacing={0.5} alignItems="center">
         <Typography variant="body2"> Already have an account? </Typography>
 
-        <Link href={paths.auth.firebase.login} component={RouterLink} variant="subtitle2">
+        <Link href={paths.auth.firebase.login} component={RouterLink} variant="body2">
           Sign in
         </Link>
       </Stack>
@@ -143,10 +152,16 @@ export default function FirebaseRegisterView() {
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
       <Stack direction="row" spacing={1} alignItems="center">
-        <Typography variant="overline" sx={{ color: 'info.main' }}>
+        <Typography variant="overline" sx={{ color: 'secondary.main' }}>
           Not sure which plan suits you
         </Typography>
-        <Button variant="soft" color="info" size="small" onClick={() => isDialogOpen.onTrue()}>
+        <Button
+          variant="soft"
+          color="secondary"
+          size="small"
+          onClick={() => isDialogOpen.onTrue()}
+          endIcon={<Iconify icon="iconamoon:compare-duotone" />}
+        >
           Compare Plans
         </Button>
       </Stack>
@@ -173,7 +188,18 @@ export default function FirebaseRegisterView() {
       </Typography>
 
       <RHFTextField name="businessName" label="Business Name" />
-      <RHFTextField name="businessCountry" label="Business Address" />
+      <Stack direction="row" spacing={2}>
+        <RHFTextField name="address" label="Address" />
+        <RHFSelect name="country" label="Country">
+          <MenuItem value="">None</MenuItem>
+          <Divider sx={{ borderStyle: 'dashed' }} />
+          {COUNTRIES.map((country) => (
+            <MenuItem key={country} value={country}>
+              {country}
+            </MenuItem>
+          ))}
+        </RHFSelect>
+      </Stack>
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
         <RHFTextField name="firstName" label="First name" />
@@ -211,38 +237,62 @@ export default function FirebaseRegisterView() {
   );
 
   const plansCards = (
-    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1 }}>
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: { sm: 'repeat(4,1fr)', xs: 'repeat(1,1fr)' },
+        gap: 1,
+      }}
+    >
       {PLANS_INFO.map((plan) => (
         <Card
           sx={{
             p: 3,
-            border: plan.isFav ? `solid 2px ${theme.palette.warning.main}` : 'solid 2px #000000',
+            border: plan.isFav ? `solid 3px ${theme.palette.secondary.light}` : 'solid 2px #000000',
+            boxShadow: `3px 3px 0 0 ${plan.isFav ? theme.palette.secondary.light : '#000000'}`,
+            borderRadius: 1,
           }}
           key={plan.name}
         >
           <Stack direction="column" spacing={1}>
-            <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Image
-                  src={`/assets/icons/plans/${plan.media.icon}.svg`}
-                  sx={{ width: 38, height: 38, borderRadius: 1 }}
-                />
-                <Typography variant="h5">{plan.name}</Typography>
-                {plan.isFav && <Label color="warning">Popular</Label>}
+            <Stack direction="column" spacing={1} sx={{ height: 140 }}>
+              <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Image
+                    src={`/assets/icons/plans/${plan.media.icon}.svg`}
+                    sx={{ width: 34, height: 34, borderRadius: 1 }}
+                  />
+                  <Typography variant="h5" sx={{ whiteSpace: 'nowrap' }}>
+                    {plan.name}
+                  </Typography>
+                </Stack>
+                <Typography variant="h5">
+                  {plan.cost.monthly} <sup style={{ fontSize: '9px' }}>AED</sup>
+                </Typography>
               </Stack>
-              <Typography variant="h4">{plan.cost.monthly} AED</Typography>
+              <Typography variant="body2">{plan.description}</Typography>
+              <Box>{plan.isFav && <Label color="secondary">Popular</Label>}</Box>
             </Stack>
-            <Typography variant="body2" sx={{ height: 100 }}>
-              {plan.description}
-            </Typography>
+
             <Divider sx={{ borderStyle: 'dashed' }} flexItem />
+
             <Typography variant="h6">Features</Typography>
-            <Stack direction="column" sx={{ ml: 2 }}>
+
+            <Stack direction="column" spacing={0.5} sx={{ ml: 2 }}>
               <Stack direction="row" spacing={0.5}>
                 <Typography variant="body2">
                   <strong>Digital Menu</strong>
                 </Typography>
                 <Iconify icon="ph:check-circle-bold" sx={{ color: 'success.main' }} />
+              </Stack>
+              <Stack direction="row" spacing={0.5}>
+                <Typography variant="body2">
+                  <strong>Analytics</strong>
+                </Typography>
+                <Iconify
+                  icon="ph:check-circle-bold"
+                  sx={{ color: plan.limits.analytics ? 'success.main' : 'grey.400' }}
+                />
               </Stack>
               <Stack direction="row" spacing={0.5}>
                 <Typography variant="body2">
@@ -262,6 +312,20 @@ export default function FirebaseRegisterView() {
                   sx={{ color: plan.isMenuOnly ? 'grey.400' : 'success.main' }}
                 />
               </Stack>
+
+              <Stack direction="row" spacing={0.5}>
+                <Typography variant="body2">
+                  <strong>Customer Self Order</strong>
+                </Typography>
+                <Iconify
+                  icon="ph:check-circle-bold"
+                  sx={{ color: plan.isMenuOnly ? 'grey.400' : 'success.main' }}
+                />
+              </Stack>
+
+              <Typography variant="body2">
+                <strong>QR/Tables: </strong> {plan.limits.tables} /per branch
+              </Typography>
               <Typography variant="body2">
                 <strong>Branches: </strong>
                 {plan.limits.branch}
@@ -279,9 +343,6 @@ export default function FirebaseRegisterView() {
               </Typography>
               <Typography variant="body2">
                 <strong>Menus: </strong> unlimited
-              </Typography>
-              <Typography variant="body2">
-                <strong>Tables: </strong> unlimited
               </Typography>
               <Typography variant="body2">
                 <strong>Scans: </strong> unlimited*

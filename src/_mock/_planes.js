@@ -1,15 +1,16 @@
 export const PLANS_INFO = [
   {
-    name: 'Cafe',
+    name: 'Coffee Cup',
     description:
       'Ideal for small businesses like cafes or coffee shops with up to 15 tables. This plan offers basic digital menu features to streamline your operations and enhance customer experience.',
     cost: { monthly: 99, annualDiscount: 10 },
     limits: {
       branch: 1,
-      tables: 20,
+      tables: 1,
       languages: 3,
       subUser: 1,
       scans: 500000,
+      analytics: false,
     },
     isMenuOnly: true,
     isFav: false,
@@ -19,16 +20,17 @@ export const PLANS_INFO = [
     },
   },
   {
-    name: 'Dine Smart',
+    name: 'Foodify',
     description:
       'Designed for medium-sized restaurants with a capacity of up to 50 tables. The Growth Package provides additional customization options and analytics tools to help you optimize your menu and better understand your customers preferences.',
     cost: { monthly: 299, annualDiscount: 10 },
     limits: {
       branch: 3,
-      tables: 75,
+      tables: 1,
       languages: 5,
       subUser: 3,
       scans: 3000000,
+      analytics: true,
     },
     isMenuOnly: true,
     isFav: false,
@@ -38,16 +40,17 @@ export const PLANS_INFO = [
     },
   },
   {
-    name: 'Foodify',
+    name: 'Dine Smart',
     description:
       'Designed for upscale restaurants and fine dining establishments, providing a galaxy of features to delight both chefs and patrons',
     cost: { monthly: 599, annualDiscount: 10 },
     limits: {
       branch: 3,
-      tables: 120,
+      tables: 50,
       languages: 5,
       subUser: 5,
       scans: 5000000,
+      analytics: true,
     },
     isMenuOnly: false,
     isFav: true,
@@ -63,10 +66,11 @@ export const PLANS_INFO = [
     cost: { monthly: 899, annualDiscount: 10 },
     limits: {
       branch: 5,
-      tables: 200,
+      tables: 75,
       languages: 8,
       subUser: 7,
       scans: 10000000,
+      analytics: true,
     },
     isMenuOnly: false,
     isFav: false,

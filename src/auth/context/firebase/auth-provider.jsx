@@ -160,7 +160,6 @@ export function AuthProvider({ children }) {
   }, []);
   // REGISTER
   const register = useCallback(async (email, password, displayName) => {
-    // ONLY ALLOW KOJAK DOMAIN TO REGISTER
     const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
     await sendEmailVerification(newUser.user);
 
