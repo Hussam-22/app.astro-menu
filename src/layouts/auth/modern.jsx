@@ -20,7 +20,7 @@ export default function AuthModernLayout({ children, image }) {
       sx={{
         width: 1,
         mx: 'auto',
-        maxWidth: 480,
+        maxWidth: 580,
         px: { xs: 2, md: 8 },
       }}
     >
@@ -58,6 +58,7 @@ export default function AuthModernLayout({ children, image }) {
           position: 'absolute',
           width: 'calc(100% - 32px)',
           height: 'calc(100% - 32px)',
+          borderRadius: 3,
         }}
       />
     </Stack>

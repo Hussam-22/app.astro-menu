@@ -2,15 +2,15 @@ import isEqual from 'lodash/isEqual';
 import { useState, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
+import Tabs from '@mui/material/Tabs';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 // @mui
 import { alpha } from '@mui/material/styles';
-import TableBody from '@mui/material/TableBody';
 import Container from '@mui/material/Container';
+import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 
@@ -20,12 +20,13 @@ import Label from 'src/components/label';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
+import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
-import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useSettingsContext } from 'src/components/settings';
+import { RouterLink } from 'src/routes/components';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 // _mock
 import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
@@ -68,16 +69,14 @@ const defaultFilters = {
 
 export default function UserListView() {
   const table = useTable();
-
   const settings = useSettingsContext();
-
   const router = useRouter();
-
   const confirm = useBoolean();
-
+  const { user: userData } = useAuthContext();
   const [tableData, setTableData] = useState(_userList);
-
   const [filters, setFilters] = useState(defaultFilters);
+
+  console.log(userData);
 
   const dataFiltered = applyFilter({
     inputData: tableData,

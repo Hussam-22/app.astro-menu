@@ -8,9 +8,17 @@ import DialogActions from '@mui/material/DialogActions';
 
 // ----------------------------------------------------------------------
 
-export default function ConfirmDialog({ title, content, action, open, onClose, ...other }) {
+export default function ConfirmDialog({
+  title,
+  content,
+  action,
+  open,
+  onClose,
+  maxWidth = 'xs',
+  ...other
+}) {
   return (
-    <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose} {...other}>
+    <Dialog fullWidth maxWidth={maxWidth} open={open} onClose={onClose} {...other}>
       <DialogTitle sx={{ pb: 2 }}>{title}</DialogTitle>
 
       {content && <DialogContent sx={{ typography: 'body2' }}> {content} </DialogContent>}
@@ -32,4 +40,5 @@ ConfirmDialog.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
   title: PropTypes.string,
+  maxWidth: PropTypes.string,
 };

@@ -101,10 +101,12 @@ export function AuthProvider({ children }) {
             const docSnap = await getDoc(userProfile);
             const profile = docSnap.data();
 
+            // create user profile (first time)
             if (!profile) {
               await setDoc(userProfile, { uid: user.uid, email: user.email, role: 'user' });
             }
 
+            // update user last login time.
             await updateDoc(userProfile, { lastLogin: new Date() });
 
             dispatch({
@@ -392,21 +394,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetAllOrders = useCallback(async (year) => {
-    const start = new Date(`01/01/${year}`);
-    const end = new Date(`12/01/${year}`);
-
-    const docRef = query(
-      collectionGroup(DB, 'orders'),
-      where('userID', '==', state.user.id),
-      where('confirmTime', '>=', start),
-      where('confirmTime', '<=', end)
-    );
-    const querySnapshot = await getDocs(docRef);
-    const dataArr = [];
-    querySnapshot.forEach((doc) => dataArr.push(doc.data()));
-    return dataArr;
-  }, []);
   // ----------------------- Branches ----------------------------
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(

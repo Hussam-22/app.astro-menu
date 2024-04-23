@@ -5,6 +5,7 @@ import { Outlet } from 'react-router-dom';
 import { GuestGuard } from 'src/auth/guard';
 // layouts
 import CompactLayout from 'src/layouts/compact';
+import AuthModernLayout from 'src/layouts/auth/modern';
 import AuthClassicLayout from 'src/layouts/auth/classic';
 // components
 import { SplashScreen } from 'src/components/loading-screen';
@@ -117,17 +118,17 @@ const authFirebase = {
     {
       path: 'login',
       element: (
-        <AuthClassicLayout>
+        <AuthModernLayout>
           <FirebaseLoginPage />
-        </AuthClassicLayout>
+        </AuthModernLayout>
       ),
     },
     {
       path: 'register',
       element: (
-        <AuthClassicLayout title="Manage the job more effectively with Minimal">
+        <AuthModernLayout title="Manage the job more effectively with Minimal">
           <FirebaseRegisterPage />
-        </AuthClassicLayout>
+        </AuthModernLayout>
       ),
     },
     {
