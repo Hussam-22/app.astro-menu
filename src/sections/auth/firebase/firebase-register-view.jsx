@@ -345,7 +345,7 @@ export default function FirebaseRegisterView() {
                 <strong>Menus: </strong> unlimited
               </Typography>
               <Typography variant="body2">
-                <strong>Scans: </strong> unlimited*
+                <strong>Scans: </strong> {plan.isMenuOnly ? plan.limits.scans : 'unlimited*'}
               </Typography>
             </Stack>
           </Stack>

@@ -9,7 +9,7 @@ export const PLANS_INFO = [
       tables: 1,
       languages: 3,
       subUser: 1,
-      scans: 500000,
+      scans: '1 million /per month',
       analytics: false,
     },
     isMenuOnly: true,
@@ -20,17 +20,17 @@ export const PLANS_INFO = [
     },
   },
   {
-    name: 'Foodify',
+    name: 'Dine Smart',
     description:
       'Designed for medium-sized restaurants with a capacity of up to 50 tables. The Growth Package provides additional customization options and analytics tools to help you optimize your menu and better understand your customers preferences.',
-    cost: { monthly: 249, annualDiscount: 10 },
+    cost: { monthly: 299, annualDiscount: 10 },
     limits: {
       branch: 3,
       tables: 1,
       languages: 5,
       subUser: 3,
-      scans: 3000000,
-      analytics: true,
+      scans: '3.5 million /per month',
+      analytics: false,
     },
     isMenuOnly: true,
     isFav: false,
@@ -40,13 +40,13 @@ export const PLANS_INFO = [
     },
   },
   {
-    name: 'Dine Smart',
+    name: 'Foodify',
     description:
       'Designed for upscale restaurants and fine dining establishments, providing a galaxy of features to delight both chefs and patrons',
-    cost: { monthly: 399, annualDiscount: 10 },
+    cost: { monthly: 499, annualDiscount: 10 },
     limits: {
       branch: 3,
-      tables: 50,
+      tables: 35,
       languages: 5,
       subUser: 5,
       scans: 5000000,
@@ -63,10 +63,10 @@ export const PLANS_INFO = [
     name: 'Menu Master',
     description:
       'An elite package for restaurant chains and franchises, offering a constellation of tools to manage multiple locations with ease and precision.',
-    cost: { monthly: 849, annualDiscount: 10 },
+    cost: { monthly: 899, annualDiscount: 10 },
     limits: {
       branch: 5,
-      tables: 75,
+      tables: 50,
       languages: 8,
       subUser: 7,
       scans: 10000000,
