@@ -1,11 +1,12 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -14,10 +15,10 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Box, Card, Button, MenuItem, useTheme } from '@mui/material';
 
-import Label from 'src/components/label';
 import Image from 'src/components/image';
 // routes
 import { paths } from 'src/routes/paths';
+import Label from 'src/components/label';
 import { useRouter } from 'src/routes/hook';
 // components
 import Iconify from 'src/components/iconify';
@@ -28,13 +29,21 @@ import { COUNTRIES } from 'src/_mock/_countries';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { LANGUAGES } from 'src/_mock/translation-languages';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import { addOneMonth } from 'src/utils/get-next-payment-date';
+import FormProvider, { RHFSelect, RHFTextField, RHFMultiSelect } from 'src/components/hook-form';
+
+const OPTIONS = LANGUAGES.map((language) => ({
+  value: language.code,
+  label: language.languageName,
+})).sort((a, b) => a.label.localeCompare(b.label));
 
 // ----------------------------------------------------------------------
 
 export default function FirebaseRegisterView() {
-  const { register, loginWithGoogle, loginWithGithub, loginWithTwitter } = useAuthContext();
+  const { register, loginWithGoogle, loginWithGithub, loginWithTwitter, fsCreateBusinessProfile } =
+    useAuthContext();
   const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
   const password = useBoolean();
@@ -49,6 +58,9 @@ export default function FirebaseRegisterView() {
     country: Yup.string().required('Country is required'),
     plan: Yup.string().required('Plan is required'),
     businessName: Yup.string().required('Plan is required'),
+    languages: Yup.array()
+      .min(1, 'Choose at least one option')
+      .max(3, 'max 3 translation languages allowed in the trial plan'),
   });
 
   const defaultValues = {
@@ -60,6 +72,7 @@ export default function FirebaseRegisterView() {
     address: '',
     country: '',
     plan: '',
+    languages: [],
   };
 
   const methods = useForm({
@@ -73,14 +86,44 @@ export default function FirebaseRegisterView() {
     formState: { isSubmitting },
   } = methods;
 
+  const {
+    mutate,
+    isPending,
+    error: mutationError,
+  } = useMutation({
+    mutationFn: (mutateFn) => mutateFn(),
+  });
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log(data);
-      // await register?.(data.email, data.password, data.firstName, data.lastName);
+      const selectedPlan = PLANS_INFO.find((plan) => plan.name === data.plan);
+      const { plan, ...formData } = data;
+      const businessProfile = {
+        ...formData,
+        planInfo: [
+          {
+            ...selectedPlan,
+            isTrial: true,
+            activationDate: new Date(),
+            trialExpiration: addOneMonth(),
+            isActive: true,
+          },
+        ],
+        paymentInfo: [
+          {
+            isPaid: true,
+            amount: 0,
+            term: 'monthly',
+            paymentDate: new Date(),
+            nextPaymentDate: addOneMonth(),
+          },
+        ],
+      };
+
+      mutate(() => fsCreateBusinessProfile(businessProfile));
+
       // const searchParams = new URLSearchParams({ email: data.email }).toString();
-
       // const href = `${paths.auth.firebase.verify}?${searchParams}`;
-
       // router.push(href);
     } catch (error) {
       console.error(error);
@@ -187,6 +230,8 @@ export default function FirebaseRegisterView() {
         No Credit Card is Required, All Plans start with 1 month free trial !!
       </Typography>
 
+      <RHFMultiSelect chip checkbox name="languages" label="Menu Languages" options={OPTIONS} />
+
       <RHFTextField name="businessName" label="Business Name" />
       <Stack direction="row" spacing={2}>
         <RHFTextField name="address" label="Address" />
@@ -229,7 +274,7 @@ export default function FirebaseRegisterView() {
         size="large"
         type="submit"
         variant="contained"
-        loading={isSubmitting}
+        loading={isPending}
       >
         Create account
       </LoadingButton>
@@ -305,7 +350,7 @@ export default function FirebaseRegisterView() {
               </Stack>
               <Stack direction="row" spacing={0.5}>
                 <Typography variant="body2">
-                  <strong>Chef Dashboard</strong>
+                  <strong>Kitchen Dashboard</strong>
                 </Typography>
                 <Iconify
                   icon="ph:check-circle-bold"

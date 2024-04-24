@@ -169,10 +169,13 @@ export function AuthProvider({ children }) {
       uid: newUser.user?.uid,
       displayName,
       email,
-      allowedPaths: ['/dashboard/analytics'],
-      role: 'user',
+      role: 'owner',
       password,
+      isActive: true,
+      lastLogin: new Date(),
     });
+
+    return newUser.user?.uid;
   }, []);
   // LOGOUT
   const logout = useCallback(async () => {
@@ -272,6 +275,32 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
+  // ----------------------- Business Profile -------------------
+  const fsCreateBusinessProfile = useCallback(
+    async (data) => {
+      try {
+        // 1- REGISTER OWNER
+        const { email, password, firstName, lastName, ...businessProfileInfo } = data;
+        const ownerID = await register?.(email, password, firstName, lastName);
+
+        // 2- CREATE BUSINESS PROFILE
+        const newDocRef = doc(collection(DB, `businessProfiles`));
+        await setDoc(newDocRef, {
+          ...businessProfileInfo,
+          docID: newDocRef.id,
+          ownerID,
+          users: [],
+          isActive: true,
+          createdOn: new Date(),
+        });
+
+        // 3- ADD MEAL LABELS
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [state]
+  );
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
     const docRef = doc(DB, docPath);
@@ -1273,6 +1302,7 @@ export function AuthProvider({ children }) {
       setStaff,
       // ---- GENERIC ----
       fsUpdateTable,
+      fsCreateBusinessProfile,
       // fsQueryDoc,
       // fsAddToDB,
       // fsRemoveFromDB,
@@ -1385,6 +1415,7 @@ export function AuthProvider({ children }) {
       setStaff,
       // ---- GENERIC ----
       fsUpdateTable,
+      fsCreateBusinessProfile,
       // fsQueryDoc,
       // fsAddToDB,
       // fsRemoveFromDB,
