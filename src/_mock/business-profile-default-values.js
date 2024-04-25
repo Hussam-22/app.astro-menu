@@ -149,7 +149,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     isDeleted: false,
     isNew: true,
     lastUpdatedAt: new Date(),
-    mealLabels: ['vegetarian', 'Italian'],
+    mealLabels: ['vegetarian'],
     portions: [
       { gram: 300, portionSize: 'small', price: 13 },
       { gram: 500, portionSize: 'regular', price: 19 },
@@ -275,7 +275,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     ],
     title: 'Chicken Biryani',
     businessProfileID,
-    section: 'Entrees',
+    section: 'Chicken Meals',
     menu: 'Gourmet',
   },
   {
@@ -293,7 +293,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     ],
     title: 'Beef Kofta',
     businessProfileID,
-    section: 'Entrees',
+    section: 'Beef Meals',
     menu: 'Gourmet',
   },
   {
@@ -311,7 +311,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     ],
     title: 'Chicken Shawarma',
     businessProfileID,
-    section: 'Entrees',
+    section: 'Chicken Meals',
   },
   {
     description:
@@ -328,7 +328,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     ],
     title: 'Beef Rendang',
     businessProfileID,
-    section: 'Entrees',
+    section: 'Beef Meals',
     menu: 'Gourmet',
   },
   {
@@ -345,7 +345,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     ],
     title: 'Bavette Steak & Sherry Shallot Sauce',
     businessProfileID,
-    section: 'Entrees',
+    section: 'Beef Meals',
     menu: 'Gourmet',
   },
 ];

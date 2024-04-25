@@ -45,6 +45,7 @@ import {
   DEFAULT_MENUS,
   DEFAULT_MEALS,
   DEFAULT_LABELS,
+  DEFAULT_MENU_SECTIONS,
 } from 'src/_mock/business-profile-default-values';
 
 import { AuthContext } from './auth-context';
@@ -310,11 +311,11 @@ export function AuthProvider({ children }) {
     [state]
   );
   const createDefaults = useCallback(async (businessProfileID) => {
-    const RUN = false;
+    const RunFn = true;
 
     // 1- ADD MEAL LABELS
     const mealLabels =
-      !RUN &&
+      RunFn &&
       (await Promise.all(
         DEFAULT_LABELS.map(async (label) => ({
           id: await fsAddNewMealLabel(label, businessProfileID),
@@ -324,7 +325,7 @@ export function AuthProvider({ children }) {
 
     // 2- ADD MEALS
     const meals =
-      !RUN &&
+      RunFn &&
       (await Promise.all(
         DEFAULT_MEALS(businessProfileID)
           .splice(0, 3)
@@ -336,7 +337,7 @@ export function AuthProvider({ children }) {
                 `meal_${index + 1}_800x800.webp`
               ),
               mealLabels: meal.mealLabels.map(
-                (label) => mealLabels.find((mealLabel) => mealLabel.label === label).id
+                (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
               ),
             };
             const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
@@ -349,7 +350,7 @@ export function AuthProvider({ children }) {
 
     // 3- ADD MENUS
     const menus =
-      RUN &&
+      RunFn &&
       (await Promise.all(
         DEFAULT_MENUS(businessProfileID).map(async (menu) => ({
           id: await fsAddNewMenu(menu, businessProfileID),
@@ -357,7 +358,21 @@ export function AuthProvider({ children }) {
         }))
       ));
 
-    console.log(menus);
+    // 3- ADD MENU SECTIONS
+    const sections =
+      RunFn &&
+      (await Promise.all(
+        DEFAULT_MENU_SECTIONS.map(async (section, order) => {
+          const sectionMeals = meals
+            .filter((item) => item.meal.section === section)
+            .map((meal) => meal.id);
+
+          menus.map(async (menu) => {
+            console.log(menu.id, section, order + 1, businessProfileID, sectionMeals);
+            await fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals);
+          });
+        })
+      ));
   }, []);
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
@@ -691,22 +706,27 @@ export function AuthProvider({ children }) {
   );
   // --------------------- Menu Sections --------------------------
   const fsAddSection = useCallback(
-    async (menuID, title, order) => {
-      const userID = state.user.id;
-      const newDocRef = doc(collection(DB, `/users/${userID}/menus/${menuID}/sections`));
+    async (menuID, title, order, businessProfileID = state.user.businessProfileID, meals = []) => {
+      const newDocRef = doc(
+        collection(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}/sections`)
+      );
       await setDoc(newDocRef, {
         docID: newDocRef.id,
         menuID,
-        userID,
+        businessProfileID,
         title,
-        meals: [],
+        meals,
         order,
-        isActive: false,
+        isActive: true,
       });
 
+      console.log(
+        `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${newDocRef.id}`
+      );
+
       fbTranslate({
-        sectionRef: `/users/${userID}/menus/${menuID}/sections/${newDocRef.id}`,
         text: title,
+        sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${newDocRef.id}`,
       });
 
       return newDocRef.id;
@@ -900,14 +920,12 @@ export function AuthProvider({ children }) {
         businessProfileID,
       });
 
-      const storageRef = ref(
-        STORAGE,
-        `gs://menu-app-b268b/${businessProfileID}/meals/${newDocRef.id}/`
-      );
-
-      const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
-
       if (imageFile) {
+        const storageRef = ref(
+          STORAGE,
+          `gs://menu-app-b268b/${businessProfileID}/meals/${newDocRef.id}/`
+        );
+        const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
         const imageRef = ref(storageRef, `${newDocRef.id}.${fileExtension}`);
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
