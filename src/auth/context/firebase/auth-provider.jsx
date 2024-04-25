@@ -42,9 +42,10 @@ import {
 
 import { FIREBASE_API } from 'src/config-global';
 import {
-  DEFAULT_MENUS,
   DEFAULT_MEALS,
+  DEFAULT_MENUS,
   DEFAULT_LABELS,
+  DEFAULT_BRANCHES,
   DEFAULT_MENU_SECTIONS,
 } from 'src/_mock/business-profile-default-values';
 
@@ -328,7 +329,7 @@ export function AuthProvider({ children }) {
       RunFn &&
       (await Promise.all(
         DEFAULT_MEALS(businessProfileID)
-          .splice(0, 3)
+          // .splice(0, 3)
           .map(async (meal, index) => {
             const modifiedMeal = {
               ...meal,
@@ -367,10 +368,26 @@ export function AuthProvider({ children }) {
             .filter((item) => item.meal.section === section)
             .map((meal) => meal.id);
 
-          menus.map(async (menu) => {
-            console.log(menu.id, section, order + 1, businessProfileID, sectionMeals);
-            await fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals);
-          });
+          menus.map(async (menu) =>
+            fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
+          );
+        })
+      ));
+
+    // 1- ADD MEAL LABELS
+    const branches =
+      RunFn &&
+      (await Promise.all(
+        DEFAULT_BRANCHES(businessProfileID).map(async (branch, index) => {
+          const modifiedBranch = {
+            ...branch,
+            cover: await fsGetImgDownloadUrl(
+              'menu-app-b268b/_mock/branches/',
+              `branch-${index + 1}_800x800.webp`
+            ),
+          };
+          const branchID = await fsAddNewBranch(modifiedBranch, businessProfileID);
+          return branchID;
         })
       ));
   }, []);
@@ -380,17 +397,17 @@ export function AuthProvider({ children }) {
     await updateDoc(docRef, payload);
   }, []);
   const fsAddBatchTablesToBranch = useCallback(
-    async (branchID) => {
-      const MAX_ALLOWED_USER_TABLES = 5;
+    async (branchID, businessProfileID = state.user.businessProfileID) => {
+      const MAX_ALLOWED_USER_TABLES = 25;
       const batch = writeBatch(DB);
 
       for (let index = 0; index <= MAX_ALLOWED_USER_TABLES; index += 1) {
         const newDocRef = doc(
-          collection(DB, `/users/${state.user.id}/branches/${branchID}/tables`)
+          collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
         );
         batch.set(newDocRef, {
           docID: newDocRef.id,
-          userID: state.user.id,
+          businessProfileID,
           branchID,
           isActive: true,
           title: index === 0 ? `Menu View only` : `Table ${index}`,
@@ -499,7 +516,7 @@ export function AuthProvider({ children }) {
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
       collectionGroup(DB, 'branches'),
-      where('userID', '==', state.user.id),
+      where('businessProfileID', '==', state.user.businessProfileID),
       where('isDeleted', '==', false)
     );
     const querySnapshot = await getDocs(docRef);
@@ -508,8 +525,10 @@ export function AuthProvider({ children }) {
 
     querySnapshot.forEach((element) => {
       const asyncOperation = async () => {
-        const bucket = `menu-app-b268b/${state.user.id}/branches/${element.data().docID}/`;
-        const imgUrl = await fsGetImgDownloadUrl(bucket, `cover_200x200.webp`);
+        const bucket = `menu-app-b268b/${state.user.businessProfileID}/branches/${
+          element.data().docID
+        }/`;
+        const imgUrl = await fsGetImgDownloadUrl(bucket, `cover_800x800.webp`);
 
         dataArr.push({ ...element.data(), imgUrl });
       };
@@ -543,33 +562,31 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsAddNewBranch = useCallback(
-    async (branchData) => {
-      const newDocRef = doc(collection(DB, `users/${state.user.id}/branches/`));
-      const { cover: imageFile, ...documentData } = branchData;
+    async (branchData, businessProfileID = state.user.businessProfileID) => {
+      const newDocRef = doc(collection(DB, `businessProfiles/${businessProfileID}/branches/`));
+      const { imageFile, ...documentData } = branchData;
       await setDoc(newDocRef, {
         ...documentData,
         docID: newDocRef.id,
-        userID: state.user.id,
+        businessProfileID,
         isDeleted: false,
-        lastUpdatedBy: state.user.id,
+        lastUpdatedBy: '',
         lastUpdatedAt: new Date(),
       });
 
-      await fsAddBatchTablesToBranch(newDocRef.id);
+      await fsAddBatchTablesToBranch(newDocRef.id, businessProfileID);
 
-      fbTranslateBranchDesc({
-        branchRef: newDocRef.path,
-        text: { description: documentData.description },
-        userID: state.user.id,
-      });
-
-      const storageRef = ref(
-        STORAGE,
-        `gs://menu-app-b268b/${state.user.id}/branches/${newDocRef.id}/`
-      );
+      // fbTranslateBranchDesc({
+      //   branchRef: newDocRef.path,
+      //   text: { description: documentData.description },
+      //   userID: state.user.id,
+      // });
 
       if (imageFile) {
-        console.log(imageFile);
+        const storageRef = ref(
+          STORAGE,
+          `gs://menu-app-b268b/${state.user.id}/branches/${newDocRef.id}/`
+        );
         const imageRef = ref(storageRef, 'cover.jpg');
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
@@ -585,6 +602,8 @@ export function AuthProvider({ children }) {
           }
         );
       }
+
+      return newDocRef.id;
     },
     [state]
   );

@@ -7,8 +7,8 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -22,6 +22,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { PATH_AFTER_LOGIN } from 'src/config-global';
 // config
 import { useRouter, useSearchParams } from 'src/routes/hook';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
@@ -61,7 +62,7 @@ export default function FirebaseLoginView() {
     try {
       await login?.(data.email, data.password);
 
-      // router.push(returnTo || PATH_AFTER_LOGIN);
+      router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
       console.error(error);
       reset();

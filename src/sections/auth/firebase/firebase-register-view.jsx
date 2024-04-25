@@ -450,6 +450,7 @@ export default function FirebaseRegisterView() {
 
   const runWorkflow = async () => {
     const businessProfileID = 'FLqmCtMhS4uQNQSgOjf4';
+    // await createDefaults(businessProfileID);
     mutate(() => createDefaults(businessProfileID));
   };
 

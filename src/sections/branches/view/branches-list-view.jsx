@@ -71,10 +71,12 @@ export default function BranchesListView() {
     data: tableData = [],
     isFetching,
     failureCount,
+    error,
   } = useQuery({
     queryKey: ['branches'],
     queryFn: () => fsGetAllBranches(),
   });
+  console.log({ isFetching, failureCount, error });
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
