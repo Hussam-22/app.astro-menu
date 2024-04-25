@@ -33,7 +33,6 @@ function ChangeDefaultMenu({ isOpen, onClose }) {
     queryFn: () => fsGetAllMenus(),
   });
   const [selectedMenuID, setSelectedMenuID] = useState('');
-  console.log(selectedMenuID);
 
   const onMenuChange = (e) => {
     setSelectedMenuID(e.target.value);
@@ -47,8 +46,6 @@ function ChangeDefaultMenu({ isOpen, onClose }) {
       onClose();
     },
   });
-
-  console.log(error);
 
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose}>

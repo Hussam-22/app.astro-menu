@@ -43,17 +43,17 @@ exports.fbTranslateSectionTitle = functions.https.onCall(async (data, context) =
 
 exports.fbTranslateMeal = functions.https.onCall(async (data, context) => {
   // get to-translate string & target translation languages array
-  const { text, mealRef, userID } = data;
+  const { text, mealRef, businessProfileID } = data;
 
   // get section data
   const mealDoc = (await admin.firestore().doc(mealRef).get()).data();
 
   // get available languages from user profile
-  const userDocRef = `/users/${userID}`;
-  const userDoc = (await admin.firestore().doc(userDocRef).get()).data();
+  const userDocRef = `/businessProfiles/${businessProfileID}`;
+  const businessProfileDoc = (await admin.firestore().doc(userDocRef).get()).data();
 
   // translate string to target languages
-  const tasks = userDoc.languages.map(async (lang) => ({
+  const tasks = businessProfileDoc.languages.map(async (lang) => ({
     [lang]: {
       title: await (await translate.translate(text.title, lang)).slice(0, 1).toString(),
       desc: await (await translate.translate(text.desc, lang)).slice(0, 1).toString(),

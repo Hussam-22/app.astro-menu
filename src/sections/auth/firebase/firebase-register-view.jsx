@@ -42,8 +42,14 @@ const OPTIONS = LANGUAGES.map((language) => ({
 // ----------------------------------------------------------------------
 
 export default function FirebaseRegisterView() {
-  const { register, loginWithGoogle, loginWithGithub, loginWithTwitter, fsCreateBusinessProfile } =
-    useAuthContext();
+  const {
+    register,
+    loginWithGoogle,
+    loginWithGithub,
+    loginWithTwitter,
+    fsCreateBusinessProfile,
+    createDefaults,
+  } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
   const password = useBoolean();
@@ -93,6 +99,8 @@ export default function FirebaseRegisterView() {
   } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
   });
+
+  console.log({ isPending, mutationError });
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -440,14 +448,25 @@ export default function FirebaseRegisterView() {
     </div>
   );
 
+  const runWorkflow = () => {
+    const businessProfileID = 'FLqmCtMhS4uQNQSgOjf4';
+    mutate(() => createDefaults(businessProfileID));
+    console.log('Running Workflow...');
+  };
+
   return (
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-      {renderHead}
+    <>
+      <LoadingButton onClick={runWorkflow} variant="contained" color="error" loading={isPending}>
+        Run Workflow
+      </LoadingButton>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        {renderHead}
 
-      {renderForm}
+        {renderForm}
 
-      {renderTerms}
-      {renderPlansDialog}
-    </FormProvider>
+        {renderTerms}
+        {renderPlansDialog}
+      </FormProvider>
+    </>
   );
 }

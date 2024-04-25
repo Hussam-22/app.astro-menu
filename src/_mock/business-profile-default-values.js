@@ -258,6 +258,95 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Vegetarian Chili',
     businessProfileID,
     section: 'Salads',
+    menu: 'Gourmet',
+  },
+  {
+    description:
+      'Tender chicken marinated in aromatic spices and yogurt, layered with fragrant basmati rice, and slow-cooked to perfection. Served with raita and spicy curry sauce on the side.',
+    isActive: true,
+    isDeleted: false,
+    isNew: true,
+    lastUpdatedAt: new Date(),
+    mealLabels: ['chicken'],
+    portions: [
+      { gram: 300, portionSize: 'small', price: 16 },
+      { gram: 500, portionSize: 'regular', price: 26 },
+      { gram: 700, portionSize: 'large', price: 36 },
+    ],
+    title: 'Chicken Biryani',
+    businessProfileID,
+    section: 'Entrees',
+    menu: 'Gourmet',
+  },
+  {
+    description:
+      'Juicy beef kofta skewers seasoned with Middle Eastern spices and grilled to perfection. Served with fluffy basmati rice, grilled vegetables, and a tangy tzatziki sauce.',
+    isActive: true,
+    isDeleted: false,
+    isNew: true,
+    lastUpdatedAt: new Date(),
+    mealLabels: ['beef'],
+    portions: [
+      { gram: 300, portionSize: 'small', price: 20 },
+      { gram: 500, portionSize: 'regular', price: 30 },
+      { gram: 700, portionSize: 'large', price: 40 },
+    ],
+    title: 'Beef Kofta',
+    businessProfileID,
+    section: 'Entrees',
+    menu: 'Gourmet',
+  },
+  {
+    description:
+      'Marinated slices of chicken roasted on a vertical spit, served with warm pita bread, garlic sauce, and pickled vegetables. Accompanied by a side of tabbouleh salad.',
+    isActive: true,
+    isDeleted: false,
+    isNew: true,
+    lastUpdatedAt: new Date(),
+    mealLabels: ['chicken'],
+    portions: [
+      { gram: 300, portionSize: 'small', price: 15 },
+      { gram: 500, portionSize: 'regular', price: 25 },
+      { gram: 700, portionSize: 'large', price: 35 },
+    ],
+    title: 'Chicken Shawarma',
+    businessProfileID,
+    section: 'Entrees',
+  },
+  {
+    description:
+      'Tender beef simmered in a rich coconut milk sauce with lemongrass, galangal, and aromatic spices until tender. Served with steamed jasmine rice and crispy fried shallots.',
+    isActive: true,
+    isDeleted: false,
+    isNew: true,
+    lastUpdatedAt: new Date(),
+    mealLabels: ['beef'],
+    portions: [
+      { gram: 300, portionSize: 'small', price: 22 },
+      { gram: 500, portionSize: 'regular', price: 32 },
+      { gram: 700, portionSize: 'large', price: 42 },
+    ],
+    title: 'Beef Rendang',
+    businessProfileID,
+    section: 'Entrees',
+    menu: 'Gourmet',
+  },
+  {
+    description: `Bavette Steak & Sherry Shallot Sauce with Crème Fraîche Mashed Potatoes & Roasted Green Beans`,
+    isActive: true,
+    isDeleted: false,
+    isNew: true,
+    lastUpdatedAt: new Date(),
+    mealLabels: ['beef'],
+    portions: [
+      { gram: 300, portionSize: 'small', price: 35 },
+      { gram: 500, portionSize: 'regular', price: 45 },
+      { gram: 700, portionSize: 'large', price: 55 },
+    ],
+    title: 'Bavette Steak & Sherry Shallot Sauce',
+    businessProfileID,
+    section: 'Entrees',
+    menu: 'Gourmet',
   },
 ];
 export const DEFAULT_MENUS = (businessProfileID) => [
@@ -288,7 +377,6 @@ export const DEFAULT_MENU_SECTIONS = [
   'Salads',
   'Vegetarian ',
 ];
-
 export const DEFAULT_BRANCHES = (businessProfileID) => [
   {
     allowSelfOrder: true,

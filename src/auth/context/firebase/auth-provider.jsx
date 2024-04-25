@@ -41,6 +41,11 @@ import {
 } from 'firebase/firestore';
 
 import { FIREBASE_API } from 'src/config-global';
+import {
+  DEFAULT_MENUS,
+  DEFAULT_MEALS,
+  DEFAULT_LABELS,
+} from 'src/_mock/business-profile-default-values';
 
 import { AuthContext } from './auth-context';
 
@@ -283,6 +288,8 @@ export function AuthProvider({ children }) {
         const { email, password, firstName, lastName, ...businessProfileInfo } = data;
         const ownerID = await register?.(email, password, firstName, lastName);
 
+        // const ownerID = '0Okdx50wpUUGXpDq9IKrSFaon7w1';
+
         // 2- CREATE BUSINESS PROFILE
         const newDocRef = doc(collection(DB, `businessProfiles`));
         await setDoc(newDocRef, {
@@ -294,13 +301,85 @@ export function AuthProvider({ children }) {
           createdOn: new Date(),
         });
 
-        // 3- ADD MEAL LABELS
+        // const businessProfileID = newDocRef.id;
+        const businessProfileID = 'xvwa709NdOhNNijWICp5';
       } catch (error) {
         console.log(error);
       }
     },
     [state]
   );
+  const createDefaults = useCallback(async (businessProfileID) => {
+    const RUN = false;
+
+    // 1- ADD MEAL LABELS
+    const mealLabels =
+      !RUN &&
+      (await Promise.all(
+        DEFAULT_LABELS.map(async (label) => ({
+          id: await fsAddNewMealLabel(label, businessProfileID),
+          label,
+        }))
+      ));
+
+    // 2- ADD MEALS
+    const meals =
+      !RUN &&
+      (await Promise.all(
+        DEFAULT_MEALS(businessProfileID)
+          .splice(0, 3)
+          .map(async (meal, index) => {
+            const modifiedMeal = {
+              ...meal,
+              mealLabels: meal.mealLabels.map(
+                (label) => mealLabels.find((mealLabel) => mealLabel.label === label).id
+              ),
+            };
+            const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
+
+            const sourceFileName = `meal_${index + 1}`; // Name of the file to copy
+            const destinationFileName = `${mealID}`; // Name for the copied file
+
+            const sourceBucket = ref(STORAGE, `gs://menu-app-b268b/_mock/meals`);
+            const destinationBucket = ref(
+              STORAGE,
+              `gs://menu-app-b268b/${businessProfileID}/meals`
+            );
+
+            await Promise.all(
+              ['_200x200.webp', '_800x800.webp'].map(async (imageSize) => {
+                // Get a reference to the source file
+                const sourceFile = sourceBucket.file(`${sourceFileName}${imageSize}`);
+
+                // Get a reference to the destination file
+                const destinationFile = destinationBucket.file(
+                  `${destinationFileName}${imageSize}`
+                );
+
+                // Copy the file from source to destination
+                await sourceFile.copy(destinationFile);
+              })
+            );
+
+            return {
+              id: mealID,
+              meal,
+            };
+          })
+      ));
+
+    // 3- ADD MENUS
+    const menus =
+      RUN &&
+      (await Promise.all(
+        DEFAULT_MENUS(businessProfileID).map(async (menu) => ({
+          id: await fsAddNewMenu(menu, businessProfileID),
+          menu,
+        }))
+      ));
+
+    console.log(menus);
+  }, []);
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
     const docRef = doc(DB, docPath);
@@ -599,16 +678,15 @@ export function AuthProvider({ children }) {
     return dataArr;
   }, [state]);
   const fsAddNewMenu = useCallback(
-    async (data) => {
-      const newDocRef = doc(collection(DB, `/users/${state.user.id}/menus/`));
+    async (data, businessProfileID = state.user.businessProfileID) => {
+      const newDocRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/menus/`));
       setDoc(newDocRef, {
         ...data,
         docID: newDocRef.id,
-        userID: state.user.id,
+        businessProfileID,
         isActive: true,
         isDeleted: false,
         lastUpdatedAt: new Date(),
-        lastUpdateBy: state.user.id,
       });
       return newDocRef.id;
     },
@@ -821,28 +899,31 @@ export function AuthProvider({ children }) {
   );
   // ------------------------- Meals --------------------------------
   const fsAddNewMeal = useCallback(
-    async (mealInfo) => {
-      const newDocRef = doc(collection(DB, `/users/${state.user.id}/meals/`));
+    async (mealInfo, businessProfileID = state.user.businessProfileID) => {
       const date = new Date();
       const dateTime = date.toDateString();
+
+      const newDocRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/meals/`));
+
       const { imageFile, cover, ...mealData } = mealInfo;
-      setDoc(newDocRef, {
+
+      await setDoc(newDocRef, {
         ...mealData,
         docID: newDocRef.id,
         lastUpdatedAt: dateTime,
-        userID: state.user.id,
+        businessProfileID,
         isDeleted: false,
       });
 
-      fbTranslateMeal({
-        mealRef: `/users/${state.user.id}/meals/${newDocRef.id}`,
+      await fbTranslateMeal({
+        mealRef: `/businessProfiles/${businessProfileID}/meals/${newDocRef.id}`,
         text: { title: mealInfo.title, desc: mealInfo.description },
-        userID: state.user.id,
+        businessProfileID,
       });
 
       const storageRef = ref(
         STORAGE,
-        `gs://menu-app-b268b/${state.user.id}/meals/${newDocRef.id}/`
+        `gs://menu-app-b268b/${businessProfileID}/meals/${newDocRef.id}/`
       );
 
       const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
@@ -979,9 +1060,10 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsAddNewMealLabel = useCallback(
-    async (title) => {
-      const docRef = doc(collection(DB, `/users/${state.user.id}/meal-labels/`));
-      await setDoc(docRef, { title, isActive: true, userID: state.user.id, docID: docRef.id });
+    async (title, businessProfileID = state.user.businessProfileID) => {
+      const docRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/meal-labels/`));
+      await setDoc(docRef, { title, isActive: true, businessProfileID, docID: docRef.id });
+      return docRef.id;
     },
     [state]
   );
@@ -1303,6 +1385,7 @@ export function AuthProvider({ children }) {
       // ---- GENERIC ----
       fsUpdateTable,
       fsCreateBusinessProfile,
+      createDefaults,
       // fsQueryDoc,
       // fsAddToDB,
       // fsRemoveFromDB,
@@ -1416,6 +1499,7 @@ export function AuthProvider({ children }) {
       // ---- GENERIC ----
       fsUpdateTable,
       fsCreateBusinessProfile,
+      createDefaults,
       // fsQueryDoc,
       // fsAddToDB,
       // fsRemoveFromDB,
