@@ -331,36 +331,15 @@ export function AuthProvider({ children }) {
           .map(async (meal, index) => {
             const modifiedMeal = {
               ...meal,
+              cover: await fsGetImgDownloadUrl(
+                'menu-app-b268b/_mock/meals/',
+                `meal_${index + 1}_800x800.webp`
+              ),
               mealLabels: meal.mealLabels.map(
                 (label) => mealLabels.find((mealLabel) => mealLabel.label === label).id
               ),
             };
             const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
-
-            const sourceFileName = `meal_${index + 1}`; // Name of the file to copy
-            const destinationFileName = `${mealID}`; // Name for the copied file
-
-            const sourceBucket = ref(STORAGE, `gs://menu-app-b268b/_mock/meals`);
-            const destinationBucket = ref(
-              STORAGE,
-              `gs://menu-app-b268b/${businessProfileID}/meals`
-            );
-
-            await Promise.all(
-              ['_200x200.webp', '_800x800.webp'].map(async (imageSize) => {
-                // Get a reference to the source file
-                const sourceFile = sourceBucket.file(`${sourceFileName}${imageSize}`);
-
-                // Get a reference to the destination file
-                const destinationFile = destinationBucket.file(
-                  `${destinationFileName}${imageSize}`
-                );
-
-                // Copy the file from source to destination
-                await sourceFile.copy(destinationFile);
-              })
-            );
-
             return {
               id: mealID,
               meal,
@@ -905,7 +884,7 @@ export function AuthProvider({ children }) {
 
       const newDocRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/meals/`));
 
-      const { imageFile, cover, ...mealData } = mealInfo;
+      const { imageFile, ...mealData } = mealInfo;
 
       await setDoc(newDocRef, {
         ...mealData,
