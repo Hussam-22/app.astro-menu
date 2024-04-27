@@ -525,12 +525,19 @@ export function AuthProvider({ children }) {
 
     querySnapshot.forEach((element) => {
       const asyncOperation = async () => {
-        const bucket = `menu-app-b268b/${state.user.businessProfileID}/branches/${
-          element.data().docID
-        }/`;
-        const imgUrl = await fsGetImgDownloadUrl(bucket, `cover_800x800.webp`);
+        let imgUrl = '';
 
-        dataArr.push({ ...element.data(), imgUrl });
+        if (element.data().cover) {
+          imgUrl = element.data().cover;
+          dataArr.push({ ...element.data(), imgUrl });
+        } else {
+          const bucket = `menu-app-b268b/${state.user.businessProfileID}/branches/${
+            element.data().docID
+          }/`;
+          imgUrl = await fsGetImgDownloadUrl(bucket, `cover_800x800.webp`);
+
+          dataArr.push({ ...element.data(), imgUrl });
+        }
       };
       asyncOperations.push(asyncOperation());
     });
