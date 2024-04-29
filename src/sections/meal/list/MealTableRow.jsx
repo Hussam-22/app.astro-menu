@@ -48,8 +48,8 @@ export default function MealTableRow({ row, onEditRow, mealLabelsList }) {
           <ListItemText
             primary={title}
             secondary={docID}
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
+            primaryTypographyProps={{ typography: 'body1' }}
+            secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
           />
         </Box>
       </TableCell>

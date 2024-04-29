@@ -2,7 +2,16 @@ import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { Stack, Button, Switch, TableRow, TableCell, ListItemText } from '@mui/material';
+import {
+  Stack,
+  Switch,
+  Divider,
+  TableRow,
+  TableCell,
+  IconButton,
+  ListItemText,
+  CircularProgress,
+} from '@mui/material';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -18,7 +27,7 @@ export default function MealLabelTableRow({ row }) {
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: (mealIDs) => {
       const affectedMealsIDs = mealIDs.map((mealID) => `meal-${mealID}`);
@@ -43,25 +52,32 @@ export default function MealLabelTableRow({ row }) {
           secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
         />
       </TableCell>
-      <TableCell align="center">
-        <Label
-          variant="soft"
-          color={isActive ? 'success' : 'error'}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {isActive ? 'Active' : 'Hidden'}
-        </Label>
-      </TableCell>
 
       <TableCell align="center">
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Switch checked={row.isActive} aria-label="Status" onClick={onStatusChangeHandler} />
-          <Button
-            endIcon={<Iconify icon="tabler:trash" sx={{ color: 'error.main' }} />}
-            onClick={onDeleteLabelHandler}
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={1}
+          divider={<Divider flexItem orientation="vertical" sx={{ borderStyle: 'dashed' }} />}
+        >
+          <Label
+            variant="soft"
+            color={isActive ? 'success' : 'error'}
+            sx={{ textTransform: 'capitalize' }}
           >
-            Delete
-          </Button>
+            {isActive ? 'Active' : 'Hidden'}
+          </Label>
+
+          {isPending ? (
+            <CircularProgress size={20} />
+          ) : (
+            <Switch checked={row.isActive} aria-label="Status" onClick={onStatusChangeHandler} />
+          )}
+
+          <IconButton onClick={onDeleteLabelHandler}>
+            <Iconify icon="tabler:trash" sx={{ color: 'error.main', width: 24, height: 24 }} />
+          </IconButton>
         </Stack>
       </TableCell>
     </TableRow>

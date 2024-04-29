@@ -52,8 +52,11 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
   });
 
   const sectionMeals = allMeals.filter((meal) =>
-    sectionInfo.meals.some((sectionMeal) => sectionMeal.mealID === meal.docID)
+    // sectionInfo.meals.some((sectionMeal) => sectionMeal.mealID === meal.docID)
+    sectionInfo.meals.some((sectionMeal) => sectionMeal === meal.docID)
   );
+
+  console.log(sectionInfo);
 
   const { mutate, isPending, error, isError, status } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -196,8 +199,11 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                   direction="row"
                   alignItems="center"
                   sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
+                  divider={
+                    <Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />
+                  }
                 >
-                  <Stack direction="column" spacing={1}>
+                  <Stack direction="column" spacing={1} sx={{ maxWidth: '10%' }}>
                     <Box sx={{ position: 'relative' }}>
                       <Avatar
                         src={meal.cover}
@@ -206,6 +212,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                           width: 72,
                           height: 72,
                           borderRadius: 1,
+                          mr: 1,
                           filter: `grayscale(${meal.isActive ? 0 : '100'})`,
                         }}
                         variant="square"
@@ -227,20 +234,17 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                         </Label>
                       )}
                     </Box>
-                    <Switch
-                      disabled={!meal.isActive || !sectionInfo.isActive}
-                      checked={
-                        sectionInfo.meals.find((sectionMeal) => sectionMeal.mealID === meal.docID)
-                          ?.isActive
-                      }
-                      onChange={() => onMealStatusChange(meal.docID)}
-                    />
                   </Stack>
-                  <Stack direction="column" sx={{ px: 2 }} spacing={1}>
+                  <Stack
+                    direction="column"
+                    sx={{ px: 2, maxWidth: '75%' }}
+                    spacing={1}
+                    flexGrow={1}
+                  >
                     <Box>
-                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      {/* <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                         {meal.docID}
-                      </Typography>
+                      </Typography> */}
                       <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
                         {meal.title}
                       </Typography>
@@ -256,6 +260,22 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                       ))}
                     </Stack>
                   </Stack>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        color="secondary"
+                        disabled={!meal.isActive || !sectionInfo.isActive}
+                        checked={
+                          sectionInfo.meals.find((sectionMeal) => sectionMeal.mealID === meal.docID)
+                            ?.isActive
+                        }
+                        onChange={() => onMealStatusChange(meal.docID)}
+                      />
+                    }
+                    labelPlacement="bottom"
+                    label="Change Meal Status on menu"
+                    sx={{ textAlign: 'center', maxWidth: '20%' }}
+                  />
                 </Stack>
                 {sectionMeals.length > 1 && index + 1 !== sectionMeals.length && (
                   <Divider sx={{ borderStyle: 'dashed' }} />

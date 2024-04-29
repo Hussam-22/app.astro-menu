@@ -69,7 +69,11 @@ function MenuListView() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [menuData, setMenuData] = useState({});
 
-  const { data = [], isLoading } = useQuery({
+  const {
+    data = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['menus'],
     queryFn: () => fsGetAllMenus(),
   });

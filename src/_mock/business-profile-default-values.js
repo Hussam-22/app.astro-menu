@@ -15,7 +15,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     description: 'Tender grilled chicken breast served with a side of seasonal vegetables.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['chicken'],
     portions: [
@@ -31,7 +31,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     description: 'Authentic beef tacos with spicy seasoning, served with salsa and sour cream.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['beef', 'spicy'],
     portions: [
@@ -48,7 +48,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
       'Freshly stir-fried vegetables tossed in a savory sauce, served over steamed rice.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['plant-based'],
     portions: [
@@ -64,7 +64,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     description: 'Delicious gluten-free pasta served with rich marinara sauce and fresh basil.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['gluten free'],
     portions: [
@@ -81,7 +81,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
       'Spicy black bean patty topped with avocado, lettuce, tomato, and chipotle mayo on a toasted bun.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['plant-based', 'spicy'],
     portions: [
@@ -115,7 +115,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
       'Classic Caesar salad topped with grilled chicken breast, parmesan cheese, and homemade croutons.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['chicken'],
     portions: [
@@ -131,7 +131,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     description: 'Savory beef curry cooked with aromatic spices, served with fluffy basmati rice.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['beef', 'spicy', 'Asian'],
     portions: [
@@ -164,7 +164,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
       'Juicy grilled steak served with roasted potatoes and a side of seasonal vegetables.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['beef'],
     portions: [
@@ -213,7 +213,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
       'Vegetarian quinoa salad with mixed greens, cherry tomatoes, cucumbers, and feta cheese.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['vegetarian'],
     portions: [
@@ -230,7 +230,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
       'Homemade cheeseburger with lettuce, tomato, onion, pickles, and special sauce on a brioche bun.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['beef'],
     portions: [
@@ -247,7 +247,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
       'Vegetarian chili made with beans, tomatoes, peppers, and a blend of spices, served with cornbread.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['vegetarian', 'spicy'],
     portions: [
@@ -265,7 +265,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
       'Tender chicken marinated in aromatic spices and yogurt, layered with fragrant basmati rice, and slow-cooked to perfection. Served with raita and spicy curry sauce on the side.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['chicken'],
     portions: [
@@ -283,7 +283,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
       'Juicy beef kofta skewers seasoned with Middle Eastern spices and grilled to perfection. Served with fluffy basmati rice, grilled vegetables, and a tangy tzatziki sauce.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['beef'],
     portions: [
@@ -301,7 +301,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
       'Marinated slices of chicken roasted on a vertical spit, served with warm pita bread, garlic sauce, and pickled vegetables. Accompanied by a side of tabbouleh salad.',
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['chicken'],
     portions: [
@@ -335,7 +335,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     description: `Bavette Steak & Sherry Shallot Sauce with Crème Fraîche Mashed Potatoes & Roasted Green Beans`,
     isActive: true,
     isDeleted: false,
-    isNew: true,
+    isNew: false,
     lastUpdatedAt: new Date(),
     mealLabels: ['beef'],
     portions: [

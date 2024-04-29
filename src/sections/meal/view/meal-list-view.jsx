@@ -50,19 +50,10 @@ function MealListView() {
   const { fsGetAllMeals, fsGetMealLabels } = useAuthContext();
   const [filterName, setFilterName] = useState('');
 
-  const {
-    data: allMeals = [],
-    isLoading,
-    isError,
-    isLoadingError,
-    failureCount,
-    isFetching,
-  } = useQuery({
+  const { data: allMeals = [], failureCount } = useQuery({
     queryKey: [`meals`],
     queryFn: () => fsGetAllMeals(),
   });
-
-  console.log({ isLoading, isError, isLoadingError, failureCount, isFetching });
 
   const { data: mealLabelsList = [] } = useQuery({
     queryKey: ['meal-labels'],

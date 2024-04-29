@@ -36,9 +36,8 @@ import {
 } from 'src/components/table';
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Meal', align: 'center', width: '60%' },
-  { id: 'isActive', label: 'Status', align: 'center', width: '15%' },
-  { id: 'actionButtons', label: '', align: 'center', width: '25%' },
+  { id: 'title', label: 'Meal', align: 'center', width: '85%' },
+  { id: 'actionButtons', label: '', align: 'center', width: '20%' },
 ];
 // ----------------------------------------------------------------------
 
