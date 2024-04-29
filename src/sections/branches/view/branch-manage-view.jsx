@@ -13,7 +13,6 @@ import { useSettingsContext } from 'src/components/settings';
 import BranchTables from 'src/sections/branches/BranchTables';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import BranchStatistics from 'src/sections/branches/BranchStatistics';
-import BranchTranslation from 'src/sections/branches/BranchTranslation';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 
@@ -24,7 +23,11 @@ function BranchManageView() {
   const { fsGetBranch } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
 
-  const { data: branchInfo = {}, isFetching } = useQuery({
+  const {
+    data: branchInfo = {},
+    isFetching,
+    error,
+  } = useQuery({
     queryKey: ['branch', branchID],
     queryFn: () => fsGetBranch(branchID),
   });
@@ -35,11 +38,11 @@ function BranchManageView() {
       icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
       component: branchInfo?.docID && <BranchNewEditForm branchInfo={branchInfo} />,
     },
-    {
-      value: 'Translation',
-      icon: <Iconify icon="clarity:language-line" width={20} height={20} />,
-      component: <BranchTranslation branchInfo={branchInfo} isFetching={isFetching} />,
-    },
+    // {
+    //   value: 'Translation',
+    //   icon: <Iconify icon="clarity:language-line" width={20} height={20} />,
+    //   component: <BranchTranslation branchInfo={branchInfo} isFetching={isFetching} />,
+    // },
     {
       value: 'Tables',
       icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,

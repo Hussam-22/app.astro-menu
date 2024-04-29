@@ -56,9 +56,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
     sectionInfo.meals.some((sectionMeal) => sectionMeal === meal.docID)
   );
 
-  console.log(sectionInfo);
-
-  const { mutate, isPending, error, isError, status } = useMutation({
+  const { mutate, isPending, isError } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       queryClient.invalidateQueries([`sections-${menuID}`]);
@@ -114,6 +112,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
       >
         <CardHeader
           title={titleCase(sectionInfo.title)}
+          sx={{ backgroundColor: 'background.neutral', pb: 2 }}
           action={
             <FormGroup row>
               <FormControlLabel
@@ -127,6 +126,15 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                 }
                 control={<Switch onChange={handleStatusChange} checked={sectionInfo?.isActive} />}
               />
+              <Tooltip title="delete section">
+                <IconButton
+                  color="error"
+                  size="small"
+                  onClick={() => handleDialogIsOpenState('removeSection', true)}
+                >
+                  <Iconify icon="ci:trash-empty" width={22} height={22} />
+                </IconButton>
+              </Tooltip>
 
               {!isFirst && (
                 <Tooltip title="move up">
@@ -144,25 +152,19 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
 
               {!isLast && (
                 <Tooltip title="move down">
-                  <IconButton color="secondary" size="small" onClick={handleShiftSectionDown}>
+                  <IconButton
+                    size="small"
+                    onClick={handleShiftSectionDown}
+                    sx={{ color: 'common.alternative' }}
+                  >
                     <Iconify icon="akar-icons:circle-chevron-down" width={22} height={22} />
                   </IconButton>
                 </Tooltip>
               )}
 
-              <Tooltip title="delete section">
-                <IconButton
-                  color="error"
-                  size="small"
-                  onClick={() => handleDialogIsOpenState('removeSection', true)}
-                >
-                  <Iconify icon="ci:trash-empty" width={22} height={22} />
-                </IconButton>
-              </Tooltip>
-
               <Tooltip title="edit section name">
                 <IconButton
-                  color="primary"
+                  sx={{ color: 'common.alternative' }}
                   size="small"
                   onClick={() => handleDialogIsOpenState('editSectionTitle', true)}
                 >
@@ -172,7 +174,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
 
               <Tooltip title="Add/Remove Meal">
                 <IconButton
-                  color="primary"
+                  sx={{ color: 'common.alternative' }}
                   size="small"
                   onClick={() => handleDialogIsOpenState('addMeal', true)}
                 >
@@ -204,7 +206,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                   }
                 >
                   <Stack direction="column" spacing={1} sx={{ maxWidth: '10%' }}>
-                    <Box sx={{ position: 'relative' }}>
+                    <Box sx={{ position: 'relative', mr: 1 }}>
                       <Avatar
                         src={meal.cover}
                         alt={meal.title}
@@ -212,27 +214,11 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                           width: 72,
                           height: 72,
                           borderRadius: 1,
-                          mr: 1,
+
                           filter: `grayscale(${meal.isActive ? 0 : '100'})`,
                         }}
                         variant="square"
                       />
-                      {!meal.isActive && (
-                        <Label
-                          variant="filled"
-                          color="error"
-                          sx={{
-                            position: 'absolute',
-                            bottom: -10,
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            fontSize: 11,
-                            fontWeight: '200',
-                          }}
-                        >
-                          Hard Disable
-                        </Label>
-                      )}
                     </Box>
                   </Stack>
                   <Stack
@@ -260,22 +246,46 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                       ))}
                     </Stack>
                   </Stack>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        color="secondary"
-                        disabled={!meal.isActive || !sectionInfo.isActive}
-                        checked={
-                          sectionInfo.meals.find((sectionMeal) => sectionMeal.mealID === meal.docID)
-                            ?.isActive
-                        }
-                        onChange={() => onMealStatusChange(meal.docID)}
-                      />
-                    }
-                    labelPlacement="bottom"
-                    label="Change Meal Status on menu"
-                    sx={{ textAlign: 'center', maxWidth: '20%' }}
-                  />
+                  <Stack
+                    direction="column"
+                    spacing={1}
+                    alignItems="center"
+                    sx={{ maxWidth: '20%' }}
+                  >
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          color="success"
+                          disabled={!meal.isActive || !sectionInfo.isActive}
+                          checked={
+                            sectionInfo.meals.find(
+                              (sectionMeal) => sectionMeal.mealID === meal.docID
+                            )?.isActive
+                          }
+                          onChange={() => onMealStatusChange(meal.docID)}
+                        />
+                      }
+                      labelPlacement="bottom"
+                      label="Change Meal Status on menu"
+                      sx={{ textAlign: 'center' }}
+                    />
+                    {!meal.isActive && (
+                      <Label
+                        variant="filled"
+                        color="error"
+                        sx={{
+                          // position: 'absolute',
+                          // bottom: -10,
+                          // left: '50%',
+                          // transform: 'translateX(-50%)',
+                          fontSize: 11,
+                          fontWeight: '200',
+                        }}
+                      >
+                        Meal Level Disable
+                      </Label>
+                    )}
+                  </Stack>
                 </Stack>
                 {sectionMeals.length > 1 && index + 1 !== sectionMeals.length && (
                   <Divider sx={{ borderStyle: 'dashed' }} />

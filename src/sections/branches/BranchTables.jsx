@@ -20,10 +20,12 @@ function BranchTables() {
 
   const [selectedTable, setSelectedTable] = useState();
 
-  const { data: tables = [] } = useQuery({
+  const { data: tables = [], error } = useQuery({
     queryKey: ['branch-tables', branchID],
     queryFn: () => fsGetBranchTables(branchID),
   });
+
+  console.log(error);
 
   const handleOnTableClick = (table) => setSelectedTable(table);
 

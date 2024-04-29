@@ -367,7 +367,7 @@ export function AuthProvider({ children }) {
         DEFAULT_MENU_SECTIONS.map(async (section, order) => {
           const sectionMeals = meals
             .filter((item) => item.meal.section === section)
-            .map((meal) => meal.id);
+            .map((meal) => ({ mealID: meal.id, isActive: true }));
 
           menus.map(async (menu) =>
             fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
@@ -566,6 +566,12 @@ export function AuthProvider({ children }) {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.data().translation === '') throw new Error('No Translation Found !!');
+
+        if (docSnap.data().cover)
+          return {
+            ...docSnap.data(),
+            lastUpdatedAt: new Date(docSnap.data().lastUpdatedAt.seconds * 1000).toDateString(),
+          };
 
         const bucketPath = `${BUCKET}/${businessProfileID}/branches/${branchID}/`;
         const imgUrl = await fsGetImgDownloadUrl(bucketPath, 'cover_800x800.webp');

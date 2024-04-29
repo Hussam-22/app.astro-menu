@@ -258,7 +258,7 @@ export default function BranchNewEditForm({ branchInfo }) {
             spacing={1}
             divider={<Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />}
           >
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
+            {/* <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="column" spacing={0}>
                 <Typography sx={{ fontWeight: theme.typography.fontWeightBold }} color="error">
                   Allow Self Order
@@ -274,7 +274,7 @@ export default function BranchNewEditForm({ branchInfo }) {
                 label={values.allowSelfOrder ? `Allow Self Order` : `View Menu Only`}
                 sx={{ alignItems: 'center' }}
               />
-            </Stack>
+            </Stack> */}
 
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="column" spacing={0}>
