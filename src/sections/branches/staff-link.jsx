@@ -49,9 +49,11 @@ function StaffLink() {
   };
 
   const { data: staffsList = [], error } = useQuery({
-    queryKey: ['staffs', user.id, branchID],
+    queryKey: ['staffs', user.businessProfileID, branchID],
     queryFn: () => fsGetStaffList(branchID),
   });
+
+  console.log(error);
 
   useEffect(() => {
     if (staffsList.length !== 0) setFilteredStaffList(staffsList);

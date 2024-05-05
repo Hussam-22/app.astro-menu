@@ -433,4 +433,53 @@ export const DEFAULT_BRANCHES = (businessProfileID) => [
     businessProfileID,
   },
 ];
-export const DEFAULT_STAFF = (businessProfileID) => [];
+export const DEFAULT_STAFF = (businessProfileID) => [
+  {
+    fullname: 'Emma Johnson',
+    isActive: true,
+    isLoggedIn: false,
+    passCode: '0000',
+    type: 'waiter',
+    businessProfileID,
+  },
+  {
+    fullname: 'Alexander Smith',
+    isActive: true,
+    isLoggedIn: false,
+    passCode: '0000',
+    type: 'chef',
+    businessProfileID,
+  },
+  {
+    fullname: 'Sophia Williams',
+    isActive: false,
+    isLoggedIn: false,
+    passCode: '0000',
+    type: 'waiter',
+    businessProfileID,
+  },
+  {
+    fullname: 'Fatima Ali',
+    isActive: true,
+    isLoggedIn: false,
+    passCode: '0000',
+    type: 'waiter',
+    businessProfileID,
+  },
+  {
+    fullname: 'Ahmed Hassan',
+    isActive: true,
+    isLoggedIn: false,
+    passCode: '0000',
+    type: 'chef',
+    businessProfileID,
+  },
+  {
+    fullname: 'Rima Mohammed',
+    isActive: false,
+    isLoggedIn: false,
+    passCode: '0000',
+    type: 'waiter',
+    businessProfileID,
+  },
+];

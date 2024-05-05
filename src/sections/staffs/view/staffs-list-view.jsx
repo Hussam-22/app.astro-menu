@@ -60,7 +60,7 @@ export default function StaffsListView() {
       defaultRowsPerPage: 10,
     });
 
-  const { data: tableData = [] } = useQuery({
+  const { data: tableData = [], error } = useQuery({
     queryKey: ['staffs'],
     queryFn: () => fsGetStaffList(),
   });

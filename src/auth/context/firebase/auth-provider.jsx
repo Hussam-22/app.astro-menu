@@ -42,8 +42,9 @@ import {
 
 import { FIREBASE_API } from 'src/config-global';
 import {
-  DEFAULT_MEALS,
+  DEFAULT_STAFF,
   DEFAULT_MENUS,
+  DEFAULT_MEALS,
   DEFAULT_LABELS,
   DEFAULT_BRANCHES,
   DEFAULT_MENU_SECTIONS,
@@ -107,6 +108,8 @@ export function AuthProvider({ children }) {
             const userProfile = doc(DB, 'users', user.uid);
             const docSnap = await getDoc(userProfile);
             const profile = docSnap.data();
+
+            console.log(userProfile);
 
             // create user profile (first time)
             if (!profile) {
@@ -313,11 +316,9 @@ export function AuthProvider({ children }) {
     [state]
   );
   const createDefaults = useCallback(async (businessProfileID) => {
-    const RunFn = true;
-
     // 1- ADD MEAL LABELS
     const mealLabels =
-      RunFn &&
+      false &&
       (await Promise.all(
         DEFAULT_LABELS.map(async (label) => ({
           id: await fsAddNewMealLabel(label, businessProfileID),
@@ -327,7 +328,7 @@ export function AuthProvider({ children }) {
 
     // 2- ADD MEALS
     const meals =
-      RunFn &&
+      false &&
       (await Promise.all(
         DEFAULT_MEALS(businessProfileID)
           // .splice(0, 3)
@@ -352,17 +353,17 @@ export function AuthProvider({ children }) {
 
     // 3- ADD MENUS
     const menus =
-      RunFn &&
-      (await Promise.all(
+      (await false) &&
+      Promise.all(
         DEFAULT_MENUS(businessProfileID).map(async (menu) => ({
           id: await fsAddNewMenu(menu, businessProfileID),
           menu,
         }))
-      ));
+      );
 
     // 3- ADD MENU SECTIONS
-    const sections =
-      RunFn &&
+    // eslint-disable-next-line no-unused-expressions
+    false &&
       (await Promise.all(
         DEFAULT_MENU_SECTIONS.map(async (section, order) => {
           const sectionMeals = meals
@@ -375,22 +376,31 @@ export function AuthProvider({ children }) {
         })
       ));
 
-    // 1- ADD MEAL LABELS
-    const branches =
-      RunFn &&
-      (await Promise.all(
-        DEFAULT_BRANCHES(businessProfileID).map(async (branch, index) => {
-          const modifiedBranch = {
-            ...branch,
-            cover: await fsGetImgDownloadUrl(
-              'menu-app-b268b/_mock/branches/',
-              `branch-${index + 1}_800x800.webp`
-            ),
-          };
-          const branchID = await fsAddNewBranch(modifiedBranch, businessProfileID);
-          return branchID;
-        })
-      ));
+    // 4- ADD BRANCHES
+    const branches = await Promise.all(
+      DEFAULT_BRANCHES(businessProfileID).map(async (branch, index) => {
+        const modifiedBranch = {
+          ...branch,
+          cover: await fsGetImgDownloadUrl(
+            'menu-app-b268b/_mock/branches/',
+            `branch-${index + 1}_800x800.webp`
+          ),
+        };
+        const branchID = await fsAddNewBranch(modifiedBranch, businessProfileID);
+        return branchID;
+      })
+    );
+
+    // 5- ADD STAFF
+    await Promise.all(
+      DEFAULT_STAFF(businessProfileID).map(async (staff, index) => {
+        const modifiedStaff = {
+          ...staff,
+          branchID: branches[0],
+        };
+        await fsAddNewStaff(modifiedStaff);
+      })
+    );
   }, []);
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
@@ -1134,6 +1144,7 @@ export function AuthProvider({ children }) {
   const fsGetMealLabels = useCallback(
     async (businessProfileID = state.user.businessProfileID) => {
       try {
+        console.log(businessProfileID);
         const dataArr = [];
         const docRef = query(
           collectionGroup(DB, 'meal-labels'),
@@ -1444,10 +1455,10 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsGetStaffList = useCallback(
-    async (branchID = '') => {
+    async (branchID = '', businessProfileID = state.user.businessProfileID) => {
       let docRef = query(
         collectionGroup(DB, 'staff'),
-        where('userID', '==', state.user.businessProfileID)
+        where('businessProfileID', '==', businessProfileID)
       );
 
       // Conditionally add branchID to where clause if provided
@@ -1466,14 +1477,12 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsAddNewStaff = useCallback(
-    async (payload) => {
-      const newDocRef = doc(
-        collection(DB, `/businessProfiles/${state.user.businessProfileID}/staff`)
-      );
+    async (payload, businessProfileID = state.user.businessProfileID) => {
+      const newDocRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/staff`));
       await setDoc(newDocRef, {
         ...payload,
         docID: newDocRef.id,
-        userID: state.user.businessProfileID,
+        businessProfileID,
       });
       return newDocRef.id;
     },
