@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { Box, TableRow, TableCell, Typography, ListItemText } from '@mui/material';
+import { Stack, TableRow, TableCell, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
 import Image from 'src/components/image';
@@ -25,36 +25,37 @@ export default function MealTableRow({ row, onEditRow, mealLabelsList }) {
     return null;
   };
 
-  // TODO: get image download-URL from her to speedup the loading of the record, instead of retrying the whole meals-list query for just one new meal with image.
-
   return (
     <TableRow hover>
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Image
-          disabledEffect
-          alt={title}
-          src={cover}
-          sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}
-        />
-        <Box
-          onClick={() => onEditRow(docID)}
-          sx={{
-            cursor: 'pointer',
-            '&:hover': {
-              textDecoration: 'underline',
-            },
-          }}
-        >
-          <ListItemText
-            primary={title}
-            secondary={docID}
-            primaryTypographyProps={{ typography: 'body1' }}
-            secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
+      <TableCell
+        onClick={() => onEditRow(docID)}
+        sx={{
+          cursor: 'pointer',
+          '&:hover': {
+            textDecoration: 'underline',
+          },
+        }}
+      >
+        <Stack direction="row" spacing={1}>
+          <Image
+            disabledEffect
+            alt={title}
+            src={cover}
+            sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}
           />
-        </Box>
+          <Stack direction="column" spacing={0.5}>
+            <Typography>{title}</Typography>
+            <Stack direction="row" spacing={2}>
+              {portions.map((portion, i) => (
+                <Label variant="soft" color="default" key={`${portion.portionSize}-${i}`}>
+                  {portion.portionSize} - {portion.gram}g - ${portion.price}
+                </Label>
+              ))}
+            </Stack>
+          </Stack>
+        </Stack>
       </TableCell>
 
-      <TableCell align="center">{portions.length}</TableCell>
       <TableCell align="center">
         <Typography variant="caption">{metaKeywordsText()}</Typography>
       </TableCell>

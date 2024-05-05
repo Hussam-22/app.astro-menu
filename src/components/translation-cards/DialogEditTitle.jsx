@@ -29,7 +29,6 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
   const { fsUpdateMeal, fsUpdateBranch } = useAuthContext();
 
   const tableToUpdate = pathname.includes('meal') ? 'meals' : 'branches';
-  const docRef = `users/${data.userID}/${tableToUpdate}/${data.docID}`;
 
   const NewUserSchema = Yup.object().shape({
     title: Yup.string().required('Title cant be empty'),
@@ -50,7 +49,6 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
   });
 
   const {
-    watch,
     handleSubmit,
     formState: { isSubmitting, isDirty },
   } = methods;

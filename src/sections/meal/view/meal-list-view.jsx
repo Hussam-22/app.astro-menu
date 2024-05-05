@@ -33,7 +33,6 @@ import {
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Meal', align: 'center', width: '40%' },
-  { id: 'portions', label: 'Portions', align: 'center', width: '5%' },
   { id: 'meal-labels', label: 'Meal Labels', align: 'center', width: '25%' },
   { id: 'isNew', label: 'New', align: 'center', width: '5%' },
   { id: 'status', label: 'Status', align: 'center', width: '15%' },
