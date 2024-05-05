@@ -1045,7 +1045,7 @@ export function AuthProvider({ children }) {
           fbTranslateMeal({
             mealRef: `/businessProfiles/${state.user.businessProfileID}/meals/${payload.docID}`,
             text: { title: payload.title, desc: payload.description },
-            userID: state.user.businessProfileID,
+            businessProfileID: state.user.businessProfileID,
           });
       } catch (error) {
         console.log(error);
