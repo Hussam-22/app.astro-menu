@@ -15,9 +15,9 @@ export const useQrMenuContext = () => {
 };
 
 export function QrMenuContextProvider({ children }) {
-  const { userID, branchID, tableID } = useParams();
+  const { businessProfileID, branchID, tableID } = useParams();
   const {
-    fsGetUser,
+    fsGetBusinessProfile,
     fsGetMealLabels,
     fsGetBranch,
     fsGetTableInfo,
@@ -34,10 +34,10 @@ export function QrMenuContextProvider({ children }) {
     color: 'secondary',
   });
 
-  const { data: user = {} } = useQuery({
-    queryKey: ['user', userID],
-    queryFn: () => fsGetUser(userID),
-    enabled: userID !== undefined,
+  const { data: businessProfile = {}, error: bpError } = useQuery({
+    queryKey: ['businessProfile', businessProfileID],
+    queryFn: () => fsGetBusinessProfile(businessProfileID),
+    enabled: businessProfileID !== undefined,
   });
 
   const {
@@ -45,39 +45,42 @@ export function QrMenuContextProvider({ children }) {
     isSuccess: isTableInfoSuccess,
     error: tableError,
   } = useQuery({
-    queryKey: ['table', userID, branchID, tableID],
-    queryFn: () => fsGetTableInfo(userID, branchID, tableID),
+    queryKey: ['table', businessProfileID, branchID, tableID],
+    queryFn: () => fsGetTableInfo(businessProfileID, branchID, tableID),
   });
 
   const { data: menuInfo = {} } = useQuery({
-    queryKey: ['menu', userID, tableInfo.menuID],
-    queryFn: () => fsGetMenu(tableInfo.menuID, userID),
-    enabled: isTableInfoSuccess,
+    queryKey: ['menu', businessProfileID, tableInfo.menuID],
+    queryFn: () => fsGetMenu(tableInfo.menuID, businessProfileID),
+    enabled: isTableInfoSuccess && tableInfo?.menuID !== undefined,
   });
 
   const { data: branchInfo = {} } = useQuery({
-    queryKey: ['branch', userID, branchID],
-    queryFn: () => fsGetBranch(branchID, userID),
+    queryKey: ['branch', businessProfileID, branchID],
+    queryFn: () => fsGetBranch(branchID, businessProfileID),
     enabled: tableInfo?.docID !== undefined,
   });
 
   const { data: mealsLabel = [] } = useQuery({
-    queryKey: ['mealsLabel', userID],
-    queryFn: () => fsGetMealLabels(userID),
+    queryKey: ['mealsLabel', businessProfileID],
+    queryFn: () => fsGetMealLabels(businessProfileID),
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive,
   });
 
   const { data: sectionsUnsubscribe = () => {} } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: tableInfo.menuID ? ['sections', userID, tableInfo.menuID] : null,
-    queryFn: () => fsGetSections(tableInfo.menuID, userID),
+    queryKey: tableInfo.menuID ? ['sections', businessProfileID, tableInfo.menuID] : [],
+    queryFn: () => fsGetSections(tableInfo.menuID, businessProfileID),
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
   });
 
   const { data: orderInfo = {}, error } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: tableInfo.menuID ? ['order', userID, branchID, tableID, tableInfo.menuID] : null,
-    queryFn: () => fsOrderSnapshot({ userID, branchID, tableID, menuID: tableInfo.menuID }),
+    queryKey: tableInfo.menuID
+      ? ['order', businessProfileID, branchID, tableID, tableInfo.menuID]
+      : [],
+    queryFn: () =>
+      fsOrderSnapshot({ businessProfileID, branchID, tableID, menuID: tableInfo.menuID }),
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
   });
 
@@ -134,7 +137,7 @@ export function QrMenuContextProvider({ children }) {
       labels,
       reset,
       loading,
-      user,
+      businessProfile,
       selectedLanguage,
       setLanguage,
       sectionsUnsubscribe,
@@ -150,7 +153,7 @@ export function QrMenuContextProvider({ children }) {
       selectedLanguage,
       setLabel,
       tableInfo,
-      user,
+      businessProfile,
       sectionsUnsubscribe,
       orderStatus,
       menuInfo,

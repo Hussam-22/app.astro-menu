@@ -89,7 +89,7 @@ function SelectedTableInfoCard({ tableInfo }) {
     mutate(() => fsUpdateBranchTable(tableInfo.branchID, tableInfo.docID, { ...formData }));
   };
 
-  const qrURL = `${window.location.host}/qr-menu/${user.id}/${tableInfo?.branchID}/${tableInfo?.docID}`;
+  const qrURL = `${window.location.host}/qr-menu/${user.businessProfileID}/${tableInfo?.branchID}/${tableInfo?.docID}`;
 
   const copUrlHandler = () => {
     navigator.clipboard.writeText(qrURL);

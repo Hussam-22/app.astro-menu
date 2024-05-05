@@ -205,7 +205,9 @@ export const paths = {
   },
   // QR-MENU
   qrMenu: {
-    home: (userID, branchID, tableID) => `${ROOTS.QR_MENU}/${userID}/${branchID}/home`,
-    menu: (userID, branchID, tableID) => `${ROOTS.QR_MENU}/${userID}/${branchID}/${tableID}/menu`,
+    home: (businessProfileID, branchID, tableID) =>
+      `${ROOTS.QR_MENU}/${businessProfileID}/${branchID}/home`,
+    menu: (businessProfileID, branchID, tableID) =>
+      `${ROOTS.QR_MENU}/${businessProfileID}/${branchID}/${tableID}/menu`,
   },
 };

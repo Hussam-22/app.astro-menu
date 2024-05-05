@@ -15,7 +15,7 @@ export const QrMenuPage = lazy(() => import('src/pages/qr-menu/qr-menu'));
 
 export const qrMenuRoutes = [
   {
-    path: 'qr-menu/:userID/:branchID/:tableID',
+    path: 'qr-menu/:businessProfileID/:branchID/:tableID',
     element: (
       <QrMenuLayout>
         <Suspense fallback={<SplashScreen />}>

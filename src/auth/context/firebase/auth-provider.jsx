@@ -109,8 +109,6 @@ export function AuthProvider({ children }) {
             const docSnap = await getDoc(userProfile);
             const profile = docSnap.data();
 
-            console.log(userProfile);
-
             // create user profile (first time)
             if (!profile) {
               await setDoc(userProfile, { uid: user.uid, email: user.email, role: 'user' });
@@ -205,6 +203,16 @@ export function AuthProvider({ children }) {
       const docRef = doc(DB, `/users/${userID}`);
       const docSnapshot = await getDoc(docRef);
       if (!docSnapshot.data()) throw Error('No User Was Returned !!');
+      return docSnapshot.data();
+    } catch (error) {
+      throw error;
+    }
+  }, []);
+  const fsGetBusinessProfile = useCallback(async (businessProfileID) => {
+    try {
+      const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
+      const docSnapshot = await getDoc(docRef);
+      if (!docSnapshot.data()) throw Error('No Business Profile Was Returned !!');
       return docSnapshot.data();
     } catch (error) {
       throw error;
@@ -1144,7 +1152,6 @@ export function AuthProvider({ children }) {
   const fsGetMealLabels = useCallback(
     async (businessProfileID = state.user.businessProfileID) => {
       try {
-        console.log(businessProfileID);
         const dataArr = [];
         const docRef = query(
           collectionGroup(DB, 'meal-labels'),
@@ -1509,6 +1516,7 @@ export function AuthProvider({ children }) {
       register,
       logout,
       fsGetUser,
+      fsGetBusinessProfile,
       staff,
       setStaff,
       // ---- GENERIC ----
@@ -1623,6 +1631,7 @@ export function AuthProvider({ children }) {
       register,
       logout,
       fsGetUser,
+      fsGetBusinessProfile,
       staff,
       setStaff,
       // ---- GENERIC ----

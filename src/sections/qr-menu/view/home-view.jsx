@@ -29,7 +29,7 @@ function QRMenuHomeView() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isWifiOpen, setIsWifiOpen] = useState(false);
   const {
-    user,
+    businessProfile,
     branchInfo: {
       title,
       description,
@@ -47,13 +47,11 @@ function QRMenuHomeView() {
   const router = useRouter();
 
   const getDescription = () => {
-    if (selectedLanguage === user.defaultLanguage) return description;
+    if (selectedLanguage === businessProfile.defaultLanguage) return description;
     return translationEdited?.[selectedLanguage]?.desc
       ? translationEdited?.[selectedLanguage]?.desc
       : translation?.[selectedLanguage]?.desc;
   };
-
-  console.log(isBranchActive);
 
   if (!isBranchActive && isBranchActive !== undefined)
     return (
