@@ -16,7 +16,7 @@ SectionsDrawer.propTypes = {
 };
 
 function SectionsDrawer({ openState, toggleDrawer }) {
-  const { userID } = useParams();
+  const { businessProfileID } = useParams();
   const { menuSections, fsGetMeal } = useAuthContext();
   const { setLabel, labels, reset, selectedLanguage, branchInfo, mealsLabel } = useQrMenuContext();
 
@@ -49,8 +49,8 @@ function SectionsDrawer({ openState, toggleDrawer }) {
 
   const mealsData = useQueries({
     queries: sectionsMealsID.map((mealID) => ({
-      queryKey: ['meal', mealID, userID],
-      queryFn: () => fsGetMeal(mealID, '800x800', userID),
+      queryKey: ['meal', mealID, businessProfileID],
+      queryFn: () => fsGetMeal(mealID, '800x800', businessProfileID),
       staleTime: Infinity,
     })),
   });

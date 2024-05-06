@@ -11,7 +11,7 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 function BranchTables() {
   const theme = useTheme();
-  const { staffID, userID } = useParams();
+  const { staffID, businessProfileID } = useParams();
   const { tables, setSelectedTable, selectedTable, branchInfo, setIsLoading } = useStaffContext();
   const { activeOrders, fsInitiateNewOrder, staff } = useAuthContext();
 
@@ -68,8 +68,8 @@ function BranchTables() {
     [activeOrders, selectedTable.docID, theme]
   );
 
-  const { mutate } = useMutation({
-    mutationKey: ['active-orders', branchInfo.docID, userID],
+  const { mutate, error } = useMutation({
+    mutationKey: ['active-orders', branchInfo.docID, businessProfileID],
     mutationFn: async (table) => {
       const { docID: tableID, menuID, branchID } = table;
       await fsInitiateNewOrder({
@@ -77,7 +77,7 @@ function BranchTables() {
         tableID,
         menuID,
         staffID,
-        userID,
+        businessProfileID,
         branchID,
       });
       return table;
@@ -86,6 +86,8 @@ function BranchTables() {
       setSelectedTable(table);
     },
   });
+
+  console.log(error);
 
   const onTableSelect = (table) => {
     const tableOrder = activeOrders.find((order) => order.tableID === table.docID);

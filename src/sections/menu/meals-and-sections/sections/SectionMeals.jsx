@@ -51,9 +51,9 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
     visibility: false,
   });
 
-  const sectionMeals = allMeals.filter((meal) =>
-    // sectionInfo.meals.some((sectionMeal) => sectionMeal.mealID === meal.docID)
-    sectionInfo.meals.some((sectionMeal) => sectionMeal === meal.docID)
+  const sectionMeals = allMeals.filter(
+    (meal) => sectionInfo.meals.some((sectionMeal) => sectionMeal.mealID === meal.docID)
+    // sectionInfo.meals.some((sectionMeal) => sectionMeal === meal.docID)
   );
 
   const { mutate, isPending, isError } = useMutation({

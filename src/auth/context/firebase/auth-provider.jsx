@@ -665,15 +665,16 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateBranch = useCallback(
-    async (branchData, shouldUpdateCover = false) => {
-      const docRef = doc(
-        DB,
-        `/businessProfiles/${state.user.businessProfileID}/branches/${branchData.docID}`
-      );
+    async (
+      branchData,
+      shouldUpdateCover = false,
+      businessProfileID = state.user.businessProfileID
+    ) => {
+      const docRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchData.docID}`);
       const { cover: imageFile, ...documentData } = branchData;
       await updateDoc(docRef, {
         ...documentData,
-        lastUpdatedBy: state.user.businessProfileID,
+        lastUpdatedBy: businessProfileID,
         lastUpdatedAt: new Date(),
       });
 
@@ -681,13 +682,13 @@ export function AuthProvider({ children }) {
         fbTranslateBranchDesc({
           branchRef: docRef.path,
           text: { description: documentData.description },
-          userID: state.user.businessProfileID,
+          businessProfileID,
         });
 
       if (shouldUpdateCover) {
         const storageRef = ref(
           STORAGE,
-          `gs://menu-app-b268b/${state.user.businessProfileID}/branches/${branchData.docID}/`
+          `gs://menu-app-b268b/${businessProfileID}/branches/${branchData.docID}/`
         );
 
         const files = await listAll(storageRef);
@@ -843,17 +844,17 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsDeleteSection = useCallback(
-    async (menuID, sectionID, orderValue) => {
+    async (menuID, sectionID, orderValue, businessProfileID = state.user.businessProfileID) => {
       const docRef = doc(
         DB,
-        `/businessProfiles/${state.user.businessProfileID}/menus/${menuID}/sections/${sectionID}`
+        `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${sectionID}`
       );
       await deleteDoc(docRef);
 
       // get all sections that order index is above the one is being deleted and reduce it
       const docsRef = query(
         collectionGroup(DB, 'sections'),
-        where('userID', '==', state.user.businessProfileID),
+        where('businessProfileID', '==', businessProfileID),
         where('menuID', '==', menuID),
         where('order', '>', orderValue)
       );
@@ -942,31 +943,34 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetSectionMeals = useCallback(async (userID, sectionMeals, size = '800x800') => {
-    const docRef = query(
-      collectionGroup(DB, 'meals'),
-      where('userID', '==', userID),
-      where('docID', 'in', sectionMeals)
-      // where('isActive', '==', true)
-    );
-    const querySnapshot = await getDocs(docRef);
-    const dataArr = [];
-    const asyncOperations = [];
+  const fsGetSectionMeals = useCallback(
+    async (businessProfileID = state.user.businessProfileID, sectionMeals, size = '800x800') => {
+      const docRef = query(
+        collectionGroup(DB, 'meals'),
+        where('businessProfileID', '==', businessProfileID),
+        where('docID', 'in', sectionMeals)
+        // where('isActive', '==', true)
+      );
+      const querySnapshot = await getDocs(docRef);
+      const dataArr = [];
+      const asyncOperations = [];
 
-    querySnapshot.forEach((element) => {
-      const asyncOperation = async () => {
-        const bucket = `menu-app-b268b/${userID}/meals/${element.data().docID}/`;
-        const cover = await fsGetImgDownloadUrl(bucket, `${element.data().docID}_${size}.webp`);
+      querySnapshot.forEach((element) => {
+        const asyncOperation = async () => {
+          const bucket = `menu-app-b268b/${businessProfileID}/meals/${element.data().docID}/`;
+          const cover = await fsGetImgDownloadUrl(bucket, `${element.data().docID}_${size}.webp`);
 
-        dataArr.push({ ...element.data(), cover });
-      };
-      asyncOperations.push(asyncOperation());
-    });
+          dataArr.push({ ...element.data(), cover });
+        };
+        asyncOperations.push(asyncOperation());
+      });
 
-    await Promise.all(asyncOperations);
+      await Promise.all(asyncOperations);
 
-    return dataArr;
-  }, []);
+      return dataArr;
+    },
+    []
+  );
   const fsEmptyMenuSelectedMeals = useCallback(
     async (menuID) => {
       const docRef = doc(DB, `/businessProfiles/${state.user.businessProfileID}/menus/${menuID}/`);
@@ -1317,27 +1321,30 @@ export function AuthProvider({ children }) {
 
     return unsubscribe;
   }, []);
-  const fsGetActiveOrdersSnapshot = useCallback(async (userID, branchID) => {
-    const docRef = query(
-      collectionGroup(DB, 'orders'),
-      where('userID', '==', userID),
-      where('branchID', '==', branchID),
-      where('isPaid', '==', false),
-      where('isCanceled', '==', false)
-    );
+  const fsGetActiveOrdersSnapshot = useCallback(
+    async (businessProfileID = state.user.businessProfileID, branchID) => {
+      const docRef = query(
+        collectionGroup(DB, 'orders'),
+        where('businessProfileID', '==', businessProfileID),
+        where('branchID', '==', branchID),
+        where('isPaid', '==', false),
+        where('isCanceled', '==', false)
+      );
 
-    const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
-      const tablesArray = [];
-      querySnapshot.forEach((doc) => {
-        if (doc.exists()) {
-          tablesArray.push(doc.data());
-        }
+      const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
+        const tablesArray = [];
+        querySnapshot.forEach((doc) => {
+          if (doc.exists()) {
+            tablesArray.push(doc.data());
+          }
+        });
+        setActiveOrders(tablesArray);
       });
-      setActiveOrders(tablesArray);
-    });
 
-    return unsubscribe;
-  }, []);
+      return unsubscribe;
+    },
+    []
+  );
   const fsUpdateCart = useCallback(async (payload) => {
     const { orderID, businessProfileID, branchID, cart } = payload;
     const docRef = doc(
@@ -1441,11 +1448,11 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetStaffLogin = useCallback(async (userID, staffID, passCode) => {
+  const fsGetStaffLogin = useCallback(async (businessProfileID, staffID, passCode) => {
     try {
       const docRef = query(
         collectionGroup(DB, 'staff'),
-        where('userID', '==', userID),
+        where('businessProfileID', '==', businessProfileID),
         where('docID', '==', staffID),
         where('passCode', '==', passCode),
         where('isActive', '==', true)

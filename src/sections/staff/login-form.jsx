@@ -16,7 +16,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 function StaffLoginForm() {
-  const { userID, staffID } = useParams();
+  const { businessProfileID, staffID } = useParams();
   const { fsGetStaffLogin, fsUpdateStaffInfo, fsGetStaffInfo } = useAuthContext();
   const { setWaiterUnsubscribe } = useStaffContext();
 
@@ -36,22 +36,24 @@ function StaffLoginForm() {
   const { handleSubmit } = methods;
 
   const { data: staffInfo = {} } = useQuery({
-    queryFn: () => fsGetStaffInfo(staffID, userID),
-    queryKey: ['staff', userID, staffID],
+    queryFn: () => fsGetStaffInfo(staffID, businessProfileID),
+    queryKey: ['staff', businessProfileID, staffID],
   });
 
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: (mutationFn) => mutationFn(),
     onSuccess: (unsubscribeFn) => {
-      fsUpdateStaffInfo({ isLoggedIn: true, lastLogIn: new Date() }, staffID, userID);
+      fsUpdateStaffInfo({ isLoggedIn: true, lastLogIn: new Date() }, staffID, businessProfileID);
       setWaiterUnsubscribe(() => unsubscribeFn);
     },
   });
 
+  console.log(error);
+
   const onSubmit = async ({ passCode }) => {
     mutate(async () => {
       await delay(500);
-      await fsGetStaffLogin(userID, staffID, passCode);
+      await fsGetStaffLogin(businessProfileID, staffID, passCode);
     });
   };
 

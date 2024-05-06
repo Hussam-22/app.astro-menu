@@ -28,13 +28,15 @@ const TableOrder = () => {
     useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
 
+  console.log(orderSnapShot);
+
   const isChef = staff?.type === 'chef';
 
   const {
     isInKitchen,
     isReadyToServe,
     docID: orderID,
-    userID,
+    businessProfileID,
     branchID,
     cart,
     updateCount,
@@ -55,8 +57,8 @@ const TableOrder = () => {
     queries: orderSnapShot.cart
       .flatMap((cartItem) => cartItem.mealID)
       .map((mealID) => ({
-        queryKey: ['meal', mealID, userID],
-        queryFn: () => fsGetMeal(mealID, '200x200', userID),
+        queryKey: ['meal', mealID, businessProfileID],
+        queryFn: () => fsGetMeal(mealID, '200x200', businessProfileID),
       })),
   });
 
@@ -84,7 +86,7 @@ const TableOrder = () => {
       );
       fsRemoveMealFromCart({
         orderID,
-        userID,
+        businessProfileID,
         branchID,
         cart: removedMealCart,
       });
@@ -95,7 +97,7 @@ const TableOrder = () => {
       await delay(500);
       fsUpdateOrderStatus({
         orderID,
-        userID,
+        businessProfileID,
         branchID,
         toUpdateFields: {
           isInKitchen: [...isInKitchen, updateCount],
@@ -110,7 +112,7 @@ const TableOrder = () => {
       setSelectedTable({});
       fsUpdateOrderStatus({
         orderID,
-        userID,
+        businessProfileID,
         branchID,
         toUpdateFields: {
           isInKitchen: isInKitchen.filter((orderIndex) => orderIndex !== value),

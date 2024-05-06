@@ -12,17 +12,17 @@ import { QrMenuContextProvider } from 'src/sections/qr-menu/context/qr-menu-cont
 
 function QrMenuLayout({ children }) {
   const { pathname } = useLocation();
-  const { userID, branchID, tableID } = useParams();
+  const { businessProfileID, branchID, tableID } = useParams();
   const { fsUpdateScanLog } = useAuthContext();
 
   const isMenu = pathname.endsWith('menu');
 
   const { mutate } = useMutation({
-    mutationFn: () => fsUpdateScanLog(branchID, userID, tableID),
+    mutationFn: () => fsUpdateScanLog(branchID, businessProfileID, tableID),
   });
 
   useEffect(() => {
-    if (branchID && userID && tableID) mutate();
+    if (branchID && businessProfileID && tableID) mutate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

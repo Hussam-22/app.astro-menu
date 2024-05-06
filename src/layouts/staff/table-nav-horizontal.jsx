@@ -10,7 +10,7 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 function StaffHorizontalNav() {
   const theme = useTheme();
-  const { userID, staffID } = useParams();
+  const { businessProfileID, staffID } = useParams();
   const { waiterUnsubscribe } = useStaffContext();
   const { fsUpdateStaffInfo, setStaff, staff } = useAuthContext();
 
@@ -18,7 +18,7 @@ function StaffHorizontalNav() {
     mutationFn: async () => {
       await delay(500);
       setStaff({});
-      fsUpdateStaffInfo(userID, staffID, { isLoggedIn: false });
+      fsUpdateStaffInfo(businessProfileID, staffID, { isLoggedIn: false });
       waiterUnsubscribe();
     },
   });

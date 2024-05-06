@@ -27,7 +27,7 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
   const { data: tableData = {} } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['table', tableInfo.docID, month, year],
-    queryFn: () => fsGetTableInfo(tableInfo.userID, branchInfo.docID, tableInfo.docID),
+    queryFn: () => fsGetTableInfo(tableInfo.businessProfileID, branchInfo.docID, tableInfo.docID),
   });
 
   const { data: orders = [] } = useQuery({

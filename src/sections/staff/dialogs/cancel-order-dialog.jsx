@@ -31,7 +31,7 @@ DialogCancelOrder.propTypes = {
 export default function DialogCancelOrder({ isOpen, onClose, tableNo, payload }) {
   const { fsUpdateOrderStatus } = useAuthContext();
   const { setSelectedTable } = useStaffContext();
-  const { orderID, userID, branchID } = payload;
+  const { orderID, businessProfileID, branchID } = payload;
   const defaultValues = useMemo(
     () => ({
       reason: CANCEL_REASONS[0],
@@ -56,7 +56,7 @@ export default function DialogCancelOrder({ isOpen, onClose, tableNo, payload })
       await delay(1000);
       fsUpdateOrderStatus({
         orderID,
-        userID,
+        businessProfileID,
         branchID,
         toUpdateFields: {
           isCanceled: true,

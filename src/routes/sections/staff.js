@@ -19,6 +19,6 @@ export const staffRoutes = [
         </Suspense>
       </StaffLayout>
     ),
-    children: [{ path: 'staff/:userID/:staffID', element: <StaffPage /> }],
+    children: [{ path: 'staff/:businessProfileID/:staffID', element: <StaffPage /> }],
   },
 ];

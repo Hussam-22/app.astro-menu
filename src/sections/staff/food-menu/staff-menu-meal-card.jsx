@@ -19,13 +19,13 @@ StaffMenuMealCard.propTypes = {
 
 function StaffMenuMealCard({ mealID, isMealActive, sectionInfo }) {
   const { staff, fsGetMeal } = useAuthContext();
-  const { user, branchInfo, selectedTable } = useStaffContext();
+  const { businessProfile, branchInfo, selectedTable } = useStaffContext();
   const [selectedPortionIndex, _] = useState(0);
   const [isReadMore, setIsReadMore] = useState(false);
 
   const { data: mealInfo = {} } = useQuery({
-    queryKey: ['meal', mealID, user.uid],
-    queryFn: () => fsGetMeal(mealID, '200x200', user.uid),
+    queryKey: ['meal', mealID, businessProfile.docID],
+    queryFn: () => fsGetMeal(mealID, '200x200', businessProfile.docID),
   });
 
   const isChef = staff?.type === 'chef';

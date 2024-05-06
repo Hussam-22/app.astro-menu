@@ -27,9 +27,11 @@ function StaffLink() {
   const { user, fsGetStaffList } = useAuthContext();
   const [filteredStaffList, setFilteredStaffList] = useState([]);
 
+  console.log(user);
+
   const copUrlHandler = (staffID) => {
     navigator.clipboard.writeText(
-      `${window.location.protocol}//${window.location.host}/staff/${user.id}/${staffID}`
+      `${window.location.protocol}//${window.location.host}/staff/${user.businessProfileID}/${staffID}`
     );
   };
 
@@ -39,7 +41,7 @@ function StaffLink() {
         .share({
           title: 'Staff Portal Access Link',
           text: 'Each staff has his/her own access link',
-          url: `${window.location.protocol}//${window.location.host}/staff/${user.id}/${staffID}`,
+          url: `${window.location.protocol}//${window.location.host}/staff/${user.businessProfileID}/${staffID}`,
         })
         .then(() => true)
         .catch((error) => console.error('Error sharing:', error));
@@ -104,7 +106,7 @@ function StaffLink() {
               </Stack>
               <TextField
                 name="URL"
-                value={`${window.location.protocol}//${window.location.host}/staff/${user.id}/${staff.docID}`}
+                value={`${window.location.protocol}//${window.location.host}/staff/${user.businessProfileID}/${staff.docID}`}
                 size="small"
                 fullWidth
                 aria-readonly
@@ -170,15 +172,15 @@ function ActionButtons({ staffID, status }) {
   );
 
   const onStatusChange = async () => {
-    fsUpdateStaffInfo({ isLoggedIn: false }, staffID, user.id);
-    fsUpdateStaffInfo({ isActive: !status }, staffID, user.id);
+    fsUpdateStaffInfo({ isLoggedIn: false }, staffID, user.businessProfileID);
+    fsUpdateStaffInfo({ isActive: !status }, staffID, user.businessProfileID);
   };
 
   const onPassCodeReset = async () => {
     const passCode = generatePassCode();
     setNewPassCode(passCode);
-    fsUpdateStaffInfo({ isLoggedIn: false }, staffID, user.id);
-    fsUpdateStaffInfo({ passCode }, staffID, user.id);
+    fsUpdateStaffInfo({ isLoggedIn: false }, staffID, user.businessProfileID);
+    fsUpdateStaffInfo({ passCode }, staffID, user.businessProfileID);
     setIsOpen(true);
   };
 

@@ -14,7 +14,7 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
   const [isActive, _] = useState(isMealActive);
 
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
-  const { docID, userID, branchID, cart, isReadyToServe } = orderSnapShot;
+  const { docID, businessProfileID, branchID, cart, isReadyToServe } = orderSnapShot;
 
   const { mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -35,8 +35,12 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
       return cartMeal;
     });
     if (!sectionMealsInfo[index].isActive)
-      mutate(() => fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart }));
-    mutate(() => fsUpdateSection(menuID, sectionInfo.docID, { meals: updatedMeals }, userID));
+      mutate(() =>
+        fsUpdateCart({ orderID: docID, businessProfileID, branchID, cart: updatedCart })
+      );
+    mutate(() =>
+      fsUpdateSection(menuID, sectionInfo.docID, { meals: updatedMeals }, businessProfileID)
+    );
   };
 
   return (

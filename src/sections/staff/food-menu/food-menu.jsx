@@ -13,18 +13,18 @@ import StaffMenuSections from 'src/sections/staff/food-menu/staff-menu-sections'
 FoodMenu.propTypes = { menuID: PropTypes.string };
 
 function FoodMenu({ menuID }) {
-  const { userID } = useParams();
+  const { businessProfileID } = useParams();
   const { fsGetMenu, fsGetSections, menuSections } = useAuthContext();
   const { selectedTable } = useStaffContext();
 
   const { data: menuInfo = {} } = useQuery({
-    queryKey: ['menu', userID, menuID],
-    queryFn: () => fsGetMenu(menuID, userID),
+    queryKey: ['menu', businessProfileID, menuID],
+    queryFn: () => fsGetMenu(menuID, businessProfileID),
   });
 
   const { data: sectionsUnsubscribe = () => {} } = useQuery({
-    queryKey: ['sections', userID, menuID],
-    queryFn: () => fsGetSections(menuID, userID),
+    queryKey: ['sections', businessProfileID, menuID],
+    queryFn: () => fsGetSections(menuID, businessProfileID),
     refetchOnMount: 'always',
   });
 

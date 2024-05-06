@@ -9,7 +9,7 @@ import MealCard from 'src/sections/qr-menu/meal-card';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 function MenuSection({ sectionInfo }) {
-  const { userID } = useParams();
+  const { businessProfileID } = useParams();
   const {
     title,
     meals: sectionMeals,
@@ -31,8 +31,8 @@ function MenuSection({ sectionInfo }) {
     queries: sectionMeals
       .flatMap((meal) => meal.mealID)
       .map((mealID) => ({
-        queryKey: ['meal', mealID, userID],
-        queryFn: () => fsGetMeal(mealID, '800x800', userID),
+        queryKey: ['meal', mealID, businessProfileID],
+        queryFn: () => fsGetMeal(mealID, '800x800', businessProfileID),
         staleTime: Infinity,
       })),
   });

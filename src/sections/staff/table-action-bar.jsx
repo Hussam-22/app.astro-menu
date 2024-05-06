@@ -31,10 +31,10 @@ function TableActionBar() {
   const { mutate, isPending, error } = useMutation({
     mutationFn: async () => {
       await delay(500);
-      await fsConfirmCartOrder(orderSnapShot.cart, totalBill, branchID, userID);
+      await fsConfirmCartOrder(orderSnapShot.cart, totalBill, branchID, businessProfileID);
       await fsUpdateOrderStatus({
         orderID,
-        userID,
+        businessProfileID,
         branchID,
         toUpdateFields: { isPaid: true, totalBill, lastUpdate: new Date() },
       });
@@ -46,7 +46,14 @@ function TableActionBar() {
 
   if (!orderSnapShot) return null;
 
-  const { docID: orderID, userID, branchID, isInKitchen, cart, updateCount } = orderSnapShot;
+  const {
+    docID: orderID,
+    businessProfileID,
+    branchID,
+    isInKitchen,
+    cart,
+    updateCount,
+  } = orderSnapShot;
 
   const isCancelOrderDisabled = cart.length === 0;
   const isCollectPaymentDisabled =
@@ -106,7 +113,7 @@ function TableActionBar() {
         isOpen={isCancelOpen}
         onClose={() => setIsCancelOpen(false)}
         tableNo={selectedTable.index}
-        payload={{ orderID, userID, branchID }}
+        payload={{ orderID, businessProfileID, branchID }}
       />
       <ConfirmDialog
         title="Payment Confirmation"

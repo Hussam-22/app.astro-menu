@@ -15,9 +15,9 @@ export const useStaffContext = () => {
 };
 
 export function StaffContextProvider({ children }) {
-  const { userID } = useParams();
+  const { businessProfileID } = useParams();
   const {
-    fsGetUser,
+    fsGetBusinessProfile,
     fsGetBranchTables,
     fsGetBranch,
     fsGetActiveOrdersSnapshot,
@@ -27,36 +27,38 @@ export function StaffContextProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [waiterUnsubscribe, setWaiterUnsubscribe] = useState();
 
-  const { data: user = {} } = useQuery({
-    queryKey: ['user', userID],
-    queryFn: () => fsGetUser(userID),
-    enabled: userID !== undefined && staffInfo.isLoggedIn,
+  const { data: businessProfile = {} } = useQuery({
+    queryKey: ['businessProfile', businessProfileID],
+    queryFn: () => fsGetBusinessProfile(businessProfileID),
+    enabled: businessProfileID !== undefined && staffInfo.isLoggedIn,
   });
 
   const branchID = staffInfo?.branchID || '';
 
   const { data: branchInfo = {} } = useQuery({
-    queryKey: ['branch', userID, branchID],
-    queryFn: () => fsGetBranch(branchID, userID),
+    queryKey: ['branch', businessProfileID, branchID],
+    queryFn: () => fsGetBranch(branchID, businessProfileID),
     enabled: staffInfo?.branchID !== undefined,
   });
 
   const { data: tables = [] } = useQuery({
-    queryKey: ['branch-tables', branchID, userID],
-    queryFn: () => fsGetBranchTables(branchID, userID),
+    queryKey: ['branch-tables', branchID, businessProfileID],
+    queryFn: () => fsGetBranchTables(branchID, businessProfileID),
     enabled: staffInfo.docID !== undefined,
   });
 
   // Get Orders Snapshot
-  useQuery({
-    queryKey: ['active-orders', branchID, userID],
-    queryFn: () => fsGetActiveOrdersSnapshot(userID, branchID),
+  const { error } = useQuery({
+    queryKey: ['active-orders', branchID, businessProfileID],
+    queryFn: () => fsGetActiveOrdersSnapshot(businessProfileID, branchID),
     enabled: staffInfo.docID !== undefined,
   });
 
+  console.log(error);
+
   const memoizedValue = useMemo(
     () => ({
-      user,
+      businessProfile,
       tables,
       branchInfo,
       selectedTable,
@@ -66,7 +68,7 @@ export function StaffContextProvider({ children }) {
       waiterUnsubscribe,
       setWaiterUnsubscribe,
     }),
-    [branchInfo, isLoading, selectedTable, tables, user, waiterUnsubscribe]
+    [branchInfo, isLoading, selectedTable, tables, businessProfile, waiterUnsubscribe]
   );
   return <StaffContext.Provider value={memoizedValue}>{children}</StaffContext.Provider>;
 }
