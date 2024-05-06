@@ -76,7 +76,6 @@ export default function BranchesListView() {
     queryKey: ['branches'],
     queryFn: () => fsGetAllBranches(),
   });
-  console.log({ isFetching, failureCount, error });
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);

@@ -54,7 +54,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
     const updatedCart = orderSnapShot.cart.filter((cartPortion) => cartPortion.id !== portion.id);
     fsRemoveMealFromCart({
       orderID: orderSnapShot.docID,
-      userID: orderSnapShot.userID,
+      businessProfileID: orderSnapShot.businessProfileID,
       branchID: orderSnapShot.branchID,
       cart: updatedCart,
     });

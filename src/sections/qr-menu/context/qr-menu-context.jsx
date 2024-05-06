@@ -67,14 +67,14 @@ export function QrMenuContextProvider({ children }) {
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive,
   });
 
-  const { data: sectionsUnsubscribe = () => {} } = useQuery({
+  const { data: sectionsUnsubscribe = () => {}, error: sectionsError } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: tableInfo.menuID ? ['sections', businessProfileID, tableInfo.menuID] : [],
     queryFn: () => fsGetSections(tableInfo.menuID, businessProfileID),
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
   });
 
-  const { data: orderInfo = {}, error } = useQuery({
+  const { data: orderInfo = {}, error: orderError } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: tableInfo.menuID
       ? ['order', businessProfileID, branchID, tableID, tableInfo.menuID]

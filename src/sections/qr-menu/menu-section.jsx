@@ -17,8 +17,8 @@ function MenuSection({ sectionInfo }) {
     translationEdited,
     translation,
   } = sectionInfo;
-  const { fsGetSectionMeals, fsGetMeal } = useAuthContext();
-  const { labels, loading, selectedLanguage, branchInfo } = useQrMenuContext();
+  const { fsGetMeal } = useAuthContext();
+  const { labels, selectedLanguage, branchInfo } = useQrMenuContext();
 
   const getTitle = () => {
     if (selectedLanguage === branchInfo.defaultLanguage) return title;
@@ -26,15 +26,6 @@ function MenuSection({ sectionInfo }) {
       ? translationEdited?.[selectedLanguage]?.title
       : translation?.[selectedLanguage]?.title;
   };
-
-  // const { data: meals = [] } = useQuery({
-  //   queryKey: ['sectionMeals', userID, sectionID],
-  //   queryFn: () =>
-  //     fsGetSectionMeals(
-  //       userID,
-  //       sectionMeals.flatMap((meal) => meal.mealID)
-  //     ),
-  // });
 
   const mealsData = useQueries({
     queries: sectionMeals

@@ -13,7 +13,7 @@ LanguageDrawer.propTypes = {
 };
 
 function LanguageDrawer({ openState, toggleDrawer }) {
-  const { user } = useQrMenuContext();
+  const { businessProfile } = useQrMenuContext();
 
   return (
     <Drawer
@@ -34,8 +34,8 @@ function LanguageDrawer({ openState, toggleDrawer }) {
         justifyContent="left"
         alignItems="left"
       >
-        {user?.languages.length !== 0 &&
-          user.languages.map((language) => (
+        {businessProfile?.languages.length !== 0 &&
+          businessProfile.languages.map((language) => (
             <LanguageButton toggleDrawer={toggleDrawer} code={language} key={language} />
           ))}
       </Stack>

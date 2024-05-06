@@ -32,7 +32,7 @@ export default function DialogAddComment({
   mealTitle,
 }) {
   const { fsUpdateCart } = useAuthContext();
-  const { docID, userID, branchID, cart, updateCount } = orderSnapShot;
+  const { docID, businessProfileID, branchID, cart, updateCount } = orderSnapShot;
 
   const defaultValues = useMemo(
     () => ({
@@ -62,7 +62,7 @@ export default function DialogAddComment({
       id: generateID(8),
       update: updateCount,
     });
-    fsUpdateCart({ orderID: docID, userID, branchID, cart: updatedCart });
+    fsUpdateCart({ orderID: docID, businessProfileID, branchID, cart: updatedCart });
     onClose();
   };
 

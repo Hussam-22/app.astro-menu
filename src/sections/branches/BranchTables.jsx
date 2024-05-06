@@ -25,8 +25,6 @@ function BranchTables() {
     queryFn: () => fsGetBranchTables(branchID),
   });
 
-  console.log(error);
-
   const handleOnTableClick = (table) => setSelectedTable(table);
 
   return (
