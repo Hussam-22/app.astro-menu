@@ -75,10 +75,9 @@ function StaffMenuMealCard({ mealID, isMealActive, sectionInfo }) {
         spacing={1}
         alignItems="center"
         justifyContent="flex-end"
-        sx={{ mt: !isMealActive && 1 }}
         divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
       >
-        {isMealActive && (
+        {isMealActive && !isChef && (
           <StaffMenuAddMealToCart
             portion={mealInfo.portions[selectedPortionIndex]}
             mealInfo={mealInfo}

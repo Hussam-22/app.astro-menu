@@ -41,6 +41,8 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
     );
   };
 
+  console.log(sectionInfo.meals.find((meal) => meal.mealID === mealInfo.docID).isActive);
+
   return (
     <Stack direction="row" spacing={0} justifyContent="flex-end" alignItems="center">
       <Typography
@@ -53,7 +55,13 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
         {isMealActive ? 'Available' : 'Out of Stock'}
       </Typography>
       {mealInfo.isActive && (
-        <Switch defaultChecked={isActive} onChange={onMealStatusChange} color="info" size="small" />
+        <Switch
+          // defaultChecked={isActive}
+          checked={sectionInfo.meals.find((meal) => meal.mealID === mealInfo.docID).isActive}
+          onChange={onMealStatusChange}
+          color="info"
+          size="small"
+        />
       )}
     </Stack>
   );

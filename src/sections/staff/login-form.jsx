@@ -48,8 +48,6 @@ function StaffLoginForm() {
     },
   });
 
-  console.log(error);
-
   const onSubmit = async ({ passCode }) => {
     mutate(async () => {
       await delay(500);
