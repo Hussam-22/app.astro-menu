@@ -28,8 +28,6 @@ function BranchStatistics() {
     queryFn: () => fsGetBranch(branchID),
   });
 
-  console.log(businessProfile);
-
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} md={12}>

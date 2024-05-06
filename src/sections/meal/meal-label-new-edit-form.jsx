@@ -27,8 +27,6 @@ export default function MealLabelNewEditForm({ onClose, mealID }) {
     queryFn: () => fsGetMealLabels(),
   });
 
-  console.log(error);
-
   const NewMealSchema = Yup.object().shape({
     title: Yup.string()
       .required('Title is required')

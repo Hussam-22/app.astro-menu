@@ -52,8 +52,6 @@ export default function IncomeStatistics({ branchID, userData, year, month, curr
       </Card>
     );
 
-  console.log(+income.toFixed(0));
-
   return (
     <Card>
       <CardHeader title="Total Income" action={<Chip label={monthLong} />} />

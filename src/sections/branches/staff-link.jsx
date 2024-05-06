@@ -27,8 +27,6 @@ function StaffLink() {
   const { user, fsGetStaffList } = useAuthContext();
   const [filteredStaffList, setFilteredStaffList] = useState([]);
 
-  console.log(user);
-
   const copUrlHandler = (staffID) => {
     navigator.clipboard.writeText(
       `${window.location.protocol}//${window.location.host}/staff/${user.businessProfileID}/${staffID}`
@@ -54,8 +52,6 @@ function StaffLink() {
     queryKey: ['staffs', user.businessProfileID, branchID],
     queryFn: () => fsGetStaffList(branchID),
   });
-
-  console.log(error);
 
   useEffect(() => {
     if (staffsList.length !== 0) setFilteredStaffList(staffsList);

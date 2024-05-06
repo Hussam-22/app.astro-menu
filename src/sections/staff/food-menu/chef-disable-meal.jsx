@@ -41,8 +41,6 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
     );
   };
 
-  console.log(sectionInfo.meals.find((meal) => meal.mealID === mealInfo.docID).isActive);
-
   return (
     <Stack direction="row" spacing={0} justifyContent="flex-end" alignItems="center">
       <Typography

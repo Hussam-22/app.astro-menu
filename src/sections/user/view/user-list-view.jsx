@@ -76,8 +76,6 @@ export default function UserListView() {
   const [tableData, setTableData] = useState(_userList);
   const [filters, setFilters] = useState(defaultFilters);
 
-  console.log(userData);
-
   const dataFiltered = applyFilter({
     inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),

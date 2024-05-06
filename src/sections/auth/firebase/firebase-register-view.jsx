@@ -100,8 +100,6 @@ export default function FirebaseRegisterView() {
     mutationFn: (mutateFn) => mutateFn(),
   });
 
-  console.log({ isPending, mutationError });
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       const selectedPlan = PLANS_INFO.find((plan) => plan.name === data.plan);
