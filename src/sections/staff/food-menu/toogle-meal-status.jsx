@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@tanstack/react-query';
 
@@ -7,11 +6,10 @@ import { Stack, Switch, useTheme, Typography } from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
-function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
+function ToggleMealStatus({ mealInfo, isMealActive, sectionInfo }) {
   const theme = useTheme();
-  const { fsUpdateSection, activeOrders, fsUpdateCart } = useAuthContext();
-  const { selectedTable } = useStaffContext();
-  const [isActive, _] = useState(isMealActive);
+  const { activeOrders, fsUpdateCart, fsUpdateDisabledMealsInBranch } = useAuthContext();
+  const { selectedTable, branchInfo } = useStaffContext();
 
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
   const { docID, businessProfileID, branchID, cart, isReadyToServe } = orderSnapShot;
@@ -21,23 +19,31 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
   });
 
   const onMealStatusChange = () => {
-    const { meals: sectionMealsInfo, menuID } = sectionInfo;
-    const index = sectionMealsInfo.findIndex((meal) => meal.mealID === mealInfo.docID);
-    const updatedMeals = sectionMealsInfo;
-    updatedMeals[index].isActive = !sectionMealsInfo[index].isActive;
-
+    // change price to 0 if meal is not available
     const updatedCart = cart.map((cartMeal) => {
       if (cartMeal.mealID === mealInfo.docID && !isReadyToServe.includes(cartMeal.update))
         return { ...cartMeal, price: 0 };
 
       return cartMeal;
     });
-    if (!sectionMealsInfo[index].isActive)
+
+    const updatedDisabledMealsInBranch = branchInfo?.disabledMeals || [];
+    const index = updatedDisabledMealsInBranch?.findIndex((mealID) => mealID === mealInfo.mealID);
+
+    console.log(updatedDisabledMealsInBranch);
+
+    console.log(updatedDisabledMealsInBranch?.findIndex((mealID) => mealID === mealInfo.mealID));
+
+    if (index === -1) updatedDisabledMealsInBranch.push(mealInfo.docID);
+    if (index !== -1) {
+      updatedDisabledMealsInBranch.filter((mealID) => mealID !== mealInfo.mealID);
       mutate(() =>
         fsUpdateCart({ orderID: docID, businessProfileID, branchID, cart: updatedCart })
       );
+    }
+
     mutate(() =>
-      fsUpdateSection(menuID, sectionInfo.docID, { meals: updatedMeals }, businessProfileID)
+      fsUpdateDisabledMealsInBranch(updatedDisabledMealsInBranch, branchID, businessProfileID)
     );
   };
 
@@ -64,8 +70,8 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
     </Stack>
   );
 }
-export default ChefDisableMeal;
-ChefDisableMeal.propTypes = {
+export default ToggleMealStatus;
+ToggleMealStatus.propTypes = {
   mealInfo: PropTypes.object,
   isMealActive: PropTypes.bool,
   sectionInfo: PropTypes.object,

@@ -381,7 +381,7 @@ export function AuthProvider({ children }) {
         DEFAULT_MENU_SECTIONS.map(async (section, order) => {
           const sectionMeals = meals
             .filter((item) => item.meal.section === section)
-            .map((meal) => ({ mealID: meal.id, isActive: true }));
+            .map((meal) => meal.id);
 
           menus.map(async (menu) =>
             fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
@@ -731,6 +731,13 @@ export function AuthProvider({ children }) {
       });
     },
     [state]
+  );
+  const fsUpdateDisabledMealsInBranch = useCallback(
+    async (disabledMeals, branchID, businessProfileID = state.user.businessProfileID) => {
+      const docRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}`);
+      await updateDoc(docRef, { disabledMeals });
+    },
+    []
   );
   // ------------------------- Menu --------------------------------
   const fsGetMenu = useCallback(
@@ -1565,6 +1572,7 @@ export function AuthProvider({ children }) {
       fsAddNewBranch,
       fsUpdateBranch,
       fsDeleteBranch,
+      fsUpdateDisabledMealsInBranch,
       // ---- TABLES ----
       // fsAddBatchTablesToBranch,
       fsGetBranchTablesCount,
@@ -1678,6 +1686,7 @@ export function AuthProvider({ children }) {
       fsAddNewBranch,
       fsUpdateBranch,
       fsDeleteBranch,
+      fsUpdateDisabledMealsInBranch,
       // ---- TABLES ----
       // fsAddBatchTablesToBranch,
       // fsDeleteTable,

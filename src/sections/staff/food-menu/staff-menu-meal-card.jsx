@@ -8,7 +8,7 @@ import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
 import TextMaxLine from 'src/components/text-max-line';
 import { useStaffContext } from 'src/sections/staff/context/staff-context';
-import ChefDisableMeal from 'src/sections/staff/food-menu/chef-disable-meal';
+import ToggleMealStatus from 'src/sections/staff/food-menu/toogle-meal-status';
 import StaffMenuAddMealToCart from 'src/sections/staff/food-menu/staff-menu-add-meal-to-cart';
 
 StaffMenuMealCard.propTypes = {
@@ -84,7 +84,7 @@ function StaffMenuMealCard({ mealID, isMealActive, sectionInfo }) {
             selectedTableID={selectedTable.docID}
           />
         )}
-        <ChefDisableMeal
+        <ToggleMealStatus
           mealInfo={mealInfo}
           isMealActive={isMealActive}
           sectionInfo={sectionInfo}

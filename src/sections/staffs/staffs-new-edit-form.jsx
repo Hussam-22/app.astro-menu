@@ -62,12 +62,9 @@ export default function StaffsNewEditForm({ staffInfo }) {
 
   const {
     reset,
-    watch,
     handleSubmit,
-    formState: { isDirty, dirtyFields },
+    formState: { isDirty },
   } = methods;
-
-  const values = watch();
 
   useEffect(() => {
     if (staffInfo) {
