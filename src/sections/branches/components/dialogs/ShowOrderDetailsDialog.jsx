@@ -102,9 +102,21 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
               {fDateTime(orderDate)}
             </Typography>
           </Stack>
-          <Label variant="filled" color={orderStatus()[1]} sx={{ textTransform: 'capitalize' }}>
-            {orderStatus()[0]}
-          </Label>
+          <Stack direction="column" alignItems="flex-end">
+            <Label variant="filled" color={orderStatus()[1]} sx={{ textTransform: 'capitalize' }}>
+              {orderStatus()[0]}
+            </Label>
+            {orderInfo.isCanceled && (
+              <Stack direction="column" alignItems="flex-end">
+                <Typography variant="caption" component="div" sx={{ color: 'error.main' }}>
+                  {orderInfo.cancelReason}
+                </Typography>
+                <Typography variant="caption" component="div" sx={{ color: 'error.main' }}>
+                  {orderInfo.cancelComment}
+                </Typography>
+              </Stack>
+            )}
+          </Stack>
         </Stack>
       </DialogTitle>
       <DialogContent>

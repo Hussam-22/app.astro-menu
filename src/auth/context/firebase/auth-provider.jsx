@@ -66,6 +66,7 @@ const THIS_YEAR = new Date().getFullYear();
 const initialState = {
   user: null,
   loading: true,
+  businessProfile: null,
 };
 
 const reducer = (state, action) => {
@@ -73,6 +74,7 @@ const reducer = (state, action) => {
     return {
       loading: false,
       user: action.payload.user,
+      businessProfile: action.payload.businessProfile,
     };
   }
   return state;
@@ -109,6 +111,8 @@ export function AuthProvider({ children }) {
             const docSnap = await getDoc(userProfile);
             const profile = docSnap.data();
 
+            const businessProfile = await fsGetBusinessProfile(profile.businessProfileID);
+
             // create user profile (first time)
             if (!profile) {
               await setDoc(userProfile, { uid: user.uid, email: user.email, role: 'user' });
@@ -125,6 +129,7 @@ export function AuthProvider({ children }) {
                   ...profile,
                   id: user.uid,
                 },
+                businessProfile,
               },
             });
           } else {
@@ -1527,6 +1532,7 @@ export function AuthProvider({ children }) {
   const memoizedValue = useMemo(
     () => ({
       user: state.user,
+      businessProfile: state.businessProfile,
       method: 'firebase',
       loading: status === 'loading',
       authenticated: status === 'authenticated',

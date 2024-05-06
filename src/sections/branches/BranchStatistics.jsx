@@ -16,7 +16,7 @@ const availableYears = [...Array(yearsSince2023 + 1)].map((value, index) => 2023
 
 function BranchStatistics() {
   const { id: branchID } = useParams();
-  const { user, fsGetBranch } = useAuthContext();
+  const { user, fsGetBranch, businessProfile } = useAuthContext();
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
 
@@ -27,6 +27,8 @@ function BranchStatistics() {
     queryKey: ['branch', branchID],
     queryFn: () => fsGetBranch(branchID),
   });
+
+  console.log(businessProfile);
 
   return (
     <Grid container spacing={3}>
@@ -49,11 +51,16 @@ function BranchStatistics() {
         </Stack>
       </Grid>
       <Grid item xs={12} md={6}>
-        <ScansUsageLinear userData={user} branch={branchInfo} month={month} year={year} />
+        <ScansUsageLinear
+          userData={businessProfile}
+          branch={branchInfo}
+          month={month}
+          year={year}
+        />
       </Grid>
       <Grid item xs={12} md={6}>
         <IncomeStatistics
-          userData={user}
+          userData={businessProfile}
           branchID={branchInfo.docID}
           month={month}
           year={year}
@@ -61,10 +68,20 @@ function BranchStatistics() {
         />
       </Grid>
       <Grid item sm={12}>
-        <MostOrderedMeals userData={user} branch={branchInfo} month={month} year={year} />
+        <MostOrderedMeals
+          userData={businessProfile}
+          branch={branchInfo}
+          month={month}
+          year={year}
+        />
       </Grid>
       <Grid item sm={12}>
-        <TablesOccupation userData={user} branch={branchInfo} month={month} year={year} />
+        <TablesOccupation
+          userData={businessProfile}
+          branch={branchInfo}
+          month={month}
+          year={year}
+        />
       </Grid>
     </Grid>
   );
