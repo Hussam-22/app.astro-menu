@@ -35,7 +35,7 @@ function BottomNavModern() {
     setDrawerStates((state) => ({ ...state, [drawer]: !state[drawer] }));
   };
 
-  if (orderSnapShot?.docID === undefined) return null;
+  // if (orderSnapShot?.docID === undefined) return null;
 
   if (!branchInfo.isActive) return null;
 
@@ -72,13 +72,15 @@ function BottomNavModern() {
           sx={{ color: '#FFF' }}
           badgeContent={labels.length === 0 ? null : ''}
         />
-        <ActionButton
-          clickAction={() => toggleDrawer('cart')}
-          icon="ph:shopping-cart-simple-fill"
-          label="Cart"
-          sx={{ color: '#FFF' }}
-          badgeContent={totalCartItems || 0}
-        />
+        {orderSnapShot?.docID && (
+          <ActionButton
+            clickAction={() => toggleDrawer('cart')}
+            icon="ph:shopping-cart-simple-fill"
+            label="Cart"
+            sx={{ color: '#FFF' }}
+            badgeContent={totalCartItems || 0}
+          />
+        )}
         <ActionButton
           clickAction={() => toggleDrawer('language')}
           icon="material-symbols:language"

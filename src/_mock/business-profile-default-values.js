@@ -356,7 +356,7 @@ export const DEFAULT_MENUS = (businessProfileID) => [
     isDeleted: false,
     lastUpdatedAt: new Date(),
     lastUpdatedBy: '',
-    title: 'Default Menu',
+    title: 'Main Menu',
     businessProfileID,
   },
   {

@@ -400,15 +400,17 @@ export function AuthProvider({ children }) {
     );
 
     // 5- ADD STAFF
-    await Promise.all(
-      DEFAULT_STAFF(businessProfileID).map(async (staff, index) => {
-        const modifiedStaff = {
-          ...staff,
-          branchID: branches[0],
-        };
-        await fsAddNewStaff(modifiedStaff);
-      })
-    );
+    // eslint-disable-next-line no-unused-expressions
+    false &&
+      (await Promise.all(
+        DEFAULT_STAFF(businessProfileID).map(async (staff, index) => {
+          const modifiedStaff = {
+            ...staff,
+            branchID: branches[0],
+          };
+          await fsAddNewStaff(modifiedStaff);
+        })
+      ));
   }, []);
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
@@ -417,7 +419,17 @@ export function AuthProvider({ children }) {
   }, []);
   const fsAddBatchTablesToBranch = useCallback(
     async (branchID, businessProfileID = state.user.businessProfileID) => {
-      const MAX_ALLOWED_USER_TABLES = 25;
+      // Get Business Profile Plan
+      const businessProfileDoc = doc(DB, `/businessProfiles/${businessProfileID}`);
+      const businessProfileSnap = await getDoc(businessProfileDoc);
+      const plans = businessProfileSnap.data().planInfo;
+      const MAX_ALLOWED_USER_TABLES = plans.at(-1).limits.tables;
+
+      // Get menus
+      const menus = await fsGetAllMenus(businessProfileID);
+      console.log(menus);
+      const menuID = menus.find((menu) => menu.title === 'Main Menu')?.docID || menus[0].docID;
+
       const batch = writeBatch(DB);
 
       for (let index = 0; index <= MAX_ALLOWED_USER_TABLES; index += 1) {
@@ -426,6 +438,7 @@ export function AuthProvider({ children }) {
         );
         batch.set(newDocRef, {
           docID: newDocRef.id,
+          menuID: menuID || '',
           businessProfileID,
           branchID,
           isActive: true,
@@ -742,7 +755,6 @@ export function AuthProvider({ children }) {
           ).toLocaleTimeString()}`,
         })
       );
-      console.log(dataArr);
       return dataArr;
     },
     [state]
@@ -1277,20 +1289,20 @@ export function AuthProvider({ children }) {
     return null;
   }, []);
   const fsOrderSnapshot = useCallback(async (payload) => {
-    const { userID, branchID, tableID, menuID } = payload;
+    const { businessProfileID, branchID, tableID, menuID } = payload;
 
     await fsInitiateNewOrder({
       initiatedBy: 'customer',
       tableID,
       menuID,
       staffID: '',
-      userID,
+      businessProfileID,
       branchID,
     });
 
     const docRef = query(
       collectionGroup(DB, 'orders'),
-      where('userID', '==', userID),
+      where('businessProfileID', '==', businessProfileID),
       where('branchID', '==', branchID),
       where('tableID', '==', tableID),
       where('isPaid', '==', false),
