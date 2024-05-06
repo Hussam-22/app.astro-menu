@@ -54,8 +54,6 @@ export function StaffContextProvider({ children }) {
     enabled: staffInfo.docID !== undefined,
   });
 
-  console.log(error);
-
   const memoizedValue = useMemo(
     () => ({
       businessProfile,

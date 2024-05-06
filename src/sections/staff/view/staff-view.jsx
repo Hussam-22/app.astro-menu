@@ -39,8 +39,6 @@ function StaffView() {
       </Box>
     );
 
-  console.log(selectedTableOrder);
-
   return (
     tableInfo?.docID &&
     selectedTableOrder &&

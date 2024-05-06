@@ -50,6 +50,7 @@ function FoodMenu({ menuID }) {
         <Stack direction="column" spacing={3}>
           {menuSections
             .filter((section) => section.isActive)
+            .filter((section) => section.meals.length > 0)
             .sort((a, b) => a.order - b.order)
             .map((section) => (
               <StaffMenuSections key={section.docID} sectionInfo={section} />

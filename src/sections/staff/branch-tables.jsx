@@ -87,8 +87,6 @@ function BranchTables() {
     },
   });
 
-  console.log(error);
-
   const onTableSelect = (table) => {
     const tableOrder = activeOrders.find((order) => order.tableID === table.docID);
     if (tableOrder) {

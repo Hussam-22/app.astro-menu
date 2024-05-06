@@ -28,8 +28,6 @@ const TableOrder = () => {
     useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
 
-  console.log(orderSnapShot);
-
   const isChef = staff?.type === 'chef';
 
   const {
@@ -76,8 +74,6 @@ const TableOrder = () => {
       ),
     [availableMeals, orderSnapShot]
   );
-
-  console.log(cartMeals(0));
 
   const removeMeal = (portion) =>
     mutate(() => {

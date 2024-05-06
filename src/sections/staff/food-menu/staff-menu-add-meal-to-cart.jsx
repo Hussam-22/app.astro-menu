@@ -27,12 +27,12 @@ function StaffMenuAddMealToCart({ mealInfo, selectedTableID }) {
 
   return (
     <>
-      <Stack direction="row" alignItems="center" justifyContent="space-evenly">
-        <Typography sx={{ color: count > 0 ? 'info.main' : 'grey.600', fontWeight: '700' }}>
+      <Stack direction="row" alignItems="center">
+        <Typography sx={{ color: count > 0 ? 'default' : 'grey.300', fontWeight: '700' }}>
           {count}x
         </Typography>
-        <IconButton onClick={() => setIsOpen(true)}>
-          <Iconify icon="flat-color-icons:plus" sx={{ width: 32, height: 32 }} />
+        <IconButton onClick={() => setIsOpen(true)} sx={{ px: 0.25 }}>
+          <Iconify icon="flat-color-icons:plus" sx={{ width: 24, height: 24 }} />
         </IconButton>
       </Stack>
 

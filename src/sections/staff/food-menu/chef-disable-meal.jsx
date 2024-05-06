@@ -20,8 +20,6 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
     mutationFn: (mutateFn) => mutateFn(),
   });
 
-  console.log(error);
-
   const onMealStatusChange = () => {
     const { meals: sectionMealsInfo, menuID } = sectionInfo;
     const index = sectionMealsInfo.findIndex((meal) => meal.mealID === mealInfo.docID);
@@ -44,16 +42,19 @@ function ChefDisableMeal({ mealInfo, isMealActive, sectionInfo }) {
   };
 
   return (
-    <Stack direction="row" spacing={1} justifyContent="flex-end" alignItems="center">
+    <Stack direction="row" spacing={0} justifyContent="flex-end" alignItems="center">
       <Typography
         sx={{
-          color: isMealActive ? 'success.main' : 'error.main',
+          color: isMealActive ? 'info.main' : 'error.main',
           fontWeight: theme.typography.fontWeightBold,
         }}
+        variant="body2"
       >
         {isMealActive ? 'Available' : 'Out of Stock'}
       </Typography>
-      {mealInfo.isActive && <Switch defaultChecked={isActive} onChange={onMealStatusChange} />}
+      {mealInfo.isActive && (
+        <Switch defaultChecked={isActive} onChange={onMealStatusChange} color="info" size="small" />
+      )}
     </Stack>
   );
 }
