@@ -36,7 +36,8 @@ function MealNewEditForm({ mealInfo }) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { fsAddNewMeal, fsDeleteMeal, fsGetMealLabels, fsUpdateMeal } = useAuthContext();
+  const { fsAddNewMeal, fsDeleteMeal, fsGetMealLabels, fsUpdateMeal, fsRemoveMealFromAllSections } =
+    useAuthContext();
   const [selectedMealLabels, setSelectedMealLabels] = useState([]);
   const queryClient = useQueryClient();
 
@@ -80,8 +81,11 @@ function MealNewEditForm({ mealInfo }) {
     setValue,
     handleSubmit,
     reset,
+    watch,
     formState: { isDirty, dirtyFields, errors },
   } = methods;
+
+  const values = watch();
 
   useEffect(() => {
     if (mealInfo) {
@@ -134,12 +138,14 @@ function MealNewEditForm({ mealInfo }) {
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       queryClient.invalidateQueries(['meals']);
-      // queryClient.invalidateQueries(['meals', `meal-${mealInfo.docID}`]);
+      if (values.isActive === false) queryClient.invalidateQueries(['menu']);
     },
   });
 
+  console.log(error);
+
   const onSubmit = async (data) => {
-    if (mealInfo?.docID)
+    if (mealInfo?.docID) {
       mutate(() =>
         fsUpdateMeal(
           {
@@ -151,6 +157,11 @@ function MealNewEditForm({ mealInfo }) {
           dirtyFields.imageFile
         )
       );
+
+      // remove meal from all menus when disabled
+      if (data.isActive === false) mutate(() => fsRemoveMealFromAllSections(mealInfo.docID));
+    }
+
     if (!mealInfo?.docID) {
       mutate(() => fsAddNewMeal(data));
       router.push(paths.dashboard.meal.list);

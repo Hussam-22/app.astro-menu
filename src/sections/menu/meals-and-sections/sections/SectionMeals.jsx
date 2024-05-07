@@ -51,9 +51,8 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
     visibility: false,
   });
 
-  const sectionMeals = allMeals.filter(
-    (meal) => sectionInfo.meals.some((sectionMeal) => sectionMeal.mealID === meal.docID)
-    // sectionInfo.meals.some((sectionMeal) => sectionMeal === meal.docID)
+  const sectionMeals = allMeals.filter((meal) =>
+    sectionInfo.meals.some((sectionMeal) => sectionMeal === meal.docID)
   );
 
   const { mutate, isPending, isError } = useMutation({
@@ -94,15 +93,6 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
 
   const handleDialogIsOpenState = (dialogName, isOpen) => {
     setDialogsState((state) => ({ ...state, [dialogName]: isOpen }));
-  };
-
-  const onMealStatusChange = (mealID) => {
-    const { meals: sectionMealsInfo } = sectionInfo;
-    const index = sectionMealsInfo.findIndex((meal) => meal.mealID === mealID);
-    const updatedMeals = sectionMealsInfo;
-    updatedMeals[index].isActive = !sectionMealsInfo[index].isActive;
-
-    mutate(() => fsUpdateSection(menuID, sectionInfo.docID, { meals: updatedMeals }));
   };
 
   return (
@@ -245,46 +235,6 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                         </Label>
                       ))}
                     </Stack>
-                  </Stack>
-                  <Stack
-                    direction="column"
-                    spacing={1}
-                    alignItems="center"
-                    sx={{ maxWidth: '20%' }}
-                  >
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          color="success"
-                          disabled={!meal.isActive || !sectionInfo.isActive}
-                          checked={
-                            sectionInfo.meals.find(
-                              (sectionMeal) => sectionMeal.mealID === meal.docID
-                            )?.isActive
-                          }
-                          onChange={() => onMealStatusChange(meal.docID)}
-                        />
-                      }
-                      labelPlacement="bottom"
-                      label="Change Meal Status on menu"
-                      sx={{ textAlign: 'center' }}
-                    />
-                    {!meal.isActive && (
-                      <Label
-                        variant="filled"
-                        color="error"
-                        sx={{
-                          // position: 'absolute',
-                          // bottom: -10,
-                          // left: '50%',
-                          // transform: 'translateX(-50%)',
-                          fontSize: 11,
-                          fontWeight: '200',
-                        }}
-                      >
-                        Meal Level Disable
-                      </Label>
-                    )}
                   </Stack>
                 </Stack>
                 {sectionMeals.length > 1 && index + 1 !== sectionMeals.length && (

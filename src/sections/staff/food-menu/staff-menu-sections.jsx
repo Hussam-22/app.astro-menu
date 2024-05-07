@@ -9,8 +9,7 @@ function StaffMenuSections({ sectionInfo }) {
   const { title, meals: sectionMeals, docID: sectionID } = sectionInfo;
   const theme = useTheme();
 
-  if (sectionMeals.flatMap((mealItem) => mealItem.mealID) === undefined)
-    return <MealCardSkeleton />;
+  if (sectionMeals.map((mealItem) => mealItem) === undefined) return <MealCardSkeleton />;
 
   return (
     <Box>
@@ -28,18 +27,9 @@ function StaffMenuSections({ sectionInfo }) {
         // sx={{ borderRadius: 1, border: `dashed 1px ${theme.palette.divider}` }}
         divider={<Divider sx={{ borderStyle: 'dashed', mx: 2 }} />}
       >
-        {sectionMeals
-          .flatMap((mealItem) => mealItem.mealID)
-          .map((mealID) => (
-            <StaffMenuMealCard
-              sectionInfo={sectionInfo}
-              key={mealID}
-              mealID={mealID}
-              isMealActive={
-                sectionMeals.find((sectionMeal) => sectionMeal.mealID === mealID)?.isActive
-              }
-            />
-          ))}
+        {sectionMeals.map((mealID) => (
+          <StaffMenuMealCard sectionInfo={sectionInfo} key={mealID} mealID={mealID} />
+        ))}
       </Stack>
     </Box>
   );

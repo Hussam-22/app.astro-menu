@@ -28,13 +28,11 @@ function MenuSection({ sectionInfo }) {
   };
 
   const mealsData = useQueries({
-    queries: sectionMeals
-      .flatMap((meal) => meal.mealID)
-      .map((mealID) => ({
-        queryKey: ['meal', mealID, businessProfileID],
-        queryFn: () => fsGetMeal(mealID, '800x800', businessProfileID),
-        staleTime: Infinity,
-      })),
+    queries: sectionMeals.map((mealID) => ({
+      queryKey: ['meal', mealID, businessProfileID],
+      queryFn: () => fsGetMeal(mealID, '800x800', businessProfileID),
+      staleTime: Infinity,
+    })),
   });
 
   const filteredMeals =
@@ -45,7 +43,7 @@ function MenuSection({ sectionInfo }) {
         );
 
   // hide sections without meals
-  if (filteredMeals.filter((meal) => meal?.data?.isActive).length === 0) return null;
+  if (filteredMeals.length === 0) return null;
 
   return (
     <Box>

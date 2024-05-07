@@ -331,64 +331,57 @@ export function AuthProvider({ children }) {
   );
   const createDefaults = useCallback(async (businessProfileID) => {
     // 1- ADD MEAL LABELS
-    const mealLabels =
-      false &&
-      (await Promise.all(
-        DEFAULT_LABELS.map(async (label) => ({
-          id: await fsAddNewMealLabel(label, businessProfileID),
-          label,
-        }))
-      ));
+    const mealLabels = await Promise.all(
+      DEFAULT_LABELS.map(async (label) => ({
+        id: await fsAddNewMealLabel(label, businessProfileID),
+        label,
+      }))
+    );
 
     // 2- ADD MEALS
-    const meals =
-      false &&
-      (await Promise.all(
-        DEFAULT_MEALS(businessProfileID)
-          // .splice(0, 3)
-          .map(async (meal, index) => {
-            const modifiedMeal = {
-              ...meal,
-              cover: await fsGetImgDownloadUrl(
-                'menu-app-b268b/_mock/meals/',
-                `meal_${index + 1}_800x800.webp`
-              ),
-              mealLabels: meal.mealLabels.map(
-                (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
-              ),
-            };
-            const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
-            return {
-              id: mealID,
-              meal,
-            };
-          })
-      ));
+    const meals = await Promise.all(
+      DEFAULT_MEALS(businessProfileID)
+        // .splice(0, 3)
+        .map(async (meal, index) => {
+          const modifiedMeal = {
+            ...meal,
+            cover: await fsGetImgDownloadUrl(
+              'menu-app-b268b/_mock/meals/',
+              `meal_${index + 1}_800x800.webp`
+            ),
+            mealLabels: meal.mealLabels.map(
+              (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
+            ),
+          };
+          const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
+          return {
+            id: mealID,
+            meal,
+          };
+        })
+    );
 
     // 3- ADD MENUS
-    const menus =
-      (await false) &&
-      Promise.all(
-        DEFAULT_MENUS(businessProfileID).map(async (menu) => ({
-          id: await fsAddNewMenu(menu, businessProfileID),
-          menu,
-        }))
-      );
+    const menus = await Promise.all(
+      DEFAULT_MENUS(businessProfileID).map(async (menu) => ({
+        id: await fsAddNewMenu(menu, businessProfileID),
+        menu,
+      }))
+    );
 
     // 3- ADD MENU SECTIONS
     // eslint-disable-next-line no-unused-expressions
-    false &&
-      (await Promise.all(
-        DEFAULT_MENU_SECTIONS.map(async (section, order) => {
-          const sectionMeals = meals
-            .filter((item) => item.meal.section === section)
-            .map((meal) => meal.id);
+    await Promise.all(
+      DEFAULT_MENU_SECTIONS.map(async (section, order) => {
+        const sectionMeals = meals
+          .filter((item) => item.meal.section === section)
+          .map((meal) => meal.id);
 
-          menus.map(async (menu) =>
-            fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
-          );
-        })
-      ));
+        menus.map(async (menu) =>
+          fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
+        );
+      })
+    );
 
     // 4- ADD BRANCHES
     const branches = await Promise.all(
@@ -407,16 +400,15 @@ export function AuthProvider({ children }) {
 
     // 5- ADD STAFF
     // eslint-disable-next-line no-unused-expressions
-    false &&
-      (await Promise.all(
-        DEFAULT_STAFF(businessProfileID).map(async (staff, index) => {
-          const modifiedStaff = {
-            ...staff,
-            branchID: branches[0],
-          };
-          await fsAddNewStaff(modifiedStaff);
-        })
-      ));
+    await Promise.all(
+      DEFAULT_STAFF(businessProfileID).map(async (staff, index) => {
+        const modifiedStaff = {
+          ...staff,
+          branchID: branches[0],
+        };
+        await fsAddNewStaff(modifiedStaff);
+      })
+    );
   }, []);
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
@@ -847,10 +839,6 @@ export function AuthProvider({ children }) {
         isActive: true,
       });
 
-      console.log(
-        `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${newDocRef.id}`
-      );
-
       fbTranslate({
         text: title,
         sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${newDocRef.id}`,
@@ -904,6 +892,27 @@ export function AuthProvider({ children }) {
       await batch.commit();
     },
     [state]
+  );
+  const fsRemoveMealFromAllSections = useCallback(
+    async (mealID, businessProfileID = state?.user?.businessProfileID) => {
+      console.log(businessProfileID);
+      const docsRef = query(
+        collectionGroup(DB, 'sections'),
+        where('businessProfileID', '==', businessProfileID),
+        where('meals', 'array-contains', mealID)
+      );
+      const snapshot = await getDocs(docsRef);
+
+      const batch = writeBatch(DB);
+      snapshot.docs.forEach((doc) => {
+        console.log(doc.data());
+        const meals = doc.data().meals.filter((meal) => meal !== mealID);
+        batch.update(doc.ref, { meals });
+      });
+
+      await batch.commit();
+    },
+    []
   );
   const fsUpdateSection = useCallback(
     async (menuID, sectionID, payload, businessProfileID = state.user.businessProfileID) => {
@@ -1160,12 +1169,12 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsGetMeal = useCallback(
-    async (mealID, size = '800x800', businessProfileID = state.user.businessProfileID) => {
+    async (mealID, size = '800x800', businessProfileID = state?.user?.businessProfileID) => {
       try {
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}/meals/${mealID}/`);
         const docSnap = await getDoc(docRef);
 
-        if (docSnap.data().translation === '' || docSnap?.data()?.translation === undefined)
+        if (docSnap.data()?.translation === '' || docSnap?.data()?.translation === undefined)
           throw new Error('NO Translation Found!!');
 
         if (!docSnap.data().cover) {
@@ -1578,10 +1587,6 @@ export function AuthProvider({ children }) {
       fsUpdateTable,
       fsCreateBusinessProfile,
       createDefaults,
-      // fsQueryDoc,
-      // fsAddToDB,
-      // fsRemoveFromDB,
-      // Timestamp,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
@@ -1599,22 +1604,19 @@ export function AuthProvider({ children }) {
       fsDeleteBranch,
       fsUpdateDisabledMealsInBranch,
       // ---- TABLES ----
-      // fsAddBatchTablesToBranch,
       fsGetBranchTablesCount,
       fsGetBranchTables,
       fsUpdateBranchTable,
       fsChangeMenuForAllTables,
       fsGetTableOrdersByPeriod,
-      // fsDeleteTable,
       fsGetTableInfo,
-      // // ---- ORDERS ----
+      // ---- ORDERS ----
       fsInitiateNewOrder,
       fsOrderSnapshot,
       fsGetActiveOrdersSnapshot,
       orderSnapShot,
       activeOrders,
-      // fsGetAllOrders,
-      // // ---- MENU SECTIONS ----
+      // ---- MENU SECTIONS ----
       menuSections,
       setMenuSections,
       fsAddSection,
@@ -1625,61 +1627,37 @@ export function AuthProvider({ children }) {
       fsGetSectionMeals,
       fsDeleteSection,
       fsUpdateSectionTitle,
-      // fsAddMealToMenuSelectedMeals,
-      // fsRemoveMealFromMenuSelectedMeals,
-      // fsDeleteAllSections,
-      // fsRemoveSectionMealsFromMenuSelectedMeals,
-      // fsUpdateSectionOrder,
-      // fsUpdateSectionTranslation,
-      // fsUpdateSectionVisibility,
-      // fsUpdateSectionVisibilityDateTimeRange,
-      // deleteMenu,
-      // // ---- MENU ----
+      fsRemoveMealFromAllSections,
+      // ---- MENU ----
       fsGetAllMenus,
       fsGetMenu,
       fsAddNewMenu,
       fsUpdateMenu,
       fsDeleteMenu,
-      // fsEmptyMenuSelectedMeals,
-      // // ---- MEALS ----
+      // ---- MEALS ----
       fsGetAllMeals,
       fsGetMeal,
       fsDeleteMeal,
       fsAddNewMeal,
       fsUpdateMeal,
-      // fsDocSnapshot,
       fsGetMealLabels,
       fsAddNewMealLabel,
       fsUpdateMealLabel,
       fsDeleteMealLabel,
-      // fsUpdateAllMetaTags,
-      // fsUpdateMealMetaTags,
-      // fsRemoveTagFromAllMeals,
-      // // ---- QR Menu ----
+      // ---- QR Menu ----
       fsConfirmCartOrder,
       fsUpdateScanLog,
       fsUpdateCart,
       fsRemoveMealFromCart,
-      // fsOrdersSnapshot,
-      // fsInitiateNewOrder,
-      // // ---- Waiter ----
+      // ---- Waiter ----
       fsGetStaffLogin,
       fsGetStaffInfo,
-      // fsWaiterTablesSnapshot,
       fsUpdateOrderStatus,
-      // fsCancelOrder,
       fsOrderIsPaid,
       fsAddNewStaff,
       fsGetStaffList,
       fsUpdateStaffInfo,
       fsDeleteStaff,
-      // // ---- RTD ----
-      // dataSnapshotListener,
-      // docSnapshot,
-      // // ---- NO SIGNED IN ----
-      // fsGetAllMealsOFF,
-      // fsSendEmail,
-      // fsSendSMS,
     }),
     [
       state.isAuthenticated,
@@ -1696,9 +1674,6 @@ export function AuthProvider({ children }) {
       fsUpdateTable,
       fsCreateBusinessProfile,
       createDefaults,
-      // fsQueryDoc,
-      // fsAddToDB,
-      // fsRemoveFromDB,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
@@ -1714,48 +1689,35 @@ export function AuthProvider({ children }) {
       fsDeleteBranch,
       fsUpdateDisabledMealsInBranch,
       // ---- TABLES ----
-      // fsAddBatchTablesToBranch,
-      // fsDeleteTable,
       fsGetBranchTablesCount,
       fsGetBranchTables,
       fsUpdateBranchTable,
       fsGetTableInfo,
       fsChangeMenuForAllTables,
-      // // ---- ORDERS ----
+      // ---- ORDERS ----
       fsInitiateNewOrder,
       fsOrderSnapshot,
       fsGetActiveOrdersSnapshot,
       orderSnapShot,
       activeOrders,
-      // fsGetAllOrders,
       fsGetTableOrdersByPeriod,
-      // // ---- MENU SECTIONS ----
+      // ---- MENU SECTIONS ----
       fsAddSection,
       fsUpdateSection,
       fsGetSections,
       fsGetSection,
       fsUpdateSectionsOrder,
       fsGetSectionMeals,
-      // fsAddMealToMenuSelectedMeals,
-      // fsRemoveMealFromMenuSelectedMeals,
-      // fsDeleteAllSections,
       fsDeleteSection,
-      // fsRemoveSectionMealsFromMenuSelectedMeals,
       fsUpdateSectionTitle,
-      // fsUpdateSectionOrder,
-      // fsUpdateSectionTranslation,
-      // fsUpdateSectionVisibility,
-      // fsUpdateSectionVisibilityDateTimeRange,
-      // deleteMenu,
-      // // ---- MENU ----
+      fsRemoveMealFromAllSections,
+      // ---- MENU ----
       fsGetAllMenus,
       fsGetMenu,
       fsAddNewMenu,
       fsUpdateMenu,
       fsDeleteMenu,
-      // fsEmptyMenuSelectedMeals,
-      // fsDocSnapshot,
-      // // ---- MEALS ----
+      // ---- MEALS ----
       fsGetAllMeals,
       fsGetMeal,
       fsDeleteMeal,
@@ -1765,34 +1727,20 @@ export function AuthProvider({ children }) {
       fsAddNewMealLabel,
       fsUpdateMealLabel,
       fsDeleteMealLabel,
-      // fsUpdateAllMetaTags,
-      // fsUpdateMealMetaTags,
-      // fsRemoveTagFromAllMeals,
-      // // ---- QR Menu ----
+      // ---- QR Menu ----
       fsConfirmCartOrder,
       fsUpdateScanLog,
       fsUpdateCart,
       fsRemoveMealFromCart,
-      // fsOrdersSnapshot,
-      // fsInitiateNewOrder,
-      // // ---- Waiter ----
+      // ---- Waiter ----
       fsGetStaffLogin,
       fsGetStaffInfo,
-      // fsWaiterTablesSnapshot,
       fsUpdateOrderStatus,
-      // fsCancelOrder,
       fsOrderIsPaid,
       fsAddNewStaff,
       fsGetStaffList,
       fsUpdateStaffInfo,
       fsDeleteStaff,
-      // // ---- RTD ----
-      // dataSnapshotListener,
-      // docSnapshot,
-      // // ---- NO SIGNED IN ----
-      // fsGetAllMealsOFF,
-      // fsSendEmail,
-      // fsSendSMS,
     ]
   );
 

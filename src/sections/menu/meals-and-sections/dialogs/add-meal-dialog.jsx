@@ -37,10 +37,12 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
   const currentSectionMeals = currentSectionInfo?.meals;
   const otherSectionsMeals = menuSections
     .filter((section) => section.docID !== sectionID)
-    .flatMap((section) => section.meals.flatMap((meal) => meal.mealID))
+    .flatMap((section) => section.meals.flatMap((meal) => meal))
     .filter((mealID) => !currentSectionMeals.includes(mealID));
 
-  const sectionAvailableMeals = allMeals.filter((meal) => !otherSectionsMeals.includes(meal.docID));
+  const sectionAvailableMeals = allMeals.filter(
+    (meal) => !otherSectionsMeals.includes(meal.docID) && meal.isActive
+  );
 
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose} scroll="paper">
@@ -109,50 +111,42 @@ function MealRow({ mealInfo, currentSectionMeals, menuID, sectionID }) {
   const { fsUpdateSection } = useAuthContext();
   const queryClient = useQueryClient();
 
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      const queryKeys = [`sections-${menuID}`];
-      queryClient.invalidateQueries(queryKeys);
+      queryClient.invalidateQueries([`sections-${menuID}`]);
     },
   });
 
   const handleAddMealToSection = (mealID) => {
     // if mealID DOES exists, Remove it
-    if (currentSectionMeals.flatMap((meal) => meal.mealID).includes(mealID))
+    if (currentSectionMeals.includes(mealID))
       mutate(() =>
         fsUpdateSection(menuID, sectionID, {
-          meals: currentSectionMeals.filter((sectionMeal) => sectionMeal.mealID !== mealID),
+          meals: currentSectionMeals.filter((sectionMeal) => sectionMeal !== mealID),
         })
       );
 
     // if mealID DOES NOT exists, Add it
-    if (!currentSectionMeals.flatMap((meal) => meal.mealID).includes(mealID))
+    if (!currentSectionMeals.includes(mealID))
       mutate(() =>
         fsUpdateSection(menuID, sectionID, {
-          meals: [...currentSectionMeals, { mealID, isActive: mealInfo.isActive }],
+          meals: [...currentSectionMeals, mealID],
         })
       );
   };
 
   return (
-    <Stack direction="row" alignItems="center" spacing={1}>
+    <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between">
       <Avatar src={mealInfo.cover} sx={{ width: 32, height: 32 }} />
+      <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
+        {mealInfo.title}
+      </Typography>
 
-      <Stack direction="column" sx={{ flexGrow: 1, ml: 0, minWidth: 100 }}>
-        <Typography variant="subtitle2">{mealInfo.title}</Typography>
-        {!mealInfo.isActive && (
-          <Typography variant="caption" color="error">
-            T
-            {`his meal will not show on customers QR-Menu because it is "Hard Disabled" from "Meals" page`}
-          </Typography>
-        )}
-      </Stack>
-
-      {isPending && <CircularProgress />}
+      {isPending && <CircularProgress size={24} />}
       {!isPending && (
         <IconButton onClick={() => handleAddMealToSection(mealInfo.docID)}>
-          {currentSectionMeals.flatMap((meal) => meal.mealID)?.includes(mealInfo.docID) ? (
+          {currentSectionMeals.flatMap((meal) => meal)?.includes(mealInfo.docID) ? (
             <Iconify icon="mdi:minus-circle" width={24} height={24} sx={{ color: 'error.main' }} />
           ) : (
             <Iconify

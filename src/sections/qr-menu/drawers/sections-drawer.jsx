@@ -43,7 +43,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
   const resetHandler = () => reset();
 
   const sectionsMealsID = useMemo(
-    () => menuSections.flatMap((section) => section.meals.map((meal) => meal.mealID)),
+    () => menuSections.flatMap((section) => section.meals.map((meal) => meal)),
     [menuSections]
   );
 
@@ -59,6 +59,8 @@ function SectionsDrawer({ openState, toggleDrawer }) {
     .map((meal) => meal.data)
     .filter((meal) => !meal.isActive)
     .map((meal) => meal.docID);
+
+  console.log(inActiveMeals);
 
   return (
     <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('menu')}>
@@ -90,8 +92,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                       (section) =>
                         section.isActive &&
                         section.meals.length !== 0 &&
-                        section.meals.filter((meal) => meal.isActive).length !== 0 &&
-                        !section.meals.every((meal) => inActiveMeals.includes(meal.mealID))
+                        !section.meals.every((meal) => inActiveMeals.includes(meal))
                     )
                     .sort((a, b) => a.order - b.order)
                     .map((section) => (
