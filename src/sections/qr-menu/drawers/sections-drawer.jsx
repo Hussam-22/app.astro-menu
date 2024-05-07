@@ -60,8 +60,6 @@ function SectionsDrawer({ openState, toggleDrawer }) {
     .filter((meal) => !meal.isActive)
     .map((meal) => meal.docID);
 
-  console.log(inActiveMeals);
-
   return (
     <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('menu')}>
       <Container maxWidth="sm" sx={{ py: 3 }}>

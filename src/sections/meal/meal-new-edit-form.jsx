@@ -142,8 +142,6 @@ function MealNewEditForm({ mealInfo }) {
     },
   });
 
-  console.log(error);
-
   const onSubmit = async (data) => {
     if (mealInfo?.docID) {
       mutate(() =>

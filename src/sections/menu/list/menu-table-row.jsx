@@ -14,8 +14,6 @@ MenusTableRow.propTypes = {
 export default function MenusTableRow({ row, onEditRow }) {
   const { title, isActive, lastUpdatedAt, docID } = row;
 
-  console.log('//TODO: enable/disable menu (If seems necessary)');
-
   return (
     <TableRow hover>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>

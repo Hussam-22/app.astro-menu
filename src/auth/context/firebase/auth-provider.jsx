@@ -895,7 +895,6 @@ export function AuthProvider({ children }) {
   );
   const fsRemoveMealFromAllSections = useCallback(
     async (mealID, businessProfileID = state?.user?.businessProfileID) => {
-      console.log(businessProfileID);
       const docsRef = query(
         collectionGroup(DB, 'sections'),
         where('businessProfileID', '==', businessProfileID),
@@ -905,14 +904,13 @@ export function AuthProvider({ children }) {
 
       const batch = writeBatch(DB);
       snapshot.docs.forEach((doc) => {
-        console.log(doc.data());
         const meals = doc.data().meals.filter((meal) => meal !== mealID);
         batch.update(doc.ref, { meals });
       });
 
       await batch.commit();
     },
-    []
+    [state]
   );
   const fsUpdateSection = useCallback(
     async (menuID, sectionID, payload, businessProfileID = state.user.businessProfileID) => {
