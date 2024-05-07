@@ -133,6 +133,9 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/staffs/new`,
       manage: (id) => `${ROOTS.DASHBOARD}/staffs/${id}/manage`,
     },
+    businessProfile: {
+      manage: (id) => `${ROOTS.DASHBOARD}/business-profile/${id}/manage`,
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,

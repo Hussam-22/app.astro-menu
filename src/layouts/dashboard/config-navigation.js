@@ -8,6 +8,7 @@ import { paths } from 'src/routes/paths';
 import { useLocales } from 'src/locales';
 import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -48,12 +49,14 @@ const ICONS = {
   menu: icon('ic_menu'),
   meal: icon('ic_meal'),
   staffs: icon('ic_staffs'),
+  businessProfile: icon('ic_businessProfile'),
 };
 
 // ----------------------------------------------------------------------
 
 export function useNavData() {
   const { t } = useLocales();
+  const { businessProfile } = useAuthContext();
 
   const data = useMemo(
     () => [
@@ -110,7 +113,13 @@ export function useNavData() {
             icon: ICONS.staffs,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
-
+          // Branches
+          {
+            title: t('Business Profile'),
+            path: paths.dashboard.businessProfile.manage(businessProfile.docID),
+            icon: ICONS.businessProfile,
+            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
+          },
           // USER
           {
             title: t('user'),
@@ -327,7 +336,7 @@ export function useNavData() {
         ],
       },
     ],
-    [t]
+    [t, businessProfile]
   );
 
   return data;

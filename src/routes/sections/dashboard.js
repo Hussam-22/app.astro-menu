@@ -85,6 +85,11 @@ const StaffsListPage = lazy(() => import('src/pages/dashboard/staffs/staffs-list
 const StaffsManagePage = lazy(() => import('src/pages/dashboard/staffs/staffs-manage-page'));
 const StaffsNewPage = lazy(() => import('src/pages/dashboard/staffs/staffs-new-page'));
 
+// BUSINESS PROFILE
+const BusinessProfileManagePage = lazy(() =>
+  import('src/pages/dashboard/business-profile/branch-manage-page')
+);
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -145,6 +150,7 @@ export const dashboardRoutes = [
           { path: ':id/manage', element: <StaffsManagePage /> },
         ],
       },
+      { path: 'business-profile/:id/manage', element: <BusinessProfileManagePage /> },
 
       {
         path: 'user',
