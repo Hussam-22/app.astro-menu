@@ -107,8 +107,8 @@ export default function UploadAvatar({ error, file, disabled, helperText, sx, ..
         sx={{
           p: 1,
           m: 'auto',
-          width: 144,
-          height: 144,
+          width: 275,
+          height: 275,
           cursor: 'pointer',
           overflow: 'hidden',
           borderRadius: '50%',

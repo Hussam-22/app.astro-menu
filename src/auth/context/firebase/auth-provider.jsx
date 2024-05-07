@@ -113,6 +113,7 @@ export function AuthProvider({ children }) {
             const profile = docSnap.data();
 
             const businessProfile = await fsGetBusinessProfile(profile.businessProfileID);
+            const businessOwnerInfo = await fsGetUser(businessProfile.ownerID);
 
             // create user profile (first time)
             if (!profile) {
@@ -130,7 +131,7 @@ export function AuthProvider({ children }) {
                   ...profile,
                   id: user.uid,
                 },
-                businessProfile,
+                businessProfile: { ...businessProfile, ownerInfo: businessOwnerInfo },
               },
             });
           } else {

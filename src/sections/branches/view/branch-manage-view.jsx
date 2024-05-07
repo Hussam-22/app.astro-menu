@@ -110,12 +110,7 @@ function BranchManageView() {
               const isMatched = tab.value === currentTab;
               return (
                 isMatched && (
-                  <Box
-                    component={m.div}
-                    {...getVariant('fadeInRight')}
-                    key={tab.value}
-                    id={tab.value}
-                  >
+                  <Box component={m.div} {...getVariant('fadeInUp')} key={tab.value} id={tab.value}>
                     {tab.component}
                   </Box>
                 )

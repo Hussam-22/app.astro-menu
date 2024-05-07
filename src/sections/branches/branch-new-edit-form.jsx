@@ -155,8 +155,6 @@ export default function BranchNewEditForm({ branchInfo }) {
     },
   });
 
-  console.log(error);
-
   const onSubmit = async (formData) => {
     const shouldUpdateCover = getFieldState('cover').isDirty;
     if (branchInfo?.docID)
@@ -165,6 +163,7 @@ export default function BranchNewEditForm({ branchInfo }) {
           {
             ...formData,
             docID: branchInfo?.docID,
+            translationEdited: dirtyFields.description ? '' : branchInfo.translationEdited,
           },
           shouldUpdateCover
         );

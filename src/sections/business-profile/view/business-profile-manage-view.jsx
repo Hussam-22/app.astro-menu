@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { m } from 'framer-motion';
 import { useParams } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
 
 import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
@@ -10,45 +9,33 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import StaffLink from 'src/sections/branches/staff-link';
 import { useSettingsContext } from 'src/components/settings';
-import BranchTables from 'src/sections/branches/BranchTables';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import BranchStatistics from 'src/sections/branches/BranchStatistics';
-import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
+import BusinessProfileEditForm from 'src/sections/business-profile/business-profile-edit-form';
 
 function BusinessProfileManageView() {
   const { id: businessProfileID } = useParams();
   const theme = useTheme();
   const { themeStretch } = useSettingsContext();
-  const { fsGetBranch } = useAuthContext();
-  const [currentTab, setCurrentTab] = useState('Branch Info');
-
-  const {
-    data: branchInfo = {},
-    isFetching,
-    error,
-  } = useQuery({
-    queryKey: ['branch', businessProfileID],
-    queryFn: () => fsGetBranch(businessProfileID),
-    enabled: false,
-  });
+  const { businessProfile } = useAuthContext();
+  const [currentTab, setCurrentTab] = useState('Business Info');
 
   const TABS = [
     {
-      value: 'Branch Info',
+      value: 'Business Info',
       icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
-      component: branchInfo?.docID && <BranchNewEditForm branchInfo={branchInfo} />,
+      component: businessProfile?.docID && <BusinessProfileEditForm />,
     },
-    {
-      value: 'Tables',
-      icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
-      component: <BranchTables branchInfo={branchInfo} />,
-    },
-    {
-      value: 'Statistics',
-      icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
-      component: <BranchStatistics />,
-    },
+    // {
+    //   value: 'Tables',
+    //   icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
+    //   component: <BranchTables businessProfile={businessProfile} />,
+    // },
+    // {
+    //   value: 'Statistics',
+    //   icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
+    //   component: <BranchStatistics />,
+    // },
     {
       value: 'Staffs Dashboard Link',
       icon: (
@@ -65,11 +52,11 @@ function BusinessProfileManageView() {
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={branchInfo?.data?.title || ''}
+        heading={businessProfile?.businessName || ''}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Branches', href: paths.dashboard.branches.list },
-          { name: branchInfo?.title || '' },
+          { name: 'Business Profile' },
+          { name: businessProfile?.businessName || '' },
         ]}
         action={
           <Typography variant="caption" sx={{ color: theme.palette.grey[600] }}>
@@ -78,7 +65,7 @@ function BusinessProfileManageView() {
         }
       />
 
-      {branchInfo?.docID && (
+      {businessProfile?.docID && (
         <>
           <Tabs
             allowScrollButtonsMobile
@@ -101,17 +88,12 @@ function BusinessProfileManageView() {
 
           <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
 
-          {branchInfo?.docID &&
+          {businessProfile?.docID &&
             TABS.map((tab) => {
               const isMatched = tab.value === currentTab;
               return (
                 isMatched && (
-                  <Box
-                    component={m.div}
-                    {...getVariant('fadeInRight')}
-                    key={tab.value}
-                    id={tab.value}
-                  >
+                  <Box component={m.div} {...getVariant('fadeInUp')} key={tab.value} id={tab.value}>
                     {tab.component}
                   </Box>
                 )
