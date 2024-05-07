@@ -143,7 +143,7 @@ export default function BranchNewEditForm({ branchInfo }) {
     setValue('cover', '');
   };
 
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       queryClient.invalidateQueries(['branches']);
@@ -155,6 +155,8 @@ export default function BranchNewEditForm({ branchInfo }) {
     },
   });
 
+  console.log(error);
+
   const onSubmit = async (formData) => {
     const shouldUpdateCover = getFieldState('cover').isDirty;
     if (branchInfo?.docID)
@@ -163,8 +165,6 @@ export default function BranchNewEditForm({ branchInfo }) {
           {
             ...formData,
             docID: branchInfo?.docID,
-            translation: dirtyFields.description ? '' : branchInfo.translation,
-            translationEdited: dirtyFields.description ? '' : branchInfo.translationEdited,
           },
           shouldUpdateCover
         );

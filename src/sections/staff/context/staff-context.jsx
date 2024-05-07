@@ -19,9 +19,10 @@ export function StaffContextProvider({ children }) {
   const {
     fsGetBusinessProfile,
     fsGetBranchTables,
-    fsGetBranch,
+    fsGetBranchSnapshot,
     fsGetActiveOrdersSnapshot,
     staff: staffInfo,
+    branchSnapshot: branchInfo,
   } = useAuthContext();
   const [selectedTable, setSelectedTable] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -35,9 +36,15 @@ export function StaffContextProvider({ children }) {
 
   const branchID = staffInfo?.branchID || '';
 
-  const { data: branchInfo = {} } = useQuery({
+  // const { data: branchInfo = {} } = useQuery({
+  //   queryKey: ['branch', businessProfileID, branchID],
+  //   queryFn: () => fsGetBranch(branchID, businessProfileID),
+  //   enabled: staffInfo?.branchID !== undefined,
+  // });
+
+  const { data: branchUnsubscribe = {} } = useQuery({
     queryKey: ['branch', businessProfileID, branchID],
-    queryFn: () => fsGetBranch(branchID, businessProfileID),
+    queryFn: () => fsGetBranchSnapshot(branchID, businessProfileID),
     enabled: staffInfo?.branchID !== undefined,
   });
 
@@ -65,8 +72,17 @@ export function StaffContextProvider({ children }) {
       setIsLoading,
       waiterUnsubscribe,
       setWaiterUnsubscribe,
+      branchUnsubscribe,
     }),
-    [branchInfo, isLoading, selectedTable, tables, businessProfile, waiterUnsubscribe]
+    [
+      branchInfo,
+      isLoading,
+      selectedTable,
+      tables,
+      businessProfile,
+      waiterUnsubscribe,
+      branchUnsubscribe,
+    ]
   );
   return <StaffContext.Provider value={memoizedValue}>{children}</StaffContext.Provider>;
 }

@@ -75,14 +75,7 @@ function MenuSection({ sectionInfo }) {
           {filteredMeals
             .filter((meal) => meal.data?.isActive)
             .map((meal) => (
-              <MealCard
-                key={meal.data.docID}
-                mealInfo={meal.data}
-                isMealActive={
-                  sectionMeals.find((sectionMeal) => sectionMeal.mealID === meal.data.docID)
-                    ?.isActive
-                }
-              />
+              <MealCard key={meal.data.docID} mealInfo={meal.data} />
             ))}
         </Stack>
       </Stack>

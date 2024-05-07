@@ -13,11 +13,10 @@ import StaffMenuAddMealToCart from 'src/sections/staff/food-menu/staff-menu-add-
 
 StaffMenuMealCard.propTypes = {
   mealID: PropTypes.string,
-  isMealActive: PropTypes.bool,
   sectionInfo: PropTypes.object,
 };
 
-function StaffMenuMealCard({ mealID, isMealActive, sectionInfo }) {
+function StaffMenuMealCard({ mealID, sectionInfo }) {
   const { staff, fsGetMeal } = useAuthContext();
   const { businessProfile, branchInfo, selectedTable } = useStaffContext();
   const [selectedPortionIndex, _] = useState(0);
@@ -29,6 +28,7 @@ function StaffMenuMealCard({ mealID, isMealActive, sectionInfo }) {
   });
 
   const isChef = staff?.type === 'chef';
+  const isMealActive = !branchInfo.disabledMeals?.includes(mealInfo.docID) && mealInfo.isActive;
 
   if (!mealInfo?.docID) return null;
 

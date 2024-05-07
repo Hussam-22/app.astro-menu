@@ -12,7 +12,7 @@ import TextMaxLine from 'src/components/text-max-line';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
-function MealCard({ mealInfo, isMealActive }) {
+function MealCard({ mealInfo }) {
   const theme = useTheme();
   const { tableID } = useParams();
   const { cover, description, isNew, portions, title, translation, translationEdited } = mealInfo;
@@ -45,6 +45,8 @@ function MealCard({ mealInfo, isMealActive }) {
       }, 0) || 0,
     [mealInfo.docID, orderSnapShot.cart]
   );
+
+  const isMealActive = !branchInfo.disabledMeals?.includes(mealInfo.docID) && mealInfo.isActive;
 
   return (
     <Box sx={{ py: 1 }}>
@@ -178,8 +180,8 @@ MealCard.propTypes = {
     title: PropTypes.string,
     translation: PropTypes.object,
     translationEdited: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+    isActive: PropTypes.bool,
   }),
-  isMealActive: PropTypes.bool,
 };
 // ----------------------------------------------------------------------------
 Title.propTypes = {

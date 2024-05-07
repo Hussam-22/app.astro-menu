@@ -20,11 +20,13 @@ export function QrMenuContextProvider({ children }) {
     fsGetBusinessProfile,
     fsGetMealLabels,
     fsGetBranch,
+    fsGetBranchSnapshot,
     fsGetTableInfo,
     fsGetSections,
     fsOrderSnapshot,
     orderSnapShot,
     fsGetMenu,
+    branchSnapshot: branchInfo,
   } = useAuthContext();
   const [labels, setLabels] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -55,9 +57,9 @@ export function QrMenuContextProvider({ children }) {
     enabled: isTableInfoSuccess && tableInfo?.menuID !== undefined,
   });
 
-  const { data: branchInfo = {} } = useQuery({
+  const { data: branchUnsubscribe = {} } = useQuery({
     queryKey: ['branch', businessProfileID, branchID],
-    queryFn: () => fsGetBranch(branchID, businessProfileID),
+    queryFn: () => fsGetBranchSnapshot(branchID, businessProfileID),
     enabled: tableInfo?.docID !== undefined,
   });
 
@@ -143,6 +145,7 @@ export function QrMenuContextProvider({ children }) {
       sectionsUnsubscribe,
       orderStatus,
       menuInfo,
+      branchUnsubscribe,
       branchInfo,
     }),
     [
@@ -157,6 +160,7 @@ export function QrMenuContextProvider({ children }) {
       sectionsUnsubscribe,
       orderStatus,
       menuInfo,
+      branchUnsubscribe,
       branchInfo,
     ]
   );

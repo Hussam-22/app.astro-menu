@@ -97,6 +97,7 @@ export function AuthProvider({ children }) {
   const [orderSnapShot, setOrderSnapShot] = useState({});
   const [activeOrders, setActiveOrders] = useState([]);
   const [menuSections, setMenuSections] = useState([]);
+  const [branchSnapshot, setBranchSnapshot] = useState({});
   const [staff, setStaff] = useState({});
 
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
@@ -623,6 +624,28 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+
+  const fsGetBranchSnapshot = useCallback(
+    async (branchID, businessProfileID = state.user.businessProfileID) => {
+      const docRef = query(
+        collectionGroup(DB, 'branches'),
+        where('businessProfileID', '==', businessProfileID),
+        where('docID', '==', branchID)
+      );
+
+      const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          if (doc.exists()) {
+            setBranchSnapshot(doc.data());
+          }
+        });
+      });
+
+      return unsubscribe;
+    },
+    []
+  );
+
   const fsAddNewBranch = useCallback(
     async (branchData, businessProfileID = state.user.businessProfileID) => {
       const newDocRef = doc(collection(DB, `businessProfiles/${businessProfileID}/branches/`));
@@ -683,12 +706,12 @@ export function AuthProvider({ children }) {
         lastUpdatedAt: new Date(),
       });
 
-      if (branchData.translation === '')
-        fbTranslateBranchDesc({
-          branchRef: docRef.path,
-          text: { description: documentData.description },
-          businessProfileID,
-        });
+      // if (branchData.translation === '')
+      //   fbTranslateBranchDesc({
+      //     branchRef: docRef.path,
+      //     text: { description: documentData.description },
+      //     businessProfileID,
+      //   });
 
       if (shouldUpdateCover) {
         const storageRef = ref(
@@ -1567,7 +1590,9 @@ export function AuthProvider({ children }) {
       STORAGE,
       fsGetImgDownloadUrl,
       // ---- BRANCHES ----
+      branchSnapshot,
       fsGetBranch,
+      fsGetBranchSnapshot,
       fsGetAllBranches,
       fsAddNewBranch,
       fsUpdateBranch,
@@ -1682,6 +1707,7 @@ export function AuthProvider({ children }) {
       fsGetImgDownloadUrl,
       // ---- BRANCHES ----
       fsGetBranch,
+      fsGetBranchSnapshot,
       fsGetAllBranches,
       fsAddNewBranch,
       fsUpdateBranch,
