@@ -332,6 +332,13 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsUpdateBusinessProfile = useCallback(
+    async (payload, businessProfileID = state?.businessProfile.docID) => {
+      const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
+      await updateDoc(docRef, payload);
+    },
+    [state]
+  );
   const createDefaults = useCallback(async (businessProfileID) => {
     // 1- ADD MEAL LABELS
     const mealLabels = await Promise.all(
@@ -619,7 +626,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsGetBranchSnapshot = useCallback(
     async (branchID, businessProfileID = state.user.businessProfileID) => {
       const docRef = query(
@@ -640,7 +646,6 @@ export function AuthProvider({ children }) {
     },
     []
   );
-
   const fsAddNewBranch = useCallback(
     async (branchData, businessProfileID = state.user.businessProfileID) => {
       const newDocRef = doc(collection(DB, `businessProfiles/${businessProfileID}/branches/`));
@@ -1586,7 +1591,9 @@ export function AuthProvider({ children }) {
       setStaff,
       // ---- GENERIC ----
       fsUpdateTable,
+      // --- BUSINESS PROFILE ----
       fsCreateBusinessProfile,
+      fsUpdateBusinessProfile,
       createDefaults,
       // ---- FUNCTIONS ----
       fbTranslate,
@@ -1673,7 +1680,9 @@ export function AuthProvider({ children }) {
       setStaff,
       // ---- GENERIC ----
       fsUpdateTable,
+      // --- BUSINESS PROFILE ----
       fsCreateBusinessProfile,
+      fsUpdateBusinessProfile,
       createDefaults,
       // ---- FUNCTIONS ----
       fbTranslate,
