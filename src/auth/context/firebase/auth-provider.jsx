@@ -100,6 +100,8 @@ export function AuthProvider({ children }) {
   const [branchSnapshot, setBranchSnapshot] = useState({});
   const [staff, setStaff] = useState({});
 
+  console.log(menuSections);
+
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
   const status = state.loading ? 'loading' : checkAuthenticated;
 
