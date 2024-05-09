@@ -9,14 +9,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, Typography } from '@mui/material';
 
-import { useAuthContext } from 'src/auth/hooks';
+import { delay } from 'src/utils/promise-delay';
 import { fData } from 'src/utils/format-number';
+import { useAuthContext } from 'src/auth/hooks';
 import FormProvider, { RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 
 function BusinessProfileEditForm() {
-  const { businessProfile } = useAuthContext();
-
-  console.log(businessProfile);
+  const { businessProfile, fsUpdateBusinessProfile } = useAuthContext();
 
   const NewUserSchema = Yup.object().shape({
     // title: Yup.string().required('Menu title is required'),
@@ -74,12 +73,17 @@ function BusinessProfileEditForm() {
     setValue('cover', '');
   };
 
-  const { isPending, mutate, error } = useMutation({
+  const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {},
   });
 
-  const onSubmit = async (formData) => {};
+  const onSubmit = async (formData) => {
+    mutate(async () => {
+      await delay(1000);
+      return fsUpdateBusinessProfile(formData);
+    });
+  };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -131,8 +135,7 @@ function BusinessProfileEditForm() {
               <RHFTextField name="description" label="Description" rows={3} multiline />
               <RHFTextField name="address" label="Address" disabled />
               <RHFTextField name="country" label="Address" disabled />
-              <RHFTextField type="email" name="email" label="Account Owner Email" disabled />
-              <RHFTextField type="number" name="number" label="Contact Number" />
+              <RHFTextField type="email" name="email" label="Business Email" disabled />
             </Stack>
           </Stack>
         </Card>

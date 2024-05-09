@@ -2,6 +2,7 @@
 /* eslint-disable no-shadow */
 import PropTypes from 'prop-types';
 import { initializeApp } from 'firebase/app';
+import { useQuery } from '@tanstack/react-query';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useMemo, useState, useEffect, useReducer, useCallback } from 'react';
 import {
@@ -100,10 +101,13 @@ export function AuthProvider({ children }) {
   const [branchSnapshot, setBranchSnapshot] = useState({});
   const [staff, setStaff] = useState({});
 
-  console.log(menuSections);
-
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
   const status = state.loading ? 'loading' : checkAuthenticated;
+
+  useQuery({
+    queryKey: ['businessProfile', state.user?.businessProfileID],
+    queryFn: () => fsGetBusinessProfile(state.user?.businessProfileID),
+  });
 
   const initialize = useCallback(() => {
     try {
@@ -114,8 +118,8 @@ export function AuthProvider({ children }) {
             const docSnap = await getDoc(userProfile);
             const profile = docSnap.data();
 
-            const businessProfile = await fsGetBusinessProfile(profile.businessProfileID);
-            const businessOwnerInfo = await fsGetUser(businessProfile.ownerID);
+            // const businessProfile = await fsGetBusinessProfile(profile.businessProfileID);
+            // const businessOwnerInfo = await fsGetUser(businessProfile.ownerID);
 
             // create user profile (first time)
             if (!profile) {
@@ -133,7 +137,7 @@ export function AuthProvider({ children }) {
                   ...profile,
                   id: user.uid,
                 },
-                businessProfile: { ...businessProfile, ownerInfo: businessOwnerInfo },
+                businessProfile: {},
               },
             });
           } else {
@@ -217,16 +221,7 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-  const fsGetBusinessProfile = useCallback(async (businessProfileID) => {
-    try {
-      const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
-      const docSnapshot = await getDoc(docRef);
-      if (!docSnapshot.data()) throw Error('No Business Profile Was Returned !!');
-      return docSnapshot.data();
-    } catch (error) {
-      throw error;
-    }
-  }, []);
+
   const fsGetUsers = useCallback(async () => {
     const docRef = collection(DB, 'users');
     const queryRef = query(docRef);
@@ -246,7 +241,7 @@ export function AuthProvider({ children }) {
   const fsGetImgDownloadUrl = useCallback(async (bucketPath, imgID) => {
     // eslint-disable-next-line no-useless-catch
     try {
-      return await getDownloadURL(ref(STORAGE, `gs://${bucketPath}${imgID}`));
+      return await getDownloadURL(ref(STORAGE, `gs://${BUCKET}/${bucketPath}/${imgID}`));
     } catch (error) {
       throw error;
     }
@@ -303,6 +298,34 @@ export function AuthProvider({ children }) {
     }
   }, []);
   // ----------------------- Business Profile -------------------
+  const fsGetBusinessProfile = useCallback(
+    async (businessProfileID) => {
+      try {
+        const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
+        const docSnapshot = await getDoc(docRef);
+
+        if (!docSnapshot.data()) throw Error('No Business Profile Was Returned !!');
+
+        const businessOwnerInfo = await fsGetUser(docSnapshot.data().ownerID);
+
+        const bucketPath = `${businessProfileID}/business-profile`;
+        const logo = await fsGetImgDownloadUrl(bucketPath, 'logo_800x800.webp');
+
+        dispatch({
+          type: 'INITIAL',
+          payload: {
+            ...state,
+            businessProfile: { ...docSnapshot.data(), logo, ownerInfo: businessOwnerInfo },
+          },
+        });
+
+        return docSnapshot.data();
+      } catch (error) {
+        throw error;
+      }
+    },
+    [state]
+  );
   const fsCreateBusinessProfile = useCallback(
     async (data) => {
       try {
@@ -334,8 +357,42 @@ export function AuthProvider({ children }) {
   );
   const fsUpdateBusinessProfile = useCallback(
     async (payload, businessProfileID = state?.businessProfile.docID) => {
+      const { logo, ...rest } = payload;
       const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
-      await updateDoc(docRef, payload);
+      await updateDoc(docRef, rest);
+
+      if (payload.logo) {
+        const storageRef = ref(
+          STORAGE,
+          `gs://menu-app-b268b/${state.user.businessProfileID}/business-profile/`
+        );
+        const imageRef = ref(storageRef, 'logo.jpg');
+        const uploadTask = uploadBytesResumable(imageRef, payload.logo);
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            console.log(snapshot);
+          },
+          (error) => {
+            console.log(error);
+          },
+          () => {
+            console.log('UPLOADED');
+          }
+        );
+      }
+
+      dispatch({
+        type: 'INITIAL',
+        payload: {
+          ...state,
+          businessProfile: {
+            ...state.businessProfile,
+            ...payload,
+            ownerInfo: state.businessProfile.ownerInfo,
+          },
+        },
+      });
     },
     [state]
   );
@@ -1576,6 +1633,7 @@ export function AuthProvider({ children }) {
 
   const memoizedValue = useMemo(
     () => ({
+      dispatch,
       user: state.user,
       businessProfile: state.businessProfile,
       method: 'firebase',

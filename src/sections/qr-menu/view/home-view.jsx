@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useQuery } from '@tanstack/react-query';
 
 import {
   Box,
@@ -20,6 +21,7 @@ import { _socials } from 'src/_mock';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
+import { useAuthContext } from 'src/auth/hooks';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import LanguageDrawer from 'src/sections/qr-menu/drawers/language-drawer';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
@@ -29,10 +31,9 @@ function QRMenuHomeView() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isWifiOpen, setIsWifiOpen] = useState(false);
   const {
-    businessProfile,
+    businessProfile: { description, docID, defaultLanguage, businessName },
     branchInfo: {
       title,
-      description,
       translationEdited,
       translation,
       cover,
@@ -44,10 +45,23 @@ function QRMenuHomeView() {
     tableInfo: { title: tableTitle, isActive: isTableActive, index },
     selectedLanguage,
   } = useQrMenuContext();
+  const { fsGetImgDownloadUrl } = useAuthContext();
   const router = useRouter();
 
+  const bucketPath = `${docID}/business-profile`;
+
+  const {
+    data: business_Logo = '',
+    error,
+    isLoading,
+  } = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: ['business_Logo', docID],
+    queryFn: () => fsGetImgDownloadUrl(bucketPath, 'logo_800x800.webp'),
+  });
+
   const getDescription = () => {
-    if (selectedLanguage === businessProfile.defaultLanguage) return description;
+    if (selectedLanguage === defaultLanguage) return description;
     return translationEdited?.[selectedLanguage]?.desc
       ? translationEdited?.[selectedLanguage]?.desc
       : translation?.[selectedLanguage]?.desc;
@@ -112,12 +126,29 @@ function QRMenuHomeView() {
         </Stack>
         <Divider sx={{ borderStyle: 'dashed', my: 1 }} />
         <Stack direction="column" spacing={1}>
-          <Image src={cover} sx={{ borderRadius: 1 }} ratio="16/9" />
-          <Box>
-            <Typography variant="overline">Welcome to</Typography>
-            <Typography variant="h3">{title}</Typography>
-            <Typography variant="body2">{getDescription() || description}</Typography>
+          <Box sx={{ position: 'relative' }}>
+            <Image src={cover} sx={{ borderRadius: 1 }} ratio="16/9" />
+            {business_Logo && (
+              <Image
+                src={business_Logo}
+                sx={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 1,
+                  position: 'absolute',
+                  zindex: 1,
+                  bottom: -30,
+                  right: 10,
+                  border: `2px solid #000000`,
+                }}
+              />
+            )}
           </Box>
+          <Stack direction="column" spacing={0}>
+            <Typography variant="h3">{businessName}</Typography>
+            <Typography variant="caption">{title}</Typography>
+          </Stack>
+          <Typography variant="body2">{getDescription() || description}</Typography>
           <Button
             variant="contained"
             endIcon={<Iconify icon={isTableActive ? 'game-icons:meal' : 'zondicons:close-solid'} />}

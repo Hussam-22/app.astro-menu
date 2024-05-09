@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import { Box, Stack } from '@mui/material';
+import { Box, Stack, useTheme } from '@mui/material';
 
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
@@ -16,6 +16,7 @@ import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 // };
 
 function BottomNavModern() {
+  const theme = useTheme();
   const router = useRouter();
   const {
     orderSnapShot: { isInKitchen, isReadyToServe, cart, docID },
@@ -44,15 +45,16 @@ function BottomNavModern() {
     <Box
       sx={{
         py: 1.5,
-        height: 70,
+        height: 60,
         position: 'fixed',
         bottom: 0,
         left: '50%',
-        bgcolor: 'grey.900',
+        bgcolor: 'grey.100',
         width: 'inherit',
         maxWidth: 'inherit',
         transform: 'translateX(-50%)',
-        borderRadius: '25px 25px 0 0',
+        // borderRadius: '25px 25px 0 0',
+        border: `solid 1px ${theme.palette.grey[300]}`,
       }}
     >
       <Stack
@@ -64,13 +66,13 @@ function BottomNavModern() {
           clickAction={() => router.push('.')}
           icon="ph:arrow-fat-left-fill"
           label="Home"
-          sx={{ color: '#FFF' }}
+          sx={{ color: '#000' }}
         />
         <ActionButton
           clickAction={() => toggleDrawer('menu')}
           icon="mdi:food"
           label="Menu"
-          sx={{ color: '#FFF' }}
+          sx={{ color: '#000' }}
           badgeContent={labels.length === 0 ? null : ''}
         />
         {docID && (
@@ -78,7 +80,7 @@ function BottomNavModern() {
             clickAction={() => toggleDrawer('cart')}
             icon="ph:shopping-cart-simple-fill"
             label="Cart"
-            sx={{ color: '#FFF' }}
+            sx={{ color: '#000' }}
             badgeContent={totalCartItems || 0}
           />
         )}
@@ -86,7 +88,7 @@ function BottomNavModern() {
           clickAction={() => toggleDrawer('language')}
           icon="material-symbols:language"
           label={LANGUAGE_CODES[selectedLanguage].value}
-          sx={{ color: '#FFF' }}
+          sx={{ color: '#000' }}
         />
       </Stack>
 

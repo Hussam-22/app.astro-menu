@@ -1,5 +1,8 @@
-import { Box, Stack, Button, Typography } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 
+import { Box, Stack, Button, Divider, useTheme, Typography } from '@mui/material';
+
+import Image from 'src/components/image';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
@@ -7,9 +10,26 @@ import MenuSection from 'src/sections/qr-menu/menu-section';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 function QrMenuView() {
-  const { menuSections } = useAuthContext();
-  const { tableInfo, branchInfo } = useQrMenuContext();
+  const theme = useTheme();
+  const { menuSections, fsGetImgDownloadUrl } = useAuthContext();
+  const {
+    tableInfo,
+    branchInfo,
+    businessProfile: { docID, businessName },
+  } = useQrMenuContext();
   const router = useRouter();
+
+  const bucketPath = `${docID}/business-profile`;
+
+  const {
+    data: business_Logo = '',
+    error,
+    isLoading,
+  } = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: ['business_Logo', docID],
+    queryFn: () => fsGetImgDownloadUrl(bucketPath, 'logo_800x800.webp'),
+  });
 
   if (!branchInfo.isActive && branchInfo.isActive !== undefined)
     return (
@@ -57,7 +77,29 @@ function QrMenuView() {
     );
 
   return (
-    <Stack direction="column" spacing={3} sx={{ py: 5 }}>
+    <Stack direction="column" spacing={2} sx={{ py: 5 }}>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        {business_Logo && (
+          <Image
+            src={business_Logo}
+            sx={{
+              width: 72,
+              height: 72,
+              borderRadius: 1,
+              border: `2px solid #000000`,
+            }}
+          />
+        )}
+        <Stack direction="column">
+          <Typography variant="h4">{businessName}</Typography>
+          <Typography variant="caption">{branchInfo.title}</Typography>
+        </Stack>
+      </Stack>
+      <Divider
+        orientation="horizontal"
+        flexItem
+        sx={{ border: `dashed 1px ${theme.palette.divider}` }}
+      />
       {menuSections
         .filter((section) => section.isActive)
         .sort((a, b) => a.order - b.order)
