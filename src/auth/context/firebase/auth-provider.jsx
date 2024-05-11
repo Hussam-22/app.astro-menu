@@ -639,7 +639,7 @@ export function AuthProvider({ children }) {
       asyncOperations.push(asyncOperation());
     });
 
-    await Promise.allSettled(asyncOperations);
+    await Promise.all(asyncOperations);
 
     return dataArr;
   }, [state]);
@@ -1154,7 +1154,7 @@ export function AuthProvider({ children }) {
         if (imageFile && imageIsDirty) {
           const storageRef = ref(
             STORAGE,
-            `gs://${state.user.businessProfileID}/meals/${payload.docID}/`
+            `gs://${BUCKET}/${state.user.businessProfileID}/meals/${payload.docID}/`
           );
           const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
           const imageRef = ref(storageRef, `${payload.docID}.${fileExtension}`);
@@ -1162,9 +1162,15 @@ export function AuthProvider({ children }) {
           const uploadTask = uploadBytesResumable(imageRef, imageFile);
           uploadTask.on(
             'state_changed',
-            (snapshot) => {},
-            (error) => {},
-            () => {}
+            (snapshot) => {
+              console.log(snapshot.bytesTransferred);
+            },
+            (error) => {
+              console.log(error);
+            },
+            () => {
+              console.log('Successfully Uploaded');
+            }
           );
         }
 

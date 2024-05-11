@@ -118,8 +118,8 @@ function MealNewEditForm({ mealInfo }) {
       });
 
       if (file) {
-        setValue('cover', URL.createObjectURL(file));
-        setValue('imageFile', newFile, {
+        setValue('imageFile', URL.createObjectURL(file));
+        setValue('cover', newFile, {
           shouldValidate: true,
           isTouched: true,
           isFocused: true,
@@ -131,7 +131,7 @@ function MealNewEditForm({ mealInfo }) {
   );
 
   const handleRemoveFile = useCallback(() => {
-    setValue('imageFile', null, { isTouched: true, isFocused: true, shouldDirty: true });
+    setValue('cover', null, { isTouched: true, isFocused: true, shouldDirty: true });
   }, [setValue]);
 
   const { isPending, mutate, error } = useMutation({
@@ -204,7 +204,7 @@ function MealNewEditForm({ mealInfo }) {
         <Grid container spacing={2}>
           <Grid xs={12}>
             <RHFUpload
-              name="imageFile"
+              name="cover"
               maxSize={3145728}
               onDrop={handleDrop}
               onDelete={handleRemoveFile}
