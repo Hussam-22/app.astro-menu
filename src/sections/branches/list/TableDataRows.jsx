@@ -19,7 +19,7 @@ const THIS_MONTH = new Date().getMonth();
 
 export default function TableDataRows({ row, onEditRow }) {
   const { user } = useAuthContext();
-  const { title, imgUrl, isActive, docID } = row;
+  const { title, cover, isActive, docID } = row;
 
   const ordersCount =
     user.statisticsSummary?.branches[docID]?.orders?.[THIS_YEAR]?.[THIS_MONTH] || 0;
@@ -34,7 +34,7 @@ export default function TableDataRows({ row, onEditRow }) {
         <Image
           disabledEffect
           alt={title}
-          src={imgUrl}
+          src={cover}
           sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}
         />
 

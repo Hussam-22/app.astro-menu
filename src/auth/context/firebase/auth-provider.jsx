@@ -362,10 +362,7 @@ export function AuthProvider({ children }) {
       await updateDoc(docRef, rest);
 
       if (payload.logo) {
-        const storageRef = ref(
-          STORAGE,
-          `gs://menu-app-b268b/${state.user.businessProfileID}/business-profile/`
-        );
+        const storageRef = ref(STORAGE, `gs://${state.user.businessProfileID}/business-profile/`);
         const imageRef = ref(storageRef, 'logo.jpg');
         const uploadTask = uploadBytesResumable(imageRef, payload.logo);
         uploadTask.on(
@@ -412,10 +409,7 @@ export function AuthProvider({ children }) {
         .map(async (meal, index) => {
           const modifiedMeal = {
             ...meal,
-            cover: await fsGetImgDownloadUrl(
-              'menu-app-b268b/_mock/meals/',
-              `meal_${index + 1}_800x800.webp`
-            ),
+            cover: await fsGetImgDownloadUrl('_mock/meals/', `meal_${index + 1}_800x800.webp`),
             mealLabels: meal.mealLabels.map(
               (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
             ),
@@ -455,10 +449,7 @@ export function AuthProvider({ children }) {
       DEFAULT_BRANCHES(businessProfileID).map(async (branch, index) => {
         const modifiedBranch = {
           ...branch,
-          cover: await fsGetImgDownloadUrl(
-            'menu-app-b268b/_mock/branches/',
-            `branch-${index + 1}_800x800.webp`
-          ),
+          cover: await fsGetImgDownloadUrl('_mock/branches', `branch-${index + 1}_800x800.webp`),
         };
         const branchID = await fsAddNewBranch(modifiedBranch, businessProfileID);
         return branchID;
@@ -634,24 +625,21 @@ export function AuthProvider({ children }) {
 
     querySnapshot.forEach((element) => {
       const asyncOperation = async () => {
-        let imgUrl = '';
+        let cover = '';
 
         if (element.data().cover) {
-          imgUrl = element.data().cover;
-          dataArr.push({ ...element.data(), imgUrl });
+          dataArr.push(element.data());
         } else {
-          const bucket = `menu-app-b268b/${state.user.businessProfileID}/branches/${
-            element.data().docID
-          }/`;
-          imgUrl = await fsGetImgDownloadUrl(bucket, `cover_800x800.webp`);
+          const path = `${state.user.businessProfileID}/branches/${element.data().docID}`;
+          cover = await fsGetImgDownloadUrl(path, `cover_200x200.webp`);
 
-          dataArr.push({ ...element.data(), imgUrl });
+          dataArr.push({ ...element.data(), cover });
         }
       };
       asyncOperations.push(asyncOperation());
     });
 
-    await Promise.all(asyncOperations);
+    await Promise.allSettled(asyncOperations);
 
     return dataArr;
   }, [state]);
@@ -669,7 +657,7 @@ export function AuthProvider({ children }) {
             lastUpdatedAt: new Date(docSnap.data().lastUpdatedAt.seconds * 1000).toDateString(),
           };
 
-        const bucketPath = `${BUCKET}/${businessProfileID}/branches/${branchID}/`;
+        const bucketPath = `${businessProfileID}/branches/${branchID}`;
         const imgUrl = await fsGetImgDownloadUrl(bucketPath, 'cover_800x800.webp');
 
         return {
@@ -727,7 +715,7 @@ export function AuthProvider({ children }) {
       if (imageFile) {
         const storageRef = ref(
           STORAGE,
-          `gs://menu-app-b268b/${state.user.businessProfileID}/branches/${newDocRef.id}/`
+          `gs://${state.user.businessProfileID}/branches/${newDocRef.id}/`
         );
         const imageRef = ref(storageRef, 'cover.jpg');
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
@@ -757,23 +745,27 @@ export function AuthProvider({ children }) {
     ) => {
       const docRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchData.docID}`);
       const { cover: imageFile, ...documentData } = branchData;
+
       await updateDoc(docRef, {
         ...documentData,
-        lastUpdatedBy: businessProfileID,
-        lastUpdatedAt: new Date(),
       });
 
-      // if (branchData.translation === '')
-      //   fbTranslateBranchDesc({
-      //     branchRef: docRef.path,
-      //     text: { description: documentData.description },
-      //     businessProfileID,
-      //   });
+      const updateMealData =
+        imageFile && shouldUpdateCover
+          ? {
+              ...branchData,
+              cover: '',
+              lastUpdatedBy: businessProfileID,
+              lastUpdatedAt: new Date(),
+            }
+          : { ...branchData, lastUpdatedBy: businessProfileID, lastUpdatedAt: new Date() };
+
+      await updateDoc(docRef, updateMealData);
 
       if (shouldUpdateCover) {
         const storageRef = ref(
           STORAGE,
-          `gs://menu-app-b268b/${businessProfileID}/branches/${branchData.docID}/`
+          `gs://${BUCKET}/${businessProfileID}/branches/${branchData.docID}/`
         );
 
         const files = await listAll(storageRef);
@@ -801,10 +793,7 @@ export function AuthProvider({ children }) {
       );
       await deleteDoc(docRef);
 
-      const storageRef = ref(
-        STORAGE,
-        `gs://menu-app-b268b/${state.user.businessProfileID}/branches/${branchID}/`
-      );
+      const storageRef = ref(STORAGE, `gs://${state.user.businessProfileID}/branches/${branchID}/`);
       const files = await listAll(storageRef);
       files.items.forEach((file) => {
         deleteObject(file);
@@ -1064,7 +1053,7 @@ export function AuthProvider({ children }) {
 
       querySnapshot.forEach((element) => {
         const asyncOperation = async () => {
-          const bucket = `menu-app-b268b/${businessProfileID}/meals/${element.data().docID}/`;
+          const bucket = `${businessProfileID}/meals/${element.data().docID}/`;
           const cover = await fsGetImgDownloadUrl(bucket, `${element.data().docID}_${size}.webp`);
 
           dataArr.push({ ...element.data(), cover });
@@ -1135,10 +1124,7 @@ export function AuthProvider({ children }) {
       });
 
       if (imageFile) {
-        const storageRef = ref(
-          STORAGE,
-          `gs://menu-app-b268b/${businessProfileID}/meals/${newDocRef.id}/`
-        );
+        const storageRef = ref(STORAGE, `gs://${businessProfileID}/meals/${newDocRef.id}/`);
         const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
         const imageRef = ref(storageRef, `${newDocRef.id}.${fileExtension}`);
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
@@ -1168,7 +1154,7 @@ export function AuthProvider({ children }) {
         if (imageFile && imageIsDirty) {
           const storageRef = ref(
             STORAGE,
-            `gs://menu-app-b268b/${state.user.businessProfileID}/meals/${payload.docID}/`
+            `gs://${state.user.businessProfileID}/meals/${payload.docID}/`
           );
           const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
           const imageRef = ref(storageRef, `${payload.docID}.${fileExtension}`);
@@ -1211,7 +1197,7 @@ export function AuthProvider({ children }) {
           try {
             if (element.data().cover) dataArr.push(element.data());
             if (!element.data().cover) {
-              const bucket = `menu-app-b268b/${businessProfileID}/meals/${element.data().docID}/`;
+              const bucket = `${businessProfileID}/meals/${element.data().docID}`;
               const cover = await fsGetImgDownloadUrl(
                 bucket,
                 `${element.data().docID}_200x200.webp`
@@ -1241,7 +1227,7 @@ export function AuthProvider({ children }) {
           throw new Error('NO Translation Found!!');
 
         if (!docSnap.data().cover) {
-          const bucketPath = `${BUCKET}/${businessProfileID}/meals/${mealID}/`;
+          const bucketPath = `${businessProfileID}/meals/${mealID}`;
           const imgUrl = await fsGetImgDownloadUrl(bucketPath, `${mealID}_${size}.webp`);
           return {
             ...docSnap.data(),

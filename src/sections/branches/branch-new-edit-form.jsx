@@ -163,7 +163,6 @@ export default function BranchNewEditForm({ branchInfo }) {
           {
             ...formData,
             docID: branchInfo?.docID,
-            translationEdited: dirtyFields.description ? '' : branchInfo.translationEdited,
           },
           shouldUpdateCover
         );
@@ -211,7 +210,7 @@ export default function BranchNewEditForm({ branchInfo }) {
             Cover Image
           </Typography>
           <RHFUpload
-            name="imgUrl"
+            name="cover"
             maxSize={3145728}
             onDrop={handleDrop}
             onRemove={handelRemove}
