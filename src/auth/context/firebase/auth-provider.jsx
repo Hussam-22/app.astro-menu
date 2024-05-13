@@ -330,7 +330,7 @@ export function AuthProvider({ children }) {
     async (data) => {
       try {
         // 1- REGISTER OWNER
-        const { email, password, firstName, lastName, ...businessProfileInfo } = data;
+        const { email, password, firstName, lastName, description, ...businessProfileInfo } = data;
         const ownerID = await register?.(email, password, firstName, lastName);
 
         // 2- CREATE BUSINESS PROFILE
@@ -346,6 +346,8 @@ export function AuthProvider({ children }) {
 
         const businessProfileID = newDocRef.id;
 
+        await fbTranslateBranchDesc({ text: description, businessProfileID });
+
         // 3- Update Assign Business-Profile to User
         const userProfile = doc(collection(DB, 'users'), ownerID);
         await updateDoc(userProfile, { businessProfileID });
@@ -356,13 +358,16 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateBusinessProfile = useCallback(
-    async (payload, businessProfileID = state?.businessProfile.docID) => {
-      const { logo, ...rest } = payload;
+    async (
+      payload,
+      shouldUpdateTranslation = false,
+      businessProfileID = state?.businessProfile.docID
+    ) => {
       const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
-      await updateDoc(docRef, rest);
+      await updateDoc(docRef, payload);
 
       if (payload.logo) {
-        const storageRef = ref(STORAGE, `gs://${state.user.businessProfileID}/business-profile/`);
+        const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
         const imageRef = ref(storageRef, 'logo.jpg');
         const uploadTask = uploadBytesResumable(imageRef, payload.logo);
         uploadTask.on(
@@ -378,6 +383,9 @@ export function AuthProvider({ children }) {
           }
         );
       }
+
+      if (shouldUpdateTranslation)
+        await fbTranslateBranchDesc({ text: payload.description, businessProfileID });
 
       dispatch({
         type: 'INITIAL',
@@ -711,12 +719,6 @@ export function AuthProvider({ children }) {
       });
 
       await fsAddBatchTablesToBranch(newDocRef.id, businessProfileID);
-
-      // fbTranslateBranchDesc({
-      //   branchRef: newDocRef.path,
-      //   text: { description: documentData.description },
-      //   userID: state.user.businessProfileID,
-      // });
 
       if (imageFile) {
         const storageRef = ref(
@@ -1648,7 +1650,6 @@ export function AuthProvider({ children }) {
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
-      fbTranslateBranchDesc,
       // ---- STORAGE ----
       STORAGE,
       fsGetImgDownloadUrl,
@@ -1737,7 +1738,6 @@ export function AuthProvider({ children }) {
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
-      fbTranslateBranchDesc,
       // ---- STORAGE ----
       fsGetImgDownloadUrl,
       // ---- BRANCHES ----

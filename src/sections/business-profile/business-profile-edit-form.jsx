@@ -47,7 +47,7 @@ function BusinessProfileEditForm() {
     watch,
     setValue,
     handleSubmit,
-    formState: { isDirty },
+    formState: { isDirty, dirtyFields },
   } = methods;
 
   const values = watch();
@@ -81,6 +81,7 @@ function BusinessProfileEditForm() {
   const onSubmit = async (formData) => {
     mutate(async () => {
       await delay(1000);
+      if (dirtyFields.description) return fsUpdateBusinessProfile(formData, true);
       return fsUpdateBusinessProfile(formData);
     });
   };
