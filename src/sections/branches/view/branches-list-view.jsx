@@ -77,8 +77,6 @@ export default function BranchesListView() {
     queryFn: () => fsGetAllBranches(),
   });
 
-  console.log(tableData);
-
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
     setPage(0);
