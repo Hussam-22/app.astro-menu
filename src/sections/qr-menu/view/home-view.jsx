@@ -48,13 +48,11 @@ function QRMenuHomeView() {
   const { fsGetImgDownloadUrl } = useAuthContext();
   const router = useRouter();
 
+  console.log({ homeView: cover });
+
   const bucketPath = `${docID}/business-profile`;
 
-  const {
-    data: business_Logo = '',
-    error,
-    isLoading,
-  } = useQuery({
+  const { data: business_Logo = '' } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['business_Logo', docID],
     queryFn: () => fsGetImgDownloadUrl(bucketPath, 'logo_800x800.webp'),

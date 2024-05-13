@@ -42,8 +42,6 @@ function QrMenuLayout({ children }) {
     theme
   );
 
-  console.log(orderStatus);
-
   return (
     <Box
       component="main"

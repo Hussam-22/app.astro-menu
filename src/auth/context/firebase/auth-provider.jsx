@@ -673,18 +673,23 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsGetBranchSnapshot = useCallback(
-    async (branchID, businessProfileID = state.user.businessProfileID) => {
+    async (branchID, businessProfileID = state?.user?.businessProfileID) => {
       const docRef = query(
         collectionGroup(DB, 'branches'),
         where('businessProfileID', '==', businessProfileID),
         where('docID', '==', branchID)
       );
 
-      const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          if (doc.exists()) {
-            setBranchSnapshot(doc.data());
+      const unsubscribe = onSnapshot(docRef, async (querySnapshot) => {
+        querySnapshot.forEach((element) => {
+          async function processElement() {
+            const bucketPath = `${businessProfileID}/branches/${element.data().docID}`;
+            setBranchSnapshot({
+              ...element.data(),
+              cover: await fsGetImgDownloadUrl(bucketPath, `cover_800x800.webp`),
+            });
           }
+          processElement();
         });
       });
 
