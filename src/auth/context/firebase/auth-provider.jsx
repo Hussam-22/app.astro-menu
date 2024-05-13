@@ -346,7 +346,11 @@ export function AuthProvider({ children }) {
 
         const businessProfileID = newDocRef.id;
 
-        await fbTranslateBranchDesc({ text: description, businessProfileID });
+        await fbTranslateBranchDesc({
+          description,
+          title: businessProfileInfo.businessName,
+          businessProfileID,
+        });
 
         // 3- Update Assign Business-Profile to User
         const userProfile = doc(collection(DB, 'users'), ownerID);
@@ -385,7 +389,11 @@ export function AuthProvider({ children }) {
       }
 
       if (shouldUpdateTranslation)
-        await fbTranslateBranchDesc({ text: payload.description, businessProfileID });
+        await fbTranslateBranchDesc({
+          description: payload.description,
+          title: payload.businessName,
+          businessProfileID,
+        });
 
       dispatch({
         type: 'INITIAL',

@@ -12,6 +12,7 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 import BusinessProfileEditForm from 'src/sections/business-profile/business-profile-edit-form';
+import BusinessProfileTranslation from 'src/sections/business-profile/business-profile-translation';
 
 function BusinessProfileManageView() {
   const { id: businessProfileID } = useParams();
@@ -25,6 +26,11 @@ function BusinessProfileManageView() {
       value: 'Business Info',
       icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
       component: businessProfile?.docID && <BusinessProfileEditForm />,
+    },
+    {
+      value: 'Description Translation',
+      icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
+      component: businessProfile?.docID && <BusinessProfileTranslation />,
     },
     // {
     //   value: 'Tables',
