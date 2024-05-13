@@ -68,14 +68,14 @@ export default function DialogAddComment({
 
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose} scroll="paper">
-      <DialogContent sx={{ p: 3 }}>
+      <DialogContent sx={{ p: 2 }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={1} direction="column" sx={{ textAlign: 'center' }}>
             <Typography variant="h5">{mealTitle}</Typography>
-            <Image src={mealInfo.cover} sx={{ borderRadius: 1, mb: 2, height: 300 }} ratio="21/9" />
+            <Image src={mealInfo.cover} sx={{ borderRadius: 1, height: 200 }} ratio="21/9" />
             <RHFRadioGroup
+              spacing={-1}
               name="portion"
-              // label="Select Meal Size/Portion"
               options={mealInfo.portions.map((portion, index) => ({
                 value: index,
                 label: `${portion.portionSize} - ${portion.gram}gram - ${portion.price} ${branchInfo.currency}`,

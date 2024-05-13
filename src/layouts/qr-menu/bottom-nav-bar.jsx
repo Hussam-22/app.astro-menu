@@ -45,7 +45,7 @@ function BottomNavModern() {
     <Box
       sx={{
         py: 1.5,
-        height: 60,
+        height: 70,
         position: 'fixed',
         bottom: 0,
         left: '50%',
@@ -55,22 +55,23 @@ function BottomNavModern() {
         transform: 'translateX(-50%)',
         // borderRadius: '25px 25px 0 0',
         border: `solid 1px ${theme.palette.grey[300]}`,
+        background: theme.palette.background.paper,
       }}
     >
       <Stack
         direction="row"
         spacing={-1}
-        sx={{ display: 'flex', justifyContent: 'space-around', my: 0.85, position: 'relative' }}
+        sx={{ display: 'flex', justifyContent: 'space-around', position: 'relative', pb: 0.5 }}
       >
         <ActionButton
           clickAction={() => router.push('.')}
-          icon="ph:arrow-fat-left-fill"
+          icon="/assets/icons/qr-menu/arrow-left.svg"
           label="Home"
           sx={{ color: '#000' }}
         />
         <ActionButton
           clickAction={() => toggleDrawer('menu')}
-          icon="mdi:food"
+          icon="/assets/icons/qr-menu/food-menu.svg"
           label="Menu"
           sx={{ color: '#000' }}
           badgeContent={labels.length === 0 ? null : ''}
@@ -78,15 +79,15 @@ function BottomNavModern() {
         {docID && (
           <ActionButton
             clickAction={() => toggleDrawer('cart')}
-            icon="ph:shopping-cart-simple-fill"
-            label="Cart"
+            icon="/assets/icons/qr-menu/bill.svg"
+            label="Bill"
             sx={{ color: '#000' }}
             badgeContent={totalCartItems || 0}
           />
         )}
         <ActionButton
           clickAction={() => toggleDrawer('language')}
-          icon="material-symbols:language"
+          icon="/assets/icons/qr-menu/language.svg"
           label={LANGUAGE_CODES[selectedLanguage].value}
           sx={{ color: '#000' }}
         />
