@@ -1,10 +1,18 @@
 import PropTypes from 'prop-types';
+import { useQueryClient } from '@tanstack/react-query';
 
 // @mui
-import { Link, TableRow, TableCell, Typography, ListItemText } from '@mui/material';
+import {
+  Link,
+  TableRow,
+  TableCell,
+  Typography,
+  ListItemText,
+  CircularProgress,
+} from '@mui/material';
 
-import Label from 'src/components/label';
 import Image from 'src/components/image';
+import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
 import { fCurrency } from 'src/utils/format-number';
 
@@ -20,6 +28,7 @@ const THIS_MONTH = new Date().getMonth();
 export default function TableDataRows({ row, onEditRow }) {
   const { user } = useAuthContext();
   const { title, cover, isActive, docID } = row;
+  const queryClient = useQueryClient();
 
   const ordersCount =
     user.statisticsSummary?.branches[docID]?.orders?.[THIS_YEAR]?.[THIS_MONTH] || 0;
@@ -28,15 +37,24 @@ export default function TableDataRows({ row, onEditRow }) {
   const thisMonthScans =
     user?.statisticsSummary?.branches[docID]?.scans?.[THIS_YEAR]?.[THIS_MONTH] || 0;
 
+  if (!cover)
+    setTimeout(() => {
+      queryClient.invalidateQueries(['branches']);
+    }, 5000);
+
   return (
     <TableRow hover>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Image
-          disabledEffect
-          alt={title}
-          src={cover}
-          sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}
-        />
+        {cover ? (
+          <Image
+            disabledEffect
+            alt={title}
+            src={cover}
+            sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}
+          />
+        ) : (
+          <CircularProgress sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }} />
+        )}
 
         <ListItemText
           primary={

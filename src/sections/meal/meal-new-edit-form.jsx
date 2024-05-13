@@ -138,6 +138,7 @@ function MealNewEditForm({ mealInfo }) {
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       queryClient.invalidateQueries(['meals']);
+      queryClient.invalidateQueries(['meal', mealInfo.docID]);
       if (values.isActive === false) queryClient.invalidateQueries(['menu']);
     },
   });
@@ -155,7 +156,7 @@ function MealNewEditForm({ mealInfo }) {
           dirtyFields.imageFile
         )
       );
-
+      reset(data);
       // remove meal from all menus when disabled
       if (data.isActive === false) mutate(() => fsRemoveMealFromAllSections(mealInfo.docID));
     }

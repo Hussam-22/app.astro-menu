@@ -625,20 +625,21 @@ export function AuthProvider({ children }) {
 
     querySnapshot.forEach((element) => {
       const asyncOperation = async () => {
-        let cover = '';
-
-        if (element.data().cover) {
-          dataArr.push(element.data());
-        } else {
-          const path = `${state.user.businessProfileID}/branches/${element.data().docID}`;
-          cover = await fsGetImgDownloadUrl(path, `cover_200x200.webp`);
-
-          dataArr.push({ ...element.data(), cover });
+        try {
+          if (element.data().cover) dataArr.push(element.data());
+          if (!element.data().cover) {
+            const bucketPath = `${state.user.businessProfileID}/branches/${element.data().docID}`;
+            const cover = await fsGetImgDownloadUrl(bucketPath, `cover_200x200.webp`);
+            dataArr.push({ ...element.data(), cover });
+          }
+        } catch (error) {
+          // Handle the case where cover is not available
+          dataArr.push({ ...element.data(), cover: undefined });
+          throw new Error(`Cover not available for meal with ID: ${element.data().docID}`);
         }
       };
       asyncOperations.push(asyncOperation());
     });
-
     await Promise.allSettled(asyncOperations);
 
     return dataArr;
@@ -1154,7 +1155,7 @@ export function AuthProvider({ children }) {
         if (imageFile && imageIsDirty) {
           const storageRef = ref(
             STORAGE,
-            `gs://${state.user.businessProfileID}/meals/${payload.docID}/`
+            `gs://${BUCKET}/${state.user.businessProfileID}/meals/${payload.docID}/`
           );
           const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
           const imageRef = ref(storageRef, `${payload.docID}.${fileExtension}`);
