@@ -7,7 +7,6 @@ import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/m
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import StaffLink from 'src/sections/branches/staff-link';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
@@ -28,30 +27,9 @@ function BusinessProfileManageView() {
       component: businessProfile?.docID && <BusinessProfileEditForm />,
     },
     {
-      value: 'Description Translation',
-      icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
+      value: 'Translation',
+      icon: <Iconify icon="ph:globe-light" width={20} height={20} />,
       component: businessProfile?.docID && <BusinessProfileTranslation />,
-    },
-    // {
-    //   value: 'Tables',
-    //   icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
-    //   component: <BranchTables businessProfile={businessProfile} />,
-    // },
-    // {
-    //   value: 'Statistics',
-    //   icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
-    //   component: <BranchStatistics />,
-    // },
-    {
-      value: 'Staffs Dashboard Link',
-      icon: (
-        <Iconify
-          icon="streamline:food-kitchenware-chef-toque-hat-cook-gear-chef-cooking-nutrition-tools-clothes-hat-clothing-food"
-          width={20}
-          height={20}
-        />
-      ),
-      component: <StaffLink />,
     },
   ];
 

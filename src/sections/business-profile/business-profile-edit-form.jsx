@@ -45,13 +45,10 @@ function BusinessProfileEditForm() {
   });
 
   const {
-    watch,
     setValue,
     handleSubmit,
     formState: { isDirty, dirtyFields },
   } = methods;
-
-  const values = watch();
 
   const handleDrop = useCallback(
     (acceptedFiles) => {
