@@ -35,7 +35,7 @@ export default function BranchNewEditForm({ branchInfo }) {
   const theme = useTheme();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const { fsAddNewBranch, fsDeleteBranch, fsUpdateBranch } = useAuthContext();
+  const { fsAddNewBranch, fsDeleteBranch, fsUpdateBranch, businessProfile } = useAuthContext();
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useSWR(`https://restcountries.com/v3.1/all`, fetcher);
@@ -84,7 +84,7 @@ export default function BranchNewEditForm({ branchInfo }) {
       allowSelfOrder: !!branchInfo?.allowSelfOrder,
       cover: branchInfo?.cover || '',
       imgUrl: branchInfo?.cover || null,
-      defaultLanguage: branchInfo?.defaultLanguage || 'en',
+      defaultLanguage: branchInfo?.defaultLanguage || businessProfile.defaultLanguage,
       currency: branchInfo?.currency || '',
       taxValue: branchInfo?.taxValue || 0,
       email: branchInfo.email || '',
@@ -102,7 +102,7 @@ export default function BranchNewEditForm({ branchInfo }) {
         // useMasterLinks: branchInfo?.socialLinks?.useMasterLinks || false,
       },
     }),
-    [branchInfo]
+    [branchInfo, businessProfile]
   );
 
   const methods = useForm({
@@ -178,6 +178,13 @@ export default function BranchNewEditForm({ branchInfo }) {
     router.push(paths.dashboard.branches.list);
   };
 
+  const availableLanguages =
+    (businessProfile?.languages &&
+      Object.entries(LANGUAGE_CODES).filter((code) =>
+        [...businessProfile.languages, businessProfile.defaultLanguage].includes(code[0])
+      )) ||
+    [];
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={2} direction="row" sx={{ justifyContent: 'flex-end', mb: 2 }}>
@@ -232,7 +239,7 @@ export default function BranchNewEditForm({ branchInfo }) {
                 </RHFSelect>
               )}
               <RHFSelect name="defaultLanguage" label="Default Menu Language">
-                {Object.entries(LANGUAGE_CODES).map((code) => (
+                {availableLanguages.map((code) => (
                   <MenuItem key={code[1].name} value={code[0]}>
                     {code[1].value}
                   </MenuItem>

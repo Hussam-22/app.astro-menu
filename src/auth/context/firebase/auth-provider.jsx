@@ -118,9 +118,6 @@ export function AuthProvider({ children }) {
             const docSnap = await getDoc(userProfile);
             const profile = docSnap.data();
 
-            // const businessProfile = await fsGetBusinessProfile(profile.businessProfileID);
-            // const businessOwnerInfo = await fsGetUser(businessProfile.ownerID);
-
             // create user profile (first time)
             if (!profile) {
               await setDoc(userProfile, { uid: user.uid, email: user.email, role: 'user' });
@@ -137,7 +134,7 @@ export function AuthProvider({ children }) {
                   ...profile,
                   id: user.uid,
                 },
-                businessProfile: {},
+                businessProfile: state?.businessProfile || {},
               },
             });
           } else {
@@ -366,12 +363,13 @@ export function AuthProvider({ children }) {
     async (
       payload,
       shouldUpdateTranslation = false,
+      isLogoDirty,
       businessProfileID = state?.businessProfile.docID
     ) => {
       const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
       await updateDoc(docRef, payload);
 
-      if (payload.logo) {
+      if (isLogoDirty) {
         const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
         const imageRef = ref(storageRef, 'logo.jpg');
         const uploadTask = uploadBytesResumable(imageRef, payload.logo);
@@ -389,7 +387,15 @@ export function AuthProvider({ children }) {
         );
       }
 
-      if (shouldUpdateTranslation)
+      const isLanguagesEqual =
+        JSON.stringify(payload.languages.sort()) ===
+        JSON.stringify(state?.businessProfile.languages.sort());
+
+      if (!isLanguagesEqual) {
+        await fsBatchUpdateBusinessProfileLanguages();
+      }
+
+      if (shouldUpdateTranslation && isLanguagesEqual)
         await fbTranslateBranchDesc({
           title: payload.businessName,
           desc: payload.description,
@@ -485,6 +491,41 @@ export function AuthProvider({ children }) {
       })
     );
   }, []);
+  const fsBatchUpdateBusinessProfileLanguages = useCallback(
+    async (businessProfileID = state.businessProfile.docID) => {
+      const sectionsRef = query(
+        collectionGroup(DB, 'sections'),
+        where('businessProfileID', '==', businessProfileID)
+      );
+
+      const promisesArray = [];
+
+      const sectionsSnapshot = await getDocs(sectionsRef);
+      sectionsSnapshot.forEach((section) => {
+        const syncOperation = async () => {
+          const { docID, title, businessProfileID, menuID } = section.data();
+          promisesArray.push(
+            await fbTranslate({
+              sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${docID}`,
+              text: title,
+            })
+          );
+        };
+        syncOperation();
+      });
+
+      await Promise.allSettled(promisesArray);
+
+      const businessProfileRef = doc(DB, `/businessProfiles/${businessProfileID}`);
+      await updateDoc(businessProfileRef, {
+        translationEditUsage: {
+          ...(state.businessProfile?.translationEditUsage || {}),
+          [THIS_MONTH]: increment(+1),
+        },
+      });
+    },
+    [state]
+  );
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
     const docRef = doc(DB, docPath);
@@ -500,7 +541,6 @@ export function AuthProvider({ children }) {
 
       // Get menus
       const menus = await fsGetAllMenus(businessProfileID);
-      console.log(menus);
       const menuID = menus.find((menu) => menu.title === 'Main Menu')?.docID || menus[0].docID;
 
       const batch = writeBatch(DB);
@@ -1656,6 +1696,7 @@ export function AuthProvider({ children }) {
       fsCreateBusinessProfile,
       fsUpdateBusinessProfile,
       createDefaults,
+      fsBatchUpdateBusinessProfileLanguages,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
@@ -1744,6 +1785,7 @@ export function AuthProvider({ children }) {
       fsCreateBusinessProfile,
       fsUpdateBusinessProfile,
       createDefaults,
+      fsBatchUpdateBusinessProfileLanguages,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,

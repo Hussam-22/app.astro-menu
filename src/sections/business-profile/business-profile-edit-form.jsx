@@ -9,21 +9,47 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, Typography } from '@mui/material';
 
-import { fData } from 'src/utils/format-number';
+import Iconify from 'src/components/iconify';
 import { delay } from 'src/utils/promise-delay';
+import { fData } from 'src/utils/format-number';
 import { useAuthContext } from 'src/auth/hooks';
-import FormProvider, { RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
+import { LANGUAGE_CODES } from 'src/locales/languageCodes';
+import { LANGUAGES } from 'src/_mock/translation-languages';
+import FormProvider, {
+  RHFTextField,
+  RHFMultiSelect,
+  RHFUploadAvatar,
+} from 'src/components/hook-form';
+
+// ----------------------------------------------------------------------------
+
+const OPTIONS = LANGUAGES.map((language) => ({
+  value: language.code,
+  label: language.languageName,
+})).sort((a, b) => a.label.localeCompare(b.label));
 
 function BusinessProfileEditForm() {
-  const { businessProfile, fsUpdateBusinessProfile } = useAuthContext();
+  const { businessProfile, fsUpdateBusinessProfile, fsBatchUpdateBusinessProfileLanguages } =
+    useAuthContext();
   const queryClient = useQueryClient();
+  const maxLanguages = businessProfile.planInfo.at(-1).limits.languages;
 
   const NewUserSchema = Yup.object().shape({
     // title: Yup.string().required('Menu title is required'),
     // imgUrl: Yup.mixed().required('Cover Image is required'),
     // defaultLanguage: Yup.string().required('Menu Default Language is required'),
     // currency: Yup.string().required('Menu Default Language is required'),
+    languages: Yup.array()
+      .min(1, 'Choose at least one option')
+      .max(maxLanguages, `max ${maxLanguages} translation languages allowed in your plan`),
   });
+
+  const availableLanguages =
+    (businessProfile?.languages &&
+      Object.entries(LANGUAGE_CODES).filter((code) =>
+        [...businessProfile.languages, businessProfile.defaultLanguage].includes(code[0])
+      )) ||
+    [];
 
   const defaultValues = useMemo(
     () => ({
@@ -33,6 +59,7 @@ function BusinessProfileEditForm() {
       country: !!businessProfile?.country,
       address: businessProfile?.address || '',
       languages: businessProfile?.languages || [],
+      defaultLanguage: businessProfile?.defaultLanguage || '',
       logo: businessProfile?.logo || '',
       isActive: !!businessProfile?.isActive,
     }),
@@ -71,18 +98,21 @@ function BusinessProfileEditForm() {
     setValue('cover', '');
   };
 
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       queryClient.invalidateQueries(['businessProfile', businessProfile?.docID]);
     },
   });
 
+  console.log(error);
+
   const onSubmit = async (formData) => {
     mutate(async () => {
       await delay(1000);
-      if (dirtyFields.description) return fsUpdateBusinessProfile(formData, true);
-      return fsUpdateBusinessProfile(formData);
+
+      if (dirtyFields.description) return fsUpdateBusinessProfile(formData, true, dirtyFields.logo);
+      return fsUpdateBusinessProfile(formData, false, dirtyFields.logo);
     });
   };
 
@@ -138,6 +168,33 @@ function BusinessProfileEditForm() {
               <RHFTextField name="country" label="Address" disabled />
               <RHFTextField type="email" name="email" label="Business Email" disabled />
             </Stack>
+          </Stack>
+        </Card>
+        <Card sx={{ p: 3 }}>
+          <Stack spacing={2}>
+            <Typography variant="h6">Languages</Typography>
+            <Stack direction="column" spacing={1} alignItems="flex-start">
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ pl: 0.5 }}>
+                <Iconify icon="dashicons:warning" sx={{ color: 'error.main' }} />
+                <Typography variant="caption" sx={{ color: 'error.main' }}>
+                  Making any changes to the languages will reset all custom translations edits for
+                  all meals, sections, business description and title
+                </Typography>
+              </Stack>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ pl: 0.5 }}>
+                <Iconify icon="dashicons:warning" sx={{ color: 'error.main' }} />
+                <Typography variant="caption" sx={{ color: 'error.main' }}>
+                  You can only change the languages list 3 times a month to avoid excessive usage
+                </Typography>
+              </Stack>
+            </Stack>
+            <RHFMultiSelect
+              chip
+              checkbox
+              name="languages"
+              label="Translation Languages"
+              options={OPTIONS}
+            />
           </Stack>
         </Card>
       </Stack>
