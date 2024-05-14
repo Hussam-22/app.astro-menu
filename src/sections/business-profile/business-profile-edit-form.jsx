@@ -2,20 +2,21 @@ import * as Yup from 'yup';
 // form
 import { useForm } from 'react-hook-form';
 import { useMemo, useCallback } from 'react';
-import { useMutation } from '@tanstack/react-query';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // @mui
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, Typography } from '@mui/material';
 
-import { delay } from 'src/utils/promise-delay';
 import { fData } from 'src/utils/format-number';
+import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider, { RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 
 function BusinessProfileEditForm() {
   const { businessProfile, fsUpdateBusinessProfile } = useAuthContext();
+  const queryClient = useQueryClient();
 
   const NewUserSchema = Yup.object().shape({
     // title: Yup.string().required('Menu title is required'),
@@ -75,7 +76,9 @@ function BusinessProfileEditForm() {
 
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
-    onSuccess: () => {},
+    onSuccess: () => {
+      queryClient.invalidateQueries(['businessProfile', businessProfile?.docID]);
+    },
   });
 
   const onSubmit = async (formData) => {
@@ -133,7 +136,7 @@ function BusinessProfileEditForm() {
             </Stack>
             <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
               <RHFTextField name="businessName" label="Business Name" disabled />
-              <RHFTextField name="description" label="Description" rows={3} multiline />
+              <RHFTextField name="description" label="Description" rows={5} multiline />
               <RHFTextField name="address" label="Address" disabled />
               <RHFTextField name="country" label="Address" disabled />
               <RHFTextField type="email" name="email" label="Business Email" disabled />

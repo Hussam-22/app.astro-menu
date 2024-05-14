@@ -28,10 +28,9 @@ export default function TranslationTextField({
   direction = 'row',
   data,
 }) {
-  console.log('//TODO: Fix buttons status on save and reset');
   const { id } = useParams();
   const location = useLocation();
-  const { user, fsUpdateTable } = useAuthContext();
+  const { user, fsUpdateTable, businessProfile } = useAuthContext();
   const queryClient = useQueryClient();
 
   const translationData = {
@@ -47,8 +46,8 @@ export default function TranslationTextField({
         table: 'menu-sections',
         docRef: `users/${user.id}/menus/${id}/sections/${data.docID}`,
       };
-    if (location.pathname.includes('branch'))
-      return { table: 'branches', docRef: `users/${user.id}/branches/${id}` };
+    if (location.pathname.includes('business-profile'))
+      return { table: 'businessProfiles', docRef: `businessProfiles/${businessProfile.docID}/` };
     return undefined;
   };
 
@@ -87,8 +86,8 @@ export default function TranslationTextField({
         queryClient.invalidateQueries(queryKeys);
       }
 
-      if (tableToUpdate().table === 'branches') {
-        const queryKeys = ['branches', `branch-${id}`];
+      if (tableToUpdate().table === 'businessProfiles') {
+        const queryKeys = ['businessProfiles', businessProfile.docID];
         queryClient.invalidateQueries(queryKeys);
       }
 
@@ -115,6 +114,7 @@ export default function TranslationTextField({
         [`translationEdited.${languageKey}.${field}`]: formData[field],
       })
     );
+    reset({ [field]: translationData.translated });
   };
 
   return (

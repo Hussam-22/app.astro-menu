@@ -15,20 +15,32 @@ function QrMenuView() {
   const {
     tableInfo,
     branchInfo,
-    businessProfile: { docID, businessName },
+    businessProfile: {
+      docID,
+      businessName,
+      defaultLanguage,
+      description,
+      translationEdited,
+      translation,
+    },
+    selectedLanguage,
   } = useQrMenuContext();
   const router = useRouter();
 
   const bucketPath = `${docID}/business-profile`;
 
-  const {
-    data: business_Logo = '',
-    error,
-    isLoading,
-  } = useQuery({
+  const getTitle = () => {
+    if (selectedLanguage === defaultLanguage) return businessName;
+    return translationEdited?.[selectedLanguage]?.title
+      ? translationEdited?.[selectedLanguage]?.title
+      : translation?.[selectedLanguage]?.title;
+  };
+
+  const { data: business_Logo = '' } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['business_Logo', docID],
     queryFn: () => fsGetImgDownloadUrl(bucketPath, 'logo_800x800.webp'),
+    enabled: !!docID,
   });
 
   if (!branchInfo.isActive && branchInfo.isActive !== undefined)
@@ -91,7 +103,7 @@ function QrMenuView() {
           />
         )}
         <Stack direction="column">
-          <Typography variant="h4">{businessName}</Typography>
+          <Typography variant="h4">{getTitle()}</Typography>
           <Typography variant="caption">{branchInfo.title}</Typography>
         </Stack>
       </Stack>

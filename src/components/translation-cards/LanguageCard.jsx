@@ -23,7 +23,10 @@ export default function LanguageCard({
 }) {
   return (
     <Card>
-      <CardHeader title={LANGUAGE_CODES[languageKey].value} sx={{ color: 'primary.main' }} />
+      <CardHeader
+        title={`${LANGUAGE_CODES[languageKey].value} (${LANGUAGE_CODES[languageKey].name})`}
+        sx={{ color: 'primary.main' }}
+      />
       <Stack direction="column" spacing={3} sx={{ p: 2 }}>
         {showTitleField && (
           <TranslationTextField field="title" label="Title" languageKey={languageKey} data={data} />

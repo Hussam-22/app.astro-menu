@@ -31,24 +31,20 @@ function QRMenuHomeView() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isWifiOpen, setIsWifiOpen] = useState(false);
   const {
-    businessProfile: { description, docID, defaultLanguage, businessName },
-    branchInfo: {
-      title,
+    businessProfile: {
+      description,
+      docID,
+      defaultLanguage,
+      businessName,
       translationEdited,
       translation,
-      cover,
-      wifiPassword,
-      isActive: isBranchActive,
-      email,
-      number,
     },
+    branchInfo: { title, cover, wifiPassword, isActive: isBranchActive, email, number },
     tableInfo: { title: tableTitle, isActive: isTableActive, index },
     selectedLanguage,
   } = useQrMenuContext();
   const { fsGetImgDownloadUrl } = useAuthContext();
   const router = useRouter();
-
-  console.log({ homeView: cover });
 
   const bucketPath = `${docID}/business-profile`;
 
@@ -56,6 +52,7 @@ function QRMenuHomeView() {
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['business_Logo', docID],
     queryFn: () => fsGetImgDownloadUrl(bucketPath, 'logo_800x800.webp'),
+    enabled: !!docID,
   });
 
   const getDescription = () => {
@@ -63,6 +60,13 @@ function QRMenuHomeView() {
     return translationEdited?.[selectedLanguage]?.desc
       ? translationEdited?.[selectedLanguage]?.desc
       : translation?.[selectedLanguage]?.desc;
+  };
+
+  const getTitle = () => {
+    if (selectedLanguage === defaultLanguage) return businessName;
+    return translationEdited?.[selectedLanguage]?.title
+      ? translationEdited?.[selectedLanguage]?.title
+      : translation?.[selectedLanguage]?.title;
   };
 
   if (!isBranchActive && isBranchActive !== undefined)
@@ -143,7 +147,7 @@ function QRMenuHomeView() {
             )}
           </Box>
           <Stack direction="column" spacing={0}>
-            <Typography variant="h3">{businessName}</Typography>
+            <Typography variant="h3">{getTitle()}</Typography>
             <Typography variant="caption">{title}</Typography>
           </Stack>
           <Typography variant="body2">{getDescription() || description}</Typography>

@@ -35,7 +35,7 @@ function LanguageDrawer({ openState, toggleDrawer }) {
         alignItems="left"
       >
         {businessProfile?.languages.length !== 0 &&
-          businessProfile.languages.map((language) => (
+          [...businessProfile.languages, businessProfile.defaultLanguage].map((language) => (
             <LanguageButton toggleDrawer={toggleDrawer} code={language} key={language} />
           ))}
       </Stack>

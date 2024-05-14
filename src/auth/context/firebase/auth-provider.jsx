@@ -337,6 +337,7 @@ export function AuthProvider({ children }) {
         const newDocRef = doc(collection(DB, `businessProfiles`));
         await setDoc(newDocRef, {
           ...businessProfileInfo,
+          defaultLanguage: businessProfileInfo?.defaultLanguage || 'en',
           docID: newDocRef.id,
           ownerID,
           users: [],
@@ -347,8 +348,8 @@ export function AuthProvider({ children }) {
         const businessProfileID = newDocRef.id;
 
         await fbTranslateBranchDesc({
-          description,
           title: businessProfileInfo.businessName,
+          desc: description,
           businessProfileID,
         });
 
@@ -390,8 +391,8 @@ export function AuthProvider({ children }) {
 
       if (shouldUpdateTranslation)
         await fbTranslateBranchDesc({
-          description: payload.description,
           title: payload.businessName,
+          desc: payload.description,
           businessProfileID,
         });
 

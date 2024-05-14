@@ -8,8 +8,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import { useTheme } from '@mui/material/styles';
-import { Box, Stack, Button, Dialog, Divider, Typography, DialogTitle } from '@mui/material';
+import { Stack, Button, Dialog, Divider, Typography } from '@mui/material';
 
+import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 
 import Iconify from '../iconify';
@@ -26,12 +27,12 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
   const theme = useTheme();
   const queryClient = useQueryClient();
   const { pathname } = useLocation();
-  const { fsUpdateMeal, fsUpdateBranch } = useAuthContext();
+  const { fsUpdateMeal, fsUpdateBusinessProfile, businessProfile } = useAuthContext();
 
-  const tableToUpdate = pathname.includes('meal') ? 'meals' : 'branches';
+  const tableToUpdate = pathname.includes('meal') ? 'meals' : 'businessProfile';
 
   const NewUserSchema = Yup.object().shape({
-    title: Yup.string().required('Title cant be empty'),
+    title: showTitle && Yup.string().required('Title cant be empty'),
     description: Yup.string().required('Description cant be empty'),
   });
 
@@ -50,10 +51,10 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
 
   const {
     handleSubmit,
-    formState: { isSubmitting, isDirty },
+    formState: { isDirty },
   } = methods;
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       if (tableToUpdate === 'meals') {
@@ -61,17 +62,17 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
         queryClient.invalidateQueries(queryKeys);
       }
 
-      if (tableToUpdate === 'branches') {
-        const queryKeys = data?.docID ? ['branches', `branch-${data.docID}`] : ['branches'];
+      if (tableToUpdate === 'businessProfile') {
+        const queryKeys = ['businessProfile', businessProfile.docID];
         queryClient.invalidateQueries(queryKeys);
       }
     },
   });
 
   const onSubmit = async (formData) => {
-    mutate(() => {
+    mutate(async () => {
       if (tableToUpdate === 'meals')
-        fsUpdateMeal({
+        await fsUpdateMeal({
           docID: data.docID,
           title: formData.title,
           description: formData.description,
@@ -79,54 +80,61 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
           translation: '',
         });
 
-      if (tableToUpdate === 'branches')
-        fsUpdateBranch({
-          docID: data.docID,
-          description: formData.description,
-          translationEdited: '',
-          translation: '',
-        });
+      if (tableToUpdate === 'businessProfile')
+        await fsUpdateBusinessProfile(
+          {
+            businessName: businessProfile.businessName,
+            description: formData.description,
+            translationEdited: '',
+            translation: '',
+          },
+          true,
+          businessProfile.docID
+        );
+      await delay(5000);
+      onClose();
     });
-    onClose();
   };
   return (
-    <Dialog fullWidth maxWidth="md" open={isOpen} onClose={onClose} scroll="paper">
-      <DialogTitle sx={{ mb: 2 }}>Edit Title & Description</DialogTitle>
-
+    <Dialog
+      fullWidth
+      maxWidth="md"
+      open={isOpen}
+      onClose={onClose}
+      scroll="paper"
+      PaperProps={{ sx: { p: 3 } }}
+    >
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Stack direction="column" spacing={3} sx={{ py: 2, px: 2 }}>
+        <Stack direction="column" spacing={3}>
           {showTitle && <RHFTextField name="title" label="Title" />}
           <RHFTextField name="description" label="Description" multiline row={3} />
         </Stack>
 
         <Divider />
 
-        <Box sx={{ py: 2, px: 2 }}>
-          <Stack direction="row" spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
-            <Iconify
-              icon="ep:warning-filled"
-              width={20}
-              height={20}
-              sx={{ color: theme.palette.error.main }}
-            />
-            <Typography variant="caption" sx={{ flexGrow: 1 }}>
-              Editing meal title or description will overwrite current translations for all
-              languages
-            </Typography>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              color="success"
-              loading={isSubmitting}
-              disabled={!isDirty}
-            >
-              Save
-            </LoadingButton>
-            <Button color="inherit" variant="outlined" onClick={onClose}>
-              close
-            </Button>
-          </Stack>
-        </Box>
+        <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 1 }}>
+          <Iconify
+            icon="ep:warning-filled"
+            width={20}
+            height={20}
+            sx={{ color: theme.palette.error.main }}
+          />
+          <Typography variant="caption" sx={{ flexGrow: 1 }}>
+            Editing title or description will overwrite current translations for all languages
+          </Typography>
+          <Button color="inherit" variant="outlined" onClick={onClose}>
+            close
+          </Button>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="success"
+            loading={isPending}
+            disabled={!isDirty}
+          >
+            Save
+          </LoadingButton>
+        </Stack>
       </FormProvider>
     </Dialog>
   );

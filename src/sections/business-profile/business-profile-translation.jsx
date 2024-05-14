@@ -22,14 +22,11 @@ function BusinessProfileTranslation() {
     setIsOpenModal(false);
   };
 
-  // if (isFetching) return <TranslationCardSkeleton languageKeys={languageKeys} />;
-
   return (
     <Stack spacing={3}>
       <Card>
         <CardHeader
-          title="Branch About Text"
-          sx={{ color: 'info.main' }}
+          title={businessProfile.businessName}
           action={
             <Tooltip title="Edit">
               <IconButton color="info" size="small" onClick={() => setIsOpenModal(true)}>
@@ -39,7 +36,8 @@ function BusinessProfileTranslation() {
           }
         />
         <Box sx={{ p: 3, pt: 1 }}>
-          <Typography>{businessProfile.description}</Typography>
+          <Typography variant="h6" />
+          <Typography variant="body2">{businessProfile.description}</Typography>
         </Box>
       </Card>
       {languageKeys
@@ -48,7 +46,7 @@ function BusinessProfileTranslation() {
           <LanguageCard
             languageKey={key}
             key={key}
-            showTitleField={false}
+            showTitleField
             reduxSlice="branch"
             data={businessProfile}
           />
