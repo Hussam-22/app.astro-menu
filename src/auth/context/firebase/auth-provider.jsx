@@ -367,7 +367,7 @@ export function AuthProvider({ children }) {
       businessProfileID = state?.businessProfile.docID
     ) => {
       try {
-        const { languages, ...data } = payload;
+        const { languages, logo, ...data } = payload;
 
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
         await updateDoc(docRef, data);
@@ -383,7 +383,7 @@ export function AuthProvider({ children }) {
         if (isLogoDirty) {
           const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
           const imageRef = ref(storageRef, 'logo.jpg');
-          const uploadTask = uploadBytesResumable(imageRef, payload.logo);
+          const uploadTask = uploadBytesResumable(imageRef, logo);
           uploadTask.on(
             'state_changed',
             (snapshot) => {
@@ -1743,7 +1743,6 @@ export function AuthProvider({ children }) {
       fsCreateBusinessProfile,
       fsUpdateBusinessProfile,
       createDefaults,
-      fsBatchUpdateBusinessProfileLanguages,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
@@ -1832,7 +1831,6 @@ export function AuthProvider({ children }) {
       fsCreateBusinessProfile,
       fsUpdateBusinessProfile,
       createDefaults,
-      fsBatchUpdateBusinessProfileLanguages,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,

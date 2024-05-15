@@ -11,8 +11,9 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, Typography } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
-import { useAuthContext } from 'src/auth/hooks';
+import { delay } from 'src/utils/promise-delay';
 import { fData } from 'src/utils/format-number';
+import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGES } from 'src/_mock/translation-languages';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import FormProvider, {
@@ -67,6 +68,7 @@ function BusinessProfileEditForm() {
   const {
     setValue,
     handleSubmit,
+    reset: resetForm,
     formState: { isDirty, dirtyFields },
   } = methods;
 
@@ -95,6 +97,7 @@ function BusinessProfileEditForm() {
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       queryClient.invalidateQueries(['businessProfile', businessProfile?.docID]);
+      enqueueSnackbar('Update success!');
     },
   });
 
@@ -107,14 +110,10 @@ function BusinessProfileEditForm() {
     if (error?.message) setIsOpen(true);
   }, [error?.message]);
 
-  console.log(error?.message);
-
   const onSubmit = async (formData) => {
     mutate(async () => {
-      // await delay(1000);
-
-      if (dirtyFields.description) return fsUpdateBusinessProfile(formData, true, dirtyFields.logo);
-      return fsUpdateBusinessProfile(formData, false, dirtyFields.logo);
+      await delay(1000);
+      await fsUpdateBusinessProfile(formData, dirtyFields.description, dirtyFields.logo);
     });
   };
 

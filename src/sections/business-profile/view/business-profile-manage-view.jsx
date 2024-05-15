@@ -44,7 +44,7 @@ function BusinessProfileManageView() {
         ]}
         action={
           <Typography variant="caption" sx={{ color: theme.palette.grey[600] }}>
-            ID: {businessProfileID}
+            ID: {businessProfile?.docID}
           </Typography>
         }
       />
