@@ -366,53 +366,59 @@ export function AuthProvider({ children }) {
       isLogoDirty,
       businessProfileID = state?.businessProfile.docID
     ) => {
-      const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
-      await updateDoc(docRef, payload);
+      try {
+        const { languages, ...data } = payload;
 
-      if (isLogoDirty) {
-        const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
-        const imageRef = ref(storageRef, 'logo.jpg');
-        const uploadTask = uploadBytesResumable(imageRef, payload.logo);
-        uploadTask.on(
-          'state_changed',
-          (snapshot) => {
-            console.log(snapshot);
+        const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
+        await updateDoc(docRef, data);
+
+        const isLanguagesEqual =
+          JSON.stringify(payload.languages.sort()) ===
+          JSON.stringify(state?.businessProfile.languages.sort());
+
+        if (!isLanguagesEqual) {
+          await fsBatchUpdateBusinessProfileLanguages(languages);
+        }
+
+        if (isLogoDirty) {
+          const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
+          const imageRef = ref(storageRef, 'logo.jpg');
+          const uploadTask = uploadBytesResumable(imageRef, payload.logo);
+          uploadTask.on(
+            'state_changed',
+            (snapshot) => {
+              console.log(snapshot);
+            },
+            (error) => {
+              console.log(error);
+            },
+            () => {
+              console.log('UPLOADED');
+            }
+          );
+        }
+
+        if (shouldUpdateTranslation && isLanguagesEqual)
+          await fbTranslateBranchDesc({
+            title: payload.businessName,
+            desc: payload.description,
+            businessProfileID,
+          });
+
+        dispatch({
+          type: 'INITIAL',
+          payload: {
+            ...state,
+            businessProfile: {
+              ...state.businessProfile,
+              ...payload,
+              ownerInfo: state.businessProfile.ownerInfo,
+            },
           },
-          (error) => {
-            console.log(error);
-          },
-          () => {
-            console.log('UPLOADED');
-          }
-        );
-      }
-
-      const isLanguagesEqual =
-        JSON.stringify(payload.languages.sort()) ===
-        JSON.stringify(state?.businessProfile.languages.sort());
-
-      if (!isLanguagesEqual) {
-        await fsBatchUpdateBusinessProfileLanguages();
-      }
-
-      if (shouldUpdateTranslation && isLanguagesEqual)
-        await fbTranslateBranchDesc({
-          title: payload.businessName,
-          desc: payload.description,
-          businessProfileID,
         });
-
-      dispatch({
-        type: 'INITIAL',
-        payload: {
-          ...state,
-          businessProfile: {
-            ...state.businessProfile,
-            ...payload,
-            ownerInfo: state.businessProfile.ownerInfo,
-          },
-        },
-      });
+      } catch (error) {
+        throw error;
+      }
     },
     [state]
   );
@@ -492,37 +498,78 @@ export function AuthProvider({ children }) {
     );
   }, []);
   const fsBatchUpdateBusinessProfileLanguages = useCallback(
-    async (businessProfileID = state.businessProfile.docID) => {
-      const sectionsRef = query(
-        collectionGroup(DB, 'sections'),
-        where('businessProfileID', '==', businessProfileID)
-      );
+    async (languages, businessProfileID = state.businessProfile.docID) => {
+      try {
+        // If limit is exceeded throw an error
+        if (state.businessProfile.translationEditUsage[THIS_MONTH] >= 3)
+          throw new Error('Monthly Translation Limit Exceeded !!');
+        const promisesArray = [];
+        const businessProfileRef = doc(DB, `/businessProfiles/${businessProfileID}`);
 
-      const promisesArray = [];
+        // 1- Add Languages to Business Profile
+        await updateDoc(businessProfileRef, { languages });
 
-      const sectionsSnapshot = await getDocs(sectionsRef);
-      sectionsSnapshot.forEach((section) => {
-        const syncOperation = async () => {
-          const { docID, title, businessProfileID, menuID } = section.data();
-          promisesArray.push(
-            await fbTranslate({
-              sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${docID}`,
-              text: title,
-            })
-          );
-        };
-        syncOperation();
-      });
+        // 2- Translate Business Profile
+        const businessProfileSnap = await getDoc(businessProfileRef);
+        await fbTranslateBranchDesc({
+          title: businessProfileSnap.data().businessName,
+          desc: businessProfileSnap.data().description,
+          businessProfileID,
+        });
 
-      await Promise.allSettled(promisesArray);
+        // 3- Translate Sections
+        const sectionsRef = query(
+          collectionGroup(DB, 'sections'),
+          where('businessProfileID', '==', businessProfileID)
+        );
 
-      const businessProfileRef = doc(DB, `/businessProfiles/${businessProfileID}`);
-      await updateDoc(businessProfileRef, {
-        translationEditUsage: {
-          ...(state.businessProfile?.translationEditUsage || {}),
-          [THIS_MONTH]: increment(+1),
-        },
-      });
+        const sectionsSnapshot = await getDocs(sectionsRef);
+        sectionsSnapshot.forEach((section) => {
+          const syncOperation = async () => {
+            const { docID, title, businessProfileID, menuID } = section.data();
+            promisesArray.push(
+              await fbTranslate({
+                sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${docID}`,
+                text: title,
+              })
+            );
+          };
+          syncOperation();
+        });
+
+        // 4- Translate Meals
+        const mealsRef = query(
+          collectionGroup(DB, 'meals'),
+          where('businessProfileID', '==', businessProfileID)
+        );
+
+        const mealsSnapshot = await getDocs(mealsRef);
+        mealsSnapshot.forEach((meal) => {
+          const syncOperation = async () => {
+            const { docID, title, description, businessProfileID } = meal.data();
+            promisesArray.push(
+              await fbTranslateMeal({
+                mealRef: `/businessProfiles/${businessProfileID}/meals/${docID}`,
+                text: { title, desc: description },
+                businessProfileID,
+              })
+            );
+          };
+          syncOperation();
+        });
+
+        await Promise.allSettled(promisesArray);
+
+        // 5- Increase translation usage limit for this month
+        await updateDoc(businessProfileRef, {
+          translationEditUsage: {
+            ...(state.businessProfile?.translationEditUsage || {}),
+            [THIS_MONTH]: (state.businessProfile?.translationEditUsage[THIS_MONTH] ?? 0) + 1,
+          },
+        });
+      } catch (error) {
+        throw error;
+      }
     },
     [state]
   );
