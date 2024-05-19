@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { m } from 'framer-motion';
-import { useParams } from 'react-router';
 
 import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
@@ -14,7 +13,6 @@ import BusinessProfileEditForm from 'src/sections/business-profile/business-prof
 import BusinessProfileTranslation from 'src/sections/business-profile/business-profile-translation';
 
 function BusinessProfileManageView() {
-  const { id: businessProfileID } = useParams();
   const theme = useTheme();
   const { themeStretch } = useSettingsContext();
   const { businessProfile } = useAuthContext();

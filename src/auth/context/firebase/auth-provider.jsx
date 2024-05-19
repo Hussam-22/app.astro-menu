@@ -104,10 +104,12 @@ export function AuthProvider({ children }) {
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
   const status = state.loading ? 'loading' : checkAuthenticated;
 
-  useQuery({
+  const { error } = useQuery({
     queryKey: ['businessProfile', state.user?.businessProfileID],
     queryFn: () => fsGetBusinessProfile(state.user?.businessProfileID),
   });
+
+  console.log(error);
 
   const initialize = useCallback(() => {
     try {
@@ -298,15 +300,20 @@ export function AuthProvider({ children }) {
   const fsGetBusinessProfile = useCallback(
     async (businessProfileID) => {
       try {
+        let logo = null;
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
         const docSnapshot = await getDoc(docRef);
 
         if (!docSnapshot.data()) throw Error('No Business Profile Was Returned !!');
-
         const businessOwnerInfo = await fsGetUser(docSnapshot.data().ownerID);
 
-        const bucketPath = `${businessProfileID}/business-profile`;
-        const logo = await fsGetImgDownloadUrl(bucketPath, 'logo_800x800.webp');
+        const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
+
+        const files = await listAll(storageRef);
+        if (files.items.length > 0) {
+          const businessLogo = files.items.filter((file) => file.name.includes('800x800'));
+          logo = await getDownloadURL(businessLogo[0]);
+        }
 
         dispatch({
           type: 'INITIAL',
@@ -383,6 +390,15 @@ export function AuthProvider({ children }) {
         if (isLogoDirty) {
           const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
           const imageRef = ref(storageRef, 'logo.jpg');
+
+          if (!logo) {
+            const files = await listAll(storageRef);
+            files.items.forEach((file) => {
+              deleteObject(file);
+            });
+            return;
+          }
+
           const uploadTask = uploadBytesResumable(imageRef, logo);
           uploadTask.on(
             'state_changed',

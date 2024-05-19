@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, Typography } from '@mui/material';
+import { Box, Card, Stack, Button, Divider, Typography } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { delay } from 'src/utils/promise-delay';
@@ -66,11 +66,14 @@ function BusinessProfileEditForm() {
   });
 
   const {
+    watch,
     setValue,
     handleSubmit,
     reset: resetForm,
     formState: { isDirty, dirtyFields },
   } = methods;
+
+  const values = watch();
 
   const handleDrop = useCallback(
     (acceptedFiles) => {
@@ -88,6 +91,10 @@ function BusinessProfileEditForm() {
     },
     [setValue]
   );
+
+  const handleRemoveFile = useCallback(() => {
+    setValue('logo', null, { isTouched: true, isFocused: true, shouldDirty: true });
+  }, [setValue]);
 
   const handelRemove = () => {
     setValue('cover', '');
@@ -116,6 +123,8 @@ function BusinessProfileEditForm() {
       await fsUpdateBusinessProfile(formData, dirtyFields.description, dirtyFields.logo);
     });
   };
+
+  console.log(values.logo);
 
   return (
     <>
@@ -162,6 +171,9 @@ function BusinessProfileEditForm() {
                     </Typography>
                   }
                 />
+                <Button variant="contained" onClick={handleRemoveFile} disabled={!values.logo}>
+                  Remove Logo
+                </Button>
               </Stack>
               <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
                 <RHFTextField name="businessName" label="Business Name" disabled />
