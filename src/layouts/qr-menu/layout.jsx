@@ -34,14 +34,14 @@ function QrMenuLayout({ children }) {
   const OrderIsInKitchen =
     orderSnapShot?.isInKitchen?.length !== 0 && orderSnapShot?.isReadyToServe?.length === 0;
 
-  const orderIsReadyToServe = orderSnapShot?.isReadyToServe?.length !== 0;
+  const orderIsReadyToServe =
+    orderSnapShot?.isReadyToServe && orderSnapShot?.isReadyToServe?.length !== 0;
 
   const orderStatus = getOrderStatusStyle(
     orderSnapShot?.isInKitchen?.includes(0),
     orderSnapShot?.isReadyToServe?.includes(0),
     theme
   );
-
   return (
     <Box
       component="main"

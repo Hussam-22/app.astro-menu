@@ -28,6 +28,8 @@ function BottomNavModern() {
     language: false,
   });
 
+  console.log(cart);
+
   const totalCartItems = useMemo(
     () => cart?.reduce((accumulator, cartPortion) => cartPortion.qty + accumulator, 0),
     [cart]

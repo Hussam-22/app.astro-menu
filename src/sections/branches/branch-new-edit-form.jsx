@@ -75,6 +75,8 @@ export default function BranchNewEditForm({ branchInfo }) {
     currency: Yup.string().required('Menu Default Language is required'),
   });
 
+  console.log(branchInfo?.defaultLanguage, businessProfile.defaultLanguage);
+
   const defaultValues = useMemo(
     () => ({
       title: branchInfo?.title || '',

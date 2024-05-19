@@ -15,14 +15,7 @@ function QrMenuView() {
   const {
     tableInfo,
     branchInfo,
-    businessProfile: {
-      docID,
-      businessName,
-      defaultLanguage,
-      description,
-      translationEdited,
-      translation,
-    },
+    businessProfile: { docID, businessName, defaultLanguage, translationEdited, translation },
     selectedLanguage,
   } = useQrMenuContext();
   const router = useRouter();

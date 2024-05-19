@@ -24,6 +24,7 @@ export function QrMenuContextProvider({ children }) {
     fsGetSections,
     orderSnapShot,
     fsGetMenu,
+    fsOrderSnapshot,
     branchSnapshot: branchInfo,
   } = useAuthContext();
   const [labels, setLabels] = useState([]);
@@ -74,6 +75,15 @@ export function QrMenuContextProvider({ children }) {
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
   });
 
+  const { data: orderInfo = {}, error: orderError } = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: tableInfo.menuID
+      ? ['order', businessProfileID, branchID, tableID, tableInfo.menuID]
+      : [],
+    queryFn: () =>
+      fsOrderSnapshot({ businessProfileID, branchID, tableID, menuID: tableInfo.menuID }),
+    enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
+  });
   useEffect(() => {
     if (orderSnapShot?.docID) {
       if (orderSnapShot?.isReadyToServe?.length !== 0) {
@@ -99,15 +109,11 @@ export function QrMenuContextProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderSnapShot]);
 
-  console.log(branchInfo);
-
   const [selectedLanguage, setLanguage] = useState('en');
 
   useEffect(() => {
     if (branchInfo?.defaultLanguage) setLanguage(branchInfo.defaultLanguage);
   }, [branchInfo, selectedLanguage]);
-
-  console.log(selectedLanguage);
 
   const setLabel = useCallback(
     (labelID) => {
