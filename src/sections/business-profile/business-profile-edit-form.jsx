@@ -124,8 +124,6 @@ function BusinessProfileEditForm() {
     });
   };
 
-  console.log(values.logo);
-
   return (
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -171,7 +169,7 @@ function BusinessProfileEditForm() {
                     </Typography>
                   }
                 />
-                <Button variant="contained" onClick={handleRemoveFile} disabled={!values.logo}>
+                <Button variant="contained" onClick={handleRemoveFile} disabled={!!values.logo}>
                   Remove Logo
                 </Button>
               </Stack>

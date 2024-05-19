@@ -109,8 +109,6 @@ export function AuthProvider({ children }) {
     queryFn: () => fsGetBusinessProfile(state.user?.businessProfileID),
   });
 
-  console.log(error);
-
   const initialize = useCallback(() => {
     try {
       onAuthStateChanged(AUTH, async (user) => {
