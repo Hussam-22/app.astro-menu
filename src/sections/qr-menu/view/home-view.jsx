@@ -153,10 +153,23 @@ function QRMenuHomeView() {
           <Typography variant="body2">{getDescription() || description}</Typography>
           <Button
             variant="contained"
-            endIcon={<Iconify icon={isTableActive ? 'game-icons:meal' : 'zondicons:close-solid'} />}
+            color="secondary"
+            endIcon={
+              <Iconify
+                icon={isTableActive ? 'game-icons:meal' : 'zondicons:close-solid'}
+                sx={{ width: 28, height: 28 }}
+              />
+            }
             onClick={() => router.replace('menu')}
             disabled={!isTableActive}
-            sx={{ my: 2 }}
+            sx={{
+              my: 1,
+              py: 1.5,
+              px: 3,
+              fontSize: '1.2rem',
+              alignSelf: 'center',
+              borderRadius: 5,
+            }}
           >
             {isTableActive ? 'Go to Menu' : 'Table is not accepting orders'}
           </Button>
@@ -199,7 +212,7 @@ function SocialLinks() {
     (link) => link[1] !== ''
   );
   return (
-    <Stack direction="row" justifyContent="center">
+    <Stack direction="row" justifyContent="center" spacing={1} sx={{ mt: 1 }}>
       {socialLinksArr.map(([name, link]) => {
         const socialObj = _socials.find((social) => social.value === name);
         if (!socialObj) return null;
@@ -210,6 +223,7 @@ function SocialLinks() {
                 '&:hover': {
                   bgcolor: alpha(socialObj.color, 0.08),
                 },
+                p: 0.25,
               }}
             >
               <Iconify color={socialObj.color} icon={socialObj.icon} />

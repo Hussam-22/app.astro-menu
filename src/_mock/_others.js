@@ -153,6 +153,27 @@ export const _socials = [
     path: 'https://www.twitter.com/caitlyn.kerluke',
   },
   {
+    value: 'snapchat',
+    name: 'Snapchat',
+    icon: 'hugeicons:snapchat',
+    color: '#000000',
+    path: 'https://www.twitter.com/caitlyn.kerluke',
+  },
+  {
+    value: 'tiktok',
+    name: 'Tiktok',
+    icon: 'logos:tiktok-icon',
+    color: '#000000',
+    path: 'https://www.twitter.com/caitlyn.kerluke',
+  },
+  {
+    value: 'youtube',
+    name: 'Youtube',
+    icon: 'openmoji:youtube',
+    color: '#000000',
+    path: 'https://www.twitter.com/caitlyn.kerluke',
+  },
+  {
     value: 'other',
     name: 'Other',
     icon: 'uil:external-link-alt',
