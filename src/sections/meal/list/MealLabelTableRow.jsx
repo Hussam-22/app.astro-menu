@@ -8,8 +8,8 @@ import {
   Divider,
   TableRow,
   TableCell,
+  Typography,
   IconButton,
-  ListItemText,
   CircularProgress,
 } from '@mui/material';
 
@@ -22,7 +22,7 @@ MealLabelTableRow.propTypes = {
 };
 
 export default function MealLabelTableRow({ row }) {
-  const { docID, title, isActive } = row;
+  const { title, isActive } = row;
   const { fsUpdateMealLabel, fsDeleteMealLabel } = useAuthContext();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
@@ -44,13 +44,25 @@ export default function MealLabelTableRow({ row }) {
 
   return (
     <TableRow hover>
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <ListItemText
-          primary={title}
-          secondary={docID}
-          primaryTypographyProps={{ typography: 'body2' }}
-          secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
-        />
+      <TableCell>
+        <Stack direction="column" spacing={1}>
+          <Typography variant="overline">{title}</Typography>
+          {row?.translation && (
+            <Stack direction="row" spacing={1}>
+              {Object.entries(row.translation).map(([key, value]) => (
+                <Label
+                  variant="soft"
+                  color="info"
+                  sx={{ textTransform: 'capitalize' }}
+                  key={key}
+                  size="small"
+                >
+                  {value.title}
+                </Label>
+              ))}
+            </Stack>
+          )}
+        </Stack>
       </TableCell>
 
       <TableCell align="center">
