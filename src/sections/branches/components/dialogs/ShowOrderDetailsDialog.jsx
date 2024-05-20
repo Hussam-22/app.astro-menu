@@ -27,7 +27,7 @@ ShowOrderDetailsDialog.propTypes = {
 };
 
 function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
-  const { cart, lastUpdate, docID } = orderInfo;
+  const { cart, lastUpdate, docID, totalBill } = orderInfo;
   const theme = useTheme();
   const { fsGetAllMeals, fsGetBranch } = useAuthContext();
 
@@ -52,7 +52,15 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
     [allMeals, orderInfo.cart]
   );
 
-  const { totalBill } = orderInfo;
+  const orderValue = useMemo(
+    () => cart.reduce((accumulator, portion) => accumulator + portion.price, 0),
+    [cart]
+  );
+
+  const taxValue = +(orderValue * (branchInfo.taxValue / 100)).toFixed(2);
+  const calculatedTotalBill = orderValue + taxValue;
+
+  console.log(calculatedTotalBill);
 
   const orderDate = new Date(lastUpdate.seconds * 1000);
 
@@ -176,7 +184,7 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
         </Scrollbar>
         <Stack direction="row" justifyContent="flex-end" alignItems="center" sx={{ py: 2, px: 1 }}>
           <Typography variant="h6">
-            Total Bill : {totalBill} {branchInfo?.currency}
+            Total Bill : {calculatedTotalBill} {branchInfo?.currency}
           </Typography>
         </Stack>
       </DialogContent>

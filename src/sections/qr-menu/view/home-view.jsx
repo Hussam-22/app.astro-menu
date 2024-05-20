@@ -119,10 +119,11 @@ function QRMenuHomeView() {
               </IconButton>
             )}
             <IconButton onClick={() => setIsLangOpen(true)}>
-              <Iconify
+              {/* <Iconify
                 icon="clarity:language-solid"
                 sx={{ color: 'common.alternative', width: 28, height: 28 }}
-              />
+              /> */}
+              <Image src="/assets/icons/qr-menu/language.svg" sx={{ width: 28, height: 28 }} />
             </IconButton>
           </Stack>
         </Stack>

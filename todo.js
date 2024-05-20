@@ -19,4 +19,11 @@
 
 ? Meal Labels
 1- Translate Meal Labels
+
+! TESTING
+1- Test all maps when there are no data to present
+
+
+* Next Release
+1- Get Customer Feedback
 */

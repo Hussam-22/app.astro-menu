@@ -14,7 +14,6 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
@@ -23,13 +22,21 @@ import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 const CartDrawer = ({ openState, toggleDrawer }) => {
   const theme = useTheme();
   const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
-  const { branchInfo, orderStatus } = useQrMenuContext();
+  const { branchInfo, selectedLanguage } = useQrMenuContext();
   const { updateCount } = orderSnapShot;
 
   const queryClient = useQueryClient();
   const cachedMeals = queryClient.getQueriesData({ queryKey: ['meal'] }) || [];
 
   const availableMeals = cachedMeals.flatMap((item) => item[1]);
+
+  const getTitle = (meal) => {
+    const { title, translation, translationEdited } = meal;
+    if (selectedLanguage === 'en') return title;
+    return translationEdited?.[selectedLanguage]?.title
+      ? translationEdited?.[selectedLanguage]?.title
+      : translation?.[selectedLanguage]?.title;
+  };
 
   const cartMeals = useMemo(
     () =>
@@ -80,7 +87,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
               {cartMeals.map((meal) => (
                 <Box key={meal.docID}>
                   <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                    {meal.title}
+                    {getTitle(meal)}
                   </Typography>
                   <Box>
                     {orderSnapShot.cart
@@ -139,17 +146,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
             </Box>
           </Scrollbar>
         </Stack>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Box>
-            <Label
-              color={orderStatus.color}
-              variant="soft"
-              startIcon={<Iconify icon={orderStatus.icon} />}
-              sx={{ fontSize: '16px', p: 2.5 }}
-            >
-              {orderStatus.text}
-            </Label>
-          </Box>
+        <Stack direction="row" justifyContent="flex-end" alignItems="center">
           <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ mb: 2 }}>
             <Typography variant="caption">
               Order : {orderValue}{' '}
