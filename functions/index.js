@@ -4,6 +4,7 @@ const { Translate } = require('@google-cloud/translate').v2;
 
 admin.initializeApp(functions.config().firebase);
 
+// // use this command to deploy functions: firebase deploy --only functions
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 const translate = new Translate({ projectId: process.env.PROJECT_ID });
@@ -16,7 +17,7 @@ exports.fbTranslateSectionTitle = functions.https.onCall(async (data, context) =
   const sectionDoc = (await admin.firestore().doc(sectionRef).get()).data();
 
   // get available languages from user profile
-  const userDocRef = `/users/${sectionDoc.userID}`;
+  const userDocRef = `/businessProfiles/${sectionDoc.businessProfileID}`;
   const userDoc = (await admin.firestore().doc(userDocRef).get()).data();
 
   // translate string to target languages
@@ -77,19 +78,16 @@ exports.fbTranslateMeal = functions.https.onCall(async (data, context) => {
 
 exports.fbTranslateBranchDesc = functions.https.onCall(async (data, context) => {
   // get to-translate string & target translation languages array
-  const { text, branchRef, userID } = data;
+  const { title, desc, businessProfileID } = data;
 
-  // get section data
-  const branchDoc = (await admin.firestore().doc(branchRef).get()).data();
-
-  // get available languages from user profile
-  const userDocRef = `/users/${userID}`;
-  const userDoc = (await admin.firestore().doc(userDocRef).get()).data();
+  const businessProfileRef = `/businessProfiles/${businessProfileID}`;
+  const businessProfileDoc = (await admin.firestore().doc(businessProfileRef).get()).data();
 
   // translate string to target languages
-  const tasks = userDoc.languages.map(async (lang) => ({
+  const tasks = businessProfileDoc.languages.map(async (lang) => ({
     [lang]: {
-      desc: await (await translate.translate(text.description, lang)).slice(0, 1).toString(),
+      title: await (await translate.translate(title, lang)).slice(0, 1).toString(),
+      desc: await (await translate.translate(desc, lang)).slice(0, 1).toString(),
     },
   }));
 
@@ -99,11 +97,48 @@ exports.fbTranslateBranchDesc = functions.https.onCall(async (data, context) => 
   // flat translation array to single object
   const translationObj = Object.assign({}, ...translations);
 
-  // update meal section
+  // update businessProfileDoc section
   await admin
     .firestore()
-    .doc(branchRef)
-    .update({ ...branchDoc, translation: translationObj, translationEdited: translationObj });
+    .doc(businessProfileRef)
+    .update({
+      ...businessProfileDoc,
+      translation: translationObj,
+      translationEdited: translationObj,
+    });
+
+  return null;
+});
+
+exports.fbTranslateMealLabelTitle = functions.https.onCall(async (data, context) => {
+  const { labelTitle, businessProfileID, labelDocID } = data;
+
+  // get label data
+  const mealLabelRef = `/businessProfiles/${businessProfileID}/meal-labels/${labelDocID}`;
+  const labelDoc = (await admin.firestore().doc(mealLabelRef).get()).data();
+
+  // get available languages from business profile
+  const businessProfileRef = `/businessProfiles/${businessProfileID}`;
+  const businessProfileDoc = (await admin.firestore().doc(businessProfileRef).get()).data();
+
+  // translate string to target languages
+  const tasks = businessProfileDoc.languages.map(async (lang) => ({
+    [lang]: {
+      title: await (await translate.translate(labelTitle, lang)).slice(0, 1).toString(),
+    },
+  }));
+
+  // resolve translation Promise
+  const translations = await Promise.all(tasks);
+
+  // flat translation array to single object
+  const translationObj = Object.assign({}, ...translations);
+
+  // update menu section
+  await admin
+    .firestore()
+    .doc(mealLabelRef)
+    .update({ ...labelDoc, translation: translationObj, translationEdited: translationObj });
 
   return null;
 });

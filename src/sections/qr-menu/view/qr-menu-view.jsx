@@ -33,14 +33,14 @@ function QrMenuView() {
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['business_Logo', docID],
     queryFn: () => fsGetImgDownloadUrl(bucketPath, 'logo_800x800.webp'),
-    enabled: !!docID,
+    enabled: !!docID && branchInfo.isActive && tableInfo?.docID && tableInfo?.isActive,
   });
 
   if (!branchInfo.isActive && branchInfo.isActive !== undefined)
     return (
       <Box
         sx={{
-          height: '100vh',
+          height: '70vh',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -50,8 +50,8 @@ function QrMenuView() {
           gap: 2,
         }}
       >
-        <Iconify icon="zondicons:close-solid" sx={{ width: 64, height: 64 }} />
-        <Typography variant="h1">Sorry this branch is not open !!</Typography>
+        <Image src="/assets/icons/qr-menu/store-closed.svg" />
+        <Typography variant="h1">Sorry, branch is Closed !!</Typography>
       </Box>
     );
 
@@ -59,22 +59,24 @@ function QrMenuView() {
     return (
       <Box
         sx={{
-          height: '100vh',
+          height: '70vh',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
           textAlign: 'center',
           px: 1,
-          gap: 2,
+          gap: 1,
         }}
       >
-        <Iconify icon="zondicons:close-solid" sx={{ width: 64, height: 64 }} />
-        <Typography variant="h1">Sorry this table is not accepting orders !!</Typography>
+        {/* <Iconify icon="zondicons:close-solid" sx={{ width: 64, height: 64 }} /> */}
+        <Image src="/assets/icons/qr-menu/store-closed.svg" />
+        <Typography variant="h1">Sorry, table is not accepting orders !!</Typography>
         <Button
           variant="soft"
           startIcon={<Iconify icon="ph:arrow-fat-left-fill" />}
           onClick={() => router.push('..')}
+          color="warning"
         >
           Back to restaurant home page
         </Button>

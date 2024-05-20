@@ -21,7 +21,7 @@ function BottomNavModern() {
   const {
     orderSnapShot: { cart, docID },
   } = useAuthContext();
-  const { labels, selectedLanguage, branchInfo } = useQrMenuContext();
+  const { labels, selectedLanguage, branchInfo, tableInfo } = useQrMenuContext();
   const [drawerStates, setDrawerStates] = useState({
     menu: false,
     cart: false,
@@ -37,7 +37,7 @@ function BottomNavModern() {
     setDrawerStates((state) => ({ ...state, [drawer]: !state[drawer] }));
   };
 
-  if (!branchInfo.isActive) return null;
+  if (!branchInfo.isActive || !tableInfo.isActive) return null;
 
   return (
     <Box

@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
+import { useQueryClient } from '@tanstack/react-query';
 
-import { Stack, TableRow, TableCell, Typography } from '@mui/material';
+import { Stack, TableRow, TableCell, Typography, CircularProgress } from '@mui/material';
 
-import Label from 'src/components/label';
 import Image from 'src/components/image';
+import Label from 'src/components/label';
 
 MealTableRow.propTypes = {
   row: PropTypes.object,
@@ -13,6 +14,12 @@ MealTableRow.propTypes = {
 
 export default function MealTableRow({ row, onEditRow, mealLabelsList }) {
   const { docID, cover, title, isActive, mealLabels, portions, isNew } = row;
+  const queryClient = useQueryClient();
+
+  if (!cover)
+    setTimeout(() => {
+      queryClient.invalidateQueries(['meals']);
+    }, 5000);
 
   const metaKeywordsText = () => {
     if (mealLabelsList.length !== 0)
@@ -37,12 +44,16 @@ export default function MealTableRow({ row, onEditRow, mealLabelsList }) {
         }}
       >
         <Stack direction="row" spacing={1}>
-          <Image
-            disabledEffect
-            alt={title}
-            src={cover}
-            sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}
-          />
+          {cover ? (
+            <Image
+              disabledEffect
+              alt={title}
+              src={cover}
+              sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }}
+            />
+          ) : (
+            <CircularProgress sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }} />
+          )}
           <Stack direction="column" spacing={0.5}>
             <Typography>{title}</Typography>
             <Stack direction="row" spacing={2}>

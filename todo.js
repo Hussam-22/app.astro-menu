@@ -9,6 +9,8 @@
 5- Update Browser Tab Title
 6- Add Confirmation Modals to all Delete actions
 7- Remove all docID when not needed
+8- Translate all static text
+9- Improve snackbars colors and text
 
 ? QR Menu
 

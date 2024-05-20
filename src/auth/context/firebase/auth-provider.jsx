@@ -230,10 +230,12 @@ export function AuthProvider({ children }) {
 
     return documents.filter((user) => user.email !== 'hussam@hotmail.co.uk');
   }, []);
+
   // ------------------------- Firebase Functions -----------------
   const fbTranslate = httpsCallable(FUNCTIONS, 'fbTranslateSectionTitle');
   const fbTranslateMeal = httpsCallable(FUNCTIONS, 'fbTranslateMeal');
   const fbTranslateBranchDesc = httpsCallable(FUNCTIONS, 'fbTranslateBranchDesc');
+  const fbTranslateMealLabelTitle = httpsCallable(FUNCTIONS, 'fbTranslateMealLabelTitle');
   // ------------------------ Image Handling ----------------------
   const fsGetImgDownloadUrl = useCallback(async (bucketPath, imgID) => {
     // eslint-disable-next-line no-useless-catch
@@ -1274,6 +1276,12 @@ export function AuthProvider({ children }) {
             STORAGE,
             `gs://${BUCKET}/${state.user.businessProfileID}/meals/${payload.docID}/`
           );
+
+          const files = await listAll(storageRef);
+          files.items.forEach((file) => {
+            deleteObject(file);
+          });
+
           const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
           const imageRef = ref(storageRef, `${payload.docID}.${fileExtension}`);
 
@@ -1324,6 +1332,7 @@ export function AuthProvider({ children }) {
             }
           } catch (error) {
             // Handle the case where cover is not available
+            dataArr.push({ ...element.data(), cover: undefined });
             throw new Error(`Cover not available for meal with ID: ${element.data().docID}`);
           }
         };
@@ -1400,6 +1409,13 @@ export function AuthProvider({ children }) {
     async (title, businessProfileID = state.user.businessProfileID) => {
       const docRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/meal-labels/`));
       await setDoc(docRef, { title, isActive: true, businessProfileID, docID: docRef.id });
+
+      await fbTranslateMealLabelTitle({
+        labelTitle: title,
+        businessProfileID,
+        labelDocID: docRef.id,
+      });
+
       return docRef.id;
     },
     [state]
