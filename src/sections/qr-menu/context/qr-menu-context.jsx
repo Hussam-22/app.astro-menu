@@ -84,6 +84,7 @@ export function QrMenuContextProvider({ children }) {
       fsOrderSnapshot({ businessProfileID, branchID, tableID, menuID: tableInfo.menuID }),
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
   });
+
   useEffect(() => {
     if (orderSnapShot?.docID) {
       if (orderSnapShot?.isReadyToServe?.length !== 0) {
@@ -109,11 +110,14 @@ export function QrMenuContextProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderSnapShot]);
 
+  console.log(branchInfo.defaultLanguage);
+
+  // Default language is always English, regardless of user input
   const [selectedLanguage, setLanguage] = useState('en');
 
   useEffect(() => {
     if (branchInfo?.defaultLanguage) setLanguage(branchInfo.defaultLanguage);
-  }, [branchInfo, selectedLanguage]);
+  }, [branchInfo]);
 
   const setLabel = useCallback(
     (labelID) => {

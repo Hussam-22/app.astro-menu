@@ -21,15 +21,17 @@ function MealCard({ mealInfo }) {
   const [isReadMore, setIsReadMore] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log(selectedLanguage);
+
   const getTitle = () => {
-    if (selectedLanguage === branchInfo.defaultLanguage) return title;
+    if (selectedLanguage === 'en') return title;
     return translationEdited?.[selectedLanguage]?.title
       ? translationEdited?.[selectedLanguage]?.title
       : translation?.[selectedLanguage]?.title;
   };
 
   const getDescription = () => {
-    if (selectedLanguage === branchInfo.defaultLanguage) return description;
+    if (selectedLanguage === 'en') return description;
     return translationEdited?.[selectedLanguage]?.desc
       ? translationEdited?.[selectedLanguage]?.desc
       : translation?.[selectedLanguage]?.desc;

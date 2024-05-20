@@ -19,7 +19,7 @@ function BottomNavModern() {
   const theme = useTheme();
   const router = useRouter();
   const {
-    orderSnapShot: { isInKitchen, isReadyToServe, cart, docID },
+    orderSnapShot: { cart, docID },
   } = useAuthContext();
   const { labels, selectedLanguage, branchInfo } = useQrMenuContext();
   const [drawerStates, setDrawerStates] = useState({
@@ -27,8 +27,6 @@ function BottomNavModern() {
     cart: false,
     language: false,
   });
-
-  console.log(cart);
 
   const totalCartItems = useMemo(
     () => cart?.reduce((accumulator, cartPortion) => cartPortion.qty + accumulator, 0),
@@ -38,8 +36,6 @@ function BottomNavModern() {
   const toggleDrawer = (drawer) => {
     setDrawerStates((state) => ({ ...state, [drawer]: !state[drawer] }));
   };
-
-  // if (orderSnapShot?.docID === undefined) return null;
 
   if (!branchInfo.isActive) return null;
 

@@ -51,6 +51,8 @@ function LanguageButton({ code, toggleDrawer }) {
   const { setLanguage, selectedLanguage } = useQrMenuContext();
   const [loading, setLoading] = useState(false);
 
+  console.log(selectedLanguage);
+
   // const { data, isValidating } = useSWR(
   //   `https://restcountries.com/v3.1/lang/${LANGUAGE_CODES[code].name}?fields=languages,flags`,
   //   fetcher
@@ -68,13 +70,6 @@ function LanguageButton({ code, toggleDrawer }) {
 
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      {/* {!isValidating && data.length !== 0 && (
-        <Image
-          src={`${data.filter((item) => Object.keys(item.languages).length === 1)[0].flags.svg}`}
-          sx={{ width: 44, height: 28, borderRadius: 1 }}
-          onClick={() => onlanguagechange(code)}
-        />
-      )} */}
       <LoadingButton
         variant={selectedLanguage === code ? 'contained' : 'outlined'}
         onClick={() => onlanguagechange(code)}
