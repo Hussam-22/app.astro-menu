@@ -21,8 +21,6 @@ function MealCard({ mealInfo }) {
   const [isReadMore, setIsReadMore] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log(selectedLanguage);
-
   const getTitle = () => {
     if (selectedLanguage === 'en') return title;
     return translationEdited?.[selectedLanguage]?.title

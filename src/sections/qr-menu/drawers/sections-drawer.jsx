@@ -20,6 +20,12 @@ function SectionsDrawer({ openState, toggleDrawer }) {
   const { menuSections, fsGetMeal } = useAuthContext();
   const { setLabel, labels, reset, selectedLanguage, branchInfo, mealsLabel } = useQrMenuContext();
 
+  const getLabel = (label) => {
+    const { title, translation } = label;
+    if (selectedLanguage === branchInfo.defaultLanguage) return title;
+    return translation?.[selectedLanguage]?.title || title;
+  };
+
   const getTitle = (section) => {
     const { title, translation, translationEdited } = section;
     if (selectedLanguage === branchInfo.defaultLanguage) return title;
@@ -124,7 +130,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                 {mealsLabel.map((label) => (
                   <Chip
                     key={label.docID}
-                    label={`#${label.title}`}
+                    label={`#${getLabel(label)}`}
                     sx={{ fontWeight: '700' }}
                     onClick={() => onMealLabelClick(label.docID)}
                     size="small"

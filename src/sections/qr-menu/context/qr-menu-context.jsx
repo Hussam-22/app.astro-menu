@@ -110,8 +110,6 @@ export function QrMenuContextProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderSnapShot]);
 
-  console.log(branchInfo.defaultLanguage);
-
   // Default language is always English, regardless of user input
   const [selectedLanguage, setLanguage] = useState('en');
 
