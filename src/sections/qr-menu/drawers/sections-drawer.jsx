@@ -22,13 +22,13 @@ function SectionsDrawer({ openState, toggleDrawer }) {
 
   const getLabel = (label) => {
     const { title, translation } = label;
-    if (selectedLanguage === branchInfo.defaultLanguage) return title;
+    if (selectedLanguage === 'en') return title;
     return translation?.[selectedLanguage]?.title || title;
   };
 
   const getTitle = (section) => {
     const { title, translation, translationEdited } = section;
-    if (selectedLanguage === branchInfo.defaultLanguage) return title;
+    if (selectedLanguage === 'en') return title;
     return translationEdited?.[selectedLanguage]?.title
       ? translationEdited?.[selectedLanguage]?.title
       : translation?.[selectedLanguage]?.title;
