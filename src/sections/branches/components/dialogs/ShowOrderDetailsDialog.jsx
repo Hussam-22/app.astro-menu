@@ -60,8 +60,6 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
   const taxValue = +(orderValue * (branchInfo.taxValue / 100)).toFixed(2);
   const calculatedTotalBill = orderValue + taxValue;
 
-  console.log(calculatedTotalBill);
-
   const orderDate = new Date(lastUpdate.seconds * 1000);
 
   const orderStatus = () => {

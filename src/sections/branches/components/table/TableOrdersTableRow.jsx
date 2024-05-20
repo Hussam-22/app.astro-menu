@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
@@ -54,6 +55,14 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
     return ['In Progress', 'default'];
   };
 
+  const orderValue = useMemo(
+    () => cart.reduce((accumulator, portion) => accumulator + portion.price, 0),
+    [cart]
+  );
+
+  const taxValue = +(orderValue * (branchInfo.taxValue / 100)).toFixed(2);
+  const calculatedTotalBill = orderValue + taxValue;
+
   return (
     <TableRow hover>
       <TableCell>
@@ -79,7 +88,7 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
           sx={{ color: 'text.disabled', cursor: 'pointer' }}
         >
           <ListItemText
-            primary={`${totalBill || 0} 
+            primary={`${calculatedTotalBill || 0} 
             ${branchInfo.currency}`}
             secondary={menuInfo?.title}
             primaryTypographyProps={{ typography: 'body2', color: 'text.primary' }}
