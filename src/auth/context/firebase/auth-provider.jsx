@@ -300,19 +300,21 @@ export function AuthProvider({ children }) {
   const fsGetBusinessProfile = useCallback(
     async (businessProfileID) => {
       try {
-        let logo = null;
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
         const docSnapshot = await getDoc(docRef);
 
         if (!docSnapshot.data()) throw Error('No Business Profile Was Returned !!');
         const businessOwnerInfo = await fsGetUser(docSnapshot.data().ownerID);
 
-        const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
+        let logo = docSnapshot.data().logo || null;
 
-        const files = await listAll(storageRef);
-        if (files.items.length > 0) {
-          const businessLogo = files.items.filter((file) => file.name.includes('800x800'));
-          logo = await getDownloadURL(businessLogo[0]);
+        if (!logo) {
+          const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
+          const files = await listAll(storageRef);
+          if (files.items.length > 0) {
+            const businessLogo = files.items.filter((file) => file.name.includes('800x800'));
+            logo = await getDownloadURL(businessLogo[0]);
+          }
         }
 
         dispatch({
@@ -347,13 +349,14 @@ export function AuthProvider({ children }) {
           users: [],
           isActive: true,
           createdOn: new Date(),
+          logo: await fsGetImgDownloadUrl('_mock', `business_logo_800x800.webp`),
         });
 
         const businessProfileID = newDocRef.id;
 
         await fbTranslateBranchDesc({
           title: businessProfileInfo.businessName,
-          desc: '',
+          desc: 'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.',
           businessProfileID,
         });
 
@@ -362,7 +365,7 @@ export function AuthProvider({ children }) {
         await updateDoc(userProfile, { businessProfileID });
 
         // 4- Create Default Data
-        await createDefaults(businessProfileID);
+        await createDefaults(businessProfileID, businessProfileInfo.planInfo);
       } catch (error) {
         console.log(error);
       }
@@ -380,7 +383,7 @@ export function AuthProvider({ children }) {
         const { languages, logo, ...data } = payload;
 
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
-        await updateDoc(docRef, data);
+        await updateDoc(docRef, { ...data, logo: isLogoDirty ? '' : logo });
 
         const isLanguagesEqual =
           JSON.stringify(payload.languages.sort()) ===
@@ -441,7 +444,13 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const createDefaults = useCallback(async (businessProfileID) => {
+  const createDefaults = useCallback(async (businessProfileID, planInfo) => {
+    console.log(businessProfileID);
+    const {
+      isMenuOnly,
+      limits: { branch: branchesCount },
+    } = planInfo.at(-1);
+
     // 1- ADD MEAL LABELS
     const mealLabels = await Promise.all(
       DEFAULT_LABELS.map(async (label) => ({
@@ -494,31 +503,35 @@ export function AuthProvider({ children }) {
 
     // 4- ADD BRANCHES
     const branches = await Promise.all(
-      DEFAULT_BRANCHES(businessProfileID).map(async (branch, index) => {
-        const modifiedBranch = {
-          ...branch,
-          cover: await fsGetImgDownloadUrl('_mock/branches', `branch-${index + 1}_800x800.webp`),
-        };
-        const branchID = await fsAddNewBranch(modifiedBranch, businessProfileID);
-        return branchID;
-      })
+      DEFAULT_BRANCHES(businessProfileID)
+        .splice(0, branchesCount > 3 ? 3 : branchesCount)
+        .map(async (branch, index) => {
+          const modifiedBranch = {
+            ...branch,
+            cover: await fsGetImgDownloadUrl('_mock/branches', `branch-${index + 1}_800x800.webp`),
+          };
+          const branchID = await fsAddNewBranch(modifiedBranch, businessProfileID);
+          return branchID;
+        })
     );
 
     // 5- ADD STAFF
     let branchIndex = 0;
-    await Promise.all(
-      DEFAULT_STAFF(businessProfileID).map(async (staff, index) => {
-        if (index === 1 || index === 0) branchIndex = 0;
-        if (index === 2 || index === 3) branchIndex = 1;
-        if (index === 4 || index === 5) branchIndex = 2;
+    // eslint-disable-next-line no-unused-expressions
+    !isMenuOnly &&
+      (await Promise.all(
+        DEFAULT_STAFF(businessProfileID).map(async (staff, index) => {
+          if (index === 1 || index === 0) branchIndex = 0;
+          if (index === 2 || index === 3) branchIndex = 1;
+          if (index === 4 || index === 5) branchIndex = 2;
 
-        const modifiedStaff = {
-          ...staff,
-          branchID: branches[branchIndex],
-        };
-        await fsAddNewStaff(modifiedStaff, businessProfileID);
-      })
-    );
+          const modifiedStaff = {
+            ...staff,
+            branchID: branches[branchIndex],
+          };
+          await fsAddNewStaff(modifiedStaff, businessProfileID);
+        })
+      ));
   }, []);
   const fsBatchUpdateBusinessProfileLanguages = useCallback(
     async (languages, businessProfileID = state.businessProfile.docID) => {
@@ -612,13 +625,26 @@ export function AuthProvider({ children }) {
       // Get menus
       const menus = await fsGetAllMenus(businessProfileID);
       const menuID = menus.find((menu) => menu.title === 'Main Menu')?.docID || menus[0].docID;
+      const newDocRef = doc(
+        collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
+      );
+
+      if (MAX_ALLOWED_USER_TABLES === 1) {
+        await setDoc(newDocRef, {
+          docID: newDocRef.id,
+          menuID: menuID || '',
+          businessProfileID,
+          branchID,
+          isActive: true,
+          title: `Menu View only`,
+          note: `This virtual table offers a QR-Menu that exclusively displays your menu. You can utilize this QR menu by showcasing it on your restaurant's front door, allowing customers to easily view your offerings. `,
+          index: 0,
+        });
+        return;
+      }
 
       const batch = writeBatch(DB);
-
       for (let index = 0; index <= MAX_ALLOWED_USER_TABLES; index += 1) {
-        const newDocRef = doc(
-          collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
-        );
         batch.set(newDocRef, {
           docID: newDocRef.id,
           menuID: menuID || '',

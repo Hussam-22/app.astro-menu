@@ -38,6 +38,7 @@ function QRMenuHomeView() {
       businessName,
       translationEdited,
       translation,
+      logo,
     },
     branchInfo: { title, cover, wifiPassword, isActive: isBranchActive, email, number },
     tableInfo: { title: tableTitle, isActive: isTableActive, index },
@@ -52,7 +53,7 @@ function QRMenuHomeView() {
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['business_Logo', docID],
     queryFn: () => fsGetImgDownloadUrl(bucketPath, 'logo_800x800.webp'),
-    enabled: !!docID,
+    enabled: !!docID && !logo,
   });
 
   const getDescription = () => {
@@ -130,9 +131,9 @@ function QRMenuHomeView() {
         <Stack direction="column" spacing={1}>
           <Box sx={{ position: 'relative' }}>
             <Image src={cover} sx={{ borderRadius: 1 }} ratio="16/9" />
-            {business_Logo && (
+            {(logo || business_Logo) && (
               <Image
-                src={business_Logo}
+                src={logo || business_Logo}
                 sx={{
                   width: 100,
                   height: 100,

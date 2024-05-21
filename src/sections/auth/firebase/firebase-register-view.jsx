@@ -87,6 +87,7 @@ export default function FirebaseRegisterView() {
   });
 
   const {
+    watch,
     reset,
     handleSubmit,
     formState: { isSubmitting },
@@ -99,8 +100,7 @@ export default function FirebaseRegisterView() {
   } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
   });
-
-  console.log(mutationError);
+  const values = watch();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -129,10 +129,6 @@ export default function FirebaseRegisterView() {
       };
 
       mutate(() => fsCreateBusinessProfile(businessProfile));
-
-      // const searchParams = new URLSearchParams({ email: data.email }).toString();
-      // const href = `${paths.auth.firebase.verify}?${searchParams}`;
-      // router.push(href);
     } catch (error) {
       console.error(error);
       reset();
@@ -449,9 +445,9 @@ export default function FirebaseRegisterView() {
   );
 
   const runWorkflow = async () => {
-    const businessProfileID = 'U4fBBcYYeZ5Giie9pYmo';
-    // await createDefaults(businessProfileID);
-    mutate(() => createDefaults(businessProfileID));
+    const businessProfileID = 'aUx7dsVErMMOgcJuZFat';
+    const selectedPlan = PLANS_INFO.find((plan) => plan.name === values.plan);
+    mutate(() => createDefaults(businessProfileID, [selectedPlan]));
   };
 
   return (

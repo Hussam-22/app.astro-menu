@@ -15,7 +15,7 @@ function QrMenuView() {
   const {
     tableInfo,
     branchInfo,
-    businessProfile: { docID, businessName, defaultLanguage, translationEdited, translation },
+    businessProfile: { docID, businessName, defaultLanguage, translationEdited, translation, logo },
     selectedLanguage,
   } = useQrMenuContext();
   const router = useRouter();
@@ -33,7 +33,7 @@ function QrMenuView() {
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['business_Logo', docID],
     queryFn: () => fsGetImgDownloadUrl(bucketPath, 'logo_800x800.webp'),
-    enabled: !!docID && branchInfo.isActive && tableInfo?.docID && tableInfo?.isActive,
+    enabled: !!docID && branchInfo.isActive && tableInfo?.docID && tableInfo?.isActive && !logo,
   });
 
   const tableNumber = tableInfo?.index === 0 ? 'QR Menu' : `Table ${tableInfo?.index}`;
@@ -88,9 +88,9 @@ function QrMenuView() {
   return (
     <Stack direction="column" spacing={2} sx={{ py: 5 }}>
       <Stack direction="row" alignItems="center" spacing={1}>
-        {business_Logo && (
+        {(logo || business_Logo) && (
           <Image
-            src={business_Logo}
+            src={logo || business_Logo}
             sx={{
               width: 72,
               height: 72,

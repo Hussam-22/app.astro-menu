@@ -20,7 +20,7 @@ function BranchManageView() {
   const { id: branchID } = useParams();
   const theme = useTheme();
   const { themeStretch } = useSettingsContext();
-  const { fsGetBranch } = useAuthContext();
+  const { fsGetBranch, businessProfile } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
 
   const {
@@ -38,11 +38,6 @@ function BranchManageView() {
       icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
       component: branchInfo?.docID && <BranchNewEditForm branchInfo={branchInfo} />,
     },
-    // {
-    //   value: 'Translation',
-    //   icon: <Iconify icon="clarity:language-line" width={20} height={20} />,
-    //   component: <BranchTranslation branchInfo={branchInfo} isFetching={isFetching} />,
-    // },
     {
       value: 'Tables',
       icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
@@ -64,7 +59,7 @@ function BranchManageView() {
       ),
       component: <StaffLink />,
     },
-  ];
+  ].splice(0, businessProfile?.planInfo?.at(-1)?.isMenuOnly ? 2 : 4);
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -82,7 +77,7 @@ function BranchManageView() {
         }
       />
 
-      {branchInfo?.docID && (
+      {branchInfo?.docID && businessProfile.docID && (
         <>
           <Tabs
             allowScrollButtonsMobile

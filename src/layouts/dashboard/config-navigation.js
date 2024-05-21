@@ -111,7 +111,6 @@ export function useNavData() {
             title: t('staffs'),
             path: paths.dashboard.staffs.root,
             icon: ICONS.staffs,
-            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
           // Branches
           {
