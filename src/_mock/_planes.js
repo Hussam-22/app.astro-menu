@@ -22,7 +22,7 @@ export const PLANS_INFO = [
   {
     name: 'Dine Smart',
     description:
-      'Designed for medium-sized restaurants with a capacity of up to 50 tables. The Growth Package provides additional customization options and analytics tools to help you optimize your menu and better understand your customers preferences.',
+      'Designed for medium-sized restaurants with a capacity of up to 30 tables. The Growth Package provides additional customization options and analytics tools to help you optimize your menu and better understand your customers preferences.',
     cost: { monthly: 299, annualDiscount: 10 },
     limits: {
       branch: 1,
@@ -42,7 +42,7 @@ export const PLANS_INFO = [
   {
     name: 'Foodify',
     description:
-      'Designed for upscale restaurants and fine dining establishments, providing a galaxy of features to delight both chefs and patrons',
+      'Designed for upscale restaurants and fine dining establishments with a capacity of up to 40 tables per branch, providing a galaxy of features to delight both chefs and patrons',
     cost: { monthly: 499, annualDiscount: 10 },
     limits: {
       branch: 3,
@@ -62,8 +62,8 @@ export const PLANS_INFO = [
   {
     name: 'Menu Master',
     description:
-      'An elite package for restaurant chains and franchises, offering a constellation of tools to manage multiple locations with ease and precision.',
-    cost: { monthly: 899, annualDiscount: 10 },
+      'An elite package for restaurant chains and franchises with a capacity of up to 50 tables per branch, offering a constellation of tools to manage multiple locations with ease and precision.',
+    cost: { monthly: 799, annualDiscount: 10 },
     limits: {
       branch: 5,
       tables: 50,

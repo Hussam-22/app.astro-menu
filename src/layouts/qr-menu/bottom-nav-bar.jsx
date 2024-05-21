@@ -20,6 +20,7 @@ function BottomNavModern() {
   const router = useRouter();
   const {
     orderSnapShot: { cart, docID },
+    businessProfile,
   } = useAuthContext();
   const { labels, selectedLanguage, branchInfo, tableInfo } = useQrMenuContext();
   const [drawerStates, setDrawerStates] = useState({
@@ -27,6 +28,11 @@ function BottomNavModern() {
     cart: false,
     language: false,
   });
+
+  const isMenuOnly = useMemo(
+    () => businessProfile?.planInfo?.at(-1)?.isMenuOnly,
+    [businessProfile]
+  );
 
   const totalCartItems = useMemo(
     () => cart?.reduce((accumulator, cartPortion) => cartPortion.qty + accumulator, 0),
@@ -74,7 +80,7 @@ function BottomNavModern() {
           sx={{ color: '#000' }}
           badgeContent={labels.length === 0 ? null : ''}
         />
-        {docID && (
+        {docID && tableInfo.index !== 0 && !isMenuOnly && (
           <ActionButton
             clickAction={() => toggleDrawer('cart')}
             icon="/assets/icons/qr-menu/bill.svg"

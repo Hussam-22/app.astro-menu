@@ -20,6 +20,11 @@
 ? Meal Labels
 1- Translate Meal Labels
 
+? Business Profile
+1- Adding new logo issue when navigating to another tab then coming back
+
+
+---------------------------------------------------------------------------
 ! TESTING
 1- Test all maps when there are no data to present
 

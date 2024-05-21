@@ -36,6 +36,8 @@ function QrMenuView() {
     enabled: !!docID && branchInfo.isActive && tableInfo?.docID && tableInfo?.isActive,
   });
 
+  const tableNumber = tableInfo?.index === 0 ? 'QR Menu' : `Table ${tableInfo?.index}`;
+
   if (!branchInfo.isActive && branchInfo.isActive !== undefined)
     return (
       <Box
@@ -100,6 +102,7 @@ function QrMenuView() {
         <Stack direction="column">
           <Typography variant="h4">{getTitle()}</Typography>
           <Typography variant="caption">{branchInfo.title}</Typography>
+          <Typography variant="caption">{tableNumber}</Typography>
         </Stack>
       </Stack>
       <Divider

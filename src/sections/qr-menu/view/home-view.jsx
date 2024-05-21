@@ -87,7 +87,6 @@ function QRMenuHomeView() {
         <Typography variant="h1">Sorry this branch is not open !!</Typography>
       </Box>
     );
-
   return (
     <Box sx={{ py: 2 }}>
       <Card sx={{ p: 1 }}>

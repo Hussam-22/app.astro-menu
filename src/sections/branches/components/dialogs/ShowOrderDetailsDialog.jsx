@@ -19,6 +19,7 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { fDateTime } from 'src/utils/format-time';
+import getCartTotal from 'src/utils/getCartTotal';
 
 ShowOrderDetailsDialog.propTypes = {
   onClose: PropTypes.func,
@@ -52,13 +53,7 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
     [allMeals, orderInfo.cart]
   );
 
-  const orderValue = useMemo(
-    () => cart.reduce((accumulator, portion) => accumulator + portion.price, 0),
-    [cart]
-  );
-
-  const taxValue = +(orderValue * (branchInfo.taxValue / 100)).toFixed(2);
-  const calculatedTotalBill = orderValue + taxValue;
+  const calculatedTotalBill = getCartTotal(cart, branchInfo.taxValue);
 
   const orderDate = new Date(lastUpdate.seconds * 1000);
 

@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
@@ -7,6 +6,7 @@ import { Link, TableRow, TableCell, ListItemText } from '@mui/material';
 import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
 import { fDateTime } from 'src/utils/format-time';
+import getCartTotal from 'src/utils/getCartTotal';
 // ----------------------------------------------------------------------
 
 TableOrdersTableRow.propTypes = {
@@ -55,13 +55,7 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
     return ['In Progress', 'default'];
   };
 
-  const orderValue = useMemo(
-    () => cart.reduce((accumulator, portion) => accumulator + portion.price, 0),
-    [cart]
-  );
-
-  const taxValue = +(orderValue * (branchInfo.taxValue / 100)).toFixed(2);
-  const calculatedTotalBill = orderValue + taxValue;
+  const calculatedTotalBill = getCartTotal(cart, branchInfo.taxValue);
 
   return (
     <TableRow hover>

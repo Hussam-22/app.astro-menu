@@ -16,7 +16,7 @@ function MealCard({ mealInfo }) {
   const theme = useTheme();
   const { tableID } = useParams();
   const { cover, description, isNew, portions, title, translation, translationEdited } = mealInfo;
-  const { orderSnapShot } = useAuthContext();
+  const { orderSnapShot, businessProfile } = useAuthContext();
   const { branchInfo, selectedLanguage, tableInfo } = useQrMenuContext();
   const [isReadMore, setIsReadMore] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -44,6 +44,11 @@ function MealCard({ mealInfo }) {
         return accumulator;
       }, 0) || 0,
     [mealInfo.docID, orderSnapShot.cart]
+  );
+
+  const isMenuOnly = useMemo(
+    () => businessProfile?.planInfo?.at(-1)?.isMenuOnly,
+    [businessProfile.planInfo]
   );
 
   const isMealActive = !branchInfo.disabledMeals?.includes(mealInfo.docID) && mealInfo.isActive;
@@ -102,7 +107,8 @@ function MealCard({ mealInfo }) {
           {isMealActive &&
             branchInfo?.allowSelfOrder &&
             tableInfo.index !== 0 &&
-            orderSnapShot?.updateCount === 0 && (
+            orderSnapShot?.updateCount === 0 &&
+            !isMenuOnly && (
               <>
                 <IconButton
                   variant="contained"

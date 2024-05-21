@@ -55,7 +55,6 @@ export function QrMenuContextProvider({ children }) {
     queryFn: () => fsGetMenu(tableInfo.menuID, businessProfileID),
     enabled: isTableInfoSuccess && tableInfo?.menuID !== undefined,
   });
-
   const { data: branchUnsubscribe = {} } = useQuery({
     queryKey: ['branch', businessProfileID, branchID],
     queryFn: () => fsGetBranchSnapshot(branchID, businessProfileID),

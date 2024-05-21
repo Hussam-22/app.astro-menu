@@ -124,6 +124,9 @@ function BusinessProfileEditForm() {
     });
   };
 
+  const translationEditUsageLimit = businessProfile?.translationEditUsage?.THIS_MONTH || 0;
+  const availableLimit = 3 - translationEditUsageLimit;
+
   return (
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -169,7 +172,7 @@ function BusinessProfileEditForm() {
                     </Typography>
                   }
                 />
-                <Button variant="contained" onClick={handleRemoveFile} disabled={!!values.logo}>
+                <Button variant="contained" onClick={handleRemoveFile} disabled={!values.logo}>
                   Remove Logo
                 </Button>
               </Stack>
@@ -199,7 +202,7 @@ function BusinessProfileEditForm() {
                   <Typography variant="caption" sx={{ color: 'error.main' }}>
                     You can only change the languages list 3 times a month to avoid excessive usage{' '}
                     <Box component="span" sx={{ color: 'common.black' }}>
-                      | Available limit: {3 - businessProfile.translationEditUsage[THIS_MONTH] || 0}
+                      | Available limit: {availableLimit}
                     </Box>
                   </Typography>
                 </Stack>

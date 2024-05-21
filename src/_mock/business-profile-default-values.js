@@ -1,13 +1,11 @@
 export const DEFAULT_LABELS = [
   'chicken',
   'beef',
-  'plant-based',
   'spicy',
   'gluten free',
   'seafood',
   'healthy',
   'Asian',
-  'italian',
   'vegetarian',
 ];
 export const DEFAULT_MEALS = (businessProfileID) => [

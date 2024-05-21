@@ -245,16 +245,6 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-  const fsGetFolderImages = useCallback(async (bucket, folderID) => {
-    const listRef = ref(STORAGE, `gs://${bucket}/${folderID}`);
-    const imagesList = await listAll(listRef);
-    const imagesUrl = await Promise.all(
-      imagesList.items.map(async (imageRef) => getDownloadURL(ref(STORAGE, imageRef)))
-    );
-    const thumbnail = imagesUrl.filter((url) => url.includes('200x200'));
-    const largeImage = imagesUrl.filter((url) => url.includes('1920x1080'));
-    return [thumbnail, largeImage];
-  }, []);
   const fsDeleteImage = useCallback(async (bucketPath, imgID) => {
     const storageRef = ref(STORAGE, `gs://${bucketPath}${imgID}`);
     deleteObject(storageRef)
@@ -264,6 +254,16 @@ export function AuthProvider({ children }) {
       .catch((error) => {
         console.error('Error deleting image:', error);
       });
+  }, []);
+  const fsGetFolderImages = useCallback(async (bucket, folderID) => {
+    const listRef = ref(STORAGE, `gs://${bucket}/${folderID}`);
+    const imagesList = await listAll(listRef);
+    const imagesUrl = await Promise.all(
+      imagesList.items.map(async (imageRef) => getDownloadURL(ref(STORAGE, imageRef)))
+    );
+    const thumbnail = imagesUrl.filter((url) => url.includes('200x200'));
+    const largeImage = imagesUrl.filter((url) => url.includes('1920x1080'));
+    return [thumbnail, largeImage];
   }, []);
   const fsUploadMultipleImages = useCallback(async (bucketPath, image) => {
     const storageRef = ref(STORAGE, `gs://${bucketPath}`);
@@ -334,7 +334,7 @@ export function AuthProvider({ children }) {
     async (data) => {
       try {
         // 1- REGISTER OWNER
-        const { email, password, firstName, lastName, description, ...businessProfileInfo } = data;
+        const { email, password, firstName, lastName, ...businessProfileInfo } = data;
         const ownerID = await register?.(email, password, firstName, lastName);
 
         // 2- CREATE BUSINESS PROFILE
@@ -353,13 +353,16 @@ export function AuthProvider({ children }) {
 
         await fbTranslateBranchDesc({
           title: businessProfileInfo.businessName,
-          desc: description,
+          desc: '',
           businessProfileID,
         });
 
         // 3- Update Assign Business-Profile to User
         const userProfile = doc(collection(DB, 'users'), ownerID);
         await updateDoc(userProfile, { businessProfileID });
+
+        // 4- Create Default Data
+        await createDefaults(businessProfileID);
       } catch (error) {
         console.log(error);
       }
@@ -454,7 +457,7 @@ export function AuthProvider({ children }) {
         .map(async (meal, index) => {
           const modifiedMeal = {
             ...meal,
-            cover: await fsGetImgDownloadUrl('_mock/meals/', `meal_${index + 1}_800x800.webp`),
+            cover: await fsGetImgDownloadUrl('_mock/meals', `meal_${index + 1}_800x800.webp`),
             mealLabels: meal.mealLabels.map(
               (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
             ),
@@ -502,14 +505,18 @@ export function AuthProvider({ children }) {
     );
 
     // 5- ADD STAFF
-    // eslint-disable-next-line no-unused-expressions
+    let branchIndex = 0;
     await Promise.all(
       DEFAULT_STAFF(businessProfileID).map(async (staff, index) => {
+        if (index === 1 || index === 0) branchIndex = 0;
+        if (index === 2 || index === 3) branchIndex = 1;
+        if (index === 4 || index === 5) branchIndex = 2;
+
         const modifiedStaff = {
           ...staff,
-          branchID: branches[0],
+          branchID: branches[branchIndex],
         };
-        await fsAddNewStaff(modifiedStaff);
+        await fsAddNewStaff(modifiedStaff, businessProfileID);
       })
     );
   }, []);
@@ -517,7 +524,7 @@ export function AuthProvider({ children }) {
     async (languages, businessProfileID = state.businessProfile.docID) => {
       try {
         // If limit is exceeded throw an error
-        if (state.businessProfile.translationEditUsage[THIS_MONTH] >= 3)
+        if (state?.businessProfile?.translationEditUsage?.THIS_MONTH >= 3)
           throw new Error('Monthly Translation Limit Exceeded !!');
         const promisesArray = [];
         const businessProfileRef = doc(DB, `/businessProfiles/${businessProfileID}`);
@@ -580,7 +587,7 @@ export function AuthProvider({ children }) {
         await updateDoc(businessProfileRef, {
           translationEditUsage: {
             ...(state.businessProfile?.translationEditUsage || {}),
-            [THIS_MONTH]: (state.businessProfile?.translationEditUsage[THIS_MONTH] ?? 0) + 1,
+            [THIS_MONTH]: (state.businessProfile?.translationEditUsage?.THIS_MONTH ?? 0) + 1,
           },
         });
       } catch (error) {
@@ -806,7 +813,9 @@ export function AuthProvider({ children }) {
             const bucketPath = `${businessProfileID}/branches/${element.data().docID}`;
             setBranchSnapshot({
               ...element.data(),
-              cover: await fsGetImgDownloadUrl(bucketPath, `cover_800x800.webp`),
+              cover:
+                element.data().cover ||
+                (await fsGetImgDownloadUrl(bucketPath, `cover_800x800.webp`)),
             });
           }
           processElement();
@@ -828,6 +837,7 @@ export function AuthProvider({ children }) {
         isDeleted: false,
         lastUpdatedBy: '',
         lastUpdatedAt: new Date(),
+        translationEditUsage: { [THIS_MONTH]: 0 },
       });
 
       await fsAddBatchTablesToBranch(newDocRef.id, businessProfileID);

@@ -100,6 +100,8 @@ export default function FirebaseRegisterView() {
     mutationFn: (mutateFn) => mutateFn(),
   });
 
+  console.log(mutationError);
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       const selectedPlan = PLANS_INFO.find((plan) => plan.name === data.plan);
@@ -316,13 +318,13 @@ export default function FirebaseRegisterView() {
                   <Typography variant="h5" sx={{ whiteSpace: 'nowrap' }}>
                     {plan.name}
                   </Typography>
+                  <Box>{plan.isFav && <Label color="secondary">Popular</Label>}</Box>
                 </Stack>
                 <Typography variant="h5">
                   {plan.cost.monthly} <sup style={{ fontSize: '9px' }}>AED</sup>
                 </Typography>
               </Stack>
               <Typography variant="body2">{plan.description}</Typography>
-              <Box>{plan.isFav && <Label color="secondary">Popular</Label>}</Box>
             </Stack>
 
             <Divider sx={{ borderStyle: 'dashed' }} flexItem />
@@ -375,7 +377,7 @@ export default function FirebaseRegisterView() {
               </Stack>
 
               <Typography variant="body2">
-                <strong>QR/Tables: </strong> {plan.limits.tables} /per branch
+                <strong>QR Codes: </strong> {plan.limits.tables} /per branch
               </Typography>
               <Typography variant="body2">
                 <strong>Branches: </strong>
@@ -447,7 +449,7 @@ export default function FirebaseRegisterView() {
   );
 
   const runWorkflow = async () => {
-    const businessProfileID = 'FLqmCtMhS4uQNQSgOjf4';
+    const businessProfileID = 'U4fBBcYYeZ5Giie9pYmo';
     // await createDefaults(businessProfileID);
     mutate(() => createDefaults(businessProfileID));
   };
