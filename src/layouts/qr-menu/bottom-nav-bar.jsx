@@ -57,7 +57,7 @@ function BottomNavModern() {
         width: 'inherit',
         maxWidth: 'inherit',
         transform: 'translateX(-50%)',
-        // borderRadius: '25px 25px 0 0',
+        borderRadius: '25px 25px 0 0',
         border: `solid 1px ${theme.palette.grey[300]}`,
         background: theme.palette.background.paper,
       }}

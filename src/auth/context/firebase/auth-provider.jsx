@@ -355,6 +355,8 @@ export function AuthProvider({ children }) {
           isActive: true,
           createdOn: new Date(),
           logo: await fsGetImgDownloadUrl('_mock', `business_logo_800x800.webp`),
+          description:
+            'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.',
         });
 
         const businessProfileID = newDocRef.id;
@@ -521,18 +523,13 @@ export function AuthProvider({ children }) {
     );
 
     // 5- ADD STAFF
-    let branchIndex = 0;
     // eslint-disable-next-line no-unused-expressions
     !isMenuOnly &&
       (await Promise.all(
-        DEFAULT_STAFF(businessProfileID).map(async (staff, index) => {
-          if (index === 1 || index === 0) branchIndex = 0;
-          if (index === 2 || index === 3) branchIndex = 1;
-          if (index === 4 || index === 5) branchIndex = 2;
-
+        DEFAULT_STAFF(businessProfileID).map(async (staff) => {
           const modifiedStaff = {
             ...staff,
-            branchID: branches[branchIndex],
+            branchID: branches[0],
           };
           await fsAddNewStaff(modifiedStaff, businessProfileID);
         })
