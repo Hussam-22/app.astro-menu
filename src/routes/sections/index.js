@@ -1,6 +1,7 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 
 import MainLayout from 'src/layouts/main';
+import { useAuthContext } from 'src/auth/hooks';
 import { staffRoutes } from 'src/routes/sections/staff';
 import { qrMenuRoutes } from 'src/routes/sections/qr-menu';
 
@@ -13,6 +14,15 @@ import { componentsRoutes } from './components';
 // ----------------------------------------------------------------------
 
 export default function Router() {
+  const { businessProfile } = useAuthContext();
+
+  const filteredDashboardRoutes = dashboardRoutes.map((route) => ({
+    ...route,
+    children: route.children.filter((child) => child.path !== 'staffs'),
+  }));
+
+  console.log(filteredDashboardRoutes);
+
   return useRoutes([
     // SET INDEX PAGE WITH SKIP HOME PAGE
     // {
@@ -37,7 +47,7 @@ export default function Router() {
     ...authDemoRoutes,
 
     // Dashboard routes
-    ...dashboardRoutes,
+    ...filteredDashboardRoutes,
 
     // Main routes
     ...mainRoutes,

@@ -338,5 +338,19 @@ export function useNavData() {
     [t, businessProfile]
   );
 
-  return data;
+  // MenuOnly Plans don't have access to "Staffs" page
+  const filteredData = useMemo(
+    () =>
+      (businessProfile?.docID &&
+        (businessProfile?.planInfo?.at(-1)?.isMenuOnly
+          ? data.map((item) => ({
+              subheader: item.subheader,
+              items: item.items.filter((tab) => tab.path !== paths.dashboard.staffs.root),
+            }))
+          : data)) ||
+      [],
+    [businessProfile?.docID, businessProfile?.planInfo, data]
+  );
+
+  return filteredData;
 }
