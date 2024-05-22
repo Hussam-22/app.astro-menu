@@ -5,10 +5,10 @@ import PropTypes from 'prop-types';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
+import Image from 'src/components/image';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 // assets
-import { ForbiddenIllustration } from 'src/assets/illustrations';
 // components
 import { varBounce, MotionContainer } from 'src/components/animate';
 
@@ -19,9 +19,9 @@ export default function RoleBasedGuard({ hasContent, roles, children, sx }) {
   const { user } = useMockedUser();
 
   // const currentRole = 'user';
-  const currentRole = user?.role; // admin;
+  // const currentRole = user?.role; // admin;
 
-  if (typeof roles !== 'undefined' && !roles.includes(currentRole)) {
+  if (typeof roles !== 'undefined' && !roles.includes('full')) {
     return hasContent ? (
       <Container component={MotionContainer} sx={{ textAlign: 'center', ...sx }}>
         <m.div variants={varBounce().in}>
@@ -37,7 +37,15 @@ export default function RoleBasedGuard({ hasContent, roles, children, sx }) {
         </m.div>
 
         <m.div variants={varBounce().in}>
-          <ForbiddenIllustration
+          {/* <ForbiddenIllustration
+            sx={{
+              height: 260,
+              my: { xs: 5, sm: 10 },
+            }}
+          /> */}
+          <Image
+            src="/assets/illustrations/no-access.svg"
+            alt="No Access"
             sx={{
               height: 260,
               my: { xs: 5, sm: 10 },

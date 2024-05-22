@@ -321,7 +321,12 @@ export function AuthProvider({ children }) {
           type: 'INITIAL',
           payload: {
             ...state,
-            businessProfile: { ...docSnapshot.data(), logo, ownerInfo: businessOwnerInfo },
+            businessProfile: {
+              ...docSnapshot.data(),
+              logo,
+              ownerInfo: businessOwnerInfo,
+              role: docSnapshot.data().planInfo.at(-1).isMenuOnly ? 'menuOnly' : 'full',
+            },
           },
         });
 

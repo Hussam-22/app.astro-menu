@@ -16,13 +16,6 @@ import { componentsRoutes } from './components';
 export default function Router() {
   const { businessProfile } = useAuthContext();
 
-  const filteredDashboardRoutes = dashboardRoutes.map((route) => ({
-    ...route,
-    children: route.children.filter((child) => child.path !== 'staffs'),
-  }));
-
-  console.log(filteredDashboardRoutes);
-
   return useRoutes([
     // SET INDEX PAGE WITH SKIP HOME PAGE
     // {
@@ -47,7 +40,7 @@ export default function Router() {
     ...authDemoRoutes,
 
     // Dashboard routes
-    ...filteredDashboardRoutes,
+    ...dashboardRoutes,
 
     // Main routes
     ...mainRoutes,

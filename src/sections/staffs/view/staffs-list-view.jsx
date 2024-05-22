@@ -19,8 +19,9 @@ import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 // redux
 import { useAuthContext } from 'src/auth/hooks';
-import Scrollbar from 'src/components/scrollbar';
 // sections
+import { RoleBasedGuard } from 'src/auth/guard';
+import Scrollbar from 'src/components/scrollbar';
 // hooks
 import { useSettingsContext } from 'src/components/settings';
 import TableToolbar from 'src/sections/staffs/list/TableToolbar';
@@ -52,7 +53,10 @@ const TABLE_HEAD = [
 export default function StaffsListView() {
   const router = useRouter();
   const { themeStretch } = useSettingsContext();
-  const { fsGetStaffList } = useAuthContext();
+  const {
+    fsGetStaffList,
+    businessProfile: { role },
+  } = useAuthContext();
   const [filterName, setFilterName] = useState('');
   const { dense, page, order, orderBy, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } =
     useTable({
@@ -83,82 +87,84 @@ export default function StaffsListView() {
   const isNotFound = !dataFiltered.length && !!filterName;
 
   return (
-    <Container maxWidth={themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading="Staffs List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.staffs.root },
-          {
-            name: 'Staffs',
-          },
-        ]}
-        action={
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            component={RouterLink}
-            to={paths.dashboard.staffs.new}
-          >
-            New Staff
-          </Button>
-        }
-      />
+    <RoleBasedGuard hasContent roles={[role]} sx={{ py: 10 }}>
+      <Container maxWidth={themeStretch ? false : 'lg'}>
+        <CustomBreadcrumbs
+          heading="Staffs List"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.staffs.root },
+            {
+              name: 'Staffs',
+            },
+          ]}
+          action={
+            <Button
+              variant="contained"
+              startIcon={<Iconify icon="eva:plus-fill" />}
+              component={RouterLink}
+              to={paths.dashboard.staffs.new}
+            >
+              New Staff
+            </Button>
+          }
+        />
 
-      <Card sx={{ mt: 4 }}>
-        <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
+        <Card sx={{ mt: 4 }}>
+          <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
-        <Scrollbar>
-          <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
-            <Table size="small">
-              <TableHeadCustom
-                disableSelectAllRows
-                order={order}
-                orderBy={orderBy}
-                headLabel={TABLE_HEAD}
-                rowCount={tableData.length}
-                // numSelected={selected.length}
-                // onSort={onSort}
-              />
-
-              <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) =>
-                    row ? (
-                      <TableDataRows
-                        key={row.docID}
-                        row={row}
-                        onEditRow={() => handleEditRow(row.docID)}
-                      />
-                    ) : (
-                      !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
-                    )
-                  )}
-
-                <TableEmptyRows
-                  height={60}
-                  emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
+          <Scrollbar>
+            <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
+              <Table size="small">
+                <TableHeadCustom
+                  disableSelectAllRows
+                  order={order}
+                  orderBy={orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={tableData.length}
+                  // numSelected={selected.length}
+                  // onSort={onSort}
                 />
 
-                <TableNoData isNotFound={isNotFound} />
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+                <TableBody>
+                  {dataFiltered
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) =>
+                      row ? (
+                        <TableDataRows
+                          key={row.docID}
+                          row={row}
+                          onEditRow={() => handleEditRow(row.docID)}
+                        />
+                      ) : (
+                        !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
+                      )
+                    )}
 
-        <Box sx={{ position: 'relative' }}>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={dataFiltered.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
-          />
-        </Box>
-      </Card>
-    </Container>
+                  <TableEmptyRows
+                    height={60}
+                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
+                  />
+
+                  <TableNoData isNotFound={isNotFound} />
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+
+          <Box sx={{ position: 'relative' }}>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={dataFiltered.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={onChangePage}
+              onRowsPerPageChange={onChangeRowsPerPage}
+            />
+          </Box>
+        </Card>
+      </Container>
+    </RoleBasedGuard>
   );
 }
 
