@@ -37,4 +37,5 @@
 
 * Next Release
 1- Get Customer Feedback
+2- Sub-users, Limit sub-users access to specific branches
 */

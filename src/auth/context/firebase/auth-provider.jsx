@@ -452,61 +452,67 @@ export function AuthProvider({ children }) {
     [state]
   );
   const createDefaults = useCallback(async (businessProfileID, planInfo) => {
-    console.log(businessProfileID);
     const {
       isMenuOnly,
       limits: { branch: branchesCount },
     } = planInfo.at(-1);
 
     // 1- ADD MEAL LABELS
-    const mealLabels = await Promise.all(
-      DEFAULT_LABELS.map(async (label) => ({
-        id: await fsAddNewMealLabel(label, businessProfileID),
-        label,
-      }))
-    );
+    const mealLabels =
+      false &&
+      (await Promise.all(
+        DEFAULT_LABELS.map(async (label) => ({
+          id: await fsAddNewMealLabel(label, businessProfileID),
+          label,
+        }))
+      ));
 
     // 2- ADD MEALS
-    const meals = await Promise.all(
-      DEFAULT_MEALS(businessProfileID)
-        // .splice(0, 3)
-        .map(async (meal, index) => {
-          const modifiedMeal = {
-            ...meal,
-            cover: await fsGetImgDownloadUrl('_mock/meals', `meal_${index + 1}_800x800.webp`),
-            mealLabels: meal.mealLabels.map(
-              (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
-            ),
-          };
-          const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
-          return {
-            id: mealID,
-            meal,
-          };
-        })
-    );
+    const meals =
+      false &&
+      (await Promise.all(
+        DEFAULT_MEALS(businessProfileID)
+          // .splice(0, 3)
+          .map(async (meal, index) => {
+            const modifiedMeal = {
+              ...meal,
+              cover: await fsGetImgDownloadUrl('_mock/meals', `meal_${index + 1}_800x800.webp`),
+              mealLabels: meal.mealLabels.map(
+                (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
+              ),
+            };
+            const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
+            return {
+              id: mealID,
+              meal,
+            };
+          })
+      ));
 
     // 3- ADD MENUS
-    const menus = await Promise.all(
-      DEFAULT_MENUS(businessProfileID).map(async (menu) => ({
-        id: await fsAddNewMenu(menu, businessProfileID),
-        menu,
-      }))
-    );
+    const menus =
+      false &&
+      (await Promise.all(
+        DEFAULT_MENUS(businessProfileID).map(async (menu) => ({
+          id: await fsAddNewMenu(menu, businessProfileID),
+          menu,
+        }))
+      ));
 
     // 3- ADD MENU SECTIONS
     // eslint-disable-next-line no-unused-expressions
-    await Promise.all(
-      DEFAULT_MENU_SECTIONS.map(async (section, order) => {
-        const sectionMeals = meals
-          .filter((item) => item.meal.section === section)
-          .map((meal) => meal.id);
+    false &&
+      (await Promise.all(
+        DEFAULT_MENU_SECTIONS.map(async (section, order) => {
+          const sectionMeals = meals
+            .filter((item) => item.meal.section === section)
+            .map((meal) => meal.id);
 
-        menus.map(async (menu) =>
-          fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
-        );
-      })
-    );
+          menus.map(async (menu) =>
+            fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
+          );
+        })
+      ));
 
     // 4- ADD BRANCHES
     const branches = await Promise.all(
@@ -627,11 +633,11 @@ export function AuthProvider({ children }) {
       // Get menus
       const menus = await fsGetAllMenus(businessProfileID);
       const menuID = menus.find((menu) => menu.title === 'Main Menu')?.docID || menus[0].docID;
-      const newDocRef = doc(
-        collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
-      );
 
-      if (MAX_ALLOWED_USER_TABLES === 1) {
+      if (+MAX_ALLOWED_USER_TABLES === 1) {
+        const newDocRef = doc(
+          collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
+        );
         await setDoc(newDocRef, {
           docID: newDocRef.id,
           menuID: menuID || '',
@@ -646,7 +652,10 @@ export function AuthProvider({ children }) {
       }
 
       const batch = writeBatch(DB);
-      for (let index = 0; index <= MAX_ALLOWED_USER_TABLES; index += 1) {
+      for (let index = 0; index < +MAX_ALLOWED_USER_TABLES + 1; index += 1) {
+        const newDocRef = doc(
+          collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
+        );
         batch.set(newDocRef, {
           docID: newDocRef.id,
           menuID: menuID || '',

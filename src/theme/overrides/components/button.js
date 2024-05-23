@@ -40,6 +40,7 @@ export default function Button(theme) {
         // OUTLINED
         ...(outlinedVariant && {
           borderColor: alpha(theme.palette.grey[500], 0.32),
+
           '&:hover': {
             backgroundColor: theme.palette.action.hover,
           },
@@ -68,12 +69,19 @@ export default function Button(theme) {
     };
 
     const colorStyle = COLORS.map((color) => ({
-      borderRadius: 10,
+      borderRadius: 20,
       ...(ownerState.color === color && {
         // CONTAINED
         ...(containedVariant && {
           '&:hover': {
             boxShadow: theme.customShadows[color],
+          },
+        }),
+        // CONTAINED
+        ...(outlinedVariant && {
+          borderWidth: 3,
+          '&:hover': {
+            borderWidth: 3,
           },
         }),
         // SOFT

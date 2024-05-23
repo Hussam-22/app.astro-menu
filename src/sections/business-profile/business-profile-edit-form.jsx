@@ -50,8 +50,6 @@ function BusinessProfileEditForm() {
       businessName: businessProfile?.businessName || '',
       description: businessProfile?.description || '',
       email: businessProfile.ownerInfo.email || '',
-      country: !!businessProfile?.country,
-      address: businessProfile?.address || '',
       languages: businessProfile?.languages || [],
       defaultLanguage: businessProfile?.defaultLanguage || '',
       logo: businessProfile?.logo || '',
@@ -179,8 +177,6 @@ function BusinessProfileEditForm() {
               <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
                 <RHFTextField name="businessName" label="Business Name" disabled />
                 <RHFTextField name="description" label="Description" rows={5} multiline />
-                <RHFTextField name="address" label="Address" disabled />
-                <RHFTextField name="country" label="Address" disabled />
                 <RHFTextField type="email" name="email" label="Business Email" disabled />
               </Stack>
             </Stack>

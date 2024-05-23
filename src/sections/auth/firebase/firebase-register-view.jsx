@@ -445,7 +445,7 @@ export default function FirebaseRegisterView() {
   );
 
   const runWorkflow = async () => {
-    const businessProfileID = 'aUx7dsVErMMOgcJuZFat';
+    const businessProfileID = 'sZ8cqIq1ceNOPDAwDB18';
     const selectedPlan = PLANS_INFO.find((plan) => plan.name === values.plan);
     mutate(() => createDefaults(businessProfileID, [selectedPlan]));
   };
