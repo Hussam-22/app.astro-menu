@@ -31,9 +31,6 @@ function BusinessProfilePlanInfo() {
   const trialExpirationDate = fDate(new Date(trialExpiration.seconds * 1000));
   const remainingDays = Math.floor((trialExpiration.seconds - Date.now() / 1000) / 86400);
 
-  const nextPaymentDate = fDate(new Date(paymentInfo.nextPaymentDate.seconds * 1000));
-  const lastPaymentDate = fDate(new Date(paymentInfo.paymentDate.seconds * 1000));
-
   const labelContent = () => {
     if (isTrial) return { label: 'Trial', color: 'info' };
     if (isActive) return { label: 'Active', color: 'success' };
@@ -88,8 +85,6 @@ function BusinessProfilePlanInfo() {
             />
           )}
 
-          <PlanInfoItem title="Last Payment" content={lastPaymentDate} />
-          <PlanInfoItem title="Next Payment Date" content={nextPaymentDate} />
           <PlanInfoItem title="Description" content={description} />
           <Divider sx={{ borderStyle: 'dashed' }} />
           <Stack direction="row" spacing={2} justifyContent="space-evenly" flexWrap>
