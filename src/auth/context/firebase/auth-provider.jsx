@@ -814,7 +814,7 @@ export function AuthProvider({ children }) {
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/`);
         const docSnap = await getDoc(docRef);
 
-        if (docSnap.data().translation === '') throw new Error('No Translation Found !!');
+        // if (docSnap.data().translation === '') throw new Error('No Translation Found !!');
 
         if (docSnap.data().cover)
           return {
