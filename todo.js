@@ -15,11 +15,13 @@
 
 ? QR Menu
 1- How item will look without image or description
-2- Clicking on the item should open a modal with the item details
+2- Clicking on the meal image should open a drawer with the item details
 3- Allow selecting only single "Meal Type"
+4- switch meal info from "modal" to "drawer"
 
 ? Branch
-- Show Mock image if no image is uploaded
+1- Show Mock image if no image is uploaded
+2- Allow Branch Admin to Close Table Order from dashboard -- Close only, no collect payment is allowed
 
 ? Meal Labels
 1- Translate Meal Labels
