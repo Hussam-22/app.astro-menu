@@ -18,6 +18,8 @@
 2- Clicking on the meal image should open a drawer with the item details
 3- Allow selecting only single "Meal Type"
 4- switch meal info from "modal" to "drawer"
+! 5- Add Search meal by name field (Think about it)
+6- Most Ordered Meal
 
 ? Branch
 1- Show Mock image if no image is uploaded
@@ -32,6 +34,7 @@
 3- Payment info
 4- Add sub users
 5- Create a firebase schedule function to check if the plan is expired or not
+6- prevent uploading svg images
 
 ---------------------------------------------------------------------------
 ! TESTING
@@ -40,4 +43,5 @@
 * Next Release
 1- Get Customer Feedback
 2- Sub-users, Limit sub-users access to specific branches
+3- Allow customers to register and show past orders and favorite meals
 */
