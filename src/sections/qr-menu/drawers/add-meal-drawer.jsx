@@ -67,7 +67,7 @@ const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo, m
 
   return (
     <Drawer anchor="bottom" open={isOpen} onClose={() => onClose()}>
-      <Scrollbar sx={{ height: '90dvh', bgcolor: 'background.default', pb: 3 }}>
+      <Scrollbar sx={{ maxHeight: '90dvh', height: 1, bgcolor: 'background.default', pb: 3 }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={1} direction="column">
             <Image src={mealInfo.cover} sx={{ height: 250 }} ratio="21/9" />

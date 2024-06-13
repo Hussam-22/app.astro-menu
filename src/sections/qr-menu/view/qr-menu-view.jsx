@@ -110,7 +110,6 @@ function QrMenuView() {
               width: 72,
               height: 72,
               borderRadius: 1,
-              border: `2px solid ${theme.palette.divider}`,
             }}
           />
         )}

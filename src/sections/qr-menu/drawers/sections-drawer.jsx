@@ -75,17 +75,14 @@ function SectionsDrawer({ openState, toggleDrawer }) {
           divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
         >
           <Box sx={{ width: 1 }}>
-            <Scrollbar sx={{ maxHeight: 250 }}>
+            <Scrollbar sx={{ maxHeight: 1 }}>
               <Typography variant="h4">Menu Sections</Typography>
               {menuSections.length !== 0 && (
                 <Box
                   sx={{
                     display: 'grid',
-                    gridTemplateColumns: { xs: 'repeat(2,1fr)', sm: 'repeat(1,1fr)' },
+                    gridTemplateColumns: { xs: 'repeat(3,1fr)', sm: 'repeat(1,1fr)' },
                     gap: 1,
-                    bgcolor: 'background.default',
-                    borderRadius: 1,
-                    p: 1,
                   }}
                 >
                   {[...menuSections]
@@ -100,15 +97,14 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                     )
                     .sort((a, b) => a.order - b.order)
                     .map((section) => (
-                      <Button
-                        onClick={() => onSectionClickHandler(section.docID)}
+                      <Chip
                         key={section.docID}
+                        label={getTitle(section)}
                         sx={{ fontWeight: '700' }}
-                        variant="outlined"
-                        disableRipple
-                      >
-                        {getTitle(section)}
-                      </Button>
+                        onClick={() => onSectionClickHandler(section.docID)}
+                        size="small"
+                        variant="soft"
+                      />
                     ))}
                 </Box>
               )}
@@ -116,6 +112,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
           </Box>
 
           <Box>
+            <Typography variant="h4">Meal Type</Typography>
             {mealsLabel.length !== 0 && (
               <Box
                 sx={{
@@ -124,9 +121,6 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                   gridTemplateColumns: { xs: 'repeat(3, 1fr)', sm: 'repeat(2, 1fr)' },
                 }}
               >
-                <Typography variant="h4" sx={{ gridColumn: '1/-1' }}>
-                  Meal Type
-                </Typography>
                 {mealsLabel.map((label) => (
                   <Chip
                     key={label.docID}

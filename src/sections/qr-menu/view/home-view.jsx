@@ -142,7 +142,6 @@ function QRMenuHomeView() {
                   zindex: 1,
                   bottom: -30,
                   right: 10,
-                  border: `2px solid ${theme.palette.divider}`,
                 }}
               />
             )}

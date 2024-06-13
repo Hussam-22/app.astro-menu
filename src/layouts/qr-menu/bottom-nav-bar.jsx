@@ -48,8 +48,8 @@ function BottomNavModern() {
   return (
     <Box
       sx={{
-        py: 1.5,
-        height: 70,
+        py: 1,
+        height: 60,
         position: 'fixed',
         bottom: 0,
         left: '50%',
@@ -57,9 +57,7 @@ function BottomNavModern() {
         width: 'inherit',
         maxWidth: 'inherit',
         transform: 'translateX(-50%)',
-        borderRadius: '25px 25px 0 0',
-        border: `solid 1px ${theme.palette.grey[300]}`,
-        background: theme.palette.background.paper,
+        background: theme.palette.background.default,
       }}
     >
       <Stack

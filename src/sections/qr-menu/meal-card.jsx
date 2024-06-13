@@ -53,6 +53,13 @@ function MealCard({ mealInfo }) {
 
   const isMealActive = !branchInfo.disabledMeals?.includes(mealInfo.docID) && mealInfo.isActive;
 
+  const allowAddToCart =
+    isMealActive &&
+    branchInfo?.allowSelfOrder &&
+    tableInfo.index !== 0 &&
+    orderSnapShot?.updateCount === 0 &&
+    !isMenuOnly;
+
   return (
     <Box>
       <Stack direction="row" spacing={1} alignItems="center" sx={{ py: 1 }}>
@@ -103,52 +110,48 @@ function MealCard({ mealInfo }) {
               maxWidth: '85%',
               p: 0,
             }}
-            onClick={() => setIsOpen(true)}
+            onClick={() => allowAddToCart && setIsOpen(true)}
           />
-          {isMealActive &&
-            branchInfo?.allowSelfOrder &&
-            tableInfo.index !== 0 &&
-            orderSnapShot?.updateCount === 0 &&
-            !isMenuOnly && (
-              <>
-                <IconButton
-                  variant="contained"
-                  color="success"
-                  sx={{
-                    position: 'absolute',
-                    bottom: -10,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    bgcolor: 'common.white',
-                    p: 0.1,
-                    // transition: 'left 0.3s ease-in-out', // Add smooth transition
-                  }}
-                  onClick={() => setIsOpen(true)}
-                >
-                  <Iconify icon="carbon:add-filled" sx={{ width: 24, height: 24 }} />
-                </IconButton>
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: -15,
-                    left: '10%',
-                    transform: 'translateX(-50%)',
-                    borderRadius: '50%',
-                    py: 0.3,
-                    px: 1.2,
-                    bgcolor: 'info.main',
-                    color: '#FFFFFF',
-                    border: 'solid 4px #FFF',
-                    fontWeight: 700,
-                    fontSize: '1rem',
-                    visibility: count === 0 ? 'hidden' : 'visible',
-                    transition: 'visibility 0.3s ease-in-out',
-                  }}
-                >
-                  {count}
-                </Box>
-              </>
-            )}
+          {allowAddToCart && (
+            <>
+              <IconButton
+                variant="contained"
+                color="success"
+                sx={{
+                  position: 'absolute',
+                  bottom: -10,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  bgcolor: 'common.white',
+                  p: 0.1,
+                  // transition: 'left 0.3s ease-in-out', // Add smooth transition
+                }}
+                onClick={() => setIsOpen(true)}
+              >
+                <Iconify icon="carbon:add-filled" sx={{ width: 24, height: 24 }} />
+              </IconButton>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: -15,
+                  left: '10%',
+                  transform: 'translateX(-50%)',
+                  borderRadius: '50%',
+                  py: 0.3,
+                  px: 1.2,
+                  bgcolor: 'info.main',
+                  color: '#FFFFFF',
+                  border: 'solid 4px #FFF',
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  visibility: count === 0 ? 'hidden' : 'visible',
+                  transition: 'visibility 0.3s ease-in-out',
+                }}
+              >
+                {count}
+              </Box>
+            </>
+          )}
           {isNew && (
             <Box sx={{ position: 'absolute', top: 4, right: 1 }}>
               <Label
