@@ -15,9 +15,7 @@
 
 ? QR Menu
 1- How item will look without image or description
-2- Clicking on the meal image should open a drawer with the item details
 3- Allow selecting only single "Meal Type"
-4- switch meal info from "modal" to "drawer"
 ! 5- Add Search meal by name field (Think about it)
 6- Most Ordered Meal
 

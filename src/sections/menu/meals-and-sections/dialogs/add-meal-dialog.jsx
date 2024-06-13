@@ -1,7 +1,7 @@
 import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Stack } from '@mui/system';
 import {
@@ -31,7 +31,12 @@ AddMealDialog.propTypes = {
 
 function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
   const { id: menuID } = useParams();
-  const { menuSections } = useAuthContext();
+  const { menuSections, fsGetMenu } = useAuthContext();
+
+  const { data: menuInfo = {} } = useQuery({
+    queryKey: [`menu-${menuID}`],
+    queryFn: () => fsGetMenu(menuID),
+  });
 
   const currentSectionInfo = menuSections.filter((section) => section.docID === sectionID)[0];
   const currentSectionMeals = currentSectionInfo?.meals;
@@ -85,7 +90,7 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
                     mealInfo={meal}
                     currentSectionMeals={currentSectionMeals}
                     sectionID={sectionID}
-                    menuID={menuID}
+                    menuInfo={menuInfo}
                   />
                 </m.div>
               ))}
@@ -103,37 +108,52 @@ export default AddMealDialog;
 MealRow.propTypes = {
   mealInfo: PropTypes.object,
   currentSectionMeals: PropTypes.array,
-  menuID: PropTypes.string,
+  menuInfo: PropTypes.object,
   sectionID: PropTypes.string,
 };
 
-function MealRow({ mealInfo, currentSectionMeals, menuID, sectionID }) {
-  const { fsUpdateSection } = useAuthContext();
+function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
+  const { fsUpdateSection, fsUpdateMenu } = useAuthContext();
   const queryClient = useQueryClient();
 
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      queryClient.invalidateQueries([`sections-${menuID}`]);
+      queryClient.invalidateQueries([`sections-${menuInfo.docID}`]);
+      queryClient.invalidateQueries([`menu-${menuInfo.docID}`]);
     },
   });
 
+  // console.log(menuInfo.meals);
+
   const handleAddMealToSection = (mealID) => {
-    // if mealID DOES exists, Remove it
-    if (currentSectionMeals.includes(mealID))
+    const menuMeals = menuInfo?.meals || [];
+
+    if (currentSectionMeals.includes(mealID)) {
       mutate(() =>
-        fsUpdateSection(menuID, sectionID, {
+        fsUpdateSection(menuInfo.docID, sectionID, {
           meals: currentSectionMeals.filter((sectionMeal) => sectionMeal !== mealID),
         })
       );
 
-    // if mealID DOES NOT exists, Add it
-    if (!currentSectionMeals.includes(mealID))
+      mutate(() => {
+        const updateMeals = menuMeals.filter((meal) => meal !== mealID);
+        fsUpdateMenu({ ...menuInfo, meals: updateMeals });
+      });
+    }
+
+    if (!currentSectionMeals.includes(mealID)) {
       mutate(() =>
-        fsUpdateSection(menuID, sectionID, {
+        fsUpdateSection(menuInfo.docID, sectionID, {
           meals: [...currentSectionMeals, mealID],
         })
       );
+
+      mutate(() => {
+        const updateMeals = [...menuMeals, mealID];
+        fsUpdateMenu({ ...menuInfo, meals: updateMeals });
+      });
+    }
   };
 
   return (
