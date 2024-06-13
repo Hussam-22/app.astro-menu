@@ -55,7 +55,7 @@ function MealCard({ mealInfo }) {
 
   return (
     <Box>
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack direction="row" spacing={1} alignItems="center" sx={{ py: 1 }}>
         <Box
           sx={{
             bgcolor: 'info.main',
