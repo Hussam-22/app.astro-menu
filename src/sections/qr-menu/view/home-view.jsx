@@ -175,16 +175,25 @@ function QRMenuHomeView() {
             {isTableActive ? 'Go to Menu' : 'Table is not accepting orders'}
           </Button>
           <Stack direction="column" alignItems="center" sx={{ mx: 1 }}>
-            {email && <Typography variant="caption">{email}</Typography>}
-            {number && <Typography variant="caption">{number}</Typography>}
+            <Stack
+              direction="row"
+              spacing={1}
+              divider={<Divider flexItem orientation="vertical" />}
+            >
+              {email && <Typography variant="caption">{email}</Typography>}
+              {number && <Typography variant="caption">{number}</Typography>}
+            </Stack>
             <SocialLinks />
           </Stack>
           <Box>
             <Divider sx={{ borderStyle: 'dashed', mb: 1 }} />
-            <Typography variant="caption" component="div" sx={{ textAlign: 'center' }}>
-              © All rights reserved | made by
-              <Link href="https://minimals.cc/"> Mage Menu </Link>
-            </Typography>
+            <Stack direction="row" spacing={0.5} alignItems="center" justifyContent="center">
+              <Typography variant="caption" component="div" sx={{ textAlign: 'center' }}>
+                Provided by
+                <Link href="https://astro-menu.com/"> Astro-Menu</Link>
+              </Typography>
+              <Image src="/assets/astro-logo.svg" sx={{ width: 20, height: 1 }} />
+            </Stack>
           </Box>
         </Stack>
       </Card>

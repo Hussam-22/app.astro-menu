@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types';
 import { useMemo, useState } from 'react';
 
-import { Box, Stack, useTheme, IconButton, Typography } from '@mui/material';
+import { Box, Stack, useTheme, Typography, IconButton } from '@mui/material';
 
-import Image from 'src/components/image';
 import Label from 'src/components/label';
+import Image from 'src/components/image';
 import { useParams } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import TextMaxLine from 'src/components/text-max-line';
+import AddMealDrawer from 'src/sections/qr-menu/drawers/add-meal-drawer';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
-import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
 function MealCard({ mealInfo }) {
   const theme = useTheme();
@@ -54,7 +54,7 @@ function MealCard({ mealInfo }) {
   const isMealActive = !branchInfo.disabledMeals?.includes(mealInfo.docID) && mealInfo.isActive;
 
   return (
-    <Box sx={{ py: 1 }}>
+    <Box>
       <Stack direction="row" spacing={1} alignItems="center">
         <Box
           sx={{
@@ -62,7 +62,7 @@ function MealCard({ mealInfo }) {
             width: count === 0 ? 0 : 8,
             height: 100,
             borderRadius: 3,
-            transition: 'width 0.3s ease-in-out', // Add the transition property here
+            transition: 'width 0.3s ease-in-out',
           }}
         />
         <Stack direction="column" spacing={0} sx={{ width: '70%', flexGrow: 1 }}>
@@ -88,7 +88,7 @@ function MealCard({ mealInfo }) {
         <Box
           sx={{
             position: 'relative',
-            width: '30%',
+            width: '40%',
             height: 1,
             textAlign: 'center',
           }}
@@ -103,6 +103,7 @@ function MealCard({ mealInfo }) {
               maxWidth: '85%',
               p: 0,
             }}
+            onClick={() => setIsOpen(true)}
           />
           {isMealActive &&
             branchInfo?.allowSelfOrder &&
@@ -115,16 +116,16 @@ function MealCard({ mealInfo }) {
                   color="success"
                   sx={{
                     position: 'absolute',
-                    bottom: -15,
+                    bottom: -10,
                     left: '50%',
                     transform: 'translateX(-50%)',
                     bgcolor: 'common.white',
-                    p: 0.25,
+                    p: 0.1,
                     // transition: 'left 0.3s ease-in-out', // Add smooth transition
                   }}
                   onClick={() => setIsOpen(true)}
                 >
-                  <Iconify icon="carbon:add-filled" sx={{ width: 32, height: 32 }} />
+                  <Iconify icon="carbon:add-filled" sx={{ width: 24, height: 24 }} />
                 </IconButton>
                 <Box
                   sx={{
@@ -136,7 +137,7 @@ function MealCard({ mealInfo }) {
                     py: 0.3,
                     px: 1.2,
                     bgcolor: 'info.main',
-                    color: '#000000',
+                    color: '#FFFFFF',
                     border: 'solid 4px #FFF',
                     fontWeight: 700,
                     fontSize: '1rem',
@@ -177,7 +178,7 @@ function MealCard({ mealInfo }) {
         </Box>
       </Stack>
       {isOpen && (
-        <DialogAddComment
+        <AddMealDrawer
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           mealInfo={mealInfo}
@@ -213,8 +214,12 @@ Title.propTypes = {
 function Title({ selectedLanguage, getTitle }) {
   return (
     <Typography
-      variant="h6"
-      sx={{ color: 'info.dark', direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+      sx={{
+        // color: 'info.dark',
+        direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr',
+        lineHeight: 1,
+        fontWeight: 700,
+      }}
     >
       {getTitle()}
     </Typography>
@@ -235,7 +240,7 @@ function Description({ setIsReadMore, selectedLanguage, getDescription, isReadMo
           line={2}
           variant="caption"
           onClick={() => setIsReadMore(true)}
-          sx={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr', color: 'grey.600' }}
+          sx={{ direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr', color: 'grey.500' }}
         >
           {getDescription()}
         </TextMaxLine>

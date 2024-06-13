@@ -3,15 +3,18 @@ import { useQuery } from '@tanstack/react-query';
 import { Box, Stack, Button, Divider, useTheme, Typography } from '@mui/material';
 
 import Image from 'src/components/image';
+import Label from 'src/components/label';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
+import { blinkingElement } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
 import MenuSection from 'src/sections/qr-menu/menu-section';
+import { getOrderStatusStyle } from 'src/utils/get-order-status-styles';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 function QrMenuView() {
   const theme = useTheme();
-  const { menuSections, fsGetImgDownloadUrl } = useAuthContext();
+  const { menuSections, fsGetImgDownloadUrl, orderSnapShot } = useAuthContext();
   const {
     tableInfo,
     branchInfo,
@@ -37,6 +40,18 @@ function QrMenuView() {
   });
 
   const tableNumber = tableInfo?.index === 0 ? 'QR Menu' : `Table ${tableInfo?.index}`;
+
+  const OrderIsInKitchen =
+    orderSnapShot?.isInKitchen?.length !== 0 && orderSnapShot?.isReadyToServe?.length === 0;
+
+  const orderIsReadyToServe =
+    orderSnapShot?.isReadyToServe && orderSnapShot?.isReadyToServe?.length !== 0;
+
+  const orderStatus = getOrderStatusStyle(
+    orderSnapShot?.isInKitchen?.includes(0),
+    orderSnapShot?.isReadyToServe?.includes(0),
+    theme
+  );
 
   if (!branchInfo.isActive && branchInfo.isActive !== undefined)
     return (
@@ -116,6 +131,24 @@ function QrMenuView() {
         .map((section) => (
           <MenuSection key={section.docID} sectionInfo={section} />
         ))}
+      {(OrderIsInKitchen || orderIsReadyToServe) && (
+        <Label
+          variant="filled"
+          color={orderStatus.labelColor}
+          startIcon={<Iconify icon={orderStatus.icon} />}
+          sx={{
+            position: 'fixed',
+            bottom: 80,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            borderRadius: 1,
+            p: 2,
+            ...blinkingElement,
+          }}
+        >
+          {orderStatus.status}
+        </Label>
+      )}
     </Stack>
   );
 }

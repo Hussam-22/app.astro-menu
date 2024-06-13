@@ -65,7 +65,7 @@ function MenuSection({ sectionInfo }) {
         sx={{
           bgcolor: 'background.paper',
           borderRadius: 2,
-          p: 1,
+          py: 1,
           border: 'dashed 1px #D9D9D9',
         }}
       >
