@@ -153,17 +153,15 @@ function MealCard({ mealInfo }) {
           )}
         </Box>
       </Stack>
-      {isOpen && (
-        <AddMealDrawer
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
-          mealInfo={mealInfo}
-          tableID={tableID}
-          orderSnapShot={orderSnapShot}
-          branchInfo={branchInfo}
-          mealTitle={getTitle()}
-        />
-      )}
+      <AddMealDrawer
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        mealInfo={mealInfo}
+        tableID={tableID}
+        orderSnapShot={orderSnapShot}
+        branchInfo={branchInfo}
+        mealTitle={getTitle()}
+      />
     </Box>
   );
 }

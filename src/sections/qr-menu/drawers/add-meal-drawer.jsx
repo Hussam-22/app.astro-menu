@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 
 import { LoadingButton } from '@mui/lab';
-import { Box, Stack, Button, Drawer, Container, Typography } from '@mui/material';
+import { Box, Stack, Button, Drawer, Typography } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
-import generateID from 'src/utils/generate-id';
 import Image from 'src/components/image/image';
+import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
+import TextMaxLine from 'src/components/text-max-line';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFTextField, RHFRadioGroup } from 'src/components/hook-form';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
@@ -67,46 +68,46 @@ const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo, m
 
   return (
     <Drawer anchor="bottom" open={isOpen} onClose={() => onClose()}>
-      <Container maxWidth="sm">
-        <Scrollbar sx={{ maxHeight: '90dvh', height: 1, bgcolor: 'background.default', pb: 3 }}>
-          <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={1} direction="column">
-              <Image src={mealInfo.cover} sx={{ height: 250 }} ratio="21/9" />
-              <Stack spacing={2} sx={{ px: 2 }}>
-                <Box>
-                  <Typography variant="h4">{getTitle()}</Typography>
-                  <Typography variant="body2">{getDescription()}</Typography>
-                </Box>
-                <RHFRadioGroup
-                  spacing={-1}
-                  name="portion"
-                  options={mealInfo.portions.map((portion, index) => ({
-                    value: index,
-                    label: `${portion.portionSize} - ${portion.gram}gram - ${portion.price} ${branchInfo.currency}`,
-                  }))}
-                />
+      <Scrollbar sx={{ bgcolor: 'background.default', pb: 3 }}>
+        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing={1} direction="column">
+            <Image src={mealInfo.cover} sx={{ height: 250 }} ratio="21/9" />
+            <Stack spacing={2} sx={{ px: 2 }}>
+              <Box>
+                <Typography variant="h4">{getTitle()}</Typography>
+                <TextMaxLine line={5} variant="body2">
+                  {getDescription()}
+                </TextMaxLine>
+              </Box>
+              <RHFRadioGroup
+                spacing={-1}
+                name="portion"
+                options={mealInfo.portions.map((portion, index) => ({
+                  value: index,
+                  label: `${portion.portionSize} - ${portion.gram}gram - ${portion.price} ${branchInfo.currency}`,
+                }))}
+              />
 
-                <RHFTextField rows={3} multiline name="comment" label="Any Special Requests?" />
+              <RHFTextField rows={2} multiline name="comment" label="Any Special Requests?" />
 
-                <Stack direction="row" spacing={1} justifyContent="flex-end">
-                  <Button variant="soft" onClick={onClose}>
-                    Close
-                  </Button>
-                  <LoadingButton
-                    type="submit"
-                    variant="contained"
-                    color="success"
-                    startIcon={<Iconify icon="mdi:hamburger-plus" />}
-                    loading={isSubmitting}
-                  >
-                    Add Meal
-                  </LoadingButton>
-                </Stack>
+              <Stack direction="row" spacing={1} justifyContent="flex-end">
+                <Button variant="soft" onClick={onClose}>
+                  Close
+                </Button>
+                <LoadingButton
+                  type="submit"
+                  variant="contained"
+                  color="success"
+                  startIcon={<Iconify icon="mdi:hamburger-plus" />}
+                  loading={isSubmitting}
+                >
+                  Add Meal
+                </LoadingButton>
               </Stack>
             </Stack>
-          </FormProvider>
-        </Scrollbar>
-      </Container>
+          </Stack>
+        </FormProvider>
+      </Scrollbar>
     </Drawer>
   );
 };

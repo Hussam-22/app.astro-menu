@@ -95,15 +95,9 @@ function BottomNavModern() {
         />
       </Stack>
 
-      {drawerStates.menu && (
-        <SectionsDrawer openState={drawerStates.menu} toggleDrawer={setDrawerStates} />
-      )}
-      {drawerStates.cart && (
-        <CartDrawer openState={drawerStates.cart} toggleDrawer={setDrawerStates} />
-      )}
-      {drawerStates.language && (
-        <LanguageDrawer openState={drawerStates.language} toggleDrawer={setDrawerStates} />
-      )}
+      <SectionsDrawer openState={drawerStates.menu} toggleDrawer={setDrawerStates} />
+      <CartDrawer openState={drawerStates.cart} toggleDrawer={setDrawerStates} />
+      <LanguageDrawer openState={drawerStates.language} toggleDrawer={setDrawerStates} />
     </Box>
   );
 }
