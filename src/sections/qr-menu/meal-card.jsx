@@ -94,6 +94,7 @@ function MealCard({ mealInfo }) {
             width: '45%',
             height: 1,
             textAlign: 'center',
+            px: 0.25,
           }}
         >
           <Image
@@ -103,8 +104,6 @@ function MealCard({ mealInfo }) {
               borderRadius: 1,
               border: `dashed 1px ${theme.palette.divider}`,
               filter: `grayscale(${isMealActive ? '0' : '100'})`,
-              maxWidth: '85%',
-              p: 0,
             }}
             onClick={() => allowAddToCart && setIsOpen(true)}
           />

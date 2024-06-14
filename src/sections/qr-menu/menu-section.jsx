@@ -65,11 +65,6 @@ function MenuSection({ sectionInfo }) {
         spacing={2}
         sx={{
           bgcolor: 'background.paper',
-          sm: {
-            borderRadius: 2,
-            py: 1,
-            border: 'dashed 1px #D9D9D9',
-          },
         }}
       >
         <Stack
