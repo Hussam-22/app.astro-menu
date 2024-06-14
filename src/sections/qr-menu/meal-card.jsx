@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useMemo, useState } from 'react';
 
-import { Box, Stack, useTheme, Typography, IconButton } from '@mui/material';
+import { Box, Stack, Button, useTheme, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
 import Image from 'src/components/image';
@@ -16,8 +16,8 @@ function MealCard({ mealInfo }) {
   const theme = useTheme();
   const { tableID } = useParams();
   const { cover, description, isNew, portions, title, translation, translationEdited } = mealInfo;
-  const { orderSnapShot, businessProfile } = useAuthContext();
-  const { branchInfo, selectedLanguage, tableInfo } = useQrMenuContext();
+  const { orderSnapShot } = useAuthContext();
+  const { branchInfo, selectedLanguage, tableInfo, businessProfile } = useQrMenuContext();
   const [isReadMore, setIsReadMore] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -109,45 +109,24 @@ function MealCard({ mealInfo }) {
             onClick={() => allowAddToCart && setIsOpen(true)}
           />
           {allowAddToCart && (
-            <>
-              <IconButton
-                variant="contained"
-                color="success"
-                sx={{
-                  position: 'absolute',
-                  bottom: 5,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  bgcolor: 'common.white',
-                  p: 0,
-                  // transition: 'left 0.3s ease-in-out', // Add smooth transition
-                }}
-                onClick={() => setIsOpen(true)}
-              >
-                <Iconify icon="carbon:add-filled" sx={{ width: 28, height: 28 }} />
-              </IconButton>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 10,
-                  left: '7%',
-                  transform: 'translateX(-50%)',
-                  borderRadius: 1,
-                  px: 0.5,
-                  bgcolor: 'warning.main',
-                  color: '#000000',
-                  fontWeight: 700,
-                  fontSize: '1rem',
-                  visibility: count === 0 ? 'hidden' : 'visible',
-                  transition: 'visibility 0.3s ease-in-out',
-                }}
-              >
-                x{count}
-              </Box>
-            </>
+            <Button
+              variant="contained"
+              color="success"
+              size="small"
+              sx={{
+                position: 'absolute',
+                bottom: 5,
+                left: '50%',
+                transform: 'translateX(-50%)',
+              }}
+              onClick={() => setIsOpen(true)}
+              startIcon={<Iconify icon="carbon:add-filled" sx={{ width: 24, height: 24 }} />}
+            >
+              {count === 0 ? 'Add' : count}
+            </Button>
           )}
           {isNew && (
-            <Box sx={{ position: 'absolute', top: 10, right: 5 }}>
+            <Box sx={{ position: 'absolute', top: 10, left: 5 }}>
               <Label
                 variant="filled"
                 color="error"
