@@ -65,25 +65,15 @@ function MealCard({ mealInfo }) {
       <Stack direction="row" spacing={1} alignItems="center" sx={{ py: 1 }}>
         <Box
           sx={{
-            bgcolor: 'info.main',
+            bgcolor: 'warning.main',
             width: count === 0 ? 0 : 8,
             height: 100,
             borderRadius: 3,
             transition: 'width 0.3s ease-in-out',
           }}
         />
-        <Stack direction="column" spacing={0} sx={{ width: '70%', flexGrow: 1 }}>
-          <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center">
-            <Title selectedLanguage={selectedLanguage} getTitle={getTitle} />
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Stack direction="row" spacing={0.5}>
-                <Typography variant="h4">{portions[0].price}</Typography>
-                <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
-                  {branchInfo?.currency}
-                </Typography>
-              </Stack>
-            </Stack>
-          </Stack>
+        <Stack direction="column" spacing={1} sx={{ width: '55%', flexGrow: 1 }}>
+          <Title selectedLanguage={selectedLanguage} getTitle={getTitle} />
 
           <Description
             isReadMore={isReadMore}
@@ -91,11 +81,17 @@ function MealCard({ mealInfo }) {
             getDescription={getDescription}
             selectedLanguage={selectedLanguage}
           />
+          <Stack direction="row" spacing={0.5} alignSelf="end">
+            <Typography variant="h4">{portions[0].price}</Typography>
+            <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
+              {branchInfo?.currency}
+            </Typography>
+          </Stack>
         </Stack>
         <Box
           sx={{
             position: 'relative',
-            width: '40%',
+            width: '45%',
             height: 1,
             textAlign: 'center',
           }}
@@ -119,41 +115,39 @@ function MealCard({ mealInfo }) {
                 color="success"
                 sx={{
                   position: 'absolute',
-                  bottom: -10,
+                  bottom: 5,
                   left: '50%',
                   transform: 'translateX(-50%)',
                   bgcolor: 'common.white',
-                  p: 0.1,
+                  p: 0,
                   // transition: 'left 0.3s ease-in-out', // Add smooth transition
                 }}
                 onClick={() => setIsOpen(true)}
               >
-                <Iconify icon="carbon:add-filled" sx={{ width: 24, height: 24 }} />
+                <Iconify icon="carbon:add-filled" sx={{ width: 28, height: 28 }} />
               </IconButton>
               <Box
                 sx={{
                   position: 'absolute',
-                  top: -15,
-                  left: '10%',
+                  top: 10,
+                  left: '7%',
                   transform: 'translateX(-50%)',
-                  borderRadius: '50%',
-                  py: 0.3,
-                  px: 1.2,
-                  bgcolor: 'info.main',
-                  color: '#FFFFFF',
-                  border: 'solid 4px #FFF',
+                  borderRadius: 1,
+                  px: 0.5,
+                  bgcolor: 'warning.main',
+                  color: '#000000',
                   fontWeight: 700,
                   fontSize: '1rem',
                   visibility: count === 0 ? 'hidden' : 'visible',
                   transition: 'visibility 0.3s ease-in-out',
                 }}
               >
-                {count}
+                x{count}
               </Box>
             </>
           )}
           {isNew && (
-            <Box sx={{ position: 'absolute', top: 4, right: 1 }}>
+            <Box sx={{ position: 'absolute', top: 10, right: 5 }}>
               <Label
                 variant="filled"
                 color="error"
@@ -170,7 +164,7 @@ function MealCard({ mealInfo }) {
               color="warning"
               sx={{
                 position: 'absolute',
-                bottom: 0,
+                bottom: 15,
                 left: '50%',
                 transform: 'translate(-50%, 30%)',
               }}

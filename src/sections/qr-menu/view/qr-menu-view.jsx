@@ -102,7 +102,7 @@ function QrMenuView() {
 
   return (
     <Stack direction="column" spacing={2} sx={{ py: 5 }}>
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack direction="row" alignItems="center" spacing={1} sx={{ px: 2 }}>
         {(logo || business_Logo) && (
           <Image
             src={logo || business_Logo}

@@ -56,6 +56,7 @@ function MenuSection({ sectionInfo }) {
           borderRadius: 1,
           py: 1,
           fontWeight: '900',
+          px: 1,
         }}
       >
         {getTitle()}
@@ -64,9 +65,11 @@ function MenuSection({ sectionInfo }) {
         spacing={2}
         sx={{
           bgcolor: 'background.paper',
-          borderRadius: 2,
-          py: 1,
-          border: 'dashed 1px #D9D9D9',
+          sm: {
+            borderRadius: 2,
+            py: 1,
+            border: 'dashed 1px #D9D9D9',
+          },
         }}
       >
         <Stack direction="column" spacing={1} divider={<Divider sx={{ borderStyle: 'dashed' }} />}>

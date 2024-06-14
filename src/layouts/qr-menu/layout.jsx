@@ -36,7 +36,7 @@ function QrMenuLayout({ children }) {
     >
       <QrMenuContextProvider>
         {/* <QrMenuHeader /> */}
-        <Container maxWidth="sm" component="main" sx={{ pt: 0, pb: 5 }}>
+        <Container maxWidth="sm" component="main" sx={{ pt: 0, pb: 5, px: 0 }}>
           {children}
 
           {isMenu && <BottomNavBar containerWidth={380} />}
