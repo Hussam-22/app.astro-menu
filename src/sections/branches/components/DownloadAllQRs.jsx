@@ -8,7 +8,7 @@ DownloadAllQRs.propTypes = { tables: PropTypes.array };
 function DownloadAllQRs({ tables }) {
   const { user } = useAuthContext();
   return tables.map((table) => {
-    const qrURL = `${window.location.host}/qrMenu/${user.id}-${table.id}`;
+    const qrURL = `${window.location.protocol}//${window.location.host}/qrMenu/${user.id}-${table.id}`;
     return (
       <QRCodeCanvas
         value={qrURL}
