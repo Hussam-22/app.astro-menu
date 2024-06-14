@@ -62,7 +62,7 @@ function MealCard({ mealInfo }) {
 
   return (
     <Box>
-      <Stack direction="row" spacing={1} alignItems="center" sx={{ py: 1 }}>
+      <Stack direction="row" spacing={1} alignItems="center" sx={{ py: 0.5 }}>
         <Box
           sx={{
             bgcolor: 'warning.main',
@@ -110,14 +110,15 @@ function MealCard({ mealInfo }) {
           />
           {allowAddToCart && (
             <Button
-              variant="contained"
-              color="success"
               size="small"
               sx={{
+                color: 'rgba(0, 0, 0, 1)',
                 position: 'absolute',
                 bottom: 5,
                 left: '50%',
                 transform: 'translateX(-50%)',
+                px: 1,
+                backgroundColor: 'rgba(255, 255, 255, 0.75)',
               }}
               onClick={() => setIsOpen(true)}
               startIcon={<Iconify icon="carbon:add-filled" sx={{ width: 24, height: 24 }} />}

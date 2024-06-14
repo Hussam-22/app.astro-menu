@@ -72,7 +72,11 @@ function MenuSection({ sectionInfo }) {
           },
         }}
       >
-        <Stack direction="column" spacing={1} divider={<Divider sx={{ borderStyle: 'dashed' }} />}>
+        <Stack
+          direction="column"
+          spacing={0.5}
+          divider={<Divider sx={{ borderStyle: 'dashed' }} />}
+        >
           {filteredMeals
             .filter((meal) => meal.data?.isActive)
             .map((meal) => (
