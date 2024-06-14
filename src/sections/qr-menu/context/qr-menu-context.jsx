@@ -87,8 +87,10 @@ export function QrMenuContextProvider({ children }) {
   });
 
   const { data: mostOrderedMeals, error: mostOrderedMealsError } = useQuery({
-    queryKey: ['most-ordered-meals', businessProfileID, menuInfo.mostOrderedMeals],
-    queryFn: () => fsGetMostOrderedMeals(menuInfo.mostOrderedMeals, businessProfileID),
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: ['most-ordered-meals', businessProfileID, menuInfo.docID],
+    queryFn: () =>
+      fsGetMostOrderedMeals(menuInfo.meals, menuInfo.mostOrderedMeals, businessProfileID),
     enabled: menuInfo?.docID !== undefined && tableInfo.isActive,
   });
 

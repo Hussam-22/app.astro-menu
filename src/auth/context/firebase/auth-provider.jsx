@@ -1542,13 +1542,14 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsGetMostOrderedMeals = useCallback(
-    async (limitCount = 0, businessProfileID = state.user.businessProfileID) => {
+    async (menuMeals, limitCount = 0, businessProfileID = state.user.businessProfileID) => {
       try {
         if (limitCount === 0) return [];
 
         const docRef = query(
           collectionGroup(DB, 'meals'),
           where('businessProfileID', '==', businessProfileID),
+          where('docID', 'in', menuMeals),
           where('isDeleted', '==', false),
           where('isActive', '==', true),
           where('orderCount', '>', 0),

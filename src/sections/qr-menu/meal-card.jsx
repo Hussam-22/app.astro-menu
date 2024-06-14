@@ -126,7 +126,7 @@ function MealCard({ mealInfo }) {
             </Button>
           )}
           {isNew && (
-            <Box sx={{ position: 'absolute', top: 10, left: 5 }}>
+            <Box sx={{ position: 'absolute', top: 10, left: -15 }}>
               <Label
                 variant="filled"
                 color="error"
