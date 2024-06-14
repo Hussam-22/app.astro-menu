@@ -42,7 +42,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
     () =>
       availableMeals.length !== 0 &&
       availableMeals.filter((meal) =>
-        orderSnapShot.cart.some((portion) => portion.mealID === meal?.docID)
+        orderSnapShot?.cart?.some((portion) => portion.mealID === meal?.docID)
       ),
     [availableMeals, orderSnapShot.cart]
   );

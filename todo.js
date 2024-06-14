@@ -14,10 +14,10 @@
 1- improve the loading for all components visually
 
 ? QR Menu
-1- How item will look without image or description
-3- Allow selecting only single "Meal Type"
-! 5- Add Search meal by name field (Think about it)
-6- Most Ordered Meal
+- How item will look without image or description
+- Allow selecting only single "Meal Type"
+! - Add Search meal by name field (Think about it)
+- Most Ordered Meal
 
 ? Branch
 1- Show Mock image if no image is uploaded

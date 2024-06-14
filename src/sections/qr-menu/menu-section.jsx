@@ -16,6 +16,7 @@ function MenuSection({ sectionInfo }) {
     docID: sectionID,
     translationEdited,
     translation,
+    order,
   } = sectionInfo;
   const { fsGetMeal } = useAuthContext();
   const { labels, selectedLanguage, branchInfo } = useQrMenuContext();
@@ -46,7 +47,7 @@ function MenuSection({ sectionInfo }) {
   if (filteredMeals.length === 0) return null;
 
   return (
-    <Box>
+    <Box sx={{ border: order === 0 ? 'solid 2px #000000' : 'none' }}>
       <Typography
         variant="h5"
         id={sectionID}
@@ -89,6 +90,7 @@ MenuSection.propTypes = {
     title: PropTypes.string,
     meals: PropTypes.array,
     docID: PropTypes.string,
+    order: PropTypes.number,
     translation: PropTypes.object,
     translationEdited: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   }),

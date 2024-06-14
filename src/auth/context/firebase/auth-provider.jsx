@@ -25,17 +25,19 @@ import {
 } from 'firebase/auth';
 import {
   doc,
-  where,
   query,
-  setDoc,
+  where,
+  limit,
   getDoc,
+  setDoc,
+  orderBy,
   getDocs,
-  increment,
-  deleteDoc,
   updateDoc,
-  onSnapshot,
-  writeBatch,
+  deleteDoc,
+  increment,
   collection,
+  writeBatch,
+  onSnapshot,
   getFirestore,
   collectionGroup,
   getCountFromServer,
@@ -1307,7 +1309,7 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateMeal = useCallback(
-    async (payload, imageIsDirty) => {
+    async (payload, imageIsDirty = false) => {
       try {
         const { imageFile, cover, ...mealData } = payload;
         const docRef = doc(
@@ -1526,6 +1528,42 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsUpdateMealOrderCount = useCallback(
+    async (mealID, businessProfileID = state.user.businessProfileID) => {
+      try {
+        const docRef = doc(DB, `/businessProfiles/${businessProfileID}/meals/${mealID}/`);
+
+        await updateDoc(docRef, { orderCount: increment(1) });
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+    [state]
+  );
+  const fsGetMostOrderedMeals = useCallback(
+    async (limitCount = 0, businessProfileID = state.user.businessProfileID) => {
+      try {
+        if (limitCount === 0) return [];
+
+        const docRef = query(
+          collectionGroup(DB, 'meals'),
+          where('businessProfileID', '==', businessProfileID),
+          where('isDeleted', '==', false),
+          where('isActive', '==', true),
+          where('orderCount', '>', 0),
+          orderBy('orderCount', 'desc'),
+          limit(limitCount)
+        );
+        const querySnapshot = await getDocs(docRef);
+        return querySnapshot.docs.map((doc) => doc.data().docID);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+    [state]
+  );
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsInitiateNewOrder = useCallback(async (payload) => {
     const { tableID, menuID, staffID, businessProfileID, branchID } = payload;
@@ -1647,9 +1685,13 @@ export function AuthProvider({ children }) {
       );
 
       const toResolveUser = cart.map((cartItem) =>
-        updateDoc(userRef, {
-          [`statisticsSummary.meals.${THIS_YEAR}.${THIS_MONTH}.${cartItem.mealID}`]: increment(1),
-        })
+        (async () => {
+          await updateDoc(userRef, {
+            [`statisticsSummary.meals.${THIS_YEAR}.${THIS_MONTH}.${cartItem.mealID}`]: increment(1),
+          });
+
+          await fsUpdateMealOrderCount(cartItem.mealID, businessProfileID);
+        })()
       );
 
       await Promise.all([...toResolveUser, ...branchMealsOrderUsage]);
@@ -1876,6 +1918,7 @@ export function AuthProvider({ children }) {
       fsAddNewMealLabel,
       fsUpdateMealLabel,
       fsDeleteMealLabel,
+      fsGetMostOrderedMeals,
       // ---- QR Menu ----
       fsConfirmCartOrder,
       fsUpdateScanLog,
@@ -1960,6 +2003,7 @@ export function AuthProvider({ children }) {
       fsAddNewMealLabel,
       fsUpdateMealLabel,
       fsDeleteMealLabel,
+      fsGetMostOrderedMeals,
       // ---- QR Menu ----
       fsConfirmCartOrder,
       fsUpdateScanLog,

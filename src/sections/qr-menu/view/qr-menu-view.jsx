@@ -20,8 +20,23 @@ function QrMenuView() {
     branchInfo,
     businessProfile: { docID, businessName, defaultLanguage, translationEdited, translation, logo },
     selectedLanguage,
+    mostOrderedMeals = [],
   } = useQrMenuContext();
   const router = useRouter();
+
+  const menuSectionsWithMostOrderedMeals =
+    mostOrderedMeals?.length === 0
+      ? menuSections
+      : [
+          ...menuSections,
+          {
+            order: 0,
+            isActive: true,
+            meals: [...mostOrderedMeals],
+            title: 'Most Ordered Meals',
+            docID: 'most-ordered-meals',
+          },
+        ];
 
   const bucketPath = `${docID}/business-profile`;
 
@@ -124,7 +139,7 @@ function QrMenuView() {
         flexItem
         sx={{ border: `dashed 1px ${theme.palette.divider}` }}
       />
-      {menuSections
+      {menuSectionsWithMostOrderedMeals
         .filter((section) => section.isActive)
         .sort((a, b) => a.order - b.order)
         .map((section) => (

@@ -25,6 +25,7 @@ export function QrMenuContextProvider({ children }) {
     orderSnapShot,
     fsGetMenu,
     fsOrderSnapshot,
+    fsGetMostOrderedMeals,
     branchSnapshot: branchInfo,
   } = useAuthContext();
   const [labels, setLabels] = useState([]);
@@ -55,6 +56,7 @@ export function QrMenuContextProvider({ children }) {
     queryFn: () => fsGetMenu(tableInfo.menuID, businessProfileID),
     enabled: isTableInfoSuccess && tableInfo?.menuID !== undefined,
   });
+
   const { data: branchUnsubscribe = {} } = useQuery({
     queryKey: ['branch', businessProfileID, branchID],
     queryFn: () => fsGetBranchSnapshot(branchID, businessProfileID),
@@ -83,6 +85,14 @@ export function QrMenuContextProvider({ children }) {
       fsOrderSnapshot({ businessProfileID, branchID, tableID, menuID: tableInfo.menuID }),
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
   });
+
+  const { data: mostOrderedMeals, error: mostOrderedMealsError } = useQuery({
+    queryKey: ['most-ordered-meals', businessProfileID, menuInfo.mostOrderedMeals],
+    queryFn: () => fsGetMostOrderedMeals(menuInfo.mostOrderedMeals, businessProfileID),
+    enabled: menuInfo?.docID !== undefined && tableInfo.isActive,
+  });
+
+  console.log(mostOrderedMealsError);
 
   useEffect(() => {
     if (orderSnapShot?.docID) {
@@ -150,6 +160,7 @@ export function QrMenuContextProvider({ children }) {
       menuInfo,
       branchUnsubscribe,
       branchInfo,
+      mostOrderedMeals,
     }),
     [
       mealsLabel,
@@ -165,6 +176,7 @@ export function QrMenuContextProvider({ children }) {
       menuInfo,
       branchUnsubscribe,
       branchInfo,
+      mostOrderedMeals,
     ]
   );
   return <QrMenuContext.Provider value={memoizedValue}>{children}</QrMenuContext.Provider>;
