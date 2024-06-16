@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { Translate } = require('@google-cloud/translate').v2;
+const { LANGUAGE_CODES } = require('./languageCodes');
 
 admin.initializeApp(functions.config().firebase);
 
@@ -139,6 +140,29 @@ exports.fbTranslateMealLabelTitle = functions.https.onCall(async (data, context)
     .firestore()
     .doc(mealLabelRef)
     .update({ ...labelDoc, translation: translationObj, translationEdited: translationObj });
+
+  return null;
+});
+
+exports.fbTranslateKeyword = functions.https.onCall(async () => {
+  const keywords = ['menu', 'bill', 'home'];
+
+  const translationTasks = Object.keys(LANGUAGE_CODES).map(async (langKey) => {
+    const tasks = keywords.map(async (keyword) => ({
+      [keyword]: (await translate.translate(keyword, langKey)).slice(0, 1).toString(),
+    }));
+
+    const translations = await Promise.all(tasks);
+    const translationObj = Object.assign({}, ...translations);
+
+    const docRef = `/system-translations/${langKey}`;
+    await admin
+      .firestore()
+      .doc(docRef)
+      .set({ ...translationObj });
+  });
+
+  await Promise.all(translationTasks);
 
   return null;
 });

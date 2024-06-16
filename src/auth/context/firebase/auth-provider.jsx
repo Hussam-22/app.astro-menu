@@ -238,6 +238,7 @@ export function AuthProvider({ children }) {
   const fbTranslateMeal = httpsCallable(FUNCTIONS, 'fbTranslateMeal');
   const fbTranslateBranchDesc = httpsCallable(FUNCTIONS, 'fbTranslateBranchDesc');
   const fbTranslateMealLabelTitle = httpsCallable(FUNCTIONS, 'fbTranslateMealLabelTitle');
+  const fbTranslateKeywords = httpsCallable(FUNCTIONS, 'fbTranslateKeyword');
   // ------------------------ Image Handling ----------------------
   const fsGetImgDownloadUrl = useCallback(async (bucketPath, imgID) => {
     // eslint-disable-next-line no-useless-catch
@@ -302,6 +303,8 @@ export function AuthProvider({ children }) {
   const fsGetBusinessProfile = useCallback(
     async (businessProfileID) => {
       try {
+        await fbTranslateKeywords();
+
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
         const docSnapshot = await getDoc(docRef);
 
