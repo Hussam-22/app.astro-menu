@@ -64,9 +64,9 @@ function SectionsDrawer({ openState, toggleDrawer }) {
   if (mealsData[0].isLoading) return <div>Loading...</div>;
 
   const inActiveMeals = mealsData
-    .map((meal) => meal.data)
-    .filter((meal) => !meal.isActive)
-    .map((meal) => meal.docID);
+    .map((meal) => meal?.data)
+    .filter((meal) => !meal?.isActive)
+    .map((meal) => meal?.docID);
 
   return (
     <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('menu')}>
