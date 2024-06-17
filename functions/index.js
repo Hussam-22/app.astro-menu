@@ -145,7 +145,29 @@ exports.fbTranslateMealLabelTitle = functions.https.onCall(async (data, context)
 });
 
 exports.fbTranslateKeyword = functions.https.onCall(async () => {
-  const keywords = ['menu', 'bill', 'home'];
+  const keywords = [
+    'most ordered meals',
+    'new',
+    'out of stock',
+    'add',
+    'add meal',
+    'close',
+    'bill',
+    'menu',
+    'home',
+    'reset',
+    'meal type',
+    'search',
+    'menu sections',
+    'total bill',
+    'order',
+    'tax',
+    'go to menu',
+    'wifi password',
+    'any special requests ?',
+    'provided by',
+    'table',
+  ];
 
   const translationTasks = Object.keys(LANGUAGE_CODES).map(async (langKey) => {
     const tasks = keywords.map(async (keyword) => ({
