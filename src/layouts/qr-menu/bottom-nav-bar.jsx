@@ -58,12 +58,20 @@ function BottomNavModern() {
         maxWidth: 'inherit',
         transform: 'translateX(-50%)',
         background: theme.palette.background.default,
+        borderTop: `1px solid ${theme.palette.divider}`,
+        overflow: 'visible',
       }}
     >
       <Stack
         direction="row"
         spacing={-1}
-        sx={{ display: 'flex', justifyContent: 'space-around', position: 'relative', pb: 0.5 }}
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-around',
+          position: 'relative',
+          pb: 0.5,
+          overflow: 'visible',
+        }}
       >
         <ActionButton
           clickAction={() => router.push('.')}
