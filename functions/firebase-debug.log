@@ -1,0 +1,102 @@
+[debug] [2024-06-17T13:16:13.306Z] ----------------------------------------------------------------------
+[debug] [2024-06-17T13:16:13.309Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\hussa\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2024-06-17T13:16:13.310Z] CLI Version:   13.11.2
+[debug] [2024-06-17T13:16:13.310Z] Platform:      win32
+[debug] [2024-06-17T13:16:13.310Z] Node Version:  v20.13.1
+[debug] [2024-06-17T13:16:13.310Z] Time:          Mon Jun 17 2024 17:16:13 GMT+0400 (Gulf Standard Time)
+[debug] [2024-06-17T13:16:13.310Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-06-17T13:16:13.314Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2024-06-17T13:16:13.510Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-06-17T13:16:13.511Z] > authorizing via signed-in user (hussam.alkhudari@gmail.com)
+[debug] [2024-06-17T13:16:13.511Z] [iam] checking project menu-app-b268b for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2024-06-17T13:16:13.512Z] > refreshing access token with scopes: []
+[debug] [2024-06-17T13:16:13.513Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-06-17T13:16:13.513Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-06-17T13:16:13.907Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-06-17T13:16:13.908Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-06-17T13:16:13.916Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/menu-app-b268b:testIamPermissions [none]
+[debug] [2024-06-17T13:16:13.916Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/menu-app-b268b:testIamPermissions x-goog-quota-user=projects/menu-app-b268b
+[debug] [2024-06-17T13:16:13.916Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/menu-app-b268b:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2024-06-17T13:16:14.003Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2024-06-17T13:16:14.003Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2024-06-17T13:16:15.527Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/menu-app-b268b:testIamPermissions 200
+[debug] [2024-06-17T13:16:15.527Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/menu-app-b268b:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2024-06-17T13:16:15.528Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/menu-app-b268b/serviceAccounts/menu-app-b268b@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2024-06-17T13:16:15.528Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/menu-app-b268b/serviceAccounts/menu-app-b268b@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2024-06-17T13:16:16.097Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/menu-app-b268b/serviceAccounts/menu-app-b268b@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2024-06-17T13:16:16.097Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/menu-app-b268b/serviceAccounts/menu-app-b268b@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'menu-app-b268b'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] +  functions: Finished running predeploy script. 
+[debug] [2024-06-17T13:16:21.884Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/menu-app-b268b [none]
+[debug] [2024-06-17T13:16:22.344Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/menu-app-b268b 200
+[debug] [2024-06-17T13:16:22.344Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/menu-app-b268b {"projectId":"menu-app-b268b","projectNumber":"416614226347","displayName":"Menu-App","name":"projects/menu-app-b268b","resources":{"hostingSite":"menu-app-b268b","realtimeDatabaseInstance":"menu-app-b268b-default-rtdb","storageBucket":"menu-app-b268b.appspot.com","locationId":"europe-west"},"state":"ACTIVE","etag":"1_bf8393c7-a4a1-4c58-a317-a00741f04452"}
+[info] i  functions: preparing codebase functions for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2024-06-17T13:16:22.357Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/cloudfunctions.googleapis.com [none]
+[debug] [2024-06-17T13:16:22.358Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/menu-app-b268b
+[debug] [2024-06-17T13:16:22.363Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/runtimeconfig.googleapis.com [none]
+[debug] [2024-06-17T13:16:22.364Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/runtimeconfig.googleapis.com x-goog-quota-user=projects/menu-app-b268b
+[debug] [2024-06-17T13:16:22.369Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/cloudbuild.googleapis.com [none]
+[debug] [2024-06-17T13:16:22.370Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/cloudbuild.googleapis.com x-goog-quota-user=projects/menu-app-b268b
+[debug] [2024-06-17T13:16:22.376Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/artifactregistry.googleapis.com [none]
+[debug] [2024-06-17T13:16:22.377Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/artifactregistry.googleapis.com x-goog-quota-user=projects/menu-app-b268b
+[debug] [2024-06-17T13:16:24.006Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/runtimeconfig.googleapis.com 200
+[debug] [2024-06-17T13:16:24.007Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2024-06-17T13:16:24.020Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/cloudfunctions.googleapis.com 200
+[debug] [2024-06-17T13:16:24.020Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/cloudfunctions.googleapis.com [omitted]
+[info] +  functions: required API cloudfunctions.googleapis.com is enabled 
+[debug] [2024-06-17T13:16:24.136Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/cloudbuild.googleapis.com 200
+[debug] [2024-06-17T13:16:24.136Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/cloudbuild.googleapis.com [omitted]
+[info] +  functions: required API cloudbuild.googleapis.com is enabled 
+[debug] [2024-06-17T13:16:24.161Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/artifactregistry.googleapis.com 200
+[debug] [2024-06-17T13:16:24.162Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/menu-app-b268b/services/artifactregistry.googleapis.com [omitted]
+[info] +  artifactregistry: required API artifactregistry.googleapis.com is enabled 
+[debug] [2024-06-17T13:16:24.163Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/menu-app-b268b/adminSdkConfig [none]
+[debug] [2024-06-17T13:16:24.705Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/menu-app-b268b/adminSdkConfig 200
+[debug] [2024-06-17T13:16:24.705Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/menu-app-b268b/adminSdkConfig {"projectId":"menu-app-b268b","databaseURL":"https://menu-app-b268b-default-rtdb.europe-west1.firebasedatabase.app","storageBucket":"menu-app-b268b.appspot.com","locationId":"europe-west"}
+[debug] [2024-06-17T13:16:24.706Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/menu-app-b268b/configs [none]
+[debug] [2024-06-17T13:16:25.290Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/menu-app-b268b/configs 200
+[debug] [2024-06-17T13:16:25.291Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/menu-app-b268b/configs {}
+[debug] [2024-06-17T13:16:25.294Z] Validating nodejs source
+[debug] [2024-06-17T13:16:27.186Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "eslint .",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/translate": "^8.0.3",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.15.0",
+    "eslint-config-google": "^0.14.0",
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+[debug] [2024-06-17T13:16:27.187Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase functions to determine what to deploy 
+[debug] [2024-06-17T13:16:27.189Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-06-17T13:16:27.227Z] Found firebase-functions binary at 'C:\_Git_Projects\The-QR-Menu-App---vite\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8881
+
+[debug] [2024-06-17T13:16:28.551Z] Got response from /__/functions.yaml {"endpoints":{"fbTranslateSectionTitle":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"fbTranslateSectionTitle"},"fbTranslateMeal":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"fbTranslateMeal"},"fbTranslateBranchDesc":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"fbTranslateBranchDesc"},"fbTranslateMealLabelTitle":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"fbTranslateMealLabelTitle"},"fbTranslateKeyword":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"fbTranslateKeyword"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] i  functions: preparing functions directory for uploading... 

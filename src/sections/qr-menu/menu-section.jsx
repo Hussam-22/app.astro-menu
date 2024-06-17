@@ -47,7 +47,7 @@ function MenuSection({ sectionInfo }) {
   if (filteredMeals.length === 0) return null;
 
   return (
-    <Box sx={{ border: order === 0 ? 'solid 2px #000000' : 'none' }}>
+    <Box>
       <Typography
         variant="h5"
         id={sectionID}
@@ -58,6 +58,7 @@ function MenuSection({ sectionInfo }) {
           py: 1,
           fontWeight: '900',
           px: 1,
+          color: order === 0 && 'rose.400',
         }}
       >
         {getTitle()}
@@ -65,7 +66,8 @@ function MenuSection({ sectionInfo }) {
       <Stack
         spacing={2}
         sx={{
-          bgcolor: 'background.paper',
+          bgcolor: order === 0 ? 'rose.50' : 'background.paper',
+          py: 2,
         }}
       >
         <Stack
