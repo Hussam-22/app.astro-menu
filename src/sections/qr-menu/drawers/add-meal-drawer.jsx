@@ -11,14 +11,16 @@ import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import TextMaxLine from 'src/components/text-max-line';
+import { useResponsive } from 'src/hooks/use-responsive';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFTextField, RHFRadioGroup } from 'src/components/hook-form';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo, mealTitle }) => {
   const { fsUpdateCart } = useAuthContext();
-  const { selectedLanguage } = useQrMenuContext();
+  const { selectedLanguage, getTranslation } = useQrMenuContext();
   const { docID, businessProfileID, branchID, cart, updateCount } = orderSnapShot;
+  const isMobile = useResponsive('down', 'sm');
 
   const defaultValues = useMemo(
     () => ({
@@ -71,7 +73,7 @@ const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo, m
       <Scrollbar sx={{ bgcolor: 'background.default', pb: 3 }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={1} direction="column">
-            <Image src={mealInfo.cover} sx={{ height: 250 }} ratio="21/9" />
+            <Image src={mealInfo.cover} ratio={isMobile ? '1/1' : '21/9'} />
             <Stack spacing={2} sx={{ px: 2 }}>
               <Box>
                 <Typography variant="h4">{getTitle()}</Typography>
@@ -88,11 +90,16 @@ const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo, m
                 }))}
               />
 
-              <RHFTextField rows={2} multiline name="comment" label="Any Special Requests?" />
+              <RHFTextField
+                rows={2}
+                multiline
+                name="comment"
+                label={getTranslation('Any Special Requests ?')}
+              />
 
               <Stack direction="row" spacing={1} justifyContent="flex-end">
                 <Button variant="soft" onClick={onClose}>
-                  Close
+                  {getTranslation('close')}
                 </Button>
                 <LoadingButton
                   type="submit"
@@ -101,7 +108,7 @@ const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo, m
                   startIcon={<Iconify icon="mdi:hamburger-plus" />}
                   loading={isSubmitting}
                 >
-                  Add Meal
+                  {getTranslation('add meal')}
                 </LoadingButton>
               </Stack>
             </Stack>

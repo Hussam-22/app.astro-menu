@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect, useContext, useCallback, createContext } 
 
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
+import { titleCase } from 'src/utils/change-case';
 
 export const QrMenuContext = createContext();
 
@@ -27,6 +28,7 @@ export function QrMenuContextProvider({ children }) {
     fsOrderSnapshot,
     fsGetMostOrderedMeals,
     branchSnapshot: branchInfo,
+    fsGetSystemTranslations,
   } = useAuthContext();
   const [labels, setLabels] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,6 +51,12 @@ export function QrMenuContextProvider({ children }) {
   } = useQuery({
     queryKey: ['table', businessProfileID, branchID, tableID],
     queryFn: () => fsGetTableInfo(businessProfileID, branchID, tableID),
+  });
+
+  const { data: systemTranslations, error: translationError } = useQuery({
+    queryKey: ['systemTranslations', businessProfile.languages],
+    queryFn: () => fsGetSystemTranslations(businessProfile.languages),
+    enabled: businessProfile.docID !== undefined && tableInfo?.menuID !== undefined,
   });
 
   const { data: menuInfo = {} } = useQuery({
@@ -93,8 +101,6 @@ export function QrMenuContextProvider({ children }) {
       fsGetMostOrderedMeals(menuInfo.meals, menuInfo.mostOrderedMeals, businessProfileID),
     enabled: menuInfo?.docID !== undefined && tableInfo.isActive,
   });
-
-  console.log(mostOrderedMealsError);
 
   useEffect(() => {
     if (orderSnapShot?.docID) {
@@ -144,7 +150,15 @@ export function QrMenuContextProvider({ children }) {
     [labels]
   );
 
-  const reset = useCallback(() => setLabels([]), []);
+  const getTranslation = useCallback(
+    (text) => {
+      const language = systemTranslations?.find(
+        (translation) => translation.lang === selectedLanguage
+      );
+      return titleCase(language?.translations?.[text.toLowerCase()] || text);
+    },
+    [selectedLanguage, systemTranslations]
+  );
 
   const memoizedValue = useMemo(
     () => ({
@@ -152,7 +166,6 @@ export function QrMenuContextProvider({ children }) {
       mealsLabel,
       setLabel,
       labels,
-      reset,
       loading,
       businessProfile,
       selectedLanguage,
@@ -163,12 +176,12 @@ export function QrMenuContextProvider({ children }) {
       branchUnsubscribe,
       branchInfo,
       mostOrderedMeals,
+      getTranslation,
     }),
     [
       mealsLabel,
       labels,
       loading,
-      reset,
       selectedLanguage,
       setLabel,
       tableInfo,
@@ -179,6 +192,7 @@ export function QrMenuContextProvider({ children }) {
       branchUnsubscribe,
       branchInfo,
       mostOrderedMeals,
+      getTranslation,
     ]
   );
   return <QrMenuContext.Provider value={memoizedValue}>{children}</QrMenuContext.Provider>;

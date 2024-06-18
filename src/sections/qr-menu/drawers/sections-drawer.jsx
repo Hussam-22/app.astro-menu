@@ -18,7 +18,8 @@ SectionsDrawer.propTypes = {
 function SectionsDrawer({ openState, toggleDrawer }) {
   const { businessProfileID } = useParams();
   const { menuSections, fsGetMeal } = useAuthContext();
-  const { setLabel, labels, reset, selectedLanguage, branchInfo, mealsLabel } = useQrMenuContext();
+  const { setLabel, labels, reset, selectedLanguage, branchInfo, mealsLabel, getTranslation } =
+    useQrMenuContext();
 
   const getLabel = (label) => {
     const { title, translation } = label;
@@ -78,7 +79,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
         >
           <Box sx={{ width: 1 }}>
             <Scrollbar sx={{ maxHeight: 1 }}>
-              <Typography variant="h4">Menu Sections</Typography>
+              <Typography variant="h4">{getTranslation('menu sections')}</Typography>
               {menuSections.length !== 0 && (
                 <Box
                   sx={{
@@ -114,7 +115,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
           </Box>
 
           <Box>
-            <Typography variant="h4">Meal Type</Typography>
+            <Typography variant="h4">{getTranslation('meal type')}</Typography>
             {mealsLabel.length !== 0 && (
               <Box
                 sx={{
@@ -143,10 +144,10 @@ function SectionsDrawer({ openState, toggleDrawer }) {
                   onClick={resetHandler}
                   disabled={labels.length === 0}
                 >
-                  Reset
+                  {getTranslation('reset')}
                 </Button>
                 <Button variant="soft" size="small" onClick={() => toggleDrawer('menu')}>
-                  Close
+                  {getTranslation('close')}
                 </Button>
               </Box>
             )}

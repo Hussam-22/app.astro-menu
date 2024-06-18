@@ -22,7 +22,7 @@ import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 const CartDrawer = ({ openState, toggleDrawer }) => {
   const theme = useTheme();
   const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
-  const { branchInfo, selectedLanguage } = useQrMenuContext();
+  const { branchInfo, selectedLanguage, getTranslation } = useQrMenuContext();
   const { updateCount } = orderSnapShot;
 
   const queryClient = useQueryClient();
@@ -75,7 +75,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
     <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('cart')}>
       <Container maxWidth="sm">
         <Stack direction="column" spacing={1} sx={{ py: 2 }}>
-          <Scrollbar sx={{ maxHeight: 300 }}>
+          <Scrollbar sx={{ maxHeight: '80dvh' }}>
             <Box
               sx={{
                 bgcolor: 'background.paper',
@@ -143,32 +143,31 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
                   <Divider flexItem sx={{ borderStyle: 'dashed' }} />
                 </Box>
               ))}
+
+              <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ my: 2 }}>
+                <Typography variant="caption">
+                  {getTranslation('order')} : {orderValue}{' '}
+                  <Box component="span" sx={{ typography: 'caption' }}>
+                    {branchInfo.currency}
+                  </Box>
+                </Typography>
+                {taxValue !== 0 && (
+                  <Typography variant="caption">
+                    {getTranslation('tax')} ({branchInfo.taxValue}%) : {taxValue}{' '}
+                    <Box component="span" sx={{ typography: 'caption' }}>
+                      {branchInfo.currency}
+                    </Box>
+                  </Typography>
+                )}
+                <Typography variant="h6">
+                  {getTranslation('total bill')} : {totalBill}{' '}
+                  <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
+                    {branchInfo.currency}
+                  </Box>
+                </Typography>
+              </Stack>
             </Box>
           </Scrollbar>
-        </Stack>
-        <Stack direction="row" justifyContent="flex-end" alignItems="center">
-          <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ mb: 2 }}>
-            <Typography variant="caption">
-              Order : {orderValue}{' '}
-              <Box component="span" sx={{ typography: 'caption' }}>
-                {branchInfo.currency}
-              </Box>
-            </Typography>
-            {taxValue !== 0 && (
-              <Typography variant="caption">
-                Tax ({branchInfo.taxValue}%) : {taxValue}{' '}
-                <Box component="span" sx={{ typography: 'caption' }}>
-                  {branchInfo.currency}
-                </Box>
-              </Typography>
-            )}
-            <Typography variant="h6" sx={{ color: 'success.main' }}>
-              Total Bill : {totalBill}{' '}
-              <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
-                {branchInfo.currency}
-              </Box>
-            </Typography>
-          </Stack>
         </Stack>
       </Container>
     </Drawer>

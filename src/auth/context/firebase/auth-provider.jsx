@@ -303,7 +303,7 @@ export function AuthProvider({ children }) {
   const fsGetBusinessProfile = useCallback(
     async (businessProfileID) => {
       try {
-        await fbTranslateKeywords();
+        // await fbTranslateKeywords();
 
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
         const docSnapshot = await getDoc(docRef);
@@ -622,6 +622,25 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsGetSystemTranslations = useCallback(async (languages) => {
+    const translations = [];
+    const systemTranslations = [];
+    languages.forEach(async (language) => {
+      const asyncOperation = async () => {
+        try {
+          const docRef = doc(DB, `/system-translations/${language}`);
+          translations.push({ lang: language, translations: (await getDoc(docRef)).data() });
+        } catch (error) {
+          throw error;
+        }
+      };
+      systemTranslations.push(asyncOperation());
+    });
+
+    await Promise.allSettled(systemTranslations);
+
+    return translations;
+  }, []);
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
     const docRef = doc(DB, docPath);
@@ -1866,6 +1885,7 @@ export function AuthProvider({ children }) {
       fsCreateBusinessProfile,
       fsUpdateBusinessProfile,
       createDefaults,
+      fsGetSystemTranslations,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
@@ -1955,6 +1975,7 @@ export function AuthProvider({ children }) {
       fsCreateBusinessProfile,
       fsUpdateBusinessProfile,
       createDefaults,
+      fsGetSystemTranslations,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,

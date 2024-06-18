@@ -22,7 +22,7 @@ function BottomNavModern() {
     orderSnapShot: { cart, docID },
     businessProfile,
   } = useAuthContext();
-  const { labels, selectedLanguage, branchInfo, tableInfo } = useQrMenuContext();
+  const { labels, selectedLanguage, branchInfo, tableInfo, getTranslation } = useQrMenuContext();
   const [drawerStates, setDrawerStates] = useState({
     menu: false,
     cart: false,
@@ -76,13 +76,13 @@ function BottomNavModern() {
         <ActionButton
           clickAction={() => router.push('.')}
           icon="/assets/icons/qr-menu/arrow-left.svg"
-          label="Home"
+          label={getTranslation('home')}
           sx={{ color: '#000' }}
         />
         <ActionButton
           clickAction={() => toggleDrawer('menu')}
           icon="/assets/icons/qr-menu/food-menu.svg"
-          label="Menu"
+          label={getTranslation('menu')}
           sx={{ color: '#000' }}
           badgeContent={labels.length === 0 ? null : ''}
         />
@@ -90,7 +90,7 @@ function BottomNavModern() {
           <ActionButton
             clickAction={() => toggleDrawer('cart')}
             icon="/assets/icons/qr-menu/bill.svg"
-            label="Bill"
+            label={getTranslation('bill')}
             sx={{ color: '#000' }}
             badgeContent={totalCartItems || 0}
           />
