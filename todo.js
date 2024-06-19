@@ -17,14 +17,13 @@
 - How item will look without image or description
 - Allow selecting only single "Meal Type"
 ! - Add Search meal by name field (Think about it)
-- Most Ordered Meal
 
 ? Branch
 1- Show Mock image if no image is uploaded
 2- Allow Branch Admin to Close Table Order from dashboard -- Close only, no collect payment is allowed
 
-? Meal Labels
-1- Translate Meal Labels
+? Meals
+1- Translate Meal Portions
 
 ? Business Profile
 1- Adding new logo issue when navigating to another tab then coming back
@@ -36,7 +35,7 @@
 
 ---------------------------------------------------------------------------
 ! TESTING
-1- Test all maps when there are no data to present
+1- Test all Array.maps when there are no data to present
 
 * Next Release
 1- Get Customer Feedback

@@ -167,6 +167,7 @@ exports.fbTranslateKeyword = functions.https.onCall(async () => {
     'any special requests ?',
     'provided by',
     'table',
+    'filter',
   ];
 
   const translationTasks = Object.keys(LANGUAGE_CODES).map(async (langKey) => {
