@@ -43,6 +43,7 @@ function QRMenuHomeView() {
     branchInfo: { title, cover, wifiPassword, isActive: isBranchActive, email, number },
     tableInfo: { title: tableTitle, isActive: isTableActive, index },
     selectedLanguage,
+    getTranslation,
   } = useQrMenuContext();
   const { fsGetImgDownloadUrl } = useAuthContext();
   const router = useRouter();
@@ -89,7 +90,7 @@ function QRMenuHomeView() {
       </Box>
     );
   return (
-    <Box sx={{ py: 2 }}>
+    <Box sx={{ mb: 2 }}>
       <Card sx={{ p: 1 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={1} alignItems="center">
@@ -142,15 +143,20 @@ function QRMenuHomeView() {
                   zindex: 1,
                   bottom: -30,
                   right: 10,
+                  border: `2px solid ${theme.palette.divider}`,
+                  bgcolor: '#FFFFFF',
+                  p: 1,
                 }}
               />
             )}
           </Box>
-          <Stack direction="column" spacing={0}>
+          <Stack direction="column" spacing={0} sx={{ px: 2 }}>
             <Typography variant="h3">{getTitle()}</Typography>
             <Typography variant="caption">{title}</Typography>
           </Stack>
-          <Typography variant="body2">{getDescription() || description}</Typography>
+          <Typography variant="body2" sx={{ px: 2 }}>
+            {getDescription() || description}
+          </Typography>
           <Button
             variant="contained"
             color="secondary"
@@ -171,7 +177,7 @@ function QRMenuHomeView() {
               borderRadius: 5,
             }}
           >
-            {isTableActive ? 'Go to Menu' : 'Table is not accepting orders'}
+            {isTableActive ? getTranslation('Go to Menu') : 'Table is not accepting orders'}
           </Button>
           <Stack direction="column" alignItems="center" sx={{ mx: 1 }}>
             <Stack
@@ -188,7 +194,7 @@ function QRMenuHomeView() {
             <Divider sx={{ borderStyle: 'dashed', mb: 1 }} />
             <Stack direction="row" spacing={0.5} alignItems="center" justifyContent="center">
               <Typography variant="caption" component="div" sx={{ textAlign: 'center' }}>
-                Provided by
+                {getTranslation('provided by')}
                 <Link href="https://astro-menu.com/"> Astro-Menu</Link>
               </Typography>
               <Image src="/assets/astro-logo.svg" sx={{ width: 20, height: 1 }} />
@@ -196,17 +202,13 @@ function QRMenuHomeView() {
           </Box>
         </Stack>
       </Card>
-      {isLangOpen && (
-        <LanguageDrawer openState={isLangOpen} toggleDrawer={() => setIsLangOpen(false)} />
-      )}
-      {isWifiOpen && (
-        <ConfirmDialog
-          title="Wifi Password"
-          content={<WifiTextField value={wifiPassword} />}
-          open={isWifiOpen}
-          onClose={() => setIsWifiOpen(false)}
-        />
-      )}
+      <LanguageDrawer openState={isLangOpen} toggleDrawer={() => setIsLangOpen(false)} />
+      <ConfirmDialog
+        title={getTranslation('wifi Password')}
+        content={<WifiTextField value={wifiPassword} />}
+        open={isWifiOpen}
+        onClose={() => setIsWifiOpen(false)}
+      />
     </Box>
   );
 }

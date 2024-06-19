@@ -27,6 +27,7 @@ function BottomNavModern() {
     menu: false,
     cart: false,
     language: false,
+    filter: false,
   });
 
   const isMenuOnly = useMemo(
@@ -80,11 +81,10 @@ function BottomNavModern() {
           sx={{ color: '#000' }}
         />
         <ActionButton
-          clickAction={() => toggleDrawer('menu')}
-          icon="/assets/icons/qr-menu/food-menu.svg"
-          label={getTranslation('menu')}
+          clickAction={() => toggleDrawer('language')}
+          icon="/assets/icons/qr-menu/language.svg"
+          label={LANGUAGE_CODES[selectedLanguage].value}
           sx={{ color: '#000' }}
-          badgeContent={labels.length === 0 ? null : ''}
         />
         {docID && tableInfo.index !== 0 && !isMenuOnly && (
           <ActionButton
@@ -96,16 +96,32 @@ function BottomNavModern() {
           />
         )}
         <ActionButton
-          clickAction={() => toggleDrawer('language')}
-          icon="/assets/icons/qr-menu/language.svg"
-          label={LANGUAGE_CODES[selectedLanguage].value}
+          clickAction={() => toggleDrawer('filter')}
+          icon="/assets/icons/qr-menu/filter.svg"
+          label={getTranslation('filter')}
+          sx={{ color: '#000' }}
+          badgeContent={labels.length === 0 ? null : ''}
+        />
+        <ActionButton
+          clickAction={() => toggleDrawer('menu')}
+          icon="/assets/icons/qr-menu/food-menu.svg"
+          label={getTranslation('menu')}
           sx={{ color: '#000' }}
         />
       </Stack>
 
-      <SectionsDrawer openState={drawerStates.menu} toggleDrawer={setDrawerStates} />
-      <CartDrawer openState={drawerStates.cart} toggleDrawer={setDrawerStates} />
       <LanguageDrawer openState={drawerStates.language} toggleDrawer={setDrawerStates} />
+      <CartDrawer openState={drawerStates.cart} toggleDrawer={setDrawerStates} />
+      <SectionsDrawer
+        openState={drawerStates.menu}
+        toggleDrawer={setDrawerStates}
+        type="sections"
+      />
+      <SectionsDrawer
+        openState={drawerStates.filter}
+        toggleDrawer={setDrawerStates}
+        type="filter"
+      />
     </Box>
   );
 }

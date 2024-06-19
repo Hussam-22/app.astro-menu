@@ -160,6 +160,8 @@ export function QrMenuContextProvider({ children }) {
     [selectedLanguage, systemTranslations]
   );
 
+  const reset = useCallback(() => setLabels([]), []);
+
   const memoizedValue = useMemo(
     () => ({
       tableInfo,
@@ -177,6 +179,7 @@ export function QrMenuContextProvider({ children }) {
       branchInfo,
       mostOrderedMeals,
       getTranslation,
+      reset,
     }),
     [
       mealsLabel,
@@ -193,6 +196,7 @@ export function QrMenuContextProvider({ children }) {
       branchInfo,
       mostOrderedMeals,
       getTranslation,
+      reset,
     ]
   );
   return <QrMenuContext.Provider value={memoizedValue}>{children}</QrMenuContext.Provider>;

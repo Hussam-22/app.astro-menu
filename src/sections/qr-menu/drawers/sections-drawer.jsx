@@ -4,21 +4,21 @@ import { useParams } from 'react-router';
 import { useQueries } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
-import { Chip, Stack, Button, Drawer, Divider, Container, Typography } from '@mui/material';
+import { Chip, Stack, Button, Drawer, Divider, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
-import Scrollbar from 'src/components/scrollbar';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 SectionsDrawer.propTypes = {
   openState: PropTypes.bool,
   toggleDrawer: PropTypes.func,
+  type: PropTypes.string,
 };
 
-function SectionsDrawer({ openState, toggleDrawer }) {
+function SectionsDrawer({ openState, toggleDrawer, type }) {
   const { businessProfileID } = useParams();
   const { menuSections, fsGetMeal } = useAuthContext();
-  const { setLabel, labels, reset, selectedLanguage, branchInfo, mealsLabel, getTranslation } =
+  const { setLabel, labels, reset, selectedLanguage, mealsLabel, getTranslation } =
     useQrMenuContext();
 
   const getLabel = (label) => {
@@ -70,90 +70,105 @@ function SectionsDrawer({ openState, toggleDrawer }) {
     .map((meal) => meal?.docID);
 
   return (
-    <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('menu')}>
-      <Container maxWidth="sm" sx={{ py: 3 }}>
-        <Stack
-          direction={{ sm: 'row', xs: 'column' }}
-          spacing={{ sm: 3, xs: 1 }}
-          divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-        >
-          <Box sx={{ width: 1 }}>
-            <Scrollbar sx={{ maxHeight: 1 }}>
-              <Typography variant="h4">{getTranslation('menu sections')}</Typography>
-              {menuSections.length !== 0 && (
-                <Box
-                  sx={{
-                    display: 'grid',
-                    gridTemplateColumns: { xs: 'repeat(3,1fr)', sm: 'repeat(1,1fr)' },
-                    gap: 1,
-                  }}
-                >
-                  {[...menuSections]
-                    .filter((section) =>
-                      section.meals.every((mealID) => !inActiveMeals.includes(mealID))
-                    )
-                    .filter(
-                      (section) =>
-                        section.isActive &&
-                        section.meals.length !== 0 &&
-                        !section.meals.every((meal) => inActiveMeals.includes(meal))
-                    )
-                    .sort((a, b) => a.order - b.order)
-                    .map((section) => (
-                      <Chip
-                        key={section.docID}
-                        label={getTitle(section)}
-                        sx={{ fontWeight: '700' }}
-                        onClick={() => onSectionClickHandler(section.docID)}
-                        size="small"
-                        variant="soft"
-                      />
-                    ))}
-                </Box>
-              )}
-            </Scrollbar>
-          </Box>
+    <Drawer
+      anchor="right"
+      open={openState}
+      onClose={() => toggleDrawer('menu')}
+      PaperProps={{ sx: { minWidth: 200 } }}
+    >
+      <Stack
+        direction="column"
+        spacing={{ sm: 3, xs: 1 }}
+        divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
+        sx={{ p: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
+      >
+        {type === 'sections' && (
+          <>
+            <Typography variant="h4">{getTranslation('menu sections')}</Typography>
+            {menuSections.length !== 0 && (
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(1,1fr)',
+                  gap: 1,
+                }}
+              >
+                {[...menuSections]
+                  .filter((section) =>
+                    section.meals.every((mealID) => !inActiveMeals.includes(mealID))
+                  )
+                  .filter(
+                    (section) =>
+                      section.isActive &&
+                      section.meals.length !== 0 &&
+                      !section.meals.every((meal) => inActiveMeals.includes(meal))
+                  )
+                  .sort((a, b) => a.order - b.order)
+                  .map((section) => (
+                    <Typography
+                      key={section.docID}
+                      onClick={() => onSectionClickHandler(section.docID)}
+                    >
+                      {getTitle(section)}
+                    </Typography>
+                  ))}
+              </Box>
+            )}
+          </>
+        )}
 
-          <Box>
-            <Typography variant="h4">{getTranslation('meal type')}</Typography>
+        {type === 'filter' && (
+          <>
+            <Typography variant="h4" sx={{ mb: 1 }}>
+              {getTranslation('meal type')}
+            </Typography>
             {mealsLabel.length !== 0 && (
               <Box
                 sx={{
                   display: 'grid',
                   gap: 1,
-                  gridTemplateColumns: { xs: 'repeat(3, 1fr)', sm: 'repeat(2, 1fr)' },
+                  gridTemplateColumns: 'repeat(1,1fr)',
                 }}
               >
                 {mealsLabel.map((label) => (
                   <Chip
                     key={label.docID}
                     label={`#${getLabel(label)}`}
-                    sx={{ fontWeight: '700' }}
                     onClick={() => onMealLabelClick(label.docID)}
                     size="small"
                     color={labels.includes(label.docID) ? 'primary' : 'default'}
                     variant="soft"
                   />
                 ))}
-
-                <Divider sx={{ my: 1, gridColumn: '1/-1' }} />
-                <Button
-                  variant="contained"
-                  color="warning"
-                  size="small"
-                  onClick={resetHandler}
-                  disabled={labels.length === 0}
-                >
-                  {getTranslation('reset')}
-                </Button>
-                <Button variant="soft" size="small" onClick={() => toggleDrawer('menu')}>
-                  {getTranslation('close')}
-                </Button>
               </Box>
             )}
-          </Box>
+          </>
+        )}
+
+        <Divider sx={{ my: 1, gridColumn: '1/-1' }} />
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          justifyContent="center"
+          alignSelf="flex-end"
+        >
+          {type === 'filter' && (
+            <Button
+              variant="contained"
+              color="warning"
+              size="small"
+              onClick={resetHandler}
+              disabled={labels.length === 0}
+            >
+              {getTranslation('reset')}
+            </Button>
+          )}
+          <Button variant="soft" size="small" onClick={() => toggleDrawer('menu')}>
+            {getTranslation('close')}
+          </Button>
         </Stack>
-      </Container>
+      </Stack>
     </Drawer>
   );
 }

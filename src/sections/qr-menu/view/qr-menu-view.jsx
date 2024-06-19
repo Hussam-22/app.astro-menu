@@ -21,6 +21,7 @@ function QrMenuView() {
     businessProfile: { docID, businessName, defaultLanguage, translationEdited, translation, logo },
     selectedLanguage,
     mostOrderedMeals = [],
+    getTranslation,
   } = useQrMenuContext();
   const router = useRouter();
 
@@ -125,6 +126,9 @@ function QrMenuView() {
               width: 72,
               height: 72,
               borderRadius: 1,
+              border: `2px solid ${theme.palette.divider}`,
+              bgcolor: '#FFFFFF',
+              p: 1,
             }}
           />
         )}

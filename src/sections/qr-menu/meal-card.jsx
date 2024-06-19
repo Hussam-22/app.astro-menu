@@ -3,8 +3,8 @@ import { useMemo, useState } from 'react';
 
 import { Box, Stack, Button, useTheme, Typography } from '@mui/material';
 
-import Label from 'src/components/label';
 import Image from 'src/components/image';
+import Label from 'src/components/label';
 import { useParams } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
@@ -17,7 +17,8 @@ function MealCard({ mealInfo }) {
   const { tableID } = useParams();
   const { cover, description, isNew, portions, title, translation, translationEdited } = mealInfo;
   const { orderSnapShot } = useAuthContext();
-  const { branchInfo, selectedLanguage, tableInfo, businessProfile } = useQrMenuContext();
+  const { branchInfo, selectedLanguage, tableInfo, businessProfile, getTranslation } =
+    useQrMenuContext();
   const [isReadMore, setIsReadMore] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -122,17 +123,17 @@ function MealCard({ mealInfo }) {
               onClick={() => setIsOpen(true)}
               startIcon={<Iconify icon="carbon:add-filled" sx={{ width: 24, height: 24 }} />}
             >
-              {count === 0 ? 'Add' : count}
+              {count === 0 ? getTranslation('add') : count}
             </Button>
           )}
           {isNew && (
-            <Box sx={{ position: 'absolute', top: 10, left: -15 }}>
+            <Box sx={{ position: 'absolute', top: 10, left: -5 }}>
               <Label
                 variant="filled"
                 color="error"
                 sx={{ fontSize: 12, p: 1, boxShadow: '2px 2px 0 0 #000', zIndex: 999 }}
               >
-                New
+                {getTranslation('new')}
               </Label>
             </Box>
           )}
@@ -148,7 +149,7 @@ function MealCard({ mealInfo }) {
                 transform: 'translate(-50%, 30%)',
               }}
             >
-              Out of Stock
+              {getTranslation('out of stock')}
             </Label>
           )}
         </Box>
