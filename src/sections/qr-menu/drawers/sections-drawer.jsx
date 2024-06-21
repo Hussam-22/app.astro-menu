@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { useQueries } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
-import { Chip, Stack, Button, Drawer, Divider, Typography } from '@mui/material';
+import { Stack, Button, Drawer, Divider, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
@@ -18,14 +18,21 @@ SectionsDrawer.propTypes = {
 function SectionsDrawer({ openState, toggleDrawer, type }) {
   const { businessProfileID } = useParams();
   const { menuSections, fsGetMeal } = useAuthContext();
-  const { setLabel, labels, reset, selectedLanguage, mealsLabel, getTranslation } =
-    useQrMenuContext();
+  const { selectedLanguage, getTranslation, mostOrderedMeals } = useQrMenuContext();
 
-  const getLabel = (label) => {
-    const { title, translation } = label;
-    if (selectedLanguage === 'en') return title;
-    return translation?.[selectedLanguage]?.title || title;
-  };
+  const menuSectionsWithMostOrderedMeals =
+    mostOrderedMeals?.length === 0
+      ? menuSections
+      : [
+          ...menuSections,
+          {
+            order: 0,
+            isActive: true,
+            meals: [...mostOrderedMeals],
+            title: 'most ordered meals',
+            docID: 'most-ordered-meals',
+          },
+        ];
 
   const getTitle = (section) => {
     const { title, translation, translationEdited } = section;
@@ -42,12 +49,6 @@ function SectionsDrawer({ openState, toggleDrawer, type }) {
       toggleDrawer('menu');
     }
   };
-
-  const onMealLabelClick = (labelID) => {
-    setLabel(labelID);
-  };
-
-  const resetHandler = () => reset();
 
   const sectionsMealsID = useMemo(
     () => menuSections.flatMap((section) => section.meals.map((meal) => meal)),
@@ -82,67 +83,33 @@ function SectionsDrawer({ openState, toggleDrawer, type }) {
         divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
         sx={{ p: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
       >
-        {type === 'sections' && (
-          <>
-            <Typography variant="h4">{getTranslation('menu sections')}</Typography>
-            {menuSections.length !== 0 && (
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(1,1fr)',
-                  gap: 1,
-                }}
-              >
-                {[...menuSections]
-                  .filter((section) =>
-                    section.meals.every((mealID) => !inActiveMeals.includes(mealID))
-                  )
-                  .filter(
-                    (section) =>
-                      section.isActive &&
-                      section.meals.length !== 0 &&
-                      !section.meals.every((meal) => inActiveMeals.includes(meal))
-                  )
-                  .sort((a, b) => a.order - b.order)
-                  .map((section) => (
-                    <Typography
-                      key={section.docID}
-                      onClick={() => onSectionClickHandler(section.docID)}
-                    >
-                      {getTitle(section)}
-                    </Typography>
-                  ))}
-              </Box>
-            )}
-          </>
-        )}
-
-        {type === 'filter' && (
-          <>
-            <Typography variant="h4" sx={{ mb: 1 }}>
-              {getTranslation('meal type')}
-            </Typography>
-            {mealsLabel.length !== 0 && (
-              <Box
-                sx={{
-                  display: 'grid',
-                  gap: 1,
-                  gridTemplateColumns: 'repeat(1,1fr)',
-                }}
-              >
-                {mealsLabel.map((label) => (
-                  <Chip
-                    key={label.docID}
-                    label={`#${getLabel(label)}`}
-                    onClick={() => onMealLabelClick(label.docID)}
-                    size="small"
-                    color={labels.includes(label.docID) ? 'primary' : 'default'}
-                    variant="soft"
-                  />
-                ))}
-              </Box>
-            )}
-          </>
+        <Typography variant="h4">{getTranslation('menu sections')}</Typography>
+        {menuSectionsWithMostOrderedMeals.length !== 0 && (
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(1,1fr)',
+              gap: 1,
+            }}
+          >
+            {[...menuSectionsWithMostOrderedMeals]
+              .filter((section) => section.meals.every((mealID) => !inActiveMeals.includes(mealID)))
+              .filter(
+                (section) =>
+                  section.isActive &&
+                  section.meals.length !== 0 &&
+                  !section.meals.every((meal) => inActiveMeals.includes(meal))
+              )
+              .sort((a, b) => a.order - b.order)
+              .map((section) => (
+                <Typography
+                  key={section.docID}
+                  onClick={() => onSectionClickHandler(section.docID)}
+                >
+                  {section?.order === 0 ? getTranslation(section.title) : getTitle(section)}
+                </Typography>
+              ))}
+          </Box>
         )}
 
         <Divider sx={{ my: 1, gridColumn: '1/-1' }} />
@@ -153,17 +120,6 @@ function SectionsDrawer({ openState, toggleDrawer, type }) {
           justifyContent="center"
           alignSelf="flex-end"
         >
-          {type === 'filter' && (
-            <Button
-              variant="contained"
-              color="warning"
-              size="small"
-              onClick={resetHandler}
-              disabled={labels.length === 0}
-            >
-              {getTranslation('reset')}
-            </Button>
-          )}
           <Button variant="soft" size="small" onClick={() => toggleDrawer('menu')}>
             {getTranslation('close')}
           </Button>

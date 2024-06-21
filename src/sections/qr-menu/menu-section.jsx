@@ -2,13 +2,14 @@ import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import { useQueries } from '@tanstack/react-query';
 
-import { Box, Stack, Divider, Typography } from '@mui/material';
+import { Box, Stack, Divider, useTheme, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import MealCard from 'src/sections/qr-menu/meal-card';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 function MenuSection({ sectionInfo }) {
+  const theme = useTheme();
   const { businessProfileID } = useParams();
   const {
     title,
@@ -67,7 +68,9 @@ function MenuSection({ sectionInfo }) {
         spacing={2}
         sx={{
           bgcolor: order === 0 ? 'rose.50' : 'background.paper',
-          py: 2,
+          border: `3px solid ${order === 0 ? theme.palette.rose[300] : 'transparent'}`,
+          borderRadius: 2,
+          py: order === 0 ? 0 : 2,
         }}
       >
         <Stack

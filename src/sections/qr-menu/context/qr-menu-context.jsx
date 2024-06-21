@@ -163,8 +163,6 @@ export function QrMenuContextProvider({ children }) {
         (keywordText) => keywordText === text.toLowerCase()
       );
 
-      console.log(keywordIndex);
-
       return titleCase(systemTranslations[languageIndex].translations[keywordIndex]);
     },
     [selectedLanguage, systemTranslations]

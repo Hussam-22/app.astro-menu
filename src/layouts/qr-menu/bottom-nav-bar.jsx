@@ -7,8 +7,9 @@ import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import CartDrawer from 'src/sections/qr-menu/drawers/cart-drawer';
 import ActionButton from 'src/sections/qr-menu/components/ActionButton';
-import SectionsDrawer from 'src/sections/qr-menu/drawers/sections-drawer';
 import LanguageDrawer from 'src/sections/qr-menu/drawers/language-drawer';
+import SectionsDrawer from 'src/sections/qr-menu/drawers/sections-drawer';
+import MealTypeDrawer from 'src/sections/qr-menu/drawers/meal-type-drawer';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 // BottomNavModern.propTypes = {
@@ -112,16 +113,8 @@ function BottomNavModern() {
 
       <LanguageDrawer openState={drawerStates.language} toggleDrawer={setDrawerStates} />
       <CartDrawer openState={drawerStates.cart} toggleDrawer={setDrawerStates} />
-      <SectionsDrawer
-        openState={drawerStates.menu}
-        toggleDrawer={setDrawerStates}
-        type="sections"
-      />
-      <SectionsDrawer
-        openState={drawerStates.filter}
-        toggleDrawer={setDrawerStates}
-        type="filter"
-      />
+      <SectionsDrawer openState={drawerStates.menu} toggleDrawer={setDrawerStates} />
+      <MealTypeDrawer openState={drawerStates.filter} toggleDrawer={setDrawerStates} />
     </Box>
   );
 }
