@@ -23,7 +23,7 @@ function MenuSection({ sectionInfo }) {
   const { labels, selectedLanguage, branchInfo, getTranslation } = useQrMenuContext();
 
   const getTitle = () => {
-    if (selectedLanguage === branchInfo.defaultLanguage) return title;
+    if (selectedLanguage === 'en') return title;
     return translationEdited?.[selectedLanguage]?.title
       ? translationEdited?.[selectedLanguage]?.title
       : translation?.[selectedLanguage]?.title;

@@ -1588,6 +1588,7 @@ export function AuthProvider({ children }) {
           limit(limitCount)
         );
         const querySnapshot = await getDocs(docRef);
+
         return querySnapshot.docs.map((doc) => doc.data().docID);
       } catch (error) {
         console.log(error);

@@ -20,19 +20,22 @@ function SectionsDrawer({ openState, toggleDrawer, type }) {
   const { menuSections, fsGetMeal } = useAuthContext();
   const { selectedLanguage, getTranslation, mostOrderedMeals } = useQrMenuContext();
 
-  const menuSectionsWithMostOrderedMeals =
-    mostOrderedMeals?.length === 0
-      ? menuSections
-      : [
-          ...menuSections,
-          {
-            order: 0,
-            isActive: true,
-            meals: [...mostOrderedMeals],
-            title: 'most ordered meals',
-            docID: 'most-ordered-meals',
-          },
-        ];
+  const menuSectionsWithMostOrderedMeals = useMemo(
+    () =>
+      mostOrderedMeals === undefined || mostOrderedMeals?.length === 0
+        ? menuSections
+        : [
+            ...menuSections,
+            {
+              order: 0,
+              isActive: true,
+              meals: [...mostOrderedMeals],
+              title: 'most ordered meals',
+              docID: 'most-ordered-meals',
+            },
+          ],
+    [menuSections, mostOrderedMeals]
+  );
 
   const getTitle = (section) => {
     const { title, translation, translationEdited } = section;

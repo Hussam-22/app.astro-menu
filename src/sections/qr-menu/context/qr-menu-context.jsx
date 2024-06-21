@@ -59,8 +59,6 @@ export function QrMenuContextProvider({ children }) {
     enabled: businessProfile.docID !== undefined && tableInfo?.menuID !== undefined,
   });
 
-  console.log(systemTranslations);
-
   const { data: menuInfo = {} } = useQuery({
     queryKey: ['menu', businessProfileID, tableInfo.menuID],
     queryFn: () => fsGetMenu(tableInfo.menuID, businessProfileID),
@@ -132,6 +130,8 @@ export function QrMenuContextProvider({ children }) {
   // Default language is always English, regardless of user input
   const [selectedLanguage, setLanguage] = useState('en');
 
+  console.log(selectedLanguage);
+
   useEffect(() => {
     if (branchInfo?.defaultLanguage) setLanguage(branchInfo.defaultLanguage);
   }, [branchInfo]);
@@ -163,7 +163,7 @@ export function QrMenuContextProvider({ children }) {
         (keywordText) => keywordText === text.toLowerCase()
       );
 
-      return titleCase(systemTranslations[languageIndex].translations[keywordIndex]);
+      return titleCase(systemTranslations?.[languageIndex]?.translations[keywordIndex] || text);
     },
     [selectedLanguage, systemTranslations]
   );
