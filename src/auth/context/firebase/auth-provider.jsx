@@ -623,23 +623,32 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsGetSystemTranslations = useCallback(async (languages) => {
+    const docRef = query(
+      collectionGroup(DB, 'system-translations'),
+      where('lang', 'in', languages)
+    );
+    const querySnapshot = await getDocs(docRef);
     const translations = [];
-    const systemTranslations = [];
-    languages.forEach(async (language) => {
-      const asyncOperation = async () => {
-        try {
-          const docRef = doc(DB, `/system-translations/${language}`);
-          translations.push({ lang: language, translations: (await getDoc(docRef)).data() });
-        } catch (error) {
-          throw error;
-        }
-      };
-      systemTranslations.push(asyncOperation());
-    });
-
-    await Promise.allSettled(systemTranslations);
-
+    querySnapshot.forEach((doc) => translations.push(doc.data()));
     return translations;
+
+    // const translations = [];
+    // const systemTranslations = [];
+    // languages.forEach(async (language) => {
+    //   const asyncOperation = async () => {
+    //     try {
+    //       const docRef = doc(DB, `/system-translations/${language}`);
+    //       translations.push({ lang: language, translations: (await getDoc(docRef)).data() });
+    //     } catch (error) {
+    //       throw error;
+    //     }
+    //   };
+    //   systemTranslations.push(asyncOperation());
+    // });
+
+    // await Promise.allSettled(systemTranslations);
+
+    // return translations;
   }, []);
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {

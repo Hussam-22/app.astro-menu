@@ -19,7 +19,7 @@ function MenuSection({ sectionInfo }) {
     order,
   } = sectionInfo;
   const { fsGetMeal } = useAuthContext();
-  const { labels, selectedLanguage, branchInfo } = useQrMenuContext();
+  const { labels, selectedLanguage, branchInfo, getTranslation } = useQrMenuContext();
 
   const getTitle = () => {
     if (selectedLanguage === branchInfo.defaultLanguage) return title;
@@ -61,7 +61,7 @@ function MenuSection({ sectionInfo }) {
           color: order === 0 && 'rose.400',
         }}
       >
-        {getTitle()}
+        {sectionInfo?.order === 0 ? getTranslation(sectionInfo.title) : getTitle()}
       </Typography>
       <Stack
         spacing={2}

@@ -59,6 +59,8 @@ export function QrMenuContextProvider({ children }) {
     enabled: businessProfile.docID !== undefined && tableInfo?.menuID !== undefined,
   });
 
+  console.log(systemTranslations);
+
   const { data: menuInfo = {} } = useQuery({
     queryKey: ['menu', businessProfileID, tableInfo.menuID],
     queryFn: () => fsGetMenu(tableInfo.menuID, businessProfileID),
@@ -152,10 +154,18 @@ export function QrMenuContextProvider({ children }) {
 
   const getTranslation = useCallback(
     (text) => {
-      const language = systemTranslations?.find(
+      if (!systemTranslations || selectedLanguage === 'en') return titleCase(text);
+
+      const languageIndex = systemTranslations.findIndex(
         (translation) => translation.lang === selectedLanguage
       );
-      return titleCase(language?.translations?.[text.toLowerCase()] || text);
+      const keywordIndex = systemTranslations[languageIndex]?.keywords?.findIndex(
+        (keywordText) => keywordText === text.toLowerCase()
+      );
+
+      console.log(keywordIndex);
+
+      return titleCase(systemTranslations[languageIndex].translations[keywordIndex]);
     },
     [selectedLanguage, systemTranslations]
   );

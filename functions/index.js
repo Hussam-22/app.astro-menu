@@ -170,19 +170,26 @@ exports.fbTranslateKeyword = functions.https.onCall(async () => {
     'filter',
   ];
 
-  const translationTasks = Object.keys(LANGUAGE_CODES).map(async (langKey) => {
-    const tasks = keywords.map(async (keyword) => ({
-      [keyword]: (await translate.translate(keyword, langKey)).slice(0, 1).toString(),
-    }));
+  // const tasks = keywords.map(async (keyword) => ({
+  //   lang: langKey,
+  //   [keyword]: (await translate.translate(keyword, langKey)).slice(0, 1).toString(),
+  // }));
 
-    const translations = await Promise.all(tasks);
-    const translationObj = Object.assign({}, ...translations);
+  const translationTasks = Object.keys(LANGUAGE_CODES).map(async (langKey) => {
+    const keywordObject = {
+      lang: langKey,
+      keywords,
+      translations: (await translate.translate(keywords.join('*'), langKey))
+        .slice(0, 1)
+        .toString()
+        .split('*'),
+    };
 
     const docRef = `/system-translations/${langKey}`;
     await admin
       .firestore()
       .doc(docRef)
-      .set({ ...translationObj });
+      .set({ ...keywordObject });
   });
 
   await Promise.all(translationTasks);

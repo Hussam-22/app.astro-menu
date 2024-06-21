@@ -34,7 +34,7 @@ function QrMenuView() {
             order: 0,
             isActive: true,
             meals: [...mostOrderedMeals],
-            title: 'Most Ordered Meals',
+            title: 'most ordered meals',
             docID: 'most-ordered-meals',
           },
         ];
