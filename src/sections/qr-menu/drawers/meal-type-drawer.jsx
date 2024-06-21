@@ -52,11 +52,11 @@ function MealTypeDrawer({ openState, toggleDrawer }) {
       anchor="right"
       open={openState}
       onClose={() => toggleDrawer('menu')}
-      PaperProps={{ sx: { minWidth: 200 } }}
+      PaperProps={{ sx: { minWidth: 200, borderRadius: '25px 0 0 25px' } }}
     >
       <Stack
         direction="column"
-        spacing={{ sm: 3, xs: 1 }}
+        spacing={1}
         divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
         sx={{ p: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
       >
@@ -85,13 +85,7 @@ function MealTypeDrawer({ openState, toggleDrawer }) {
         )}
 
         <Divider sx={{ my: 1, gridColumn: '1/-1' }} />
-        <Stack
-          direction="row"
-          spacing={1}
-          alignItems="center"
-          justifyContent="center"
-          alignSelf="flex-end"
-        >
+        <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
           <Button
             variant="contained"
             color="warning"
@@ -101,7 +95,12 @@ function MealTypeDrawer({ openState, toggleDrawer }) {
           >
             {getTranslation('reset')}
           </Button>
-          <Button variant="soft" size="small" onClick={() => toggleDrawer('menu')}>
+          <Button
+            variant="contained"
+            color="inherit"
+            size="small"
+            onClick={() => toggleDrawer('filter')}
+          >
             {getTranslation('close')}
           </Button>
         </Stack>

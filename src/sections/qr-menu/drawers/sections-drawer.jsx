@@ -97,13 +97,18 @@ function SectionsDrawer({ openState, toggleDrawer, type }) {
         },
       }}
     >
+      <Box sx={{ bgcolor: '#000', py: 1, px: 2 }}>
+        <Typography variant="h4" sx={{ color: '#FFFFFF' }}>
+          {getTranslation('menu sections')}
+        </Typography>
+      </Box>
+
       <Stack
         direction="column"
-        spacing={{ sm: 3, xs: 1 }}
+        spacing={1}
         divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
         sx={{ p: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
       >
-        <Typography variant="h4">{getTranslation('menu sections')}</Typography>
         {menuSectionsWithMostOrderedMeals.length !== 0 && (
           <Box
             sx={{
@@ -125,6 +130,7 @@ function SectionsDrawer({ openState, toggleDrawer, type }) {
                 <Typography
                   key={section.docID}
                   onClick={() => onSectionClickHandler(section.docID)}
+                  sx={{ fontWeight: '600' }}
                 >
                   {section?.order === 0 ? getTranslation(section.title) : getTitle(section)}
                 </Typography>
@@ -138,9 +144,14 @@ function SectionsDrawer({ openState, toggleDrawer, type }) {
           spacing={1}
           alignItems="center"
           justifyContent="center"
-          alignSelf="flex-end"
+          alignSelf="center"
         >
-          <Button variant="soft" size="small" onClick={() => toggleDrawer('menu')}>
+          <Button
+            variant="contained"
+            color="inherit"
+            size="small"
+            onClick={() => toggleDrawer('menu')}
+          >
             {getTranslation('close')}
           </Button>
         </Stack>

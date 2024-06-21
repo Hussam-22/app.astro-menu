@@ -71,6 +71,8 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
     mutationFn: (portion) => removeMeal(portion),
   });
 
+  if (!cartMeals) return null;
+
   return (
     <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('cart')}>
       <Container maxWidth="sm">
