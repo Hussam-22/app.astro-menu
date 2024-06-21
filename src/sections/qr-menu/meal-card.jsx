@@ -69,7 +69,7 @@ function MealCard({ mealInfo }) {
             bgcolor: 'warning.main',
             width: count === 0 ? 0 : 8,
             height: 100,
-            borderRadius: 3,
+            borderRadius: '0 25px 25px 0',
             transition: 'width 0.3s ease-in-out',
           }}
         />

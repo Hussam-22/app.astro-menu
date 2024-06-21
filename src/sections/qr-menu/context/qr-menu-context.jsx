@@ -130,8 +130,6 @@ export function QrMenuContextProvider({ children }) {
   // Default language is always English, regardless of user input
   const [selectedLanguage, setLanguage] = useState('en');
 
-  console.log(selectedLanguage);
-
   useEffect(() => {
     if (branchInfo?.defaultLanguage) setLanguage(branchInfo.defaultLanguage);
   }, [branchInfo]);

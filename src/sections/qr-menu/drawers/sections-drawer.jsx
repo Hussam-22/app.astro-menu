@@ -78,7 +78,24 @@ function SectionsDrawer({ openState, toggleDrawer, type }) {
       anchor="right"
       open={openState}
       onClose={() => toggleDrawer('menu')}
-      PaperProps={{ sx: { minWidth: 200 } }}
+      PaperProps={{
+        sx: {
+          minWidth: 200,
+          borderRadius: '25px 0 0 25px',
+          // '&:before': {
+          //   width: 1,
+          //   height: 1,
+          //   zIndex: -1,
+          //   content: "''",
+          //   opacity: 0.24,
+          //   position: 'absolute',
+          //   backgroundSize: 'cover',
+          //   backgroundRepeat: 'no-repeat',
+          //   backgroundPosition: 'center center',
+          //   backgroundImage: 'url(/assets/background/overlay_4.jpg)',
+          // },
+        },
+      }}
     >
       <Stack
         direction="column"

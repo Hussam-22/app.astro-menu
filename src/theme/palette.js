@@ -126,6 +126,7 @@ export function palette(mode) {
       neutral: GREY[200],
       light: GREY[100],
       dark: '#000000',
+      transparent: alpha('#FFFFFF', 0),
     },
     action: {
       ...COMMON.action,
