@@ -6,6 +6,7 @@ import { useQueries } from '@tanstack/react-query';
 import { Box } from '@mui/system';
 import { Chip, Stack, Button, Drawer, Divider, Typography } from '@mui/material';
 
+import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
@@ -55,14 +56,23 @@ function MealTypeDrawer({ openState, toggleDrawer }) {
       PaperProps={{ sx: { minWidth: 200, borderRadius: '25px 0 0 25px' } }}
     >
       <Stack
+        direction="row"
+        spacing={1}
+        sx={{ bgcolor: 'rose.400', py: 1, px: 2 }}
+        alignItems="center"
+        justifyContent="flex-end"
+      >
+        <Typography variant="h5" sx={{ color: '#FFFFFF' }}>
+          {getTranslation('meal type')}
+        </Typography>
+        <Image src="/assets/icons/qr-menu/filter.svg" width={32} height={32} />
+      </Stack>
+      <Stack
         direction="column"
         spacing={1}
         divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
         sx={{ p: 2, direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr' }}
       >
-        <Typography variant="h4" sx={{ mb: 1 }}>
-          {getTranslation('meal type')}
-        </Typography>
         {mealsLabel.length !== 0 && (
           <Box
             sx={{
@@ -84,11 +94,10 @@ function MealTypeDrawer({ openState, toggleDrawer }) {
           </Box>
         )}
 
-        <Divider sx={{ my: 1, gridColumn: '1/-1' }} />
         <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
           <Button
             variant="contained"
-            color="warning"
+            color="primary"
             size="small"
             onClick={resetHandler}
             disabled={labels.length === 0}

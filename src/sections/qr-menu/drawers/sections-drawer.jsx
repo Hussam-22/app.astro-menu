@@ -4,18 +4,19 @@ import { useParams } from 'react-router';
 import { useQueries } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
-import { Stack, Button, Drawer, Divider, Typography } from '@mui/material';
+import { Stack, Drawer, Button, Divider, useTheme, Typography } from '@mui/material';
 
+import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 SectionsDrawer.propTypes = {
   openState: PropTypes.bool,
   toggleDrawer: PropTypes.func,
-  type: PropTypes.string,
 };
 
-function SectionsDrawer({ openState, toggleDrawer, type }) {
+function SectionsDrawer({ openState, toggleDrawer }) {
+  const theme = useTheme();
   const { businessProfileID } = useParams();
   const { menuSections, fsGetMeal } = useAuthContext();
   const { selectedLanguage, getTranslation, mostOrderedMeals } = useQrMenuContext();
@@ -97,11 +98,18 @@ function SectionsDrawer({ openState, toggleDrawer, type }) {
         },
       }}
     >
-      <Box sx={{ bgcolor: '#000', py: 1, px: 2 }}>
-        <Typography variant="h4" sx={{ color: '#FFFFFF' }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ bgcolor: 'rose.400', py: 1, px: 2 }}
+        alignItems="center"
+        justifyContent="flex-end"
+      >
+        <Typography variant="h5" sx={{ color: '#FFFFFF' }}>
           {getTranslation('menu sections')}
         </Typography>
-      </Box>
+        <Image src="/assets/icons/qr-menu/food-menu.svg" width={32} height={32} />
+      </Stack>
 
       <Stack
         direction="column"
@@ -130,7 +138,12 @@ function SectionsDrawer({ openState, toggleDrawer, type }) {
                 <Typography
                   key={section.docID}
                   onClick={() => onSectionClickHandler(section.docID)}
-                  sx={{ fontWeight: '600' }}
+                  sx={{
+                    fontWeight: '600',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    textDecorationColor: theme.palette.rose[300],
+                  }}
                 >
                   {section?.order === 0 ? getTranslation(section.title) : getTitle(section)}
                 </Typography>
@@ -138,7 +151,6 @@ function SectionsDrawer({ openState, toggleDrawer, type }) {
           </Box>
         )}
 
-        <Divider sx={{ my: 1, gridColumn: '1/-1' }} />
         <Stack
           direction="row"
           spacing={1}
