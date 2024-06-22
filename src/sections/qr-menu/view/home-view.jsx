@@ -159,7 +159,7 @@ function QRMenuHomeView() {
           </Typography>
           <Button
             variant="contained"
-            color="secondary"
+            color="primary"
             endIcon={
               <Iconify
                 icon={isTableActive ? 'game-icons:meal' : 'zondicons:close-solid'}

@@ -118,7 +118,7 @@ function MealCard({ mealInfo }) {
                 left: '50%',
                 transform: 'translateX(-50%)',
                 px: 1,
-                backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                backgroundColor: 'rgba(255, 255, 255, 1)',
               }}
               onClick={() => setIsOpen(true)}
               startIcon={<Iconify icon="carbon:add-filled" sx={{ width: 24, height: 24 }} />}

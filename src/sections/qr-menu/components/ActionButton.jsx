@@ -16,7 +16,7 @@ export default function ActionButton({ clickAction, label, icon, badgeContent, s
   return (
     <IconButton disableTouchRipple disableRipple sx={{ p: 0 }} onClick={() => clickAction()}>
       <Stack direction="column" spacing={0} sx={{ alignSelf: 'center', alignItems: 'center' }}>
-        <Badge badgeContent={badgeContent} color="warning">
+        <Badge badgeContent={badgeContent} color="primary">
           <Image src={icon} sx={{ width: 28, height: 28 }} />
         </Badge>
         <Typography variant="caption" color="primary" sx={{ ...sx, fontWeight: 500 }}>

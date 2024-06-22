@@ -5,15 +5,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Box } from '@mui/system';
 import {
   Stack,
+  Button,
   Drawer,
   Divider,
   useTheme,
   Container,
-  IconButton,
   Typography,
+  IconButton,
   CircularProgress,
 } from '@mui/material';
 
+import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
@@ -74,7 +76,34 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
   if (!cartMeals) return null;
 
   return (
-    <Drawer anchor="bottom" open={openState} onClose={() => toggleDrawer('cart')}>
+    <Drawer
+      anchor="bottom"
+      open={openState}
+      onClose={() => toggleDrawer('cart')}
+      PaperProps={{ sx: { borderRadius: '25px 25px 0 0' } }}
+    >
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ bgcolor: 'rose.400', py: 1, px: 2 }}
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Button
+          variant="contained"
+          color="inherit"
+          size="small"
+          onClick={() => toggleDrawer('cart')}
+        >
+          {getTranslation('close')}
+        </Button>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="h5" sx={{ color: '#FFFFFF' }}>
+            {getTranslation('bill')}
+          </Typography>
+          <Image src="/assets/icons/qr-menu/bill.svg" width={32} height={32} />
+        </Stack>
+      </Stack>
       <Container maxWidth="sm">
         <Stack direction="column" spacing={1} sx={{ py: 2 }}>
           <Scrollbar sx={{ maxHeight: '80dvh' }}>

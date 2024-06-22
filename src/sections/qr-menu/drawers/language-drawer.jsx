@@ -2,8 +2,9 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
-import { Stack, Drawer } from '@mui/material';
+import { Stack, Drawer, Button, Typography } from '@mui/material';
 
+import Image from 'src/components/image';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
@@ -13,7 +14,7 @@ LanguageDrawer.propTypes = {
 };
 
 function LanguageDrawer({ openState, toggleDrawer }) {
-  const { businessProfile } = useQrMenuContext();
+  const { businessProfile, getTranslation } = useQrMenuContext();
 
   if (!businessProfile.languages) return null;
 
@@ -23,12 +24,34 @@ function LanguageDrawer({ openState, toggleDrawer }) {
       open={openState}
       PaperProps={{
         sx: {
-          maxHeight: '50%',
-          minHeight: '20%',
+          borderRadius: '25px 25px 0 0',
         },
       }}
       onClose={() => toggleDrawer('language')}
     >
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ bgcolor: 'rose.400', py: 1, px: 2 }}
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Button
+          variant="contained"
+          color="inherit"
+          size="small"
+          onClick={() => toggleDrawer('language')}
+        >
+          {getTranslation('close')}
+        </Button>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="h5" sx={{ color: '#FFFFFF' }}>
+            {getTranslation('language')}
+          </Typography>
+          <Image src="/assets/icons/qr-menu/language.svg" width={32} height={32} />
+        </Stack>
+      </Stack>
+
       <Stack
         direction="column"
         spacing={1}
@@ -75,7 +98,7 @@ function LanguageButton({ code, toggleDrawer }) {
         onClick={() => onlanguagechange(code)}
         loading={loading}
         sx={{
-          minWidth: 200,
+          minWidth: 120,
         }}
       >
         {LANGUAGE_CODES[code].value}

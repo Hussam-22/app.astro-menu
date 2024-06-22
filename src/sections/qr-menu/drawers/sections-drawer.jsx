@@ -151,22 +151,15 @@ function SectionsDrawer({ openState, toggleDrawer }) {
           </Box>
         )}
 
-        <Stack
-          direction="row"
-          spacing={1}
-          alignItems="center"
-          justifyContent="center"
-          alignSelf="center"
+        <Button
+          variant="contained"
+          color="inherit"
+          size="small"
+          onClick={() => toggleDrawer('menu')}
+          sx={{ alignSelf: 'center' }}
         >
-          <Button
-            variant="contained"
-            color="inherit"
-            size="small"
-            onClick={() => toggleDrawer('menu')}
-          >
-            {getTranslation('close')}
-          </Button>
-        </Stack>
+          {getTranslation('close')}
+        </Button>
       </Stack>
     </Drawer>
   );

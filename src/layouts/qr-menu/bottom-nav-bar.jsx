@@ -51,7 +51,7 @@ function BottomNavModern() {
     <Box
       sx={{
         py: 1,
-        height: 60,
+        height: 70,
         position: 'fixed',
         bottom: 0,
         left: '50%',
@@ -66,12 +66,12 @@ function BottomNavModern() {
     >
       <Stack
         direction="row"
-        spacing={-1}
+        spacing={0}
         sx={{
           display: 'flex',
           justifyContent: 'space-around',
           position: 'relative',
-          pb: 0.5,
+          py: 0.75,
           overflow: 'visible',
         }}
       >
