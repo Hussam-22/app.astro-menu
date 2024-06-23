@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { Box, Stack, useTheme } from '@mui/material';
 
@@ -8,8 +8,8 @@ import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import CartDrawer from 'src/sections/qr-menu/drawers/cart-drawer';
 import ActionButton from 'src/sections/qr-menu/components/ActionButton';
-import SectionsDrawer from 'src/sections/qr-menu/drawers/sections-drawer';
 import LanguageDrawer from 'src/sections/qr-menu/drawers/language-drawer';
+import SectionsDrawer from 'src/sections/qr-menu/drawers/sections-drawer';
 import MealTypeDrawer from 'src/sections/qr-menu/drawers/meal-type-drawer';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
@@ -47,9 +47,29 @@ function BottomNavModern() {
     setDrawerStates((state) => ({ ...state, [drawer]: true }));
   };
 
-  const closeDrawer = (drawer) => {
-    setDrawerStates((state) => ({ ...state, [drawer]: false }));
-  };
+  const closeDrawer = useCallback(() => {
+    setDrawerStates(() => ({ menu: false, cart: false, language: false, filter: false }));
+  }, []);
+
+  useEffect(() => {
+    // Handler for the popstate event
+    const handlePopState = (event) => {
+      if (event.type === 'popstate') closeDrawer();
+      // Ensure we push a new state to handle further back button presses
+      window.history.pushState({}, '');
+    };
+
+    // Add the popstate event listener
+    window.addEventListener('popstate', handlePopState);
+
+    // Push initial state
+    window.history.pushState({}, '');
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [closeDrawer]);
 
   if (!branchInfo.isActive || !tableInfo.isActive) return null;
 

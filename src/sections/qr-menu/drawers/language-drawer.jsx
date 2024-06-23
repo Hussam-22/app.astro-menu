@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { Stack, Drawer, Button, Typography } from '@mui/material';
@@ -15,44 +15,6 @@ LanguageDrawer.propTypes = {
 
 function LanguageDrawer({ openState, onClose }) {
   const { businessProfile, getTranslation } = useQrMenuContext();
-
-  useEffect(() => {
-    window.keydown = (event) => {
-      console.log(event.key);
-    };
-
-    // Function to simulate ESC key press
-    const simulateEscKeyPress = () => {
-      console.log('simulateEscKeyPress');
-      const event = new KeyboardEvent('keydown', {
-        key: 'Escape',
-        keyCode: 27,
-        code: 'Escape',
-        which: 27,
-        bubbles: true,
-        cancelable: true,
-      });
-      return document.dispatchEvent(event);
-    };
-
-    // Handler for the popstate event
-    const handlePopState = () => {
-      simulateEscKeyPress();
-      // Ensure we push a new state to handle further back button presses
-      window.history.pushState({}, '');
-    };
-
-    // Add the popstate event listener
-    window.addEventListener('popstate', handlePopState);
-
-    // Push initial state
-    window.history.pushState({}, '');
-
-    // Clean up the event listener on component unmount
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
 
   if (!businessProfile.languages) return null;
 
