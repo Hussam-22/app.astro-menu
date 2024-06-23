@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 import { Box, Stack, Button, useTheme, Typography } from '@mui/material';
 
@@ -60,6 +60,26 @@ function MealCard({ mealInfo }) {
     tableInfo.index !== 0 &&
     orderSnapShot?.updateCount === 0 &&
     !isMenuOnly;
+
+  useEffect(() => {
+    // Handler for the popstate event
+    const handlePopState = (event) => {
+      if (event.type === 'popstate') setIsOpen(false);
+      // Ensure we push a new state to handle further back button presses
+      window.history.pushState({}, '');
+    };
+
+    // Add the popstate event listener
+    window.addEventListener('popstate', handlePopState);
+
+    // Push initial state
+    window.history.pushState({}, '');
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [setIsOpen]);
 
   return (
     <Box>
