@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
@@ -21,7 +21,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
-const CartDrawer = ({ openState, toggleDrawer }) => {
+const CartDrawer = ({ openState, onClose }) => {
   const theme = useTheme();
   const { fsRemoveMealFromCart, orderSnapShot } = useAuthContext();
   const { branchInfo, selectedLanguage, getTranslation } = useQrMenuContext();
@@ -31,20 +31,6 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
   const cachedMeals = queryClient.getQueriesData({ queryKey: ['meal'] }) || [];
 
   const availableMeals = cachedMeals.flatMap((item) => item[1]);
-
-  useEffect(() => {
-    const handlePopState = (event) => {
-      console.log('Back button was pressed!');
-      // Additional logic here
-    };
-
-    window.addEventListener('popstate', handlePopState);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   const getTitle = (meal) => {
     const { title, translation, translationEdited } = meal;
@@ -93,7 +79,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
     <Drawer
       anchor="bottom"
       open={openState}
-      onClose={() => toggleDrawer('cart')}
+      onClose={onClose}
       PaperProps={{ sx: { borderRadius: '25px 25px 0 0' } }}
     >
       <Stack
@@ -103,12 +89,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
         alignItems="center"
         justifyContent="space-between"
       >
-        <Button
-          variant="contained"
-          color="inherit"
-          size="small"
-          onClick={() => toggleDrawer('cart')}
-        >
+        <Button variant="contained" color="inherit" size="small" onClick={onClose}>
           {getTranslation('close')}
         </Button>
         <Stack direction="row" spacing={1} alignItems="center">
@@ -221,7 +202,7 @@ const CartDrawer = ({ openState, toggleDrawer }) => {
 
 CartDrawer.propTypes = {
   openState: PropTypes.bool,
-  toggleDrawer: PropTypes.func,
+  onClose: PropTypes.func,
 };
 
 export default CartDrawer;

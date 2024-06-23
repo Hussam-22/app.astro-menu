@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { Stack, Drawer, Button, Typography } from '@mui/material';
@@ -10,11 +10,49 @@ import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 LanguageDrawer.propTypes = {
   openState: PropTypes.bool,
-  toggleDrawer: PropTypes.func,
+  onClose: PropTypes.func,
 };
 
-function LanguageDrawer({ openState, toggleDrawer }) {
+function LanguageDrawer({ openState, onClose }) {
   const { businessProfile, getTranslation } = useQrMenuContext();
+
+  useEffect(() => {
+    window.keydown = (event) => {
+      console.log(event.key);
+    };
+
+    // Function to simulate ESC key press
+    const simulateEscKeyPress = () => {
+      console.log('simulateEscKeyPress');
+      const event = new KeyboardEvent('keydown', {
+        key: 'Escape',
+        keyCode: 27,
+        code: 'Escape',
+        which: 27,
+        bubbles: true,
+        cancelable: true,
+      });
+      return document.dispatchEvent(event);
+    };
+
+    // Handler for the popstate event
+    const handlePopState = () => {
+      simulateEscKeyPress();
+      // Ensure we push a new state to handle further back button presses
+      window.history.pushState({}, '');
+    };
+
+    // Add the popstate event listener
+    window.addEventListener('popstate', handlePopState);
+
+    // Push initial state
+    window.history.pushState({}, '');
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   if (!businessProfile.languages) return null;
 
@@ -27,7 +65,7 @@ function LanguageDrawer({ openState, toggleDrawer }) {
           borderRadius: '25px 25px 0 0',
         },
       }}
-      onClose={() => toggleDrawer('language')}
+      onClose={onClose}
     >
       <Stack
         direction="row"
@@ -36,12 +74,7 @@ function LanguageDrawer({ openState, toggleDrawer }) {
         alignItems="center"
         justifyContent="space-between"
       >
-        <Button
-          variant="contained"
-          color="inherit"
-          size="small"
-          onClick={() => toggleDrawer('language')}
-        >
+        <Button variant="contained" color="inherit" size="small" onClick={onClose}>
           {getTranslation('close')}
         </Button>
         <Stack direction="row" spacing={1} alignItems="center">
@@ -61,7 +94,7 @@ function LanguageDrawer({ openState, toggleDrawer }) {
       >
         {businessProfile?.languages?.length !== 0 &&
           [...businessProfile.languages, businessProfile.defaultLanguage].map((language) => (
-            <LanguageButton toggleDrawer={toggleDrawer} code={language} key={language} />
+            <LanguageButton toggleDrawer={onClose} code={language} key={language} />
           ))}
       </Stack>
     </Drawer>

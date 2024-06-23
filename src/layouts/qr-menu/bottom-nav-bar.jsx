@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 import { Box, Stack, useTheme } from '@mui/material';
 
@@ -7,8 +8,8 @@ import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import CartDrawer from 'src/sections/qr-menu/drawers/cart-drawer';
 import ActionButton from 'src/sections/qr-menu/components/ActionButton';
-import LanguageDrawer from 'src/sections/qr-menu/drawers/language-drawer';
 import SectionsDrawer from 'src/sections/qr-menu/drawers/sections-drawer';
+import LanguageDrawer from 'src/sections/qr-menu/drawers/language-drawer';
 import MealTypeDrawer from 'src/sections/qr-menu/drawers/meal-type-drawer';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
@@ -19,6 +20,7 @@ import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 function BottomNavModern() {
   const theme = useTheme();
   const router = useRouter();
+  const navigate = useNavigate();
   const {
     orderSnapShot: { cart, docID },
     businessProfile,
@@ -41,8 +43,12 @@ function BottomNavModern() {
     [cart]
   );
 
-  const toggleDrawer = (drawer) => {
-    setDrawerStates((state) => ({ ...state, [drawer]: !state[drawer] }));
+  const openDrawer = (drawer) => {
+    setDrawerStates((state) => ({ ...state, [drawer]: true }));
+  };
+
+  const closeDrawer = (drawer) => {
+    setDrawerStates((state) => ({ ...state, [drawer]: false }));
   };
 
   if (!branchInfo.isActive || !tableInfo.isActive) return null;
@@ -76,20 +82,20 @@ function BottomNavModern() {
         }}
       >
         <ActionButton
-          clickAction={() => router.push('.')}
+          onClick={() => router.push('.')}
           icon="/assets/icons/qr-menu/arrow-left.svg"
           label={getTranslation('home')}
           sx={{ color: '#000' }}
         />
         <ActionButton
-          clickAction={() => toggleDrawer('language')}
+          onClick={() => openDrawer('language')}
           icon="/assets/icons/qr-menu/language.svg"
           label={LANGUAGE_CODES[selectedLanguage].value}
           sx={{ color: '#000' }}
         />
         {docID && tableInfo.index !== 0 && !isMenuOnly && (
           <ActionButton
-            clickAction={() => toggleDrawer('cart')}
+            onClick={() => openDrawer('cart')}
             icon="/assets/icons/qr-menu/bill.svg"
             label={getTranslation('bill')}
             sx={{ color: '#000' }}
@@ -97,24 +103,24 @@ function BottomNavModern() {
           />
         )}
         <ActionButton
-          clickAction={() => toggleDrawer('filter')}
+          onClick={() => openDrawer('filter')}
           icon="/assets/icons/qr-menu/filter.svg"
           label={getTranslation('filter')}
           sx={{ color: '#000' }}
           badgeContent={labels.length === 0 ? null : ''}
         />
         <ActionButton
-          clickAction={() => toggleDrawer('menu')}
+          onClick={() => openDrawer('menu')}
           icon="/assets/icons/qr-menu/food-menu.svg"
           label={getTranslation('menu')}
           sx={{ color: '#000' }}
         />
       </Stack>
 
-      <LanguageDrawer openState={drawerStates.language} toggleDrawer={setDrawerStates} />
-      <CartDrawer openState={drawerStates.cart} toggleDrawer={setDrawerStates} />
-      <SectionsDrawer openState={drawerStates.menu} toggleDrawer={setDrawerStates} />
-      <MealTypeDrawer openState={drawerStates.filter} toggleDrawer={setDrawerStates} />
+      <LanguageDrawer openState={drawerStates.language} onClose={() => closeDrawer('language')} />
+      <CartDrawer openState={drawerStates.cart} onClose={() => closeDrawer('cart')} />
+      <SectionsDrawer openState={drawerStates.menu} onClose={() => closeDrawer('menu')} />
+      <MealTypeDrawer openState={drawerStates.filter} onClose={() => closeDrawer('filter')} />
     </Box>
   );
 }

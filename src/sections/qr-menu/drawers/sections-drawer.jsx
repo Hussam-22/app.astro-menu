@@ -12,10 +12,10 @@ import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 SectionsDrawer.propTypes = {
   openState: PropTypes.bool,
-  toggleDrawer: PropTypes.func,
+  onClose: PropTypes.func,
 };
 
-function SectionsDrawer({ openState, toggleDrawer }) {
+function SectionsDrawer({ openState, onClose }) {
   const theme = useTheme();
   const { businessProfileID } = useParams();
   const { menuSections, fsGetMeal } = useAuthContext();
@@ -50,7 +50,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
     const sectionElement = document.getElementById(sectionID);
     if (sectionElement) {
       sectionElement.scrollIntoView({ behavior: 'smooth' });
-      toggleDrawer('menu');
+      onClose();
     }
   };
 
@@ -78,7 +78,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
     <Drawer
       anchor="right"
       open={openState}
-      onClose={() => toggleDrawer('menu')}
+      onClose={onClose}
       PaperProps={{
         sx: {
           minWidth: 200,
@@ -155,7 +155,7 @@ function SectionsDrawer({ openState, toggleDrawer }) {
           variant="contained"
           color="inherit"
           size="small"
-          onClick={() => toggleDrawer('menu')}
+          onClick={onClose}
           sx={{ alignSelf: 'center' }}
         >
           {getTranslation('close')}

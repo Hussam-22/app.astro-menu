@@ -12,10 +12,10 @@ import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
 
 MealTypeDrawer.propTypes = {
   openState: PropTypes.bool,
-  toggleDrawer: PropTypes.func,
+  onClose: PropTypes.func,
 };
 
-function MealTypeDrawer({ openState, toggleDrawer }) {
+function MealTypeDrawer({ openState, onClose }) {
   const { businessProfileID } = useParams();
   const { menuSections, fsGetMeal } = useAuthContext();
   const { setLabel, labels, reset, selectedLanguage, mealsLabel, getTranslation } =
@@ -52,7 +52,7 @@ function MealTypeDrawer({ openState, toggleDrawer }) {
     <Drawer
       anchor="right"
       open={openState}
-      onClose={() => toggleDrawer('menu')}
+      onClose={onClose}
       PaperProps={{ sx: { minWidth: 200, borderRadius: '25px 0 0 25px' } }}
     >
       <Stack
@@ -104,12 +104,7 @@ function MealTypeDrawer({ openState, toggleDrawer }) {
           >
             {getTranslation('reset')}
           </Button>
-          <Button
-            variant="contained"
-            color="inherit"
-            size="small"
-            onClick={() => toggleDrawer('filter')}
-          >
+          <Button variant="contained" color="inherit" size="small" onClick={onClose}>
             {getTranslation('close')}
           </Button>
         </Stack>
