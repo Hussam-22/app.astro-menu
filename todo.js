@@ -16,6 +16,7 @@
 ? QR Menu
 - How item will look without image or description
 - Allow selecting only single "Meal Type"
+- test back button that will close modal on ios and different browsers
 ! - Add Search meal by name field (Think about it)
 
 ? Branch
