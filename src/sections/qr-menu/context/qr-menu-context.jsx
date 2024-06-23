@@ -5,6 +5,7 @@ import { useMemo, useState, useEffect, useContext, useCallback, createContext } 
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import { titleCase } from 'src/utils/change-case';
+import { SplashScreen } from 'src/components/loading-screen';
 
 export const QrMenuContext = createContext();
 
@@ -32,13 +33,19 @@ export function QrMenuContextProvider({ children }) {
   } = useAuthContext();
   const [labels, setLabels] = useState([]);
   const [loading, setLoading] = useState(false);
+
   const [orderStatus, setOrderStatus] = useState({
     text: 'Taking Order...',
     icon: 'solar:pen-new-square-bold',
     color: 'secondary',
   });
 
-  const { data: businessProfile = {}, error: bpError } = useQuery({
+  const {
+    data: businessProfile = {},
+    error: bpError,
+    isPending: businessProfileIsPending,
+    status,
+  } = useQuery({
     queryKey: ['businessProfile', businessProfileID],
     queryFn: () => fsGetBusinessProfile(businessProfileID),
     enabled: businessProfileID !== undefined,
@@ -48,43 +55,56 @@ export function QrMenuContextProvider({ children }) {
     data: tableInfo = {},
     isSuccess: isTableInfoSuccess,
     error: tableError,
+    isPending: tableIsPending,
   } = useQuery({
     queryKey: ['table', businessProfileID, branchID, tableID],
     queryFn: () => fsGetTableInfo(businessProfileID, branchID, tableID),
   });
 
-  const { data: systemTranslations, error: translationError } = useQuery({
+  const {
+    data: systemTranslations,
+    error: translationError,
+    isPending: systemTranslationIsPending,
+  } = useQuery({
     queryKey: ['systemTranslations', businessProfile.languages],
     queryFn: () => fsGetSystemTranslations(businessProfile.languages),
     enabled: businessProfile.docID !== undefined && tableInfo?.menuID !== undefined,
   });
 
-  const { data: menuInfo = {} } = useQuery({
+  const { data: menuInfo = {}, isPending: menuInfoIsPending } = useQuery({
     queryKey: ['menu', businessProfileID, tableInfo.menuID],
     queryFn: () => fsGetMenu(tableInfo.menuID, businessProfileID),
     enabled: isTableInfoSuccess && tableInfo?.menuID !== undefined,
   });
 
-  const { data: branchUnsubscribe = {} } = useQuery({
+  const { data: branchUnsubscribe = {}, isPending: branchIsPending } = useQuery({
     queryKey: ['branch', businessProfileID, branchID],
     queryFn: () => fsGetBranchSnapshot(branchID, businessProfileID),
     enabled: tableInfo?.docID !== undefined,
   });
 
-  const { data: mealsLabel = [] } = useQuery({
+  const { data: mealsLabel = [], isPending: mealsLabelIsPending } = useQuery({
     queryKey: ['mealsLabel', businessProfileID],
     queryFn: () => fsGetMealLabels(businessProfileID),
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive,
   });
 
-  const { data: sectionsUnsubscribe = () => {}, error: sectionsError } = useQuery({
+  const {
+    data: sectionsUnsubscribe = () => {},
+    error: sectionsError,
+    isPending: sectionsIsPending,
+  } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: tableInfo.menuID ? ['sections', businessProfileID, tableInfo.menuID] : [],
     queryFn: () => fsGetSections(tableInfo.menuID, businessProfileID),
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
   });
 
-  const { data: orderInfo = {}, error: orderError } = useQuery({
+  const {
+    data: orderInfo = {},
+    error: orderError,
+    isPending: orderIsPending,
+  } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: tableInfo.menuID
       ? ['order', businessProfileID, branchID, tableID, tableInfo.menuID]
@@ -94,13 +114,45 @@ export function QrMenuContextProvider({ children }) {
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
   });
 
-  const { data: mostOrderedMeals, error: mostOrderedMealsError } = useQuery({
+  const {
+    data: mostOrderedMeals,
+    error: mostOrderedMealsError,
+    isPending: mostOrderedMealsIsPending,
+  } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['most-ordered-meals', businessProfileID, menuInfo.docID],
     queryFn: () =>
       fsGetMostOrderedMeals(menuInfo.meals, menuInfo.mostOrderedMeals, businessProfileID),
     enabled: menuInfo?.docID !== undefined && tableInfo.isActive,
   });
+
+  const [suspenseInterface, setSuspenseInterface] = useState(true);
+
+  useEffect(() => {
+    if (
+      !businessProfileIsPending &&
+      !tableIsPending &&
+      !mealsLabelIsPending &&
+      !sectionsIsPending &&
+      !orderIsPending &&
+      !mostOrderedMealsIsPending &&
+      !branchIsPending &&
+      !systemTranslationIsPending
+    ) {
+      setSuspenseInterface(false);
+    }
+  }, [
+    branchIsPending,
+    businessProfileIsPending,
+    mealsLabelIsPending,
+    mostOrderedMealsIsPending,
+    orderIsPending,
+    sectionsIsPending,
+    systemTranslationIsPending,
+    tableIsPending,
+  ]);
+
+  console.log(suspenseInterface);
 
   useEffect(() => {
     if (orderSnapShot?.docID) {
@@ -205,7 +257,11 @@ export function QrMenuContextProvider({ children }) {
       reset,
     ]
   );
-  return <QrMenuContext.Provider value={memoizedValue}>{children}</QrMenuContext.Provider>;
+  return (
+    <QrMenuContext.Provider value={memoizedValue}>
+      {suspenseInterface ? <SplashScreen /> : children}
+    </QrMenuContext.Provider>
+  );
 }
 
 QrMenuContextProvider.propTypes = { children: PropTypes.node };
