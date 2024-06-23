@@ -99,6 +99,8 @@ function MealCard({ mealInfo }) {
           }}
         >
           <Image
+            visibleByDefault
+            disabledEffect
             src={cover}
             ratio="1/1"
             sx={{

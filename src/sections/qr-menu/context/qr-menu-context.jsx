@@ -130,17 +130,17 @@ export function QrMenuContextProvider({ children }) {
 
   useEffect(() => {
     if (
-      !businessProfileIsPending &&
-      !tableIsPending &&
-      !mealsLabelIsPending &&
-      !sectionsIsPending &&
-      !orderIsPending &&
-      !mostOrderedMealsIsPending &&
-      !branchIsPending &&
-      !systemTranslationIsPending
+      businessProfileIsPending ||
+      tableIsPending ||
+      mealsLabelIsPending ||
+      sectionsIsPending ||
+      orderIsPending ||
+      mostOrderedMealsIsPending ||
+      branchIsPending ||
+      systemTranslationIsPending
     ) {
-      setSuspenseInterface(false);
-    }
+      setSuspenseInterface(true);
+    } else setSuspenseInterface(false);
   }, [
     branchIsPending,
     businessProfileIsPending,
@@ -151,8 +151,6 @@ export function QrMenuContextProvider({ children }) {
     systemTranslationIsPending,
     tableIsPending,
   ]);
-
-  console.log(suspenseInterface);
 
   useEffect(() => {
     if (orderSnapShot?.docID) {
