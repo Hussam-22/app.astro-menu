@@ -6,8 +6,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
-
 // ----------------------------------------------------------------------
 
 export default function ConfirmDialog({
@@ -17,9 +15,9 @@ export default function ConfirmDialog({
   open,
   onClose,
   maxWidth = 'xs',
+  closeText,
   ...other
 }) {
-  const { getTranslation } = useQrMenuContext();
   return (
     <Dialog fullWidth maxWidth={maxWidth} open={open} onClose={onClose} {...other}>
       <DialogTitle sx={{ pb: 2 }}>{title}</DialogTitle>
@@ -29,8 +27,8 @@ export default function ConfirmDialog({
       <DialogActions>
         {action}
 
-        <Button variant="outlined" color="inherit" onClick={onClose}>
-          {getTranslation('close')}
+        <Button variant="contained" color="inherit" onClick={onClose}>
+          {closeText}
         </Button>
       </DialogActions>
     </Dialog>
@@ -44,4 +42,5 @@ ConfirmDialog.propTypes = {
   open: PropTypes.bool,
   title: PropTypes.string,
   maxWidth: PropTypes.string,
+  closeText: PropTypes.string,
 };

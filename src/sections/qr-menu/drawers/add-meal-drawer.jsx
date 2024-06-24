@@ -98,7 +98,7 @@ const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo, m
               />
 
               <Stack direction="row" spacing={1} justifyContent="flex-end">
-                <Button variant="soft" onClick={onClose}>
+                <Button variant="contained" onClick={onClose}>
                   {getTranslation('close')}
                 </Button>
                 <LoadingButton

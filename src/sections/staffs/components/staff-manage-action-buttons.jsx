@@ -76,6 +76,7 @@ function StaffManageActionButtons({ staffID, status }) {
         content={PASSWORD_RESET_TEXT}
         open={isOpen}
         onClose={() => dispatch(rdxSetIsOpen(false))}
+        closeText="Close"
       />
     </>
   );

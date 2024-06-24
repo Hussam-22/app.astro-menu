@@ -130,6 +130,7 @@ function TableActionBar() {
         }
         open={isPaymentOpen}
         onClose={() => setIsPaymentOpen(false)}
+        closeText="close"
       />
     </>
   );

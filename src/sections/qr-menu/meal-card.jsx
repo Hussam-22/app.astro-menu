@@ -3,8 +3,8 @@ import { useMemo, useState, useEffect } from 'react';
 
 import { Box, Stack, Button, useTheme, Typography } from '@mui/material';
 
-import Image from 'src/components/image';
 import Label from 'src/components/label';
+import Image from 'src/components/image';
 import { useParams } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
@@ -130,20 +130,23 @@ function MealCard({ mealInfo }) {
           />
           {allowAddToCart && (
             <Button
-              size="small"
+              type="submit"
+              variant="contained"
+              color="success"
+              onClick={() => setIsOpen(true)}
+              startIcon={<Iconify icon="mdi:hamburger-plus" />}
               sx={{
-                color: 'rgba(0, 0, 0, 1)',
                 position: 'absolute',
                 bottom: 5,
                 left: '50%',
                 transform: 'translateX(-50%)',
-                px: 1,
-                backgroundColor: 'rgba(255, 255, 255, 1)',
+                whiteSpace: 'nowrap',
+                borderRadius: 1,
+                typography: 'caption',
+                py: 0.5,
               }}
-              onClick={() => setIsOpen(true)}
-              startIcon={<Iconify icon="carbon:add-filled" sx={{ width: 24, height: 24 }} />}
             >
-              {count === 0 ? getTranslation('add') : count}
+              {count === 0 ? getTranslation('add meal') : count}
             </Button>
           )}
           {isNew && (

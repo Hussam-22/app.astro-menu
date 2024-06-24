@@ -5,7 +5,6 @@ import { useMemo, useState, useEffect, useContext, useCallback, createContext } 
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import { titleCase } from 'src/utils/change-case';
-import { SplashScreen } from 'src/components/loading-screen';
 
 export const QrMenuContext = createContext();
 
@@ -126,32 +125,6 @@ export function QrMenuContextProvider({ children }) {
     enabled: menuInfo?.docID !== undefined && tableInfo.isActive,
   });
 
-  const [suspenseInterface, setSuspenseInterface] = useState(true);
-
-  useEffect(() => {
-    if (
-      businessProfileIsPending ||
-      tableIsPending ||
-      mealsLabelIsPending ||
-      sectionsIsPending ||
-      orderIsPending ||
-      mostOrderedMealsIsPending ||
-      branchIsPending ||
-      systemTranslationIsPending
-    ) {
-      setSuspenseInterface(true);
-    } else setSuspenseInterface(false);
-  }, [
-    branchIsPending,
-    businessProfileIsPending,
-    mealsLabelIsPending,
-    mostOrderedMealsIsPending,
-    orderIsPending,
-    sectionsIsPending,
-    systemTranslationIsPending,
-    tableIsPending,
-  ]);
-
   useEffect(() => {
     if (orderSnapShot?.docID) {
       if (orderSnapShot?.isReadyToServe?.length !== 0) {
@@ -255,11 +228,7 @@ export function QrMenuContextProvider({ children }) {
       reset,
     ]
   );
-  return (
-    <QrMenuContext.Provider value={memoizedValue}>
-      {suspenseInterface ? <SplashScreen /> : children}
-    </QrMenuContext.Provider>
-  );
+  return <QrMenuContext.Provider value={memoizedValue}>{children}</QrMenuContext.Provider>;
 }
 
 QrMenuContextProvider.propTypes = { children: PropTypes.node };

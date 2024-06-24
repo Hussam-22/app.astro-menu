@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import {
@@ -71,6 +71,27 @@ function QRMenuHomeView() {
       : translation?.[selectedLanguage]?.title;
   };
 
+  useEffect(() => {
+    // Handler for the popstate event
+    const handlePopState = (event) => {
+      if (event.type === 'popstate') setIsLangOpen(false);
+      setIsWifiOpen(false);
+      // Ensure we push a new state to handle further back button presses
+      window.history.pushState({}, '');
+    };
+
+    // Add the popstate event listener
+    window.addEventListener('popstate', handlePopState);
+
+    // Push initial state
+    window.history.pushState({}, '');
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isLangOpen, isWifiOpen]);
+
   if (!isBranchActive && isBranchActive !== undefined)
     return (
       <Box
@@ -89,6 +110,7 @@ function QRMenuHomeView() {
         <Typography variant="h1">Sorry this branch is not open !!</Typography>
       </Box>
     );
+
   return (
     <Box sx={{ mb: 2 }}>
       <Card sx={{ p: 1 }}>
@@ -202,12 +224,13 @@ function QRMenuHomeView() {
           </Box>
         </Stack>
       </Card>
-      <LanguageDrawer openState={isLangOpen} toggleDrawer={() => setIsLangOpen(false)} />
+      <LanguageDrawer openState={isLangOpen} onClose={() => setIsLangOpen(false)} />
       <ConfirmDialog
         title={getTranslation('wifi Password')}
         content={<WifiTextField value={wifiPassword} />}
         open={isWifiOpen}
         onClose={() => setIsWifiOpen(false)}
+        closeText={getTranslation('close')}
       />
     </Box>
   );

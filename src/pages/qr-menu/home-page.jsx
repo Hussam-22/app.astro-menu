@@ -6,7 +6,7 @@ export default function QrMenuHomePage() {
   return (
     <>
       <Helmet>
-        <title>Welcome to ProzEffect Menu</title>
+        <title>Home</title>
       </Helmet>
       <QRMenuHomeView />
     </>

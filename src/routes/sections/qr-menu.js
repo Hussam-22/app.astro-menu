@@ -8,7 +8,7 @@ import QrMenuHomePage from 'src/pages/qr-menu/home-page';
 
 // ----------------------------------------------------------------------
 
-export const QrMenuPage = lazy(() => import('src/pages/qr-menu/qr-menu'));
+export const QrMenuPage = lazy(() => import('src/pages/qr-menu/menu-page'));
 
 // ----------------------------------------------------------------------
 
