@@ -179,49 +179,14 @@ function MealNewEditForm({ mealInfo }) {
   return (
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Grid xs={12}>
-          <Stack direction="row" spacing={2} sx={{ mb: 2, p: 1, justifyContent: 'flex-end' }}>
-            {mealInfo?.docID && (
-              <LoadingButton
-                loading={isPending}
-                color="error"
-                variant="contained"
-                onClick={handleDeleteMeal}
-              >
-                Delete Meal
-              </LoadingButton>
-            )}
-            <LoadingButton
-              type="submit"
-              color="primary"
-              variant="contained"
-              loading={isPending}
-              disabled={!isDirty}
-            >
-              {mealInfo?.docID ? 'Update Meal' : 'Add Meal'}
-            </LoadingButton>
-          </Stack>
-        </Grid>
         <Grid container spacing={2}>
-          <Grid xs={12}>
-            <RHFUpload
-              name="imageFile"
-              maxSize={3145728}
-              onDrop={handleDrop}
-              onDelete={handleRemoveFile}
-            />
-          </Grid>
-
-          <Grid xs={12}>
+          <Grid xs={12} sm={7}>
             <Stack spacing={3}>
               <Card sx={{ p: 3 }}>
                 <Stack direction="column" spacing={3}>
+                  <Typography variant="h4">Meal Labels</Typography>
                   <RHFTextField name="title" label="Meal Title" />
                   <RHFTextField name="description" label="Description" multiline rows={5} />
-                  <Stack direction="row" alignItems="center" justifyContent="flex-end">
-                    <RHFSwitch name="isNew" label="New" labelPlacement="start" />
-                    <RHFSwitch name="isActive" label="Status" labelPlacement="start" />
-                  </Stack>
                 </Stack>
               </Card>
 
@@ -235,21 +200,21 @@ function MealNewEditForm({ mealInfo }) {
                   <Typography variant="h4">Meal Labels</Typography>
                   <Button
                     onClick={() => setIsOpen(true)}
-                    variant="soft"
-                    color="info"
-                    startIcon={<Iconify icon="fluent:table-cell-edit-24-regular" />}
+                    variant="contained"
+                    color="inherit"
+                    startIcon={<Iconify icon="eva:plus-fill" />}
                   >
                     Add New Meal Label
                   </Button>
                 </Stack>
-                <Typography variant="caption">
-                  {`"Meal Labels" empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+                  {` empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
                 </Typography>
                 <Divider sx={{ mt: 1, border: `dashed 1px ${theme.palette.divider}` }} />
                 <Box
                   sx={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(6,1fr)',
+                    gridTemplateColumns: 'repeat(5,1fr)',
                     gap: 1,
                     mt: 3,
                     mb: 1.5,
@@ -259,14 +224,12 @@ function MealNewEditForm({ mealInfo }) {
                     .filter((label) => label.isActive)
                     .map((label) => (
                       <Button
-                        variant={
-                          selectedMealLabels.includes(label.docID) ? 'contained' : 'outlined'
-                        }
                         key={label.docID}
+                        variant={selectedMealLabels.includes(label.docID) ? 'contained' : 'soft'}
+                        color={selectedMealLabels.includes(label.docID) ? 'primary' : 'inherit'}
                         onClick={() => handleAddTag(label)}
-                        color="info"
                       >
-                        #{label.title.toLowerCase()}
+                        {label.title.toLowerCase()}
                       </Button>
                     ))}
                 </Box>
@@ -278,6 +241,97 @@ function MealNewEditForm({ mealInfo }) {
               </Card>
 
               <MealPortionAdd />
+
+              <Card sx={{ p: 3 }}>
+                <Typography variant="h4" sx={{ mb: 1 }}>
+                  Meal Settings
+                </Typography>
+                <Stack
+                  direction="column"
+                  spacing={1}
+                  divider={<Divider sx={{ borderStyle: 'dashed' }} />}
+                >
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ px: 1 }}
+                  >
+                    <Typography>{`Show "New" Label on Meal`}</Typography>
+                    <RHFSwitch name="isNew" label="New" labelPlacement="start" />
+                  </Stack>
+
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ px: 1 }}
+                  >
+                    <Stack direction="column">
+                      <Typography>Whats the Meal Status?</Typography>
+                      <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+                        Disabling the meal will remove it from all menus
+                      </Typography>
+                    </Stack>
+                    <RHFSwitch
+                      name="isActive"
+                      label={values.isActive ? 'Active' : 'Disabled'}
+                      labelPlacement="start"
+                    />
+                  </Stack>
+
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{
+                      bgcolor: 'error.main',
+                      borderRadius: 1,
+                      p: 1,
+                      color: 'common.white',
+                    }}
+                  >
+                    <Stack direction="column">
+                      <Typography>Delete Meal</Typography>
+                      <Typography variant="caption">
+                        Deleting the meal will completely remove it from the system and all menus
+                      </Typography>
+                    </Stack>
+                    {mealInfo?.docID && (
+                      <LoadingButton
+                        loading={isPending}
+                        variant="contained"
+                        onClick={handleDeleteMeal}
+                        sx={{ bgcolor: 'common.white', color: 'error.main' }}
+                      >
+                        Delete Meal
+                      </LoadingButton>
+                    )}
+                  </Stack>
+                </Stack>
+              </Card>
+            </Stack>
+          </Grid>
+
+          <Grid xs={12} sm={5}>
+            <Stack spacing={2}>
+              <RHFUpload
+                name="imageFile"
+                maxSize={3145728}
+                onDrop={handleDrop}
+                onDelete={handleRemoveFile}
+              />
+
+              <LoadingButton
+                type="submit"
+                color="success"
+                variant="contained"
+                loading={isPending}
+                disabled={!isDirty}
+                sx={{ alignSelf: 'center' }}
+              >
+                {mealInfo?.docID ? 'Update Meal' : 'Add Meal'}
+              </LoadingButton>
             </Stack>
           </Grid>
         </Grid>

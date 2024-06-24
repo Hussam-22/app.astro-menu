@@ -155,7 +155,7 @@ export default function Upload({
             borderColor: 'error.light',
           }),
           ...(hasFile && {
-            padding: '24% 0',
+            padding: '50% 0',
           }),
         }}
       >

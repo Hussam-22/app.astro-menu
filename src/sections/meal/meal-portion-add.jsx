@@ -23,7 +23,6 @@ export default function MealPortionAdd() {
     append({
       portionSize: '',
       price: 0,
-      gram: 0,
     });
   };
 
@@ -36,8 +35,8 @@ export default function MealPortionAdd() {
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Typography variant="h4">Portions</Typography>
         <Button
-          variant="soft"
-          color="info"
+          variant="contained"
+          color="inherit"
           startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={handleAdd}
         >
@@ -47,7 +46,7 @@ export default function MealPortionAdd() {
       <Box sx={{ pt: 3 }}>
         <Stack spacing={2}>
           {fields.map((item, index) => (
-            <Stack key={item.id} alignItems="flex-end" spacing={1.5}>
+            <Stack key={item.id} alignItems="center" spacing={1.5}>
               <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
                 <RHFTextField
                   size="small"
@@ -70,32 +69,10 @@ export default function MealPortionAdd() {
                   sx={{ maxWidth: { md: 125 } }}
                 />
 
-                <RHFTextField
-                  size="small"
-                  type="number"
-                  name={`portions[${index}].gram`}
-                  label="gram"
-                  onChange={(event) =>
-                    setValue(`portions[${index}].gram`, Number(event.target.value))
-                  }
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">g</InputAdornment>,
-                  }}
-                  sx={{ maxWidth: { md: 125 } }}
-                />
                 <IconButton color="error" onClick={() => handleRemove(index)}>
-                  <Iconify icon="eva:trash-2-outline" />
+                  <Iconify icon="mdi:cancel-circle" />
                 </IconButton>
               </Stack>
-
-              {/* <Button
-                size="small"
-                color="error"
-                startIcon={<Iconify icon="eva:trash-2-outline" />}
-                onClick={() => handleRemove(index)}
-              >
-                Remove
-              </Button> */}
             </Stack>
           ))}
           {errors?.portions?.message && (

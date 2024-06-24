@@ -67,7 +67,7 @@ function SectionsDrawer({ openState, onClose }) {
     })),
   });
 
-  if (mealsData[0].isLoading) return <div>Loading...</div>;
+  if (mealsData[0]?.isLoading) return <div>Loading...</div>;
 
   const inActiveMeals = mealsData
     .map((meal) => meal?.data)

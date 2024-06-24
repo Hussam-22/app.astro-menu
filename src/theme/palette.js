@@ -27,7 +27,7 @@ const PRIMARY = {
 };
 
 const SECONDARY = {
-  lighter: '#C8FAD6',
+  lighter: '#CFF0CC',
   light: '#5BE49B',
   main: '#00A76F',
   dark: '#007867',
@@ -45,11 +45,11 @@ const INFO = {
 };
 
 const SUCCESS = {
-  lighter: '#D3FCD2',
-  light: '#77ED8B',
-  main: '#1EAE53',
-  dark: '#118D57',
-  darker: '#065E49',
+  lighter: '#CFF0CC',
+  light: '#5BE49B',
+  main: '#00A76F',
+  dark: '#007867',
+  darker: '#004B50',
   contrastText: '#ffffff',
 };
 

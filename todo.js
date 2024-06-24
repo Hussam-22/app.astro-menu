@@ -17,11 +17,17 @@
 - How item will look without image or description
 - Allow selecting only single "Meal Type"
 - test back button that will close modal on ios and different browsers
-! - Add Search meal by name field (Think about it)
+- Add Search meal by name field (Think about it)
+- check what happens if a meal gets deleted while its in cart
+!- changing meal status causing the qr-menu to reset back to default language
+
+? Staff Dashboard
+
 
 ? Branch
-1- Show Mock image if no image is uploaded
-2- Allow Branch Admin to Close Table Order from dashboard -- Close only, no collect payment is allowed
+- Show Mock image if no image is uploaded
+- Allow Branch Admin to Close Table Order from dashboard -- Close only, no collect payment is allowed
+/- Add "Skip Kitchen" toggle to the branch
 
 ? Meals
 1- Translate Meal Portions

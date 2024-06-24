@@ -69,7 +69,7 @@ export default function Button(theme) {
     };
 
     const colorStyle = COLORS.map((color) => ({
-      borderRadius: 20,
+      borderRadius: 10,
       ...(ownerState.color === color && {
         // CONTAINED
         ...(containedVariant && {

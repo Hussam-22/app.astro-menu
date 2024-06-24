@@ -74,7 +74,7 @@ function TablesCard({ tables, onTableClick, selectedTableID }) {
                     width: 32,
                     height: 32,
                     border: `2px solid ${
-                      table.isActive ? theme.palette.success.main : theme.palette.error.main
+                      table.isActive ? theme.palette.success.lighter : theme.palette.error.main
                     }`,
                     bgcolor:
                       // eslint-disable-next-line no-nested-ternary
