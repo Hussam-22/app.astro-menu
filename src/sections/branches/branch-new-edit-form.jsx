@@ -89,6 +89,7 @@ export default function BranchNewEditForm({ branchInfo }) {
       taxValue: branchInfo?.taxValue || 0,
       email: branchInfo.email || '',
       number: branchInfo.number || '',
+      skipKitchen: !!branchInfo?.skipKitchen,
 
       socialLinks: {
         facebook: branchInfo?.socialLinks?.facebook || '',
@@ -261,23 +262,22 @@ export default function BranchNewEditForm({ branchInfo }) {
             spacing={1}
             divider={<Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />}
           >
-            {/* <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="column" spacing={0}>
                 <Typography sx={{ fontWeight: theme.typography.fontWeightBold }} color="error">
-                  Allow Self Order
+                  Skip Kitchen
                 </Typography>
                 <Typography variant="caption">
-                  Allow restaurant customers to place orders directly from their devices without
-                  waiter/ess attendance
+                  {`Activate "Skip Kitchen" to allow orders to be processed without going through the kitchen`}
                 </Typography>
               </Stack>
               <RHFSwitch
-                name="allowSelfOrder"
+                name="skipKitchen"
                 labelPlacement="start"
-                label={values.allowSelfOrder ? `Allow Self Order` : `View Menu Only`}
+                label={values.skipKitchen ? `Skip` : `Don't Skip`}
                 sx={{ alignItems: 'center' }}
               />
-            </Stack> */}
+            </Stack>
 
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="column" spacing={0}>

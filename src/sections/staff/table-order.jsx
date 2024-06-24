@@ -29,6 +29,7 @@ const TableOrder = () => {
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
 
   const isChef = staff?.type === 'chef';
+  const { skipKitchen } = branchInfo;
 
   const {
     isInKitchen,
@@ -105,7 +106,7 @@ const TableOrder = () => {
 
   const onReadyToServe = (value) =>
     mutate(() => {
-      setSelectedTable({});
+      // setSelectedTable({});
       fsUpdateOrderStatus({
         orderID,
         businessProfileID,
@@ -282,7 +283,7 @@ const TableOrder = () => {
                 </LoadingButton>
               )}
 
-            {isChef && isInKitchen.includes(orderIndex) && (
+            {(skipKitchen || isChef) && isInKitchen.includes(orderIndex) && (
               <LoadingButton
                 variant="soft"
                 color="info"
