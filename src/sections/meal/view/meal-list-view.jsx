@@ -32,10 +32,10 @@ import {
 } from 'src/components/table';
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Meal', align: 'center', width: '40%' },
+  { id: 'title', label: 'Meal', align: 'center', width: '50%' },
   { id: 'meal-labels', label: 'Meal Labels', align: 'center', width: '25%' },
-  { id: 'isNew', label: 'New', align: 'center', width: '5%' },
-  { id: 'status', label: 'Status', align: 'center', width: '15%' },
+  { id: 'isNew', label: 'New', align: 'center', width: '7.5%' },
+  { id: 'status', label: 'Status', align: 'center', width: '7.5%' },
 ];
 // ----------------------------------------------------------------------
 

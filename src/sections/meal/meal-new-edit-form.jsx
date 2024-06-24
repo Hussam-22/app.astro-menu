@@ -302,7 +302,7 @@ function MealNewEditForm({ mealInfo }) {
                         loading={isPending}
                         variant="contained"
                         onClick={handleDeleteMeal}
-                        sx={{ bgcolor: 'common.white', color: 'error.main' }}
+                        sx={{ bgcolor: 'common.white', color: 'error.main', whiteSpace: 'nowrap' }}
                       >
                         Delete Meal
                       </LoadingButton>

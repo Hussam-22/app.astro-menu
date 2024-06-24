@@ -59,7 +59,7 @@ export default function MealTableRow({ row, onEditRow, mealLabelsList }) {
             <Stack direction="row" spacing={2}>
               {portions.map((portion, i) => (
                 <Label variant="soft" color="default" key={`${portion.portionSize}-${i}`}>
-                  {portion.portionSize} - {portion.gram}g - ${portion.price}
+                  {portion.portionSize} - ${portion.price}
                 </Label>
               ))}
             </Stack>
@@ -72,7 +72,7 @@ export default function MealTableRow({ row, onEditRow, mealLabelsList }) {
       </TableCell>
       <TableCell align="center">
         {isNew && (
-          <Label variant="soft" color="warning">
+          <Label variant="filled" color="error">
             New
           </Label>
         )}
@@ -81,7 +81,7 @@ export default function MealTableRow({ row, onEditRow, mealLabelsList }) {
       <TableCell align="center">
         <Label
           variant="soft"
-          color={isActive ? 'success' : 'error'}
+          color={isActive ? 'success' : 'default'}
           sx={{ textTransform: 'capitalize' }}
         >
           {isActive ? 'Active' : 'Hidden'}
