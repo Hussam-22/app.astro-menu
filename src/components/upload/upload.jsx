@@ -27,6 +27,7 @@ export default function Upload({
   multiple = false,
   error,
   helperText,
+  paddingValue,
   //
   file,
   onDelete,
@@ -155,7 +156,7 @@ export default function Upload({
             borderColor: 'error.light',
           }),
           ...(hasFile && {
-            padding: '50% 0',
+            padding: paddingValue,
           }),
         }}
       >
@@ -188,4 +189,5 @@ Upload.propTypes = {
   onUpload: PropTypes.func,
   sx: PropTypes.object,
   thumbnail: PropTypes.bool,
+  paddingValue: PropTypes.string,
 };

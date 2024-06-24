@@ -257,7 +257,9 @@ function MealNewEditForm({ mealInfo }) {
                     alignItems="center"
                     sx={{ px: 1 }}
                   >
-                    <Typography>{`Show "New" Label on Meal`}</Typography>
+                    <Typography
+                      sx={{ fontWeight: theme.typography.fontWeightBold }}
+                    >{`Show "New" Label on Meal`}</Typography>
                     <RHFSwitch name="isNew" label="New" labelPlacement="start" />
                   </Stack>
 
@@ -268,8 +270,10 @@ function MealNewEditForm({ mealInfo }) {
                     sx={{ px: 1 }}
                   >
                     <Stack direction="column">
-                      <Typography>Whats the Meal Status?</Typography>
-                      <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+                      <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                        Whats the Meal Status?
+                      </Typography>
+                      <Typography variant="caption">
                         Disabling the meal will remove it from all menus
                       </Typography>
                     </Stack>
@@ -292,7 +296,9 @@ function MealNewEditForm({ mealInfo }) {
                     }}
                   >
                     <Stack direction="column">
-                      <Typography>Delete Meal</Typography>
+                      <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                        Delete Meal
+                      </Typography>
                       <Typography variant="caption">
                         Deleting the meal will completely remove it from the system and all menus
                       </Typography>
@@ -320,6 +326,7 @@ function MealNewEditForm({ mealInfo }) {
                 maxSize={3145728}
                 onDrop={handleDrop}
                 onDelete={handleRemoveFile}
+                paddingValue="50% 0"
               />
 
               <LoadingButton

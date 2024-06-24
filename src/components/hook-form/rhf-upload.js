@@ -60,7 +60,7 @@ RHFUploadBox.propTypes = {
 
 // ----------------------------------------------------------------------
 
-export function RHFUpload({ name, multiple, helperText, onRemove, ...other }) {
+export function RHFUpload({ name, multiple, helperText, onRemove, paddingValue, ...other }) {
   const { control } = useFormContext();
   const theme = useTheme();
 
@@ -97,6 +97,7 @@ export function RHFUpload({ name, multiple, helperText, onRemove, ...other }) {
                   </FormHelperText>
                 )
               }
+              paddingValue={paddingValue}
               {...other}
             />
             {onRemove !== undefined && (
@@ -126,5 +127,6 @@ RHFUpload.propTypes = {
   helperText: PropTypes.string,
   multiple: PropTypes.bool,
   name: PropTypes.string,
+  paddingValue: PropTypes.string,
   onRemove: PropTypes.func,
 };

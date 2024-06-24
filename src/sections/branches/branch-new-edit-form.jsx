@@ -10,6 +10,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // @mui
 import { LoadingButton } from '@mui/lab';
+import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Box, Card, Stack, Divider, MenuItem, useTheme, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -58,8 +59,8 @@ export default function BranchNewEditForm({ branchInfo }) {
               spacing={1}
               divider={<Divider orientation="vertical" flexItem />}
             >
-              <Typography>{item.name.official}</Typography>
-              <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+              <Typography variant="caption">{item.name.official}</Typography>
+              <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightBold }}>
                 {Object.values(item?.currencies)[0]?.symbol}
               </Typography>
             </Stack>
@@ -188,120 +189,145 @@ export default function BranchNewEditForm({ branchInfo }) {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={2} direction="row" sx={{ justifyContent: 'flex-end', mb: 2 }}>
-        {branchInfo?.docID && (
-          <LoadingButton
-            variant="contained"
-            loading={isPending}
-            color="error"
-            onClick={handleDeleteBranch}
-          >
-            Delete Branch
-          </LoadingButton>
-        )}
+      <Grid container spacing={2}>
+        <Grid xs={12} md={7}>
+          <Stack direction="column" spacing={2}>
+            <Card sx={{ p: 3 }}>
+              <Stack spacing={2}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography variant="h3">Branch Info</Typography>
+                </Stack>
+                <RHFTextField name="title" label="Name" />
+                <RHFTextField name="description" label="About" multiline rows={3} />
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
+                  <RHFTextField name="wifiPassword" label="Wifi Password" />
+                  <RHFTextField name="taxValue" label="Tax Value" type="number" />
 
-        <LoadingButton
-          type="submit"
-          variant="contained"
-          color="success"
-          loading={isPending}
-          disabled={!isDirty}
-        >
-          Save
-        </LoadingButton>
-      </Stack>
-      <Stack direction="column" spacing={2}>
-        <Card sx={{ p: 3 }}>
-          <Typography variant="h3" sx={{ mb: 1 }}>
-            Cover Image
-          </Typography>
+                  {!isLoading && (
+                    <RHFSelect name="currency" label="Currency">
+                      {currencies}
+                    </RHFSelect>
+                  )}
+                  <RHFSelect name="defaultLanguage" label="Default Menu Language">
+                    {availableLanguages.map((code) => (
+                      <MenuItem key={code[1].name} value={code[0]}>
+                        {code[1].value}
+                      </MenuItem>
+                    ))}
+                  </RHFSelect>
+
+                  <RHFTextField type="email" name="email" label="Contact Email" />
+                  <RHFTextField type="number" name="number" label="Contact Number" />
+                </Box>
+              </Stack>
+            </Card>
+
+            <Card sx={{ p: 3 }}>
+              <BranchSocialLinks />
+            </Card>
+
+            <Card sx={{ p: 3 }}>
+              <Typography variant="h3" sx={{ mb: 1 }}>
+                Branch Settings
+              </Typography>
+              <Stack
+                direction="column"
+                spacing={1}
+                divider={
+                  <Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />
+                }
+              >
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Stack direction="column" spacing={0} sx={{ px: 1 }}>
+                    <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                      Skip Kitchen
+                    </Typography>
+                    <Typography variant="caption">
+                      {`Activate "Skip Kitchen" to allow orders to be processed without going through the kitchen`}
+                    </Typography>
+                  </Stack>
+                  <RHFSwitch
+                    name="skipKitchen"
+                    labelPlacement="start"
+                    label={values.skipKitchen ? `Skip` : `Don't Skip`}
+                    sx={{ alignItems: 'center' }}
+                  />
+                </Stack>
+
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Stack direction="column" spacing={0} sx={{ px: 1 }}>
+                    <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                      Branch Status
+                    </Typography>
+                    <Typography variant="caption">
+                      When branch is inactive, customers cant view menu and waiters cant take orders
+                    </Typography>
+                  </Stack>
+                  <RHFSwitch
+                    name="isActive"
+                    labelPlacement="start"
+                    label={values.isActive ? `Branch is Active` : `Branch is Inactive`}
+                    sx={{ alignItems: 'center' }}
+                  />
+                </Stack>
+
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{
+                    bgcolor: 'error.main',
+                    borderRadius: 1,
+                    p: 1,
+                    color: 'common.white',
+                  }}
+                >
+                  <Stack direction="column">
+                    <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                      Delete Branch
+                    </Typography>
+                    <Typography variant="caption">
+                      Deleting the Branch will completely remove it from the system along with the
+                      tables, statistics and all other data
+                    </Typography>
+                  </Stack>
+                  {branchInfo?.docID && (
+                    <LoadingButton
+                      variant="contained"
+                      loading={isPending}
+                      color="error"
+                      onClick={handleDeleteBranch}
+                      sx={{ bgcolor: 'common.white', color: 'error.main', whiteSpace: 'nowrap' }}
+                    >
+                      Delete Branch
+                    </LoadingButton>
+                  )}
+                </Stack>
+              </Stack>
+            </Card>
+          </Stack>
+        </Grid>
+
+        <Grid xs={12} md={5}>
           <RHFUpload
             name="cover"
             maxSize={3145728}
             onDrop={handleDrop}
             onRemove={handelRemove}
             helperText={`Allowed *.jpeg, *.jpg, *.png, *.webp | max size of ${fData(3145728)}`}
+            paddingValue="30% 0"
           />
-        </Card>
-        <Card sx={{ p: 3 }}>
-          <Stack spacing={2}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="h3">Branch Info</Typography>
-            </Stack>
-            <RHFTextField name="title" label="Name" />
-            <RHFTextField name="description" label="About" multiline rows={3} />
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
-              <RHFTextField name="wifiPassword" label="Wifi Password" />
-              <RHFTextField name="taxValue" label="Tax Value" type="number" />
-
-              {!isLoading && (
-                <RHFSelect name="currency" label="Currency">
-                  {currencies}
-                </RHFSelect>
-              )}
-              <RHFSelect name="defaultLanguage" label="Default Menu Language">
-                {availableLanguages.map((code) => (
-                  <MenuItem key={code[1].name} value={code[0]}>
-                    {code[1].value}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-
-              <RHFTextField type="email" name="email" label="Contact Email" />
-              <RHFTextField type="number" name="number" label="Contact Number" />
-            </Box>
-          </Stack>
-        </Card>
-
-        <Card sx={{ p: 3 }}>
-          <Typography variant="h3" sx={{ mb: 1 }}>
-            Branch Settings
-          </Typography>
-          <Stack
-            direction="column"
-            spacing={1}
-            divider={<Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />}
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="success"
+            loading={isPending}
+            disabled={!isDirty}
           >
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Stack direction="column" spacing={0}>
-                <Typography sx={{ fontWeight: theme.typography.fontWeightBold }} color="error">
-                  Skip Kitchen
-                </Typography>
-                <Typography variant="caption">
-                  {`Activate "Skip Kitchen" to allow orders to be processed without going through the kitchen`}
-                </Typography>
-              </Stack>
-              <RHFSwitch
-                name="skipKitchen"
-                labelPlacement="start"
-                label={values.skipKitchen ? `Skip` : `Don't Skip`}
-                sx={{ alignItems: 'center' }}
-              />
-            </Stack>
-
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Stack direction="column" spacing={0}>
-                <Typography sx={{ fontWeight: theme.typography.fontWeightBold }} color="error">
-                  Branch Status
-                </Typography>
-                <Typography variant="caption">
-                  When branch is inactive, customers cant view menu and waiters cant take orders
-                </Typography>
-              </Stack>
-              <RHFSwitch
-                name="isActive"
-                labelPlacement="start"
-                label={values.isActive ? `Branch is Active` : `Branch is Inactive`}
-                sx={{ alignItems: 'center' }}
-              />
-            </Stack>
-          </Stack>
-        </Card>
-
-        <Card sx={{ p: 3 }}>
-          <BranchSocialLinks />
-        </Card>
-      </Stack>
+            Save
+          </LoadingButton>
+        </Grid>
+      </Grid>
     </FormProvider>
   );
 }
