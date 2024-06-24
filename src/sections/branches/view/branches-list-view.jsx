@@ -1,206 +1,78 @@
-import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
-import { Link as RouterLink } from 'react-router-dom';
 
-// @mui
-import {
-  Box,
-  Card,
-  Table,
-  Button,
-  TableRow,
-  TableBody,
-  Container,
-  TableCell,
-  TableContainer,
-  TablePagination,
-  CircularProgress,
-} from '@mui/material';
+import { Box, Card, Stack, Button, Container, Typography } from '@mui/material';
 
+import Image from 'src/components/image';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import Iconify from 'src/components/iconify';
-// redux
 import { useAuthContext } from 'src/auth/hooks';
-import Scrollbar from 'src/components/scrollbar';
-// sections
-// hooks
+import TextMaxLine from 'src/components/text-max-line';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import TableToolbar from 'src/sections/branches/list/TableToolbar';
-import TableDataRows from 'src/sections/branches/list/TableDataRows';
-// components
-import {
-  useTable,
-  emptyRows,
-  TableNoData,
-  TableSkeleton,
-  getComparator,
-  TableEmptyRows,
-  TableHeadCustom,
-} from 'src/components/table';
 
-// ----------------------------------------------------------------------
-
-const monthLong = new Date(`${new Date().getMonth() + 1}`).toLocaleDateString('en-US', {
-  month: 'long',
-});
-
-const TABLE_HEAD = [
-  { id: 'title', label: 'Branch Name', align: 'left', width: '40%' },
-  { id: 'orders', label: `(${monthLong}) Orders`, align: 'center', width: '15%' },
-  { id: 'income', label: `(${monthLong}) Income`, align: 'center', width: '15%' },
-  { id: 'scans', label: `(${monthLong}) Scans`, align: 'center', width: '15%' },
-  { id: 'status', label: 'Status', align: 'center', width: '15%' },
-];
-
-// ----------------------------------------------------------------------
-
-export default function BranchesListView() {
-  const { dense, page, order, orderBy, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } =
-    useTable({
-      defaultOrderBy: 'title',
-      defaultRowsPerPage: 10,
-    });
+function BranchesListView() {
   const { themeStretch } = useSettingsContext();
-  const router = useRouter();
   const { fsGetAllBranches } = useAuthContext();
-  const [filterName, setFilterName] = useState('');
 
   const {
-    data: tableData = [],
+    data: branchesInfo = [],
     isFetching,
     failureCount,
   } = useQuery({
     queryKey: ['branches'],
     queryFn: () => fsGetAllBranches(),
   });
-
-  const handleFilterName = (filteredName) => {
-    setFilterName(filteredName);
-    setPage(0);
-  };
-
-  const handleEditRow = (id) => {
-    // dispatch(rdxSetBranchByID(id));
-    router.push(paths.dashboard.branches.manage(id));
-  };
-
-  const dataFiltered = applySortFilter({
-    tableData,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
-
-  const isNotFound = !dataFiltered.length && !!filterName;
-
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading="Branches List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.branches.root },
-          {
-            name: 'Branches',
-          },
-        ]}
-        action={
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            component={RouterLink}
-            to={paths.dashboard.branches.new}
-          >
-            New Branch
-          </Button>
-        }
-      />
-
-      <Card sx={{ mt: 4 }}>
-        <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
-
-        <Scrollbar>
-          <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
-            <Table size={dense ? 'small' : 'medium'}>
-              <TableHeadCustom
-                disableSelectAllRows
-                order={order}
-                orderBy={orderBy}
-                headLabel={TABLE_HEAD}
-                rowCount={tableData.length}
-                // numSelected={selected.length}
-                // onSort={onSort}
-              />
-
-              <TableBody>
-                {(isFetching || failureCount !== 0) && (
-                  <TableRow>
-                    <TableCell colSpan={6} align="center">
-                      <CircularProgress />
-                    </TableCell>
-                  </TableRow>
-                )}
-                {!isFetching &&
-                  failureCount === 0 &&
-                  dataFiltered
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) =>
-                      row ? (
-                        <TableDataRows
-                          key={row.docID}
-                          row={row}
-                          onEditRow={() => handleEditRow(row.docID)}
-                        />
-                      ) : (
-                        !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
-                      )
-                    )}
-
-                <TableEmptyRows
-                  height={60}
-                  emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                />
-
-                <TableNoData isNotFound={isNotFound} />
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
-
-        <Box sx={{ position: 'relative' }}>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={dataFiltered.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
-          />
-        </Box>
-      </Card>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3,1fr)',
+          gap: 2,
+        }}
+      >
+        {branchesInfo.map((branch) => (
+          <BranchCard key={branch.docID} branchInfo={branch} />
+        ))}
+      </Box>
     </Container>
   );
 }
+export default BranchesListView;
 
-// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-function applySortFilter({ tableData, comparator, filterName }) {
-  const stabilizedThis = tableData.map((el, index) => [el, index]);
+BranchCard.propTypes = {
+  branchInfo: PropTypes.object,
+};
 
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
+function BranchCard({ branchInfo }) {
+  const router = useRouter();
+  const { title, cover, docID, description } = branchInfo;
 
-  tableData = stabilizedThis.map((el) => el[0]);
+  const branchCover = () => {
+    if (cover === undefined)
+      return <Image disabledEffect alt={title} src="/assets/mock-images/branch-cover.png" />;
+    return <Image disabledEffect alt={title} src={cover} ratio="4/3" />;
+  };
 
-  if (filterName) {
-    tableData = tableData.filter(
-      (item) => item.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
-  }
+  // <CircularProgress sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }} />
 
-  return tableData;
+  return (
+    <Card>
+      {branchCover()}
+      <Stack direction="column" spacing={1} sx={{ p: 2 }}>
+        <Typography variant="h6">{title}</Typography>
+        <TextMaxLine variant="body2">{description}</TextMaxLine>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ alignSelf: 'flex-end' }}
+          onClick={() => router.push(paths.dashboard.branches.manage(docID))}
+        >
+          Manage Branch
+        </Button>
+      </Stack>
+    </Card>
+  );
 }

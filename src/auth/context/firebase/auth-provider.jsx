@@ -826,7 +826,7 @@ export function AuthProvider({ children }) {
           if (element.data().cover) dataArr.push(element.data());
           if (!element.data().cover) {
             const bucketPath = `${state.user.businessProfileID}/branches/${element.data().docID}`;
-            const cover = await fsGetImgDownloadUrl(bucketPath, `cover_200x200.webp`);
+            const cover = await fsGetImgDownloadUrl(bucketPath, `cover_800x800.webp`);
             dataArr.push({ ...element.data(), cover });
           }
         } catch (error) {

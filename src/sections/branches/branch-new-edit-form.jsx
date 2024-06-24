@@ -309,23 +309,26 @@ export default function BranchNewEditForm({ branchInfo }) {
         </Grid>
 
         <Grid xs={12} md={5}>
-          <RHFUpload
-            name="cover"
-            maxSize={3145728}
-            onDrop={handleDrop}
-            onRemove={handelRemove}
-            helperText={`Allowed *.jpeg, *.jpg, *.png, *.webp | max size of ${fData(3145728)}`}
-            paddingValue="30% 0"
-          />
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            color="success"
-            loading={isPending}
-            disabled={!isDirty}
-          >
-            Save
-          </LoadingButton>
+          <Stack spacing={2}>
+            <RHFUpload
+              name="cover"
+              maxSize={3145728}
+              onDrop={handleDrop}
+              onRemove={handelRemove}
+              helperText={`Allowed *.jpeg, *.jpg, *.png, *.webp | max size of ${fData(3145728)}`}
+              paddingValue="30% 0"
+            />
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              color="success"
+              loading={isPending}
+              disabled={!isDirty}
+              sx={{ alignSelf: 'center' }}
+            >
+              {branchInfo?.docID ? 'Update Branch' : 'Add Branch'}
+            </LoadingButton>
+          </Stack>
         </Grid>
       </Grid>
     </FormProvider>
