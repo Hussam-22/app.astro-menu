@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState, useContext, createContext } from 'react';
+import { useMemo, useState, useEffect, useContext, createContext } from 'react';
 
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
@@ -23,10 +23,19 @@ export function StaffContextProvider({ children }) {
     fsGetActiveOrdersSnapshot,
     staff: staffInfo,
     branchSnapshot: branchInfo,
+    branchTables,
   } = useAuthContext();
   const [selectedTable, setSelectedTable] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [waiterUnsubscribe, setWaiterUnsubscribe] = useState();
+
+  useEffect(() => {
+    if (selectedTable.docID) {
+      const table = branchTables.find((branchTable) => branchTable.docID === selectedTable.docID);
+      if (!table.isActive) setSelectedTable({});
+      if (table.isActive) setSelectedTable(table);
+    }
+  }, [branchTables, selectedTable.docID]);
 
   const { data: businessProfile = {} } = useQuery({
     queryKey: ['businessProfile', businessProfileID],
@@ -36,19 +45,13 @@ export function StaffContextProvider({ children }) {
 
   const branchID = staffInfo?.branchID || '';
 
-  // const { data: branchInfo = {} } = useQuery({
-  //   queryKey: ['branch', businessProfileID, branchID],
-  //   queryFn: () => fsGetBranch(branchID, businessProfileID),
-  //   enabled: staffInfo?.branchID !== undefined,
-  // });
-
   const { data: branchUnsubscribe = {} } = useQuery({
     queryKey: ['branch', businessProfileID, branchID],
     queryFn: () => fsGetBranchSnapshot(branchID, businessProfileID),
     enabled: staffInfo?.branchID !== undefined,
   });
 
-  const { data: tables = [] } = useQuery({
+  const { data: branchTablesUnsubscribe = [] } = useQuery({
     queryKey: ['branch-tables', branchID, businessProfileID],
     queryFn: () => fsGetBranchTables(branchID, businessProfileID),
     enabled: staffInfo.docID !== undefined,
@@ -64,7 +67,7 @@ export function StaffContextProvider({ children }) {
   const memoizedValue = useMemo(
     () => ({
       businessProfile,
-      tables,
+      branchTablesUnsubscribe,
       branchInfo,
       selectedTable,
       setSelectedTable,
@@ -78,7 +81,7 @@ export function StaffContextProvider({ children }) {
       branchInfo,
       isLoading,
       selectedTable,
-      tables,
+      branchTablesUnsubscribe,
       businessProfile,
       waiterUnsubscribe,
       branchUnsubscribe,

@@ -26,9 +26,14 @@ const TableOrder = () => {
   const { selectedTable, branchInfo } = useStaffContext();
   const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus, staff, fsGetMeal } =
     useAuthContext();
-  const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
+
+  const orderSnapShot = useMemo(
+    () => activeOrders.find((order) => order.tableID === selectedTable.docID),
+    [activeOrders, selectedTable.docID]
+  );
 
   const isChef = staff?.type === 'chef';
+
   const { skipKitchen } = branchInfo;
 
   const {
@@ -125,7 +130,7 @@ const TableOrder = () => {
     ? [...Array(updateCount + 1)].map((_, index) => index).filter((i) => isInKitchen.includes(i))
     : [...Array(updateCount + 1)].map((_, index) => index);
 
-  if (cachedSectionMeals.length === 0) return null;
+  if (cachedSectionMeals.length === 0 || !selectedTable.isActive) return null;
 
   return (
     <Stack direction="column-reverse" spacing={2}>

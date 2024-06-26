@@ -100,6 +100,7 @@ export function AuthProvider({ children }) {
   const [orderSnapShot, setOrderSnapShot] = useState({});
   const [activeOrders, setActiveOrders] = useState([]);
   const [menuSections, setMenuSections] = useState([]);
+  const [branchTables, setBranchTables] = useState([]);
   const [branchSnapshot, setBranchSnapshot] = useState({});
   const [staff, setStaff] = useState({});
 
@@ -756,11 +757,24 @@ export function AuthProvider({ children }) {
         where('businessProfileID', '==', businessProfileID),
         where('branchID', '==', branchID)
       );
-      const querySnapshot = await getDocs(docRef);
-      const dataArr = [];
-      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
 
-      return dataArr;
+      const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
+        const tablesArray = [];
+        querySnapshot.forEach((doc) => {
+          if (doc.exists()) {
+            tablesArray.push(doc.data());
+          }
+        });
+        setBranchTables(tablesArray);
+      });
+
+      return unsubscribe;
+
+      // const querySnapshot = await getDocs(docRef);
+      // const dataArr = [];
+      // querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+
+      // return dataArr;
     },
     [state]
   );
@@ -1942,6 +1956,7 @@ export function AuthProvider({ children }) {
       fsChangeMenuForAllTables,
       fsGetTableOrdersByPeriod,
       fsGetTableInfo,
+      branchTables,
       // ---- ORDERS ----
       fsInitiateNewOrder,
       fsOrderSnapshot,
@@ -2028,6 +2043,7 @@ export function AuthProvider({ children }) {
       fsUpdateBranchTable,
       fsGetTableInfo,
       fsChangeMenuForAllTables,
+      branchTables,
       // ---- ORDERS ----
       fsInitiateNewOrder,
       fsOrderSnapshot,

@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
 import { useParams } from 'react-router';
+import { useEffect, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 
 import { Box, Button, Avatar, useTheme } from '@mui/material';
@@ -12,8 +12,8 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 function BranchTables() {
   const theme = useTheme();
   const { staffID, businessProfileID } = useParams();
-  const { tables, setSelectedTable, selectedTable, branchInfo, setIsLoading } = useStaffContext();
-  const { activeOrders, fsInitiateNewOrder, staff } = useAuthContext();
+  const { setSelectedTable, selectedTable, branchInfo, setIsLoading } = useStaffContext();
+  const { activeOrders, fsInitiateNewOrder, staff, branchTables } = useAuthContext();
 
   const isChef = staff?.type === 'chef';
 
@@ -68,7 +68,7 @@ function BranchTables() {
     [activeOrders, selectedTable.docID, theme]
   );
 
-  const { mutate, error } = useMutation({
+  const { mutate, error, isPending } = useMutation({
     mutationKey: ['active-orders', branchInfo.docID, businessProfileID],
     mutationFn: async (table) => {
       const { docID: tableID, menuID, branchID } = table;
@@ -87,27 +87,24 @@ function BranchTables() {
     },
   });
 
-  const onTableSelect = (table) => {
-    const tableOrder = activeOrders.find((order) => order.tableID === table.docID);
-    if (tableOrder) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setSelectedTable(table);
-        setIsLoading(false);
-      }, 500);
-    }
-    if (!tableOrder && table.isActive) mutate(table);
-  };
+  useEffect(() => {
+    const tableOrder = activeOrders.find((order) => order.tableID === selectedTable.docID);
+    if (!tableOrder && selectedTable.isActive) mutate(selectedTable);
+    setIsLoading(isPending);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mutate, selectedTable, isPending]);
+
+  const onTableSelect = (table) => setSelectedTable(table);
 
   const ordersInKitchen = activeOrders.filter((order) => order?.isInKitchen?.length !== 0);
 
-  const tablesWithInKitchenOrder = tables.filter((table) =>
+  const tablesWithInKitchenOrder = branchTables.filter((table) =>
     ordersInKitchen.some((order) => order.tableID === table.docID)
   );
 
   const tablesToShow = isChef
     ? tablesWithInKitchenOrder
-    : tables.filter((table) => table.index !== 0);
+    : branchTables.filter((table) => table.index !== 0);
 
   return (
     tablesToShow.length !== 0 && (
@@ -124,7 +121,11 @@ function BranchTables() {
                 ...getStyle(table),
               }}
             >
-              <Button onClick={() => onTableSelect(table)} sx={{ color: 'text.primary' }}>
+              <Button
+                onClick={() => onTableSelect(table)}
+                sx={{ color: 'text.primary' }}
+                disabled={!table.isActive}
+              >
                 {table.index}
               </Button>
             </Avatar>

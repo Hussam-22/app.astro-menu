@@ -16,11 +16,11 @@ const year = new Date().getFullYear();
 function BranchTables() {
   const theme = useTheme();
   const { id: branchID } = useParams();
-  const { fsGetBranchTables } = useAuthContext();
+  const { fsGetBranchTables, branchTables } = useAuthContext();
 
   const [selectedTable, setSelectedTable] = useState();
 
-  const { data: tables = [], error } = useQuery({
+  const { data: branchTablesUnsubscribe = {}, error } = useQuery({
     queryKey: ['branch-tables', branchID],
     queryFn: () => fsGetBranchTables(branchID),
   });
@@ -31,7 +31,7 @@ function BranchTables() {
     <Stack direction="column" spacing={2}>
       <TablesCard
         theme={theme}
-        tables={tables}
+        tables={branchTables}
         onTableClick={handleOnTableClick}
         selectedTableID={selectedTable?.docID}
       />

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Stack, Typography } from '@mui/material';
 
@@ -16,6 +16,7 @@ function FoodMenu({ menuID }) {
   const { businessProfileID } = useParams();
   const { fsGetMenu, fsGetSections, menuSections } = useAuthContext();
   const { selectedTable } = useStaffContext();
+  const queryClient = useQueryClient();
 
   const { data: menuInfo = {} } = useQuery({
     queryKey: ['menu', businessProfileID, menuID],
@@ -27,6 +28,11 @@ function FoodMenu({ menuID }) {
     queryFn: () => fsGetSections(menuID, businessProfileID),
     refetchOnMount: 'always',
   });
+
+  useEffect(() => {
+    if (menuID)
+      queryClient.invalidateQueries({ queryKey: ['sections', businessProfileID, menuID] });
+  }, [businessProfileID, menuID, queryClient]);
 
   useEffect(
     () => () => {

@@ -56,6 +56,7 @@ function TableActionBar() {
   } = orderSnapShot;
 
   const isCancelOrderDisabled = cart.length === 0;
+
   const isCollectPaymentDisabled =
     cart.some((item) => item.update === updateCount) ||
     cart.length === 0 ||
