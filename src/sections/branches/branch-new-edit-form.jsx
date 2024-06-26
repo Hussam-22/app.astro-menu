@@ -173,13 +173,6 @@ export default function BranchNewEditForm({ branchInfo }) {
     }
   };
 
-  const handleDeleteBranch = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    fsDeleteBranch(branchInfo?.docID);
-    queryClient.invalidateQueries({ queryKey: ['branches'] });
-    router.push(paths.dashboard.branches.list);
-  };
-
   const availableLanguages =
     (businessProfile?.languages &&
       Object.entries(LANGUAGE_CODES).filter((code) =>
@@ -238,7 +231,7 @@ export default function BranchNewEditForm({ branchInfo }) {
                 }
               >
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Stack direction="column" spacing={0} sx={{ px: 1 }}>
+                  <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
                     <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
                       Skip Kitchen
                     </Typography>
@@ -255,7 +248,7 @@ export default function BranchNewEditForm({ branchInfo }) {
                 </Stack>
 
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Stack direction="column" spacing={0} sx={{ px: 1 }}>
+                  <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
                     <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
                       Branch Status
                     </Typography>
@@ -266,42 +259,8 @@ export default function BranchNewEditForm({ branchInfo }) {
                   <RHFSwitch
                     name="isActive"
                     labelPlacement="start"
-                    label={values.isActive ? `Branch is Active` : `Branch is Inactive`}
-                    sx={{ alignItems: 'center' }}
+                    label={values.isActive ? `Active` : `Disabled`}
                   />
-                </Stack>
-
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{
-                    bgcolor: 'error.main',
-                    borderRadius: 1,
-                    p: 1,
-                    color: 'common.white',
-                  }}
-                >
-                  <Stack direction="column">
-                    <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                      Delete Branch
-                    </Typography>
-                    <Typography variant="caption">
-                      Deleting the Branch will completely remove it from the system along with the
-                      tables, statistics and all other data
-                    </Typography>
-                  </Stack>
-                  {branchInfo?.docID && (
-                    <LoadingButton
-                      variant="contained"
-                      loading={isPending}
-                      color="error"
-                      onClick={handleDeleteBranch}
-                      sx={{ bgcolor: 'common.white', color: 'error.main', whiteSpace: 'nowrap' }}
-                    >
-                      Delete Branch
-                    </LoadingButton>
-                  )}
                 </Stack>
               </Stack>
             </Card>

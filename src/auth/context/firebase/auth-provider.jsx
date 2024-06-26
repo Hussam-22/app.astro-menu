@@ -944,7 +944,7 @@ export function AuthProvider({ children }) {
       businessProfileID = state.user.businessProfileID
     ) => {
       const docRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchData.docID}`);
-      const { cover: imageFile, ...documentData } = branchData;
+      const { cover: imageFile, docID, ...documentData } = branchData;
 
       await updateDoc(docRef, {
         ...documentData,
@@ -1909,7 +1909,6 @@ export function AuthProvider({ children }) {
       fsGetAllBranches,
       fsAddNewBranch,
       fsUpdateBranch,
-      fsDeleteBranch,
       fsUpdateDisabledMealsInBranch,
       // ---- TABLES ----
       fsGetBranchTablesCount,
@@ -1997,7 +1996,6 @@ export function AuthProvider({ children }) {
       fsGetAllBranches,
       fsAddNewBranch,
       fsUpdateBranch,
-      fsDeleteBranch,
       fsUpdateDisabledMealsInBranch,
       // ---- TABLES ----
       fsGetBranchTablesCount,
