@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
-import { Card, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -76,50 +76,48 @@ export default function MenuNewEditForm({ menuData, onClose }) {
   };
 
   return (
-    <Card sx={{ p: 3 }}>
-      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Stack direction="column" spacing={2}>
-          <RHFTextField name="title" label="Menu Title" />
-          <RHFTextField name="description" label="Menu Description" multiline rows={3} />
-          <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
-            <Stack direction="column" sx={{ width: 1 }}>
-              <Typography variant="" color="text.secondary">
-                Number of Most Ordered Meals to Show
-              </Typography>
-              <Typography variant="caption" sx={{ color: 'info.main' }}>
-                Set to 0 (Zero) to hide the most ordered meals section, max is 10
-              </Typography>
-            </Stack>
-            <RHFTextField
-              name="mostOrderedMeals"
-              label="Number of Most Ordered Meals to Show"
-              type="number"
-            />
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+      <Stack direction="column" spacing={2}>
+        <RHFTextField name="title" label="Menu Title" />
+        <RHFTextField name="description" label="Menu Description" multiline rows={3} />
+        <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+          <Stack direction="column" sx={{ width: 1 }}>
+            <Typography variant="" color="text.secondary">
+              Number of Most Ordered Meals to Show
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'info.main' }}>
+              Set to 0 (Zero) to hide the most ordered meals section, max is 10
+            </Typography>
           </Stack>
-          <Stack direction="row" spacing={2} alignItems="center" justifyContent="flex-end">
-            {menuData?.docID && (
-              <LoadingButton
-                color="error"
-                variant="contained"
-                loading={isPending}
-                sx={{ alignSelf: 'flex-end' }}
-                onClick={deleteMenu}
-              >
-                Delete
-              </LoadingButton>
-            )}
+          <RHFTextField
+            name="mostOrderedMeals"
+            label="Number of Most Ordered Meals to Show"
+            type="number"
+          />
+        </Stack>
+        <Stack direction="row" spacing={2} alignItems="center" justifyContent="flex-end">
+          {menuData?.docID && (
             <LoadingButton
-              type="submit"
+              color="error"
               variant="contained"
-              color="success"
               loading={isPending}
               sx={{ alignSelf: 'flex-end' }}
+              onClick={deleteMenu}
             >
-              Save
+              Delete
             </LoadingButton>
-          </Stack>
+          )}
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="success"
+            loading={isPending}
+            sx={{ alignSelf: 'flex-end' }}
+          >
+            Save
+          </LoadingButton>
         </Stack>
-      </FormProvider>
-    </Card>
+      </Stack>
+    </FormProvider>
   );
 }

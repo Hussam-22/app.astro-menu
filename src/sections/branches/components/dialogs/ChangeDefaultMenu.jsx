@@ -27,12 +27,12 @@ function ChangeDefaultMenu({ isOpen, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
   const { fsChangeMenuForAllTables, fsGetAllMenus } = useAuthContext();
   const queryClient = useQueryClient();
+  const [selectedMenuID, setSelectedMenuID] = useState('');
 
   const { data: menusList = [] } = useQuery({
     queryKey: ['menus'],
     queryFn: () => fsGetAllMenus(),
   });
-  const [selectedMenuID, setSelectedMenuID] = useState('');
 
   const onMenuChange = (e) => {
     setSelectedMenuID(e.target.value);
@@ -50,12 +50,11 @@ function ChangeDefaultMenu({ isOpen, onClose }) {
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose}>
       <DialogTitle>Change Menu for All Tables</DialogTitle>
-      <DialogContent sx={{ mt: 3 }}>
+      <DialogContent>
         <Select
           value={selectedMenuID}
           onChange={onMenuChange}
-          size="small"
-          variant="filled"
+          variant="standard"
           fullWidth
           required
         >
@@ -73,6 +72,7 @@ function ChangeDefaultMenu({ isOpen, onClose }) {
           color="success"
           onClick={() => mutate()}
           loading={isPending}
+          disabled={!selectedMenuID}
         >
           Save
         </LoadingButton>

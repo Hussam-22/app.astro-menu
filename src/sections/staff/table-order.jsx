@@ -23,8 +23,8 @@ import { useStaffContext } from 'src/sections/staff/context/staff-context';
 
 const TableOrder = () => {
   const theme = useTheme();
-  const { selectedTable, setSelectedTable, branchInfo } = useStaffContext();
-  const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus, staff, fsGetMenu, fsGetMeal } =
+  const { selectedTable, branchInfo } = useStaffContext();
+  const { fsRemoveMealFromCart, activeOrders, fsUpdateOrderStatus, staff, fsGetMeal } =
     useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
 

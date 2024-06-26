@@ -18,7 +18,7 @@ function MenuNewDialog({ isOpen, onClose, menuData }) {
       <IconButton onClick={onClose} sx={{ position: 'absolute', top: 20, right: 20 }}>
         <Iconify icon="carbon:close-filled" />
       </IconButton>
-      <DialogContent sx={{ p: 3 }}>
+      <DialogContent sx={{ pb: 2 }}>
         <MenuNewEditForm menuData={menuData} onClose={onClose} />
       </DialogContent>
     </Dialog>

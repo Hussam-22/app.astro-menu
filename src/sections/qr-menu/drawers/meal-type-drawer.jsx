@@ -46,7 +46,7 @@ function MealTypeDrawer({ openState, onClose }) {
     })),
   });
 
-  if (mealsData[0].isLoading) return <div>Loading...</div>;
+  if (mealsData.length === 0 || mealsData[0]?.isLoading) return <div>Loading...</div>;
 
   return (
     <Drawer

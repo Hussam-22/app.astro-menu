@@ -685,7 +685,7 @@ export function AuthProvider({ children }) {
       }
 
       const batch = writeBatch(DB);
-      for (let index = 0; index < +MAX_ALLOWED_USER_TABLES + 1; index += 1) {
+      for (let index = 0; index < +MAX_ALLOWED_USER_TABLES + 2; index += 1) {
         const newDocRef = doc(
           collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
         );
@@ -736,12 +736,16 @@ export function AuthProvider({ children }) {
       );
       const snapshot = await getDocs(docsRef);
 
-      const batch = writeBatch(DB);
-      snapshot.docs.forEach((doc) => {
-        batch.update(doc.ref, { menuID });
+      const toUpdate = [];
+
+      snapshot.docs.forEach((tableDoc) => {
+        const updateTable = async () =>
+          toUpdate.push(await fsUpdateBranchTable(branchID, tableDoc.data().docID, { menuID }));
+
+        updateTable();
       });
 
-      await batch.commit();
+      await Promise.allSettled(toUpdate);
     },
     [state]
   );
@@ -761,12 +765,33 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateBranchTable = useCallback(
-    async (branchID, tableID, value, businessProfileID = state.user.businessProfileID) => {
-      const docRef = doc(
-        DB,
-        `/businessProfiles/${businessProfileID}/branches/${branchID}/tables/${tableID}`
-      );
-      await updateDoc(docRef, value);
+    async (branchID, tableID, data, businessProfileID = state.user.businessProfileID) => {
+      try {
+        const docRef = doc(
+          DB,
+          `/businessProfiles/${businessProfileID}/branches/${branchID}/tables/${tableID}`
+        );
+        await updateDoc(docRef, data);
+
+        if (data.menuID) {
+          const ordersQuery = query(
+            collectionGroup(DB, 'orders'),
+            where('tableID', '==', tableID),
+            where('branchID', '==', branchID),
+            where('businessProfileID', '==', businessProfileID),
+            where('isCanceled', '==', false),
+            where('isPaid', '==', false),
+            where('isReadyToServe', '==', []),
+            where('isInKitchen', '==', [])
+          );
+          const querySnapshot = await getDocs(ordersQuery);
+          if (querySnapshot.empty) return;
+          const orderRef = querySnapshot.docs[0].ref;
+          await updateDoc(orderRef, { cart: [], menuID: data.menuID });
+        }
+      } catch (error) {
+        throw new Error(error);
+      }
     },
     [state]
   );

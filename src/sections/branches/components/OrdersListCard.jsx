@@ -44,7 +44,9 @@ const TABLE_HEAD = [
 OrdersListCard.propTypes = {
   tableInfo: PropTypes.object,
 };
-// TODO: FIX TABLE ORDER, ADD FILTER BY STATUS OPTION
+
+const THIS_MONTH = new Date().getMonth();
+const THIS_YEAR = new Date().getFullYear();
 
 export default function OrdersListCard({ tableInfo }) {
   const { fsGetTableOrdersByPeriod } = useAuthContext();
@@ -63,10 +65,10 @@ export default function OrdersListCard({ tableInfo }) {
     onSort,
     onChangePage,
     onChangeRowsPerPage,
-  } = useTable({ defaultOrderBy: 'LastUpdate', defaultOrder: 'desc', defaultRowsPerPage: 10 });
+  } = useTable({ defaultOrderBy: 'LastUpdate', defaultOrder: 'desc', defaultRowsPerPage: 50 });
 
-  const [month, setMonth] = useState(new Date().getMonth());
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(THIS_MONTH);
+  const [year, setYear] = useState(THIS_YEAR);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
@@ -98,11 +100,6 @@ export default function OrdersListCard({ tableInfo }) {
 
   const denseHeight = 56;
 
-  const dateShort = new Date(Date.UTC(year, month)).toLocaleDateString('en-US', {
-    month: 'short',
-    year: 'numeric',
-  });
-
   const reFetchData = () => {
     setIsLoading(true);
     setTimeout(() => {
@@ -132,6 +129,7 @@ export default function OrdersListCard({ tableInfo }) {
           endIcon={<Iconify icon="uiw:reload" sx={{ width: 16, height: 16 }} />}
           onClick={reFetchData}
           loading={isLoading}
+          disabled={month !== THIS_MONTH || year !== THIS_YEAR}
         >
           Re-fetch Data
         </LoadingButton>

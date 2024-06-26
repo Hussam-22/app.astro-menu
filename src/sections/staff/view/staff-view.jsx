@@ -54,7 +54,7 @@ function StaffView() {
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Stack direction="column">
               <Typography variant="overline">Table# {tableInfo?.index}</Typography>
-              <Typography variant="caption">{tableInfo.docID}</Typography>
+              <Typography variant="caption">{tableInfo.note}</Typography>
             </Stack>
 
             <Stack direction="column">

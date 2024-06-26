@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
+import { Box, Tab, Card, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
@@ -28,18 +28,17 @@ function MenuManageView() {
     {
       value: 'Menu Info',
       icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
-      component: <MenuNewEditForm menuData={menuData} />,
+      component: (
+        <Card sx={{ p: 3 }}>
+          <MenuNewEditForm menuData={menuData} />
+        </Card>
+      ),
     },
     {
       value: 'Meals and Sections',
       icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
       component: <MealsAndSections />,
     },
-    // {
-    //   value: 'Statistics',
-    //   icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
-    //   component: <MenuStatisticsTab />,
-    // },
   ];
 
   return (

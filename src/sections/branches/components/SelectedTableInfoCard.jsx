@@ -44,7 +44,7 @@ function SelectedTableInfoCard({ tableInfo }) {
     queryFn: () => fsGetAllMenus(),
   });
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending, error } = useMutation({
     mutationKey: ['branch-tables', branchID],
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
@@ -76,7 +76,7 @@ function SelectedTableInfoCard({ tableInfo }) {
     reset,
     watch,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { dirtyFields, isDirty },
   } = methods;
 
   useEffect(() => {
@@ -86,7 +86,12 @@ function SelectedTableInfoCard({ tableInfo }) {
   const values = watch();
 
   const onSubmit = async (formData) => {
-    mutate(() => fsUpdateBranchTable(tableInfo.branchID, tableInfo.docID, { ...formData }));
+    const { menuID, ...dataToUpdate } = formData;
+    if (dirtyFields.menuID)
+      mutate(() => fsUpdateBranchTable(tableInfo.branchID, tableInfo.docID, { ...formData }));
+    if (!dirtyFields.menuID)
+      mutate(() => fsUpdateBranchTable(tableInfo.branchID, tableInfo.docID, { ...dataToUpdate }));
+    reset(formData);
   };
 
   const qrURL = `${window.location.protocol}//${window.location.host}/qr-menu/${user.businessProfileID}/${tableInfo?.branchID}/${tableInfo?.docID}`;
@@ -142,15 +147,15 @@ function SelectedTableInfoCard({ tableInfo }) {
                       ))}
                     </RHFSelect>
                   )}
-                </Stack>
-                <TextField value="This table is to show your menu only" disabled />
-                <Stack spacing={2} direction="row" justifyContent="flex-end" alignItems="center">
+                  <TextField value="This table is to show your menu only" disabled />
                   <LoadingButton
                     loading={isPending}
                     type="submit"
                     variant="contained"
                     color="success"
                     startIcon={<Iconify icon="ion:save-sharp" />}
+                    disabled={!isDirty}
+                    sx={{ alignSelf: 'flex-end' }}
                   >
                     Save
                   </LoadingButton>
@@ -252,6 +257,7 @@ function SelectedTableInfoCard({ tableInfo }) {
                   variant="contained"
                   color="success"
                   startIcon={<Iconify icon="ion:save-sharp" />}
+                  disabled={!isDirty}
                 >
                   Save
                 </LoadingButton>
