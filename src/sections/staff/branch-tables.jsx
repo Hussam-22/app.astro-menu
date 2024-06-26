@@ -90,11 +90,13 @@ function BranchTables() {
   useEffect(() => {
     const tableOrder = activeOrders.find((order) => order.tableID === selectedTable.docID);
     if (!tableOrder && selectedTable.isActive) mutate(selectedTable);
-    setIsLoading(isPending);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mutate, selectedTable, isPending]);
 
-  const onTableSelect = (table) => setSelectedTable(table);
+  const onTableSelect = (table) => {
+    setIsLoading(true);
+    setSelectedTable(table);
+  };
 
   const ordersInKitchen = activeOrders.filter((order) => order?.isInKitchen?.length !== 0);
 

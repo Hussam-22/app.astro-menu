@@ -16,13 +16,13 @@ const year = new Date().getFullYear();
 function BranchTables() {
   const theme = useTheme();
   const { id: branchID } = useParams();
-  const { fsGetBranchTables, branchTables } = useAuthContext();
+  const { fsGetBranchTablesSnapshot, branchTables } = useAuthContext();
 
   const [selectedTable, setSelectedTable] = useState();
 
   const { data: branchTablesUnsubscribe = {}, error } = useQuery({
     queryKey: ['branch-tables', branchID],
-    queryFn: () => fsGetBranchTables(branchID),
+    queryFn: () => fsGetBranchTablesSnapshot(branchID),
   });
 
   const handleOnTableClick = (table) => setSelectedTable(table);

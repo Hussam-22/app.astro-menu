@@ -18,7 +18,7 @@ export function StaffContextProvider({ children }) {
   const { businessProfileID } = useParams();
   const {
     fsGetBusinessProfile,
-    fsGetBranchTables,
+    fsGetBranchTablesSnapshot,
     fsGetBranchSnapshot,
     fsGetActiveOrdersSnapshot,
     staff: staffInfo,
@@ -29,11 +29,17 @@ export function StaffContextProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [waiterUnsubscribe, setWaiterUnsubscribe] = useState();
 
+  console.log(isLoading);
+
   useEffect(() => {
     if (selectedTable.docID) {
       const table = branchTables.find((branchTable) => branchTable.docID === selectedTable.docID);
       if (!table.isActive) setSelectedTable({});
       if (table.isActive) setSelectedTable(table);
+
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
     }
   }, [branchTables, selectedTable.docID]);
 
@@ -53,7 +59,7 @@ export function StaffContextProvider({ children }) {
 
   const { data: branchTablesUnsubscribe = [] } = useQuery({
     queryKey: ['branch-tables', branchID, businessProfileID],
-    queryFn: () => fsGetBranchTables(branchID, businessProfileID),
+    queryFn: () => fsGetBranchTablesSnapshot(branchID, businessProfileID),
     enabled: staffInfo.docID !== undefined,
   });
 

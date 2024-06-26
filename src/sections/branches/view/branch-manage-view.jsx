@@ -44,11 +44,6 @@ function BranchManageView() {
       component: <BranchTables branchInfo={branchInfo} />,
     },
     {
-      value: 'Statistics',
-      icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
-      component: <BranchStatistics />,
-    },
-    {
       value: 'Staffs Dashboard Link',
       icon: (
         <Iconify
@@ -58,6 +53,11 @@ function BranchManageView() {
         />
       ),
       component: <StaffLink />,
+    },
+    {
+      value: 'Statistics',
+      icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
+      component: <BranchStatistics />,
     },
   ].splice(0, businessProfile?.planInfo?.at(-1)?.isMenuOnly ? 2 : 4);
 
