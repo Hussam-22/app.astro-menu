@@ -58,7 +58,7 @@ function MenuListView() {
     onChangeRowsPerPage,
   } = useTable({
     defaultOrderBy: 'title',
-    defaultRowsPerPage: 10,
+    defaultRowsPerPage: 25,
   });
 
   const router = useRouter();
@@ -132,7 +132,7 @@ function MenuListView() {
 
         <Scrollbar>
           <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
-            <Table size={dense ? 'small' : 'medium'}>
+            <Table size="small">
               <TableHeadCustom
                 disableSelectAllRows
                 order={order}
