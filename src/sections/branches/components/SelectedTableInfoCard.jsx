@@ -223,18 +223,18 @@ function SelectedTableInfoCard({ tableInfo }) {
                   <Typography variant="caption" sx={{ color: 'text.disabled' }}>
                     {tableInfo?.docID}
                   </Typography>
-                  <Typography variant="h4">Table# {tableInfo?.index}</Typography>
+                  <Typography variant="h4">QR# {tableInfo?.index}</Typography>
                 </Stack>
                 <RHFSwitch
                   name="isActive"
-                  label={`Table is ${values.isActive ? 'Active' : 'Disabled'}`}
+                  label={`QR is ${values.isActive ? 'Active' : 'Disabled'}`}
                   labelPlacement="end"
                   sx={{ m: 0 }}
                 />
               </Stack>
               <Stack direction="column" spacing={2}>
-                <RHFTextField name="title" label="Table Nickname" />
-                {menusList?.length !== 0 && menusList !== undefined && (
+                <RHFTextField name="title" label="QR Nickname (Shows on Customers Menu)" />
+                {/* {menusList?.length !== 0 && menusList !== undefined && (
                   <RHFSelect
                     name="menuID"
                     label="Default Menu"
@@ -247,9 +247,14 @@ function SelectedTableInfoCard({ tableInfo }) {
                       </MenuItem>
                     ))}
                   </RHFSelect>
-                )}
+                )} */}
               </Stack>
-              <RHFTextField name="note" label="Note" multiline rows={3} />
+              <RHFTextField
+                name="note"
+                label="Note (Shows on Waiter Staff Dashboard Only)"
+                multiline
+                rows={3}
+              />
               <Stack spacing={2} direction="row" justifyContent="flex-end" alignItems="center">
                 <LoadingButton
                   loading={isPending}

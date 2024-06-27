@@ -10,7 +10,7 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import StaffLink from 'src/sections/branches/staff-link';
 import { useSettingsContext } from 'src/components/settings';
-import BranchTables from 'src/sections/branches/BranchTables';
+import QRManagement from 'src/sections/branches/QR-Management';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import BranchStatistics from 'src/sections/branches/BranchStatistics';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
@@ -39,9 +39,9 @@ function BranchManageView() {
       component: branchInfo?.docID && <BranchNewEditForm branchInfo={branchInfo} />,
     },
     {
-      value: 'Tables',
-      icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
-      component: <BranchTables branchInfo={branchInfo} />,
+      value: 'QR Management',
+      icon: <Iconify icon="clarity:qr-code-line" width={20} height={20} />,
+      component: <QRManagement branchInfo={branchInfo} />,
     },
     {
       value: 'Staffs Dashboard Link',

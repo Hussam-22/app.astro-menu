@@ -13,7 +13,7 @@ import StatisticsOverviewCard from 'src/sections/branches/components/StatisticsO
 const month = new Date().getMonth();
 const year = new Date().getFullYear();
 
-function BranchTables() {
+function QRManagement() {
   const theme = useTheme();
   const { id: branchID } = useParams();
   const { fsGetBranchTablesSnapshot, branchTables } = useAuthContext();
@@ -21,7 +21,7 @@ function BranchTables() {
   const [selectedTable, setSelectedTable] = useState();
 
   const { data: branchTablesUnsubscribe = {}, error } = useQuery({
-    queryKey: ['branch-tables', branchID],
+    queryKey: ['branch-tables-snapshot', branchID],
     queryFn: () => fsGetBranchTablesSnapshot(branchID),
   });
 
@@ -53,4 +53,4 @@ function BranchTables() {
   );
 }
 
-export default BranchTables;
+export default QRManagement;

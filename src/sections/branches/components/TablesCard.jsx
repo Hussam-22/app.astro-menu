@@ -44,14 +44,14 @@ function TablesCard({ tables, onTableClick, selectedTableID }) {
             startIcon={<Iconify icon="mdi:file-replace-outline" />}
             onClick={() => setIsOpen(true)}
           >
-            Change Menu for All Tables
+            Change Menu for All QRs
           </Button>
           <Button
             variant="text"
             startIcon={<Iconify icon="uil:image-download" />}
             onClick={downloadAllTableQRImages}
           >
-            Download All Tables QR Images
+            Download All QR Images
           </Button>
         </Box>
         <Card sx={{ p: 2 }}>

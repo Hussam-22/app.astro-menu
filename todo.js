@@ -30,7 +30,8 @@
 /- Add "Skip Kitchen" toggle to the branch
 
 ? Meals
-1- Translate Meal Portions
+- Translate Meal Portions
+/- Remove "gram"
 
 ? Business Profile
 1- Adding new logo issue when navigating to another tab then coming back
