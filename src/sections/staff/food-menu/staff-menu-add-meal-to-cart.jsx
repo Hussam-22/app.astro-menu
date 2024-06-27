@@ -5,8 +5,8 @@ import { Stack, Typography, IconButton } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import AddMealDrawer from 'src/sections/staff/food-menu/add-meal-drawer';
 import { useStaffContext } from 'src/sections/staff/context/staff-context';
-import DialogAddComment from 'src/sections/qr-menu/components/DialogAddComment';
 
 function StaffMenuAddMealToCart({ mealInfo, selectedTableID }) {
   const { branchInfo } = useStaffContext();
@@ -36,15 +36,14 @@ function StaffMenuAddMealToCart({ mealInfo, selectedTableID }) {
         </IconButton>
       </Stack>
 
-      {isOpen && (
-        <DialogAddComment
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
-          mealInfo={mealInfo}
-          orderSnapShot={orderSnapShot}
-          branchInfo={branchInfo}
-        />
-      )}
+      <AddMealDrawer
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        mealInfo={mealInfo}
+        tableID={selectedTableID}
+        orderSnapShot={orderSnapShot}
+        branchInfo={branchInfo}
+      />
     </>
   );
 }

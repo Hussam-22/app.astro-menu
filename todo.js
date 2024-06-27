@@ -15,12 +15,11 @@
 
 ? QR Menu
 - How item will look without image or description
-- Allow selecting only single "Meal Type"
 - test back button that will close modal on ios and different browsers
-- Add Search meal by name field (Think about it)
+/- Add Search meal by name field (Think about it) -- Not feasible
 - check what happens if a meal gets deleted while its in cart
 /- changing meal status causing the qr-menu to reset back to default language
-- Add scroll to "add menu drawer" when the menu is too long to fit the screen, caused by long description or too many portions
+- Add scroll to "add meal" drawer when the meal is too long to fit the screen, caused by long description or too many portions
 
 ? Staff Dashboard
 
@@ -31,7 +30,7 @@
 /- Add "Skip Kitchen" toggle to the branch
 
 ? Meals
-- Translate Meal Portions
+/- Translate Meal Portions (Not feasible as it will require a lot of work)
 /- Remove "gram"
 
 ? Business Profile

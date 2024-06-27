@@ -29,8 +29,6 @@ export function StaffContextProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [waiterUnsubscribe, setWaiterUnsubscribe] = useState();
 
-  console.log(isLoading);
-
   useEffect(() => {
     if (selectedTable.docID) {
       const table = branchTables.find((branchTable) => branchTable.docID === selectedTable.docID);
