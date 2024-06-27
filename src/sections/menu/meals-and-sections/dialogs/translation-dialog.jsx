@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
-import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -16,7 +16,6 @@ import {
 
 import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import { rdxUpdateMenuSection } from 'src/redux/slices/menu';
 
 import TranslationTextField from '../TranslationTextField';
 // ----------------------------------------------------------------------
@@ -36,13 +35,6 @@ function TranslationDialog({ sectionID, isOpen, onClose, languagesLength }) {
   const sectionInfo = useSelector((state) =>
     state.menu.menu.sections.find((section) => section.id === sectionID)
   );
-
-  useEffect(() => {
-    (async () => {
-      dispatch(rdxUpdateMenuSection(await fsGetSection(menuID, sectionID)));
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const formStateHandler = (state) => {
     setFormIsSubmitting(state);

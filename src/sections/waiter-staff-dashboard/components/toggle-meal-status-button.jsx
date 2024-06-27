@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Stack, Switch, useTheme, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function ToggleMealStatus({ mealInfo }) {
   const theme = useTheme();
@@ -55,7 +55,7 @@ function ToggleMealStatus({ mealInfo }) {
     <Stack direction="row" spacing={0} justifyContent="flex-end" alignItems="center">
       <Typography
         sx={{
-          color: isMealActive ? 'info.main' : 'error.main',
+          color: isMealActive ? 'common.black' : 'grey.400',
           fontWeight: theme.typography.fontWeightBold,
         }}
         variant="body2"
@@ -66,8 +66,8 @@ function ToggleMealStatus({ mealInfo }) {
         <Switch
           checked={branchInfo.disabledMeals?.includes(mealInfo.docID) ? false : isMealActive}
           onChange={onMealStatusChange}
-          color="info"
           size="small"
+          sx={{ color: 'common.black' }}
         />
       )}
     </Stack>

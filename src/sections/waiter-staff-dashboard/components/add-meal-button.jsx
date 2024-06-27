@@ -5,10 +5,10 @@ import { Stack, Typography, IconButton } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import AddMealDrawer from 'src/sections/staff/food-menu/add-meal-drawer';
-import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import AddMealDrawer from 'src/sections/waiter-staff-dashboard/components/add-meal-drawer';
+import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
-function StaffMenuAddMealToCart({ mealInfo, selectedTableID }) {
+function StaffMenuAddMealToCart({ mealInfo, selectedTableID, isActive }) {
   const { branchInfo } = useStaffContext();
   const { activeOrders } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
@@ -31,8 +31,13 @@ function StaffMenuAddMealToCart({ mealInfo, selectedTableID }) {
         <Typography sx={{ color: count > 0 ? 'default' : 'grey.300', fontWeight: '700' }}>
           {count}x
         </Typography>
-        <IconButton onClick={() => setIsOpen(true)} sx={{ px: 0.25 }}>
-          <Iconify icon="flat-color-icons:plus" sx={{ width: 24, height: 24 }} />
+        <IconButton
+          onClick={() => setIsOpen(true)}
+          sx={{ px: 0.25 }}
+          disabled={!isActive}
+          color="primary"
+        >
+          <Iconify icon="mdi:hamburger-plus" sx={{ width: 24, height: 24 }} />
         </IconButton>
       </Stack>
 
@@ -52,4 +57,5 @@ export default StaffMenuAddMealToCart;
 StaffMenuAddMealToCart.propTypes = {
   mealInfo: PropTypes.object,
   selectedTableID: PropTypes.string,
+  isActive: PropTypes.bool,
 };

@@ -23,6 +23,9 @@
 
 ? Staff Dashboard
 
+? Menu
+- Fix Section Title Edit
+
 
 ? Branch
 - Show Mock image if no image is uploaded

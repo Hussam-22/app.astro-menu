@@ -57,12 +57,12 @@ const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo })
       anchor="right"
       open={isOpen}
       onClose={() => onClose()}
-      PaperProps={{ sx: { borderRadius: '25px 0 0 25px', minWidth: '30%' } }}
+      PaperProps={{ sx: { borderRadius: '25px 0 0 25px', minWidth: '25%', maxWidth: '35%' } }}
     >
       <Scrollbar sx={{ bgcolor: 'background.default', pb: 3, height: 1 }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={1} direction="column">
-            <Image src={mealInfo.cover} ratio="6/4" />
+            <Image src={mealInfo.cover} ratio="4/3" />
             <Stack spacing={2} sx={{ px: 2 }}>
               <Box>
                 <Typography variant="h4">{mealInfo.title}</Typography>

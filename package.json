@@ -1,8 +1,8 @@
 {
-  "name": "@minimal-kit/vite-js",
-  "author": "Minimals",
-  "version": "5.1.0",
-  "description": "Vite & JavaScript",
+  "name": "astro-menu",
+  "author": "astro-menu",
+  "version": "1.0",
+  "description": "astro-menu - a digital qr menu for restaurants",
   "private": true,
   "type": "module",
   "scripts": {

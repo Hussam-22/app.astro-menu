@@ -13,7 +13,7 @@ import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import { shakingAnimation } from 'src/theme/css';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function StaffLoginForm() {
   const { businessProfileID, staffID } = useParams();

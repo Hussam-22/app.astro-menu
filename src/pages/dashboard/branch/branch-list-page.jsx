@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet-async';
 
 import BranchesListView from 'src/sections/branches/view/branches-list-view';

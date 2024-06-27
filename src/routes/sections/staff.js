@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import StaffLayout from 'src/layouts/staff/layout';
 import { SplashScreen } from 'src/components/loading-screen';
+import StaffLayout from 'src/layouts/waiter-staff-dashboard/layout';
 
 // ----------------------------------------------------------------------
 

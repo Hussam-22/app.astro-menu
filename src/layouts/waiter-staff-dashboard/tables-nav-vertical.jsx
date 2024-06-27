@@ -2,10 +2,10 @@
 
 import { Box, Stack, Divider, Typography } from '@mui/material';
 
-import { NAV } from 'src/layouts/config-layout';
 import Scrollbar from 'src/components/scrollbar';
-import BranchTables from 'src/sections/staff/branch-tables';
-import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import { STAFF_NAV } from 'src/layouts/config-layout';
+import BranchTables from 'src/sections/waiter-staff-dashboard/branch-tables';
+import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function TablesNavVertical() {
   const { branchInfo } = useStaffContext();
@@ -15,14 +15,14 @@ function TablesNavVertical() {
       component="nav"
       sx={{
         flexShrink: { lg: 0 },
-        width: { lg: NAV.W_VERTICAL },
+        width: { lg: STAFF_NAV.W_VERTICAL },
       }}
     >
       <Stack
         sx={{
           height: 1,
           position: 'fixed',
-          width: NAV.W_VERTICAL,
+          width: STAFF_NAV.W_VERTICAL,
           borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
         }}
       >

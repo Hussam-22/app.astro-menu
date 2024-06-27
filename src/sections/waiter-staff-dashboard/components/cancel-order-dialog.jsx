@@ -7,10 +7,10 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Stack, Dialog, MenuItem, Typography, DialogContent } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
-import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
-import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import { delay } from 'src/utils/promise-delay';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 const CANCEL_REASONS = [
   'Order is Opened but Nothing Was Orders',

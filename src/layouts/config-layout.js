@@ -10,3 +10,8 @@ export const NAV = {
   W_VERTICAL: 280,
   W_MINI: 88,
 };
+
+export const STAFF_NAV = {
+  W_VERTICAL: 220,
+  W_MINI: 88,
+};

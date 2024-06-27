@@ -8,8 +8,8 @@ import Iconify from 'src/components/iconify';
 import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { useStaffContext } from 'src/sections/staff/context/staff-context';
-import DialogCancelOrder from 'src/sections/staff/dialogs/cancel-order-dialog';
+import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
+import DialogCancelOrder from 'src/sections/waiter-staff-dashboard/components/cancel-order-dialog';
 
 function TableActionBar() {
   const { activeOrders, fsUpdateOrderStatus, fsConfirmCartOrder } = useAuthContext();

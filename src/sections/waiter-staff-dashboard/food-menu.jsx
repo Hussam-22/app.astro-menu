@@ -7,8 +7,8 @@ import { Stack, Typography } from '@mui/material';
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
-import { useStaffContext } from 'src/sections/staff/context/staff-context';
-import StaffMenuSections from 'src/sections/staff/food-menu/staff-menu-sections';
+import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
+import StaffMenuSections from 'src/sections/waiter-staff-dashboard/components/menu-sections';
 
 FoodMenu.propTypes = { menuID: PropTypes.string };
 

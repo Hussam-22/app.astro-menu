@@ -2,14 +2,14 @@ import PropTypes from 'prop-types';
 
 import { Box } from '@mui/material';
 
-import Main from 'src/layouts/staff/main';
 import { useAuthContext } from 'src/auth/hooks';
-import StaffLoginLayout from 'src/layouts/staff/auth';
-import StaffLoginForm from 'src/sections/staff/login-form';
-import StaffView from 'src/sections/staff/view/staff-view';
-import TablesNavVertical from 'src/layouts/staff/tables-nav-vertical';
-import StaffHorizontalNav from 'src/layouts/staff/table-nav-horizontal';
-import { StaffContextProvider } from 'src/sections/staff/context/staff-context';
+import Main from 'src/layouts/waiter-staff-dashboard/main';
+import StaffLoginLayout from 'src/layouts/waiter-staff-dashboard/auth';
+import StaffLoginForm from 'src/sections/waiter-staff-dashboard/login-form';
+import StaffView from 'src/sections/waiter-staff-dashboard/view/staff-view';
+import TablesNavVertical from 'src/layouts/waiter-staff-dashboard/tables-nav-vertical';
+import StaffHorizontalNav from 'src/layouts/waiter-staff-dashboard/table-nav-horizontal';
+import { StaffContextProvider } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function StaffLayout({ children }) {
   const { staff } = useAuthContext();

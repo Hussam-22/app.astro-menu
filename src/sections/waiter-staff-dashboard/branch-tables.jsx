@@ -7,7 +7,7 @@ import { Box, Button, Avatar, useTheme } from '@mui/material';
 import { blinkingBorder } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
 import { getOrderStatusStyle } from 'src/utils/get-order-status-styles';
-import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function BranchTables() {
   const theme = useTheme();
@@ -110,7 +110,7 @@ function BranchTables() {
 
   return (
     tablesToShow.length !== 0 && (
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 1, p: 2 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, p: 2 }}>
         {[...tablesToShow]
           .sort((a, b) => a.index - b.index)
           .map((table) => (

@@ -6,7 +6,7 @@ import { Box, Stack, useTheme, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { delay } from 'src/utils/promise-delay';
-import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function StaffHorizontalNav() {
   const theme = useTheme();

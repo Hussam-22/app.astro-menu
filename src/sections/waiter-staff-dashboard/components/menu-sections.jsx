@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Box, Stack, Divider, useTheme, Typography } from '@mui/material';
 
 import MealCardSkeleton from 'src/sections/qr-menu/components/meal-card-skeleton';
-import StaffMenuMealCard from 'src/sections/staff/food-menu/staff-menu-meal-card';
+import StaffMenuMealCard from 'src/sections/waiter-staff-dashboard/components/meal-card';
 
 function StaffMenuSections({ sectionInfo }) {
   const { title, meals: sectionMeals, docID: sectionID } = sectionInfo;
@@ -14,7 +14,6 @@ function StaffMenuSections({ sectionInfo }) {
   return (
     <Box>
       <Typography
-        // variant="caption"
         id={sectionID}
         sx={{
           fontWeight: theme.typography.fontWeightBold,
@@ -22,11 +21,7 @@ function StaffMenuSections({ sectionInfo }) {
       >
         {title}
       </Typography>
-      <Stack
-        direction="column"
-        // sx={{ borderRadius: 1, border: `dashed 1px ${theme.palette.divider}` }}
-        divider={<Divider sx={{ borderStyle: 'dashed', mx: 2 }} />}
-      >
+      <Stack direction="column" divider={<Divider sx={{ borderStyle: 'dashed' }} />}>
         {sectionMeals.map((mealID) => (
           <StaffMenuMealCard sectionInfo={sectionInfo} key={mealID} mealID={mealID} />
         ))}

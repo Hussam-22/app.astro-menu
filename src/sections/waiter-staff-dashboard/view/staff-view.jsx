@@ -6,11 +6,11 @@ import { Box, Stack, Divider, Typography } from '@mui/material';
 
 import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
-import TableOrder from 'src/sections/staff/table-order';
-import FoodMenu from 'src/sections/staff/food-menu/food-menu';
-import TableActionBar from 'src/sections/staff/table-action-bar';
-import { useStaffContext } from 'src/sections/staff/context/staff-context';
-import TableOrderSkeleton from 'src/sections/staff/skeleton/table-order-skeleton';
+import FoodMenu from 'src/sections/waiter-staff-dashboard/food-menu';
+import TableOrder from 'src/sections/waiter-staff-dashboard/table-order';
+import TableActionBar from 'src/sections/waiter-staff-dashboard/table-action-bar';
+import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
+import TableOrderSkeleton from 'src/sections/waiter-staff-dashboard/components/table-order-skeleton';
 
 function StaffView() {
   const { activeOrders, staff } = useAuthContext();
@@ -20,6 +20,10 @@ function StaffView() {
     () => activeOrders.find((order) => order?.tableID === tableInfo?.docID),
     [activeOrders, tableInfo?.docID]
   );
+
+  const orderInitiationTime =
+    selectedTableOrder?.docID &&
+    new Date(selectedTableOrder.initiationTime.seconds * 1000).toLocaleString('en-AE');
 
   if (isLoading) return <TableOrderSkeleton />;
 
@@ -55,18 +59,21 @@ function StaffView() {
         sx={{ py: 2 }}
         divider={<Divider sx={{ borderStyle: 'dashed' }} flexItem orientation="vertical" />}
       >
-        <Stack direction="column" spacing={2} sx={{ width: '50%' }}>
+        <Stack direction="column" spacing={2}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-            <Stack direction="column">
+            <Stack direction="column" sx={{ width: '65%' }}>
               <Typography variant="overline">Table# {tableInfo?.index}</Typography>
               <Typography variant="caption" sx={{ color: 'error.main' }}>
                 {tableInfo.note}
               </Typography>
             </Stack>
 
-            <Stack direction="column">
-              <Typography variant="overline">Order ID</Typography>
-              <Typography variant="caption">{selectedTableOrder?.docID}</Typography>
+            <Stack direction="column" sx={{ width: '35%' }}>
+              <Typography variant="overline">Order</Typography>
+              <Typography variant="caption">{orderInitiationTime}</Typography>
+              <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+                {selectedTableOrder?.docID}
+              </Typography>
             </Stack>
           </Stack>
           {staff?.type === 'waiter' && <TableActionBar />}

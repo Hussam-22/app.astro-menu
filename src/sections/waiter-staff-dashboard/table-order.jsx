@@ -19,7 +19,7 @@ import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import { blinkingBorder, blinkingElement } from 'src/theme/css';
 import { getOrderStatusStyle } from 'src/utils/get-order-status-styles';
-import { useStaffContext } from 'src/sections/staff/context/staff-context';
+import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 const TableOrder = () => {
   const theme = useTheme();
@@ -130,6 +130,13 @@ const TableOrder = () => {
     ? [...Array(updateCount + 1)].map((_, index) => index).filter((i) => isInKitchen.includes(i))
     : [...Array(updateCount + 1)].map((_, index) => index);
 
+  const orderValue = useMemo(
+    () =>
+      orderSnapShot?.docID &&
+      orderSnapShot.cart.reduce((accumulator, portion) => accumulator + portion.price, 0),
+    [orderSnapShot.cart, orderSnapShot?.docID]
+  );
+
   if (cachedSectionMeals.length === 0 || !selectedTable.isActive) return null;
 
   return (
@@ -151,10 +158,10 @@ const TableOrder = () => {
             variant="filled"
             sx={{
               position: 'absolute',
-              top: -10,
-              left: -10,
-              fontSize: 15,
-              borderRadius: 4,
+              top: 0,
+              left: 0,
+              fontSize: 20,
+              borderRadius: '5px 0 5px 0',
               p: 0,
             }}
           >
@@ -275,7 +282,8 @@ const TableOrder = () => {
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
             {!isChef &&
               !isInKitchen.includes(orderIndex) &&
-              !isReadyToServe.includes(orderIndex) && (
+              !isReadyToServe.includes(orderIndex) &&
+              orderValue !== 0 && (
                 <LoadingButton
                   variant="soft"
                   color="warning"
