@@ -19,7 +19,8 @@
 - test back button that will close modal on ios and different browsers
 - Add Search meal by name field (Think about it)
 - check what happens if a meal gets deleted while its in cart
-!- changing meal status causing the qr-menu to reset back to default language
+/- changing meal status causing the qr-menu to reset back to default language
+- Add scroll to "add menu drawer" when the menu is too long to fit the screen, caused by long description or too many portions
 
 ? Staff Dashboard
 

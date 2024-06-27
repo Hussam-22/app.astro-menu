@@ -151,11 +151,9 @@ export function QrMenuContextProvider({ children }) {
   }, [orderSnapShot]);
 
   // Default language is always English, regardless of user input
-  const [selectedLanguage, setLanguage] = useState('en');
-
-  useEffect(() => {
-    if (branchInfo?.defaultLanguage) setLanguage(branchInfo.defaultLanguage);
-  }, [branchInfo]);
+  const [selectedLanguage, setLanguage] = useState();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setLanguage(branchInfo?.defaultLanguage || 'en'), []);
 
   const setLabel = useCallback(
     (labelID) => {
@@ -172,7 +170,6 @@ export function QrMenuContextProvider({ children }) {
     },
     [labels]
   );
-
   const getTranslation = useCallback(
     (text) => {
       if (!systemTranslations || selectedLanguage === 'en') return titleCase(text);
@@ -188,7 +185,6 @@ export function QrMenuContextProvider({ children }) {
     },
     [selectedLanguage, systemTranslations]
   );
-
   const reset = useCallback(() => setLabels([]), []);
 
   const memoizedValue = useMemo(
