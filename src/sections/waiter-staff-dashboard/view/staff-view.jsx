@@ -55,11 +55,11 @@ function StaffView() {
     !selectedTableOrder?.isPaid && (
       <Stack
         direction="row"
-        spacing={3}
+        spacing={1.5}
         sx={{ py: 2 }}
         divider={<Divider sx={{ borderStyle: 'dashed' }} flexItem orientation="vertical" />}
       >
-        <Stack direction="column" spacing={2}>
+        <Stack direction="column" spacing={2} sx={{ maxWidth: '50%' }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
             <Stack direction="column" sx={{ width: '65%' }}>
               <Typography variant="overline">Table# {tableInfo?.index}</Typography>
@@ -79,6 +79,7 @@ function StaffView() {
           {staff?.type === 'waiter' && <TableActionBar />}
           <TableOrder />
         </Stack>
+
         <Box flexGrow={1} sx={{ maxWidth: '50%' }}>
           <FoodMenu
             menuID={

@@ -2,8 +2,9 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
-import { Box, Stack, Avatar, Divider, Typography } from '@mui/material';
+import { Box, Stack, Divider, Typography } from '@mui/material';
 
+import Image from 'src/components/image';
 import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
 import TextMaxLine from 'src/components/text-max-line';
@@ -35,13 +36,13 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
   return (
     <Box sx={{ bgcolor: 'background.paper', py: 1, px: 2, width: 1, borderRadius: 1 }}>
       <Stack direction="row" spacing={1} sx={{ position: 'relative' }} alignItems="center">
-        <Avatar
+        <Image
           src={mealInfo.cover}
           sx={{
             borderRadius: 1,
             filter: `grayscale(${isMealActive ? '0' : '100'})`,
-            width: 100,
-            height: 100,
+            width: '25%',
+            height: '25%',
           }}
         />
         {mealInfo.isNew && (
@@ -51,12 +52,10 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
             </Label>
           </Box>
         )}
-        <Stack direction="column" sx={{ width: 1 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="body1" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
-              {mealInfo.title}
-            </Typography>
-          </Stack>
+        <Stack direction="column" spacing={0.5} sx={{ width: 1 }}>
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+            {mealInfo.title}
+          </Typography>
           {!isReadMore && (
             <TextMaxLine line={2} variant="caption" onClick={() => setIsReadMore(true)}>
               {mealInfo.description}
@@ -67,6 +66,13 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
               {mealInfo.description}
             </Typography>
           )}
+          <Stack direction="row" spacing={1}>
+            {mealInfo.portions.map((portion, i) => (
+              <Label variant="soft" color="default" key={`${portion.portionSize}-${i}`}>
+                {portion.portionSize} - ${portion.price}
+              </Label>
+            ))}
+          </Stack>
           <Stack
             direction="row"
             spacing={1}
@@ -88,10 +94,6 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
                 isActive={isMealActive}
               />
             )}
-            <Typography variant="h6">
-              {`${mealInfo.portions[selectedPortionIndex].price} `}
-              <span style={{ fontSize: 12 }}>{branchInfo.currency}</span>
-            </Typography>
           </Stack>
         </Stack>
       </Stack>
