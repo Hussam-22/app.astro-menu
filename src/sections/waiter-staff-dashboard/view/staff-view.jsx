@@ -2,18 +2,19 @@
 
 import { useMemo } from 'react';
 
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack, Divider, Typography } from '@mui/material';
 
 import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
 import FoodMenu from 'src/sections/waiter-staff-dashboard/food-menu';
 import TableOrder from 'src/sections/waiter-staff-dashboard/table-order';
 import TableActionBar from 'src/sections/waiter-staff-dashboard/table-action-bar';
+import MenuNavigation from 'src/sections/waiter-staff-dashboard/components/menu-navigation';
 import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 import TableOrderSkeleton from 'src/sections/waiter-staff-dashboard/components/table-order-skeleton';
 
 function StaffView() {
-  const { activeOrders, staff } = useAuthContext();
+  const { activeOrders, staff, menuSections } = useAuthContext();
   const { selectedTable: tableInfo, isLoading, selectedTable } = useStaffContext();
 
   const selectedTableOrder = useMemo(
@@ -75,8 +76,8 @@ function StaffView() {
     <FoodMenu
       menuID={
         selectedTableOrder?.cart?.length !== 0 && !selectedTable?.menuID
-          ? selectedTableOrder.menuID
-          : selectedTable.menuID
+          ? selectedTableOrder?.menuID
+          : selectedTable?.menuID
       }
     />
   );
@@ -86,11 +87,17 @@ function StaffView() {
     selectedTableOrder &&
     !selectedTableOrder?.isCanceled &&
     !selectedTableOrder?.isPaid && (
-      <>
-        <Box sx={{ width: '65%' }}>{tableOrder}</Box>
-
-        <Box sx={{ width: '35%' }}>{foodMenu}</Box>
-      </>
+      <Stack
+        direction="row"
+        spacing={2}
+        divider={<Divider sx={{ border: '1px dashed', borderColor: 'divider' }} flexItem />}
+      >
+        <Box sx={{ width: '50%' }}>{tableOrder}</Box>
+        <Box sx={{ width: '40%' }}>{foodMenu}</Box>
+        <Box sx={{ width: '10%' }}>
+          <MenuNavigation />
+        </Box>
+      </Stack>
     )
   );
 }

@@ -52,7 +52,7 @@ function FoodMenu({ menuID }) {
         <Typography variant="overline">Menu</Typography>
         <Typography variant="caption">{menuInfo?.title}</Typography>
       </Stack>
-      <Scrollbar sx={{ height: '100dvh' }}>
+      <Scrollbar sx={{ height: '80dvh' }}>
         <Stack direction="column" spacing={3}>
           {menuSections
             .filter((section) => section.isActive)

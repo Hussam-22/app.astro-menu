@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState, useEffect, useContext, createContext } from 'react';
+import { useMemo, useState, useEffect, useContext, useCallback, createContext } from 'react';
 
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
@@ -24,13 +24,14 @@ export function StaffContextProvider({ children }) {
     staff: staffInfo,
     branchSnapshot: branchInfo,
     branchTables,
+    fsGetMealLabels,
   } = useAuthContext();
   const [selectedTable, setSelectedTable] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [waiterUnsubscribe, setWaiterUnsubscribe] = useState();
+  const [labels, setLabels] = useState([]);
 
   useEffect(() => {
-    console.log(isLoading);
     if (selectedTable.docID) {
       const table = branchTables.find((branchTable) => branchTable.docID === selectedTable.docID);
       if (!table.isActive) setSelectedTable({});
@@ -67,6 +68,24 @@ export function StaffContextProvider({ children }) {
     enabled: staffInfo.docID !== undefined,
   });
 
+  const { data: mealsLabel = [], isPending: mealsLabelIsPending } = useQuery({
+    queryKey: ['mealsLabel', businessProfileID],
+    queryFn: () => fsGetMealLabels(businessProfileID),
+    enabled: staffInfo.docID !== undefined,
+  });
+
+  const setLabel = useCallback(
+    (labelID) => {
+      // Remove labelID if it exists in the array
+      setLabels((state) => state.filter((label) => label !== labelID));
+      // Add labelID if it doesn't exist in the array
+      if (!labels.includes(labelID)) {
+        setLabels((state) => [...new Set([...state, labelID])]);
+      }
+    },
+    [labels]
+  );
+
   const memoizedValue = useMemo(
     () => ({
       businessProfile,
@@ -79,6 +98,9 @@ export function StaffContextProvider({ children }) {
       waiterUnsubscribe,
       setWaiterUnsubscribe,
       branchUnsubscribe,
+      setLabel,
+      mealsLabel,
+      labels,
     }),
     [
       branchInfo,
@@ -88,6 +110,9 @@ export function StaffContextProvider({ children }) {
       businessProfile,
       waiterUnsubscribe,
       branchUnsubscribe,
+      setLabel,
+      mealsLabel,
+      labels,
     ]
   );
   return <StaffContext.Provider value={memoizedValue}>{children}</StaffContext.Provider>;

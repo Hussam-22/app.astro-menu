@@ -41,8 +41,8 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
           sx={{
             borderRadius: 1,
             filter: `grayscale(${isMealActive ? '0' : '100'})`,
-            width: '25%',
-            height: '25%',
+            width: '20%',
+            height: '20%',
           }}
         />
         {mealInfo.isNew && (
@@ -53,7 +53,7 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
           </Box>
         )}
         <Stack direction="column" spacing={0.5}>
-          <TextMaxLine line={1} sx={{ fontWeight: 'bold' }}>
+          <TextMaxLine line={1} variant="overline">
             {mealInfo.title}
           </TextMaxLine>
           <Stack direction="row" spacing={1}>
