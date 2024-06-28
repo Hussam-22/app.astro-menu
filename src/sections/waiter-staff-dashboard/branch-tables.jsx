@@ -111,7 +111,9 @@ function BranchTables() {
 
   return (
     tablesToShow.length !== 0 && (
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1.5, p: 2 }}>
+      <Box
+        sx={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1.5, mx: 'auto', px: 1 }}
+      >
         {[...tablesToShow]
           .sort((a, b) => a.index - b.index)
           .map((table) => (

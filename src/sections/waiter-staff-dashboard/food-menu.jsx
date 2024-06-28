@@ -47,7 +47,7 @@ function FoodMenu({ menuID }) {
     return <Typography variant="h6">Sorry this table is not taking orders !!</Typography>;
 
   return (
-    <Stack direction="column" spacing={2} sx={{ maxWidth: '40%', minWidth: '30%' }}>
+    <Stack direction="column" spacing={2}>
       <Stack direction="column">
         <Typography variant="overline">Menu</Typography>
         <Typography variant="caption">{menuInfo?.title}</Typography>

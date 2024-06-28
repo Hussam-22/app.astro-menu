@@ -4,11 +4,8 @@ import { Box } from '@mui/material';
 
 import Scrollbar from 'src/components/scrollbar';
 import BranchTables from 'src/sections/waiter-staff-dashboard/branch-tables';
-import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function TablesColumn() {
-  const { branchInfo } = useStaffContext();
-
   return (
     <Box component="nav">
       <Scrollbar

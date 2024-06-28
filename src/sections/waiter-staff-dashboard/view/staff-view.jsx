@@ -48,40 +48,48 @@ function StaffView() {
       </Box>
     );
 
+  const tableOrder = (
+    <Stack direction="column" spacing={2}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+        <Stack direction="column">
+          <Typography variant="overline">Table# {tableInfo?.index}</Typography>
+          <Typography variant="caption" sx={{ color: 'error.main' }}>
+            {tableInfo.note}
+          </Typography>
+        </Stack>
+
+        <Stack direction="column">
+          <Typography variant="overline">Order</Typography>
+          <Typography variant="caption">{orderInitiationTime}</Typography>
+          <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+            {selectedTableOrder?.docID}
+          </Typography>
+        </Stack>
+      </Stack>
+      {staff?.type === 'waiter' && <TableActionBar />}
+      <TableOrder />
+    </Stack>
+  );
+
+  const foodMenu = (
+    <FoodMenu
+      menuID={
+        selectedTableOrder?.cart?.length !== 0 && !selectedTable?.menuID
+          ? selectedTableOrder.menuID
+          : selectedTable.menuID
+      }
+    />
+  );
+
   return (
     tableInfo?.docID &&
     selectedTableOrder &&
     !selectedTableOrder?.isCanceled &&
     !selectedTableOrder?.isPaid && (
       <>
-        <Stack direction="column" spacing={2}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-            <Stack direction="column">
-              <Typography variant="overline">Table# {tableInfo?.index}</Typography>
-              <Typography variant="caption" sx={{ color: 'error.main' }}>
-                {tableInfo.note}
-              </Typography>
-            </Stack>
+        <Box sx={{ width: '65%' }}>{tableOrder}</Box>
 
-            <Stack direction="column">
-              <Typography variant="overline">Order</Typography>
-              <Typography variant="caption">{orderInitiationTime}</Typography>
-              <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-                {selectedTableOrder?.docID}
-              </Typography>
-            </Stack>
-          </Stack>
-          {staff?.type === 'waiter' && <TableActionBar />}
-          <TableOrder />
-        </Stack>
-
-        <FoodMenu
-          menuID={
-            selectedTableOrder?.cart?.length !== 0 && !selectedTable?.menuID
-              ? selectedTableOrder.menuID
-              : selectedTable.menuID
-          }
-        />
+        <Box sx={{ width: '35%' }}>{foodMenu}</Box>
       </>
     )
   );
