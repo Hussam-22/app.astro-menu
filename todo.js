@@ -22,6 +22,7 @@
 - Add scroll to "add meal" drawer when the meal is too long to fit the screen, caused by long description or too many portions
 
 ? Staff Dashboard
+- either add "search bar" or "filter meals" drawer, or both
 
 ? Menu
 - Fix Section Title Edit

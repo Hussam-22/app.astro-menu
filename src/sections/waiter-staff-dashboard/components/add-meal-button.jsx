@@ -28,9 +28,6 @@ function StaffMenuAddMealToCart({ mealInfo, selectedTableID, isActive }) {
   return (
     <>
       <Stack direction="row" alignItems="center">
-        <Typography sx={{ color: count > 0 ? 'default' : 'grey.300', fontWeight: '700' }}>
-          {count}x
-        </Typography>
         <IconButton
           onClick={() => setIsOpen(true)}
           sx={{ px: 0.25 }}
@@ -39,6 +36,9 @@ function StaffMenuAddMealToCart({ mealInfo, selectedTableID, isActive }) {
         >
           <Iconify icon="mdi:hamburger-plus" sx={{ width: 24, height: 24 }} />
         </IconButton>
+        <Typography sx={{ color: count > 0 ? 'default' : 'grey.300', fontWeight: '700' }}>
+          {count}x
+        </Typography>
       </Stack>
 
       <AddMealDrawer

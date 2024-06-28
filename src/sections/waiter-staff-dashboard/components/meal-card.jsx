@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
-import { Box, Stack, Divider, Typography } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 
 import Image from 'src/components/image';
 import Label from 'src/components/label';
@@ -34,7 +34,7 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
   if (!mealInfo?.docID) return null;
 
   return (
-    <Box sx={{ bgcolor: 'background.paper', py: 1, px: 2, width: 1, borderRadius: 1 }}>
+    <Box sx={{ bgcolor: 'background.paper', py: 0.5, borderRadius: 1 }}>
       <Stack direction="row" spacing={1} sx={{ position: 'relative' }} alignItems="center">
         <Image
           src={mealInfo.cover}
@@ -52,23 +52,13 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
             </Label>
           </Box>
         )}
-        <Stack direction="column" spacing={0.5} sx={{ width: 1 }}>
-          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+        <Stack direction="column" spacing={0.5}>
+          <TextMaxLine line={1} sx={{ fontWeight: 'bold' }}>
             {mealInfo.title}
-          </Typography>
-          {!isReadMore && (
-            <TextMaxLine line={2} variant="caption" onClick={() => setIsReadMore(true)}>
-              {mealInfo.description}
-            </TextMaxLine>
-          )}
-          {isReadMore && (
-            <Typography variant="caption" onClick={() => setIsReadMore(false)}>
-              {mealInfo.description}
-            </Typography>
-          )}
+          </TextMaxLine>
           <Stack direction="row" spacing={1}>
             {mealInfo.portions.map((portion, i) => (
-              <Label variant="soft" color="default" key={`${portion.portionSize}-${i}`}>
+              <Label variant="soft" color="warning" key={`${portion.portionSize}-${i}`}>
                 {portion.portionSize} - ${portion.price}
               </Label>
             ))}
@@ -77,9 +67,8 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
             direction="row"
             spacing={1}
             alignItems="center"
-            justifyContent="flex-end"
-            divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-            sx={{ px: 2 }}
+            justifyContent="space-between"
+            sx={{ px: 1 }}
           >
             <ToggleMealStatus
               mealInfo={mealInfo}

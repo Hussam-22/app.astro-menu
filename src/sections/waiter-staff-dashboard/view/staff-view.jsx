@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { Box, Stack, Divider, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 
 import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
@@ -53,22 +53,17 @@ function StaffView() {
     selectedTableOrder &&
     !selectedTableOrder?.isCanceled &&
     !selectedTableOrder?.isPaid && (
-      <Stack
-        direction="row"
-        spacing={1.5}
-        sx={{ py: 2 }}
-        divider={<Divider sx={{ borderStyle: 'dashed' }} flexItem orientation="vertical" />}
-      >
-        <Stack direction="column" spacing={2} sx={{ maxWidth: '50%' }}>
+      <>
+        <Stack direction="column" spacing={2}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-            <Stack direction="column" sx={{ width: '65%' }}>
+            <Stack direction="column">
               <Typography variant="overline">Table# {tableInfo?.index}</Typography>
               <Typography variant="caption" sx={{ color: 'error.main' }}>
                 {tableInfo.note}
               </Typography>
             </Stack>
 
-            <Stack direction="column" sx={{ width: '35%' }}>
+            <Stack direction="column">
               <Typography variant="overline">Order</Typography>
               <Typography variant="caption">{orderInitiationTime}</Typography>
               <Typography variant="caption" sx={{ color: 'text.disabled' }}>
@@ -80,16 +75,14 @@ function StaffView() {
           <TableOrder />
         </Stack>
 
-        <Box flexGrow={1} sx={{ maxWidth: '50%' }}>
-          <FoodMenu
-            menuID={
-              selectedTableOrder?.cart?.length !== 0 && !selectedTable?.menuID
-                ? selectedTableOrder.menuID
-                : selectedTable.menuID
-            }
-          />
-        </Box>
-      </Stack>
+        <FoodMenu
+          menuID={
+            selectedTableOrder?.cart?.length !== 0 && !selectedTable?.menuID
+              ? selectedTableOrder.menuID
+              : selectedTable.menuID
+          }
+        />
+      </>
     )
   );
 }

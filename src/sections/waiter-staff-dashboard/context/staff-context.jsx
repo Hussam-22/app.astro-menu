@@ -30,15 +30,14 @@ export function StaffContextProvider({ children }) {
   const [waiterUnsubscribe, setWaiterUnsubscribe] = useState();
 
   useEffect(() => {
+    console.log(isLoading);
     if (selectedTable.docID) {
       const table = branchTables.find((branchTable) => branchTable.docID === selectedTable.docID);
       if (!table.isActive) setSelectedTable({});
       if (table.isActive) setSelectedTable(table);
-
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
+      setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [branchTables, selectedTable.docID]);
 
   const { data: businessProfile = {} } = useQuery({

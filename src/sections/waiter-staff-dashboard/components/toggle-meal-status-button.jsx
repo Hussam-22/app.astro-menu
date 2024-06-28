@@ -1,18 +1,17 @@
 import PropTypes from 'prop-types';
 import { useMutation } from '@tanstack/react-query';
 
-import { Stack, Switch, useTheme, Typography } from '@mui/material';
+import { Switch, FormControlLabel } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function ToggleMealStatus({ mealInfo }) {
-  const theme = useTheme();
   const { activeOrders, fsUpdateCart, fsUpdateDisabledMealsInBranch } = useAuthContext();
   const { selectedTable, branchInfo } = useStaffContext();
 
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
-  const { docID, businessProfileID, branchID, cart, isReadyToServe } = orderSnapShot;
+  const { docID, businessProfileID, branchID, cart } = orderSnapShot;
 
   const { mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -52,25 +51,19 @@ function ToggleMealStatus({ mealInfo }) {
   const isMealActive = !branchInfo.disabledMeals?.includes(mealInfo.docID) && mealInfo.isActive;
 
   return (
-    <Stack direction="row" spacing={0} justifyContent="flex-end" alignItems="center">
-      <Typography
-        sx={{
-          color: isMealActive ? 'common.black' : 'grey.400',
-          fontWeight: theme.typography.fontWeightBold,
-        }}
-        variant="body2"
-      >
-        {isMealActive ? 'Available' : 'Out of Stock'}
-      </Typography>
-      {mealInfo.isActive && (
+    <FormControlLabel
+      value={isMealActive}
+      label={isMealActive ? 'Available' : 'Out of Stock'}
+      labelPlacement="end"
+      control={
         <Switch
           checked={branchInfo.disabledMeals?.includes(mealInfo.docID) ? false : isMealActive}
           onChange={onMealStatusChange}
           size="small"
           sx={{ color: 'common.black' }}
         />
-      )}
-    </Stack>
+      }
+    />
   );
 }
 export default ToggleMealStatus;

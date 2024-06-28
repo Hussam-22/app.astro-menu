@@ -12,13 +12,8 @@ function StaffMenuSections({ sectionInfo }) {
   if (sectionMeals.map((mealItem) => mealItem) === undefined) return <MealCardSkeleton />;
 
   return (
-    <Box>
-      <Typography
-        id={sectionID}
-        sx={{
-          fontWeight: theme.typography.fontWeightBold,
-        }}
-      >
+    <Box sx={{ px: 2 }}>
+      <Typography id={sectionID} variant="h5">
         {title}
       </Typography>
       <Stack direction="column" divider={<Divider sx={{ borderStyle: 'dashed' }} />}>
