@@ -79,7 +79,7 @@ function MenuNavigation() {
   // ----------------------------------------------------------------------------
 
   return (
-    <Stack direction="column" spacing={2} divider={<Divider sx={{ borderStyle: 'dashed' }} />}>
+    <Stack direction="column" spacing={2} divider={<Divider sx={{ border: '1px dashed #999' }} />}>
       {sections}
       {mealsType}
     </Stack>

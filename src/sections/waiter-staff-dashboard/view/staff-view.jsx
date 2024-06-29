@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { Box, Stack, Divider, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 
 import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
@@ -54,7 +54,7 @@ function StaffView() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
         <Stack direction="column">
           <Typography variant="overline">Table# {tableInfo?.index}</Typography>
-          <Typography variant="caption" sx={{ color: 'error.main' }}>
+          <Typography variant="caption" sx={{ color: 'error.main', maxWidth: 302 }}>
             {tableInfo.note}
           </Typography>
         </Stack>
@@ -87,17 +87,19 @@ function StaffView() {
     selectedTableOrder &&
     !selectedTableOrder?.isCanceled &&
     !selectedTableOrder?.isPaid && (
-      <Stack
-        direction="row"
-        spacing={2}
-        divider={<Divider sx={{ border: '1px dashed', borderColor: 'divider' }} flexItem />}
-      >
-        <Box sx={{ width: '50%' }}>{tableOrder}</Box>
-        <Box sx={{ width: '40%' }}>{foodMenu}</Box>
-        <Box sx={{ width: '10%' }}>
+      // <Stack
+      //   direction="row"
+      //   spacing={2}
+      //   divider={<Divider sx={{ border: '1px dashed', borderColor: 'divider' }} flexItem />}
+      // >
+      <>
+        <Box sx={{ minWidth: '40%', maxWidth: '40%' }}>{tableOrder}</Box>
+        <Box sx={{ minWidth: '33%', maxWidth: '33%' }}>{foodMenu}</Box>
+        <Box sx={{ minWidth: '8%', maxWidth: '8%' }}>
           <MenuNavigation />
         </Box>
-      </Stack>
+      </>
+      // </Stack>
     )
   );
 }
