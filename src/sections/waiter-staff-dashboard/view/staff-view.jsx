@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack, useTheme, Typography } from '@mui/material';
 
 import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
@@ -14,7 +14,8 @@ import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/sta
 import TableOrderSkeleton from 'src/sections/waiter-staff-dashboard/components/table-order-skeleton';
 
 function StaffView() {
-  const { activeOrders, staff, menuSections } = useAuthContext();
+  const theme = useTheme();
+  const { activeOrders, staff } = useAuthContext();
   const { selectedTable: tableInfo, isLoading, selectedTable } = useStaffContext();
 
   const selectedTableOrder = useMemo(
@@ -94,8 +95,17 @@ function StaffView() {
       // >
       <>
         <Box sx={{ minWidth: '40%', maxWidth: '40%' }}>{tableOrder}</Box>
-        <Box sx={{ minWidth: '33%', maxWidth: '33%' }}>{foodMenu}</Box>
-        <Box sx={{ minWidth: '8%', maxWidth: '8%' }}>
+        <Box sx={{ minWidth: '30%', maxWidth: '30%' }}>{foodMenu}</Box>
+        <Box
+          sx={{
+            minWidth: '10%',
+            maxWidth: '10%',
+            borderRadius: 2,
+            bgcolor: 'background.paper',
+            px: 2,
+            border: `dashed 2px ${theme.palette.divider}`,
+          }}
+        >
           <MenuNavigation />
         </Box>
       </>

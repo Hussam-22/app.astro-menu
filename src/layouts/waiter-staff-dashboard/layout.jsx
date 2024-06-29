@@ -30,6 +30,7 @@ function StaffLayout({ children }) {
           direction="row"
           spacing={2}
           divider={<Divider sx={{ borderStyle: 'dashed' }} flexItem orientation="vertical" />}
+          sx={{}}
         >
           <TablesColumn />
 

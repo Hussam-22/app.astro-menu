@@ -7,7 +7,7 @@ import BranchTables from 'src/sections/waiter-staff-dashboard/branch-tables';
 
 function TablesColumn() {
   return (
-    <Box component="nav">
+    <Box component="nav" sx={{ width: '14%' }}>
       <Scrollbar
         sx={{
           height: 1,

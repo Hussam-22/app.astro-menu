@@ -52,7 +52,7 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
             </Label>
           </Box>
         )}
-        <Stack direction="column" spacing={0.5}>
+        <Stack direction="column" spacing={0.5} sx={{ width: 1, px: 1 }}>
           <TextMaxLine line={1} variant="overline">
             {mealInfo.title}
           </TextMaxLine>

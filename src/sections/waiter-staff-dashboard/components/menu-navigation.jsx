@@ -1,8 +1,7 @@
-import { Box, Chip, Stack, Divider } from '@mui/material';
+import { Box, Chip, Stack, Divider, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
-import TextMaxLine from 'src/components/text-max-line';
 import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function MenuNavigation() {
@@ -17,22 +16,23 @@ function MenuNavigation() {
   };
 
   const sections = (
-    <Scrollbar sx={{ height: '40dvh', py: 1 }}>
-      <Stack direction="column" spacing={1}>
+    <Scrollbar sx={{ height: '42dvh', pb: 1 }}>
+      <Typography variant="caption" sx={{ fontWeight: 'bolder' }} color="primary">
+        Menu Sections
+      </Typography>
+      <Stack direction="column" spacing={1} sx={{ mt: 1 }}>
         {menuSections
           .filter((section) => section.isActive)
           .filter((section) => section.meals.length > 0)
           .sort((a, b) => a.order - b.order)
           .map((section) => (
-            <TextMaxLine
-              line={1}
-              variant="body2"
+            <Chip
               key={section.docID}
+              label={section.title}
               onClick={() => onSectionClickHandler(section.docID)}
-              sx={{ cursor: 'pointer', fontWeight: '600', textDecoration: 'underline' }}
-            >
-              {section.title}
-            </TextMaxLine>
+              size="small"
+              variant="soft"
+            />
           ))}
       </Stack>
     </Scrollbar>
@@ -45,21 +45,18 @@ function MenuNavigation() {
   };
 
   const mealsType = (
-    <Scrollbar sx={{ height: '40dvh', py: 1 }}>
+    <Scrollbar sx={{ height: '42dvh', pb: 1 }}>
+      <Typography variant="caption" sx={{ fontWeight: 'bolder' }} color="primary">
+        Meal Types
+      </Typography>
       <Stack
         direction="column"
         spacing={1}
+        sx={{ mt: 1 }}
         divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-        alignItems="flex-start"
       >
         {mealsLabel?.length !== 0 && (
-          <Box
-            sx={{
-              display: 'grid',
-              gap: 1,
-              gridTemplateRows: 'repeat(auto-fill, minmax(32px, 1fr))',
-            }}
-          >
+          <Stack direction="column" spacing={1}>
             {mealsLabel.map((label) => (
               <Chip
                 key={label.docID}
@@ -70,7 +67,7 @@ function MenuNavigation() {
                 variant="soft"
               />
             ))}
-          </Box>
+          </Stack>
         )}
       </Stack>
     </Scrollbar>
@@ -79,10 +76,11 @@ function MenuNavigation() {
   // ----------------------------------------------------------------------------
 
   return (
-    <Stack direction="column" spacing={2} divider={<Divider sx={{ border: '1px dashed #999' }} />}>
+    <Box sx={{ display: 'grid', textAlign: 'center', mx: 'auto' }}>
       {sections}
+      <Divider sx={{ borderStyle: 'dashed', borderWidth: 2 }} />
       {mealsType}
-    </Stack>
+    </Box>
   );
 }
 export default MenuNavigation;
