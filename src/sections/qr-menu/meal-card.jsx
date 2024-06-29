@@ -144,9 +144,10 @@ function MealCard({ mealInfo }) {
                 borderRadius: 1,
                 typography: 'caption',
                 py: 0.5,
+                fontWeight: 'bold',
               }}
             >
-              {count === 0 ? getTranslation('add meal') : count}
+              {count === 0 ? getTranslation('add') : count}
             </Button>
           )}
           {isNew && (

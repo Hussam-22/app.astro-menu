@@ -117,20 +117,19 @@ function QrMenuView() {
     );
 
   return (
-    <Stack direction="column" spacing={2} sx={{ py: 5 }}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ px: 2 }}>
+    <Stack direction="column" spacing={2} sx={{ pt: 1, pb: 5 }}>
+      <Stack direction="row" alignItems="center" spacing={1} sx={{ px: 1 }}>
         {(logo || business_Logo) && (
-          <Image
-            src={logo || business_Logo}
-            sx={{
-              width: 72,
-              height: 72,
-              borderRadius: 1,
-              border: `2px solid ${theme.palette.divider}`,
-              bgcolor: '#FFFFFF',
-              p: 1,
-            }}
-          />
+          <Box sx={{ bgcolor: '#FFFFFF', p: 0.5, borderRadius: 2 }}>
+            <Image
+              src={logo || business_Logo}
+              sx={{
+                width: 100,
+                height: 100,
+                borderRadius: 2,
+              }}
+            />
+          </Box>
         )}
         <Stack direction="column">
           <Typography variant="h4">{getTitle()}</Typography>

@@ -155,21 +155,26 @@ function QRMenuHomeView() {
           <Box sx={{ position: 'relative' }}>
             <Image src={cover} sx={{ borderRadius: 1 }} ratio="16/9" />
             {(logo || business_Logo) && (
-              <Image
-                src={logo || business_Logo}
+              <Box
                 sx={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 1,
+                  bgcolor: '#FFFFFF',
+                  p: 0.5,
+                  borderRadius: 2,
                   position: 'absolute',
                   zindex: 1,
                   bottom: -30,
                   right: 10,
-                  border: `2px solid ${theme.palette.divider}`,
-                  bgcolor: '#FFFFFF',
-                  p: 1,
                 }}
-              />
+              >
+                <Image
+                  src={logo || business_Logo}
+                  sx={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: 2,
+                  }}
+                />
+              </Box>
             )}
           </Box>
           <Stack direction="column" spacing={0} sx={{ px: 2 }}>
