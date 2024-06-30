@@ -114,9 +114,9 @@ function BranchTables() {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4,1fr)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(25px, 1fr))',
           gap: 1.5,
-          ml: -1.25,
+          mt: 1,
         }}
       >
         {[...tablesToShow]

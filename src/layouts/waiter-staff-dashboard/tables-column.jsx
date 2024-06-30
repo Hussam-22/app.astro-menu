@@ -1,6 +1,6 @@
 // import PropTypes from 'prop-types';
 
-import { Box, useTheme } from '@mui/material';
+import { Box, useTheme, Typography } from '@mui/material';
 
 import Scrollbar from 'src/components/scrollbar';
 import BranchTables from 'src/sections/waiter-staff-dashboard/branch-tables';
@@ -8,7 +8,7 @@ import BranchTables from 'src/sections/waiter-staff-dashboard/branch-tables';
 function TablesColumn() {
   const theme = useTheme();
   return (
-    <Box component="nav" sx={{ width: '14%' }}>
+    <Box component="nav">
       <Scrollbar
         sx={{
           height: 1,
@@ -18,12 +18,15 @@ function TablesColumn() {
             flexDirection: 'column',
           },
           bgcolor: 'background.paper',
-          p: 2,
+          py: 1,
+          px: 2,
           borderRadius: 2,
           border: `dashed 2px ${theme.palette.divider}`,
-          ml: 1,
         }}
       >
+        <Typography variant="overline" color="primary" sx={{ ml: -1 }}>
+          Branch Tables
+        </Typography>
         <BranchTables />
       </Scrollbar>
     </Box>

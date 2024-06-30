@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { Stack } from '@mui/material';
+import { Box } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import StaffLoginLayout from 'src/layouts/waiter-staff-dashboard/auth';
@@ -26,11 +26,19 @@ function StaffLayout({ children }) {
     return (
       <StaffContextProvider>
         <StaffHorizontalNav />
-        <Stack direction="row" spacing={1}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: '1.5fr 4fr 3.5fr 1fr',
+            mx: 2,
+            gap: 1,
+            height: 'calc(100vh - 56px)',
+          }}
+        >
           <TablesColumn />
 
           <StaffView>{children}</StaffView>
-        </Stack>
+        </Box>
       </StaffContextProvider>
     );
 }

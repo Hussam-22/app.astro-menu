@@ -64,12 +64,12 @@ function TableActionBar() {
 
   return (
     <>
-      <Card sx={{ px: 2 }}>
+      <Card sx={{ px: 2, bgcolor: 'primary.main' }}>
         <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
           <Stack direction="row" spacing={1}>
             <LoadingButton
-              variant="soft"
-              color="error"
+              variant="contained"
+              color="inherit"
               onClick={() => setIsCancelOpen(true)}
               startIcon={<Iconify icon="icon-park-twotone:close-one" />}
               disabled={isCancelOrderDisabled}
@@ -77,7 +77,7 @@ function TableActionBar() {
               Cancel Order
             </LoadingButton>
             <LoadingButton
-              variant="soft"
+              variant="contained"
               color="success"
               // onClick={() => onOrderStatusUpdate('COLLECT')}
               onClick={() => setIsPaymentOpen(true)}
@@ -88,7 +88,12 @@ function TableActionBar() {
             </LoadingButton>
           </Stack>
 
-          <Stack direction="column" spacing={0} alignItems="flex-end" sx={{ my: 2 }}>
+          <Stack
+            direction="column"
+            spacing={0}
+            alignItems="flex-end"
+            sx={{ my: 2, color: 'white' }}
+          >
             <Typography variant="caption">
               Order : {orderValue}{' '}
               <Box component="span" sx={{ fontSize: 9 }}>
@@ -101,7 +106,7 @@ function TableActionBar() {
                 {branchInfo?.currency}
               </Box>
             </Typography>
-            <Typography variant="h6" sx={{ color: 'success.main' }}>
+            <Typography variant="h6">
               Total: {totalBill}{' '}
               <Box component="span" sx={{ fontSize: 9 }}>
                 {branchInfo?.currency}

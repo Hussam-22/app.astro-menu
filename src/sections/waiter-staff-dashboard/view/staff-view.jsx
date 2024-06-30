@@ -52,7 +52,7 @@ function StaffView() {
 
   const tableOrder = (
     <Stack direction="column" spacing={2}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+      <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
         <Stack direction="column">
           <Typography variant="overline" color="primary">
             Table# {tableInfo?.index}
@@ -97,11 +97,9 @@ function StaffView() {
       <>
         <Box
           sx={{
-            minWidth: '40%',
-            maxWidth: '40%',
+            p: 2,
             borderRadius: 2,
             bgcolor: 'background.paper',
-            p: 2,
             border: `dashed 2px ${theme.palette.divider}`,
           }}
         >
@@ -109,11 +107,9 @@ function StaffView() {
         </Box>
         <Box
           sx={{
-            minWidth: '30%',
-            maxWidth: '30%',
+            p: 2,
             borderRadius: 2,
             bgcolor: 'background.paper',
-            p: 2,
             border: `dashed 2px ${theme.palette.divider}`,
           }}
         >
@@ -121,11 +117,9 @@ function StaffView() {
         </Box>
         <Box
           sx={{
-            minWidth: '10%',
-            maxWidth: '10%',
+            p: 2,
             borderRadius: 2,
             bgcolor: 'background.paper',
-            p: 2,
             border: `dashed 2px ${theme.palette.divider}`,
           }}
         >
