@@ -236,13 +236,32 @@ export default function BranchNewEditForm({ branchInfo }) {
                       Skip Kitchen
                     </Typography>
                     <Typography variant="caption">
-                      {`Activate "Skip Kitchen" to allow orders to be processed without going through the kitchen`}
+                      {`Activate "Skip Kitchen" when you want your waiter/ess to be in control of the order process. without waiting for the kitchen to confirm when the order is ready.`}
                     </Typography>
                   </Stack>
                   <RHFSwitch
                     name="skipKitchen"
                     labelPlacement="start"
                     label={values.skipKitchen ? `Skip` : `Don't Skip`}
+                    sx={{ alignItems: 'center' }}
+                  />
+                </Stack>
+
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
+                    <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                      Self-Order
+                    </Typography>
+                    <Typography variant="caption">
+                      Disable self-order to prevent customers from ordering directly from the menu,
+                      customers can still view the cart when the waiter adds items from their
+                      dashboard
+                    </Typography>
+                  </Stack>
+                  <RHFSwitch
+                    name="allowSelfOrder"
+                    labelPlacement="start"
+                    label={values.skipKitchen ? `Enabled` : `Disabled`}
                     sx={{ alignItems: 'center' }}
                   />
                 </Stack>

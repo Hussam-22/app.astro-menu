@@ -15,8 +15,9 @@ import {
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
+import { delay } from 'src/utils/promise-delay';
+import Scrollbar from 'src/components/scrollbar';
 import { blinkingBorder, blinkingElement } from 'src/theme/css';
 import { getOrderStatusStyle } from 'src/utils/get-order-status-styles';
 import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
@@ -140,178 +141,180 @@ const TableOrder = () => {
   if (cachedSectionMeals.length === 0 || !selectedTable.isActive) return null;
 
   return (
-    <Stack direction="column-reverse" spacing={2}>
-      {orderUpdateToShow.map((orderIndex) => (
-        <Card
-          key={`${orderID}${orderIndex}`}
-          sx={{
-            p: 3,
-            position: 'relative',
-            overflow: 'visible',
-            ...(getStatus(+orderIndex) !== 'none' && {
-              ...blinkingBorder(getStatus(+orderIndex).color, `${orderID}${orderIndex}`),
-            }),
-          }}
-        >
-          <Label
-            color="default"
-            variant="filled"
+    <Scrollbar sx={{ height: `calc(70vh - 56px)` }}>
+      <Stack direction="column-reverse" spacing={2}>
+        {orderUpdateToShow.map((orderIndex) => (
+          <Card
+            key={`${orderID}${orderIndex}`}
             sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              fontSize: 20,
-              borderRadius: '5px 0 5px 0',
-              p: 0,
+              p: 3,
+              position: 'relative',
+              overflow: 'visible',
+              ...(getStatus(+orderIndex) !== 'none' && {
+                ...blinkingBorder(getStatus(+orderIndex).color, `${orderID}${orderIndex}`),
+              }),
             }}
           >
-            {orderIndex + 1}
-          </Label>
-
-          {getStatus(orderIndex) !== 'none' && (
             <Label
-              color={getStatus(orderIndex).labelColor}
-              startIcon={<Iconify icon={getStatus(orderIndex).icon} />}
+              color="default"
+              variant="filled"
               sx={{
                 position: 'absolute',
                 top: 0,
-                right: 0,
-                fontSize: 15,
-                borderRadius: '0 0 0 20px',
-                p: 2,
-                ...blinkingElement,
+                left: 0,
+                fontSize: 20,
+                borderRadius: '5px 0 5px 0',
+                p: 0,
               }}
             >
-              {getStatus(orderIndex).status}
+              {orderIndex + 1}
             </Label>
-          )}
-          <Stack direction="column" spacing={0.25}>
-            {cartMeals(orderIndex).map((meal) => (
-              <React.Fragment key={meal.docID}>
-                <Stack direction="row" spacing={1}>
-                  <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                    {meal.title}
-                  </Typography>
-                  <Box sx={{ color: 'text.disabled' }}>
-                    x(
-                    {
-                      orderSnapShot.cart.filter(
+
+            {getStatus(orderIndex) !== 'none' && (
+              <Label
+                color={getStatus(orderIndex).labelColor}
+                startIcon={<Iconify icon={getStatus(orderIndex).icon} />}
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  fontSize: 15,
+                  borderRadius: '0 0 0 20px',
+                  p: 2,
+                  ...blinkingElement,
+                }}
+              >
+                {getStatus(orderIndex).status}
+              </Label>
+            )}
+            <Stack direction="column" spacing={0.25}>
+              {cartMeals(orderIndex).map((meal) => (
+                <React.Fragment key={meal.docID}>
+                  <Stack direction="row" spacing={1}>
+                    <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                      {meal.title}
+                    </Typography>
+                    <Box sx={{ color: 'text.disabled' }}>
+                      x(
+                      {
+                        orderSnapShot.cart.filter(
+                          (cartPortion) =>
+                            cartPortion.mealID === meal.docID && cartPortion.update === orderIndex
+                        ).length
+                      }
+                      )
+                    </Box>
+                  </Stack>
+                  <Box sx={{ ml: 3 }}>
+                    {orderSnapShot.cart
+                      .filter(
                         (cartPortion) =>
                           cartPortion.mealID === meal.docID && cartPortion.update === orderIndex
-                      ).length
-                    }
-                    )
-                  </Box>
-                </Stack>
-                <Box sx={{ ml: 3 }}>
-                  {orderSnapShot.cart
-                    .filter(
-                      (cartPortion) =>
-                        cartPortion.mealID === meal.docID && cartPortion.update === orderIndex
-                    )
-                    .map((portion) => (
-                      <Stack key={portion.id}>
-                        <Stack
-                          direction="row"
-                          justifyContent="space-between"
-                          sx={{
-                            textDecorationLine: portion?.price === 0 ? 'line-through' : 'none',
-                            textDecorationColor: theme.palette.error.main,
-                            textDecorationThickness: 2,
-                          }}
-                        >
-                          <Typography variant="body2" sx={{ flexGrow: 1 }}>
-                            - {portion.portionSize}
-                          </Typography>
+                      )
+                      .map((portion) => (
+                        <Stack key={portion.id}>
+                          <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            sx={{
+                              textDecorationLine: portion?.price === 0 ? 'line-through' : 'none',
+                              textDecorationColor: theme.palette.error.main,
+                              textDecorationThickness: 2,
+                            }}
+                          >
+                            <Typography variant="body2" sx={{ flexGrow: 1 }}>
+                              - {portion.portionSize}
+                            </Typography>
 
-                          {!isChef && (
-                            <Typography variant="caption" sx={{ alignSelf: 'center', mx: 1 }}>
-                              {`${portion.price} 
+                            {!isChef && (
+                              <Typography variant="caption" sx={{ alignSelf: 'center', mx: 1 }}>
+                                {`${portion.price} 
                             ${branchInfo?.currency}`}
+                              </Typography>
+                            )}
+                            {!isChef && (
+                              <Divider
+                                orientation="vertical"
+                                flexItem
+                                sx={{ borderStyle: 'dashed', mx: 1 }}
+                              />
+                            )}
+
+                            {!isChef && (
+                              <IconButton
+                                onClick={() => removeMeal(portion)}
+                                sx={{ p: 0.5 }}
+                                disabled={
+                                  isInKitchen.includes(orderIndex) ||
+                                  isReadyToServe.includes(orderIndex)
+                                }
+                              >
+                                {isPending ? (
+                                  <CircularProgress color="primary" size={20} />
+                                ) : (
+                                  <Iconify
+                                    icon="eva:trash-2-outline"
+                                    width={20}
+                                    height={20}
+                                    sx={{
+                                      color:
+                                        isInKitchen.includes(orderIndex) ||
+                                        isReadyToServe.includes(orderIndex)
+                                          ? 'default'
+                                          : 'error.main',
+                                    }}
+                                  />
+                                )}
+                              </IconButton>
+                            )}
+                          </Stack>
+                          {portion?.comment && (
+                            <Typography variant="caption" sx={{ ml: 2, color: 'error.main' }}>
+                              *{portion.comment}
                             </Typography>
                           )}
-                          {!isChef && (
-                            <Divider
-                              orientation="vertical"
-                              flexItem
-                              sx={{ borderStyle: 'dashed', mx: 1 }}
-                            />
-                          )}
-
-                          {!isChef && (
-                            <IconButton
-                              onClick={() => removeMeal(portion)}
-                              sx={{ p: 0.5 }}
-                              disabled={
-                                isInKitchen.includes(orderIndex) ||
-                                isReadyToServe.includes(orderIndex)
-                              }
-                            >
-                              {isPending ? (
-                                <CircularProgress color="primary" size={20} />
-                              ) : (
-                                <Iconify
-                                  icon="eva:trash-2-outline"
-                                  width={20}
-                                  height={20}
-                                  sx={{
-                                    color:
-                                      isInKitchen.includes(orderIndex) ||
-                                      isReadyToServe.includes(orderIndex)
-                                        ? 'default'
-                                        : 'error.main',
-                                  }}
-                                />
-                              )}
-                            </IconButton>
-                          )}
                         </Stack>
-                        {portion?.comment && (
-                          <Typography variant="caption" sx={{ ml: 2, color: 'error.main' }}>
-                            *{portion.comment}
-                          </Typography>
-                        )}
-                      </Stack>
-                    ))}
-                </Box>
+                      ))}
+                  </Box>
 
-                <Divider flexItem sx={{ borderStyle: 'dashed' }} />
-              </React.Fragment>
-            ))}
-          </Stack>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            {!isChef &&
-              !isInKitchen.includes(orderIndex) &&
-              !isReadyToServe.includes(orderIndex) &&
-              orderValue !== 0 && (
+                  <Divider flexItem sx={{ borderStyle: 'dashed' }} />
+                </React.Fragment>
+              ))}
+            </Stack>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              {!isChef &&
+                !isInKitchen.includes(orderIndex) &&
+                !isReadyToServe.includes(orderIndex) &&
+                orderValue !== 0 && (
+                  <LoadingButton
+                    variant="soft"
+                    color="warning"
+                    onClick={() => onOrderStatusUpdate()}
+                    startIcon={<Iconify icon="ph:cooking-pot-light" />}
+                    loading={isPending}
+                    disabled={isSendToKitchenDisabled(orderIndex)}
+                  >
+                    Send to Kitchen
+                  </LoadingButton>
+                )}
+
+              {(skipKitchen || isChef) && isInKitchen.includes(orderIndex) && (
                 <LoadingButton
                   variant="soft"
-                  color="warning"
-                  onClick={() => onOrderStatusUpdate()}
-                  startIcon={<Iconify icon="ph:cooking-pot-light" />}
+                  color="info"
+                  onClick={() => onReadyToServe(orderIndex)}
+                  startIcon={<Iconify icon="dashicons:food" />}
                   loading={isPending}
-                  disabled={isSendToKitchenDisabled(orderIndex)}
+                  // disabled={isSendToKitchenDisabled(orderIndex)}
                 >
-                  Send to Kitchen
+                  Ready to Serve
                 </LoadingButton>
               )}
-
-            {(skipKitchen || isChef) && isInKitchen.includes(orderIndex) && (
-              <LoadingButton
-                variant="soft"
-                color="info"
-                onClick={() => onReadyToServe(orderIndex)}
-                startIcon={<Iconify icon="dashicons:food" />}
-                loading={isPending}
-                // disabled={isSendToKitchenDisabled(orderIndex)}
-              >
-                Ready to Serve
-              </LoadingButton>
-            )}
-          </Box>
-        </Card>
-      ))}
-    </Stack>
+            </Box>
+          </Card>
+        ))}
+      </Stack>
+    </Scrollbar>
   );
 };
 

@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
-import { useMemo, useEffect } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
+import { useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -13,13 +13,15 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import {
   Box,
   Card,
+  Alert,
   Stack,
   Button,
-  MenuItem,
   useTheme,
+  MenuItem,
   TextField,
-  IconButton,
   Typography,
+  IconButton,
+  AlertTitle,
 } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
@@ -36,6 +38,7 @@ function SelectedTableInfoCard({ tableInfo }) {
   const { enqueueSnackbar } = useSnackbar();
   const { fsUpdateBranchTable, user, fsGetAllMenus } = useAuthContext();
   const queryClient = useQueryClient();
+  const [isVisible, setIsVisible] = useState(true);
 
   const isQrMenuOnly = tableInfo?.index === 0;
 
@@ -114,6 +117,21 @@ function SelectedTableInfoCard({ tableInfo }) {
   if (isQrMenuOnly)
     return (
       <Grid container spacing={2}>
+        {isVisible && (
+          <Grid xs={12}>
+            <Alert
+              severity="warning"
+              variant="outlined"
+              onClose={() => setIsVisible(false)}
+              sx={{ width: 1 }}
+            >
+              <AlertTitle>Menu View Only</AlertTitle>
+              This table is set to show the menu only, use it on your social media or place it on
+              your front door, dont place it on customers tables unless you are intending to let
+              them view the menu and take orders manually.
+            </Alert>
+          </Grid>
+        )}
         <Grid xs={12} sm={8}>
           <Card sx={{ p: 3, height: 1 }}>
             <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -127,7 +145,7 @@ function SelectedTableInfoCard({ tableInfo }) {
                   </Stack>
                   <RHFSwitch
                     name="isActive"
-                    label={`Table is ${values.isActive ? 'Active' : 'Disabled'}`}
+                    label={`QR is ${values.isActive ? 'Active' : 'Disabled'}`}
                     labelPlacement="end"
                     sx={{ m: 0 }}
                   />

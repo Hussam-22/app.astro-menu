@@ -37,6 +37,7 @@ function StaffHorizontalNav() {
         py: 1,
         px: 2,
         mb: 2,
+        height: '56px',
       }}
     >
       <Typography
