@@ -33,7 +33,7 @@ function StaffHorizontalNav() {
       justifyContent="space-between"
       alignItems="center"
       sx={{
-        bgcolor: 'primary.light',
+        bgcolor: 'common.black',
         py: 1,
         px: 2,
         mb: 2,
@@ -43,15 +43,19 @@ function StaffHorizontalNav() {
       <Typography
         sx={{
           fontWeight: theme.typography.fontWeightBold,
-          color: 'common.black',
         }}
+        color="primary"
       >
         Hello, {staff?.fullname}
       </Typography>
-      <Stack direction="row" spacing={1}>
-        <Typography sx={{ fontWeight: 'bold' }}>{businessName}</Typography>
-        <span>|</span>
-        <Typography>{branchInfo.title}</Typography>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Typography color="white" sx={{ fontWeight: 'bold' }}>
+          {businessName}
+        </Typography>
+        <span style={{ color: '#FFFFFF' }}>|</span>
+        <Typography sx={{ color: 'grey.500' }} variant="caption">
+          {branchInfo.title}
+        </Typography>
       </Stack>
       <LoadingButton
         variant="contained"

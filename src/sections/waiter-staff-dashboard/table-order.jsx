@@ -148,6 +148,7 @@ const TableOrder = () => {
             key={`${orderID}${orderIndex}`}
             sx={{
               p: 3,
+              bgcolor: 'background.default',
               position: 'relative',
               overflow: 'visible',
               ...(getStatus(+orderIndex) !== 'none' && {

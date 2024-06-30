@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { Stack, Divider } from '@mui/material';
+import { Stack } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import StaffLoginLayout from 'src/layouts/waiter-staff-dashboard/auth';
@@ -26,12 +26,7 @@ function StaffLayout({ children }) {
     return (
       <StaffContextProvider>
         <StaffHorizontalNav />
-        <Stack
-          direction="row"
-          spacing={2}
-          divider={<Divider sx={{ borderStyle: 'dashed' }} flexItem orientation="vertical" />}
-          sx={{}}
-        >
+        <Stack direction="row" spacing={1}>
           <TablesColumn />
 
           <StaffView>{children}</StaffView>

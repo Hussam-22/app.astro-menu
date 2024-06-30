@@ -8,8 +8,8 @@ import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
 import FoodMenu from 'src/sections/waiter-staff-dashboard/food-menu';
 import TableOrder from 'src/sections/waiter-staff-dashboard/table-order';
+import MenuNavigation from 'src/sections/waiter-staff-dashboard/menu-navigation';
 import TableActionBar from 'src/sections/waiter-staff-dashboard/table-action-bar';
-import MenuNavigation from 'src/sections/waiter-staff-dashboard/components/menu-navigation';
 import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 import TableOrderSkeleton from 'src/sections/waiter-staff-dashboard/components/table-order-skeleton';
 
@@ -54,16 +54,22 @@ function StaffView() {
     <Stack direction="column" spacing={2}>
       <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
         <Stack direction="column">
-          <Typography variant="overline">Table# {tableInfo?.index}</Typography>
-          <Typography variant="caption" sx={{ color: 'error.main', maxWidth: 302 }}>
+          <Typography variant="overline" color="primary">
+            Table# {tableInfo?.index}
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'warning.main' }}>
             {tableInfo.note}
           </Typography>
         </Stack>
 
         <Stack direction="column">
-          <Typography variant="overline">Order</Typography>
-          <Typography variant="caption">{orderInitiationTime}</Typography>
-          <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+          <Typography variant="overline" color="primary">
+            Order
+          </Typography>
+          <Typography variant="caption" sx={{ whiteSpace: 'nowrap' }}>
+            {orderInitiationTime}
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'text.disabled', whiteSpace: 'nowrap' }}>
             {selectedTableOrder?.docID}
           </Typography>
         </Stack>
@@ -88,21 +94,38 @@ function StaffView() {
     selectedTableOrder &&
     !selectedTableOrder?.isCanceled &&
     !selectedTableOrder?.isPaid && (
-      // <Stack
-      //   direction="row"
-      //   spacing={2}
-      //   divider={<Divider sx={{ border: '1px dashed', borderColor: 'divider' }} flexItem />}
-      // >
       <>
-        <Box sx={{ minWidth: '40%', maxWidth: '40%' }}>{tableOrder}</Box>
-        <Box sx={{ minWidth: '30%', maxWidth: '30%' }}>{foodMenu}</Box>
+        <Box
+          sx={{
+            minWidth: '40%',
+            maxWidth: '40%',
+            borderRadius: 2,
+            bgcolor: 'background.paper',
+            p: 2,
+            border: `dashed 2px ${theme.palette.divider}`,
+          }}
+        >
+          {tableOrder}
+        </Box>
+        <Box
+          sx={{
+            minWidth: '30%',
+            maxWidth: '30%',
+            borderRadius: 2,
+            bgcolor: 'background.paper',
+            p: 2,
+            border: `dashed 2px ${theme.palette.divider}`,
+          }}
+        >
+          {foodMenu}
+        </Box>
         <Box
           sx={{
             minWidth: '10%',
             maxWidth: '10%',
             borderRadius: 2,
             bgcolor: 'background.paper',
-            px: 2,
+            p: 2,
             border: `dashed 2px ${theme.palette.divider}`,
           }}
         >
