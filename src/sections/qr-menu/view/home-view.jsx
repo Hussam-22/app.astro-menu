@@ -119,8 +119,6 @@ function QRMenuHomeView() {
             <Avatar
               variant="rounded"
               sx={{
-                // width: 16,
-                // height: 16,
                 border: `1px solid ${theme.palette.divider}`,
                 bgcolor: 'background.paper',
               }}
@@ -142,10 +140,6 @@ function QRMenuHomeView() {
               </IconButton>
             )}
             <IconButton onClick={() => setIsLangOpen(true)}>
-              {/* <Iconify
-                icon="clarity:language-solid"
-                sx={{ color: 'common.alternative', width: 28, height: 28 }}
-              /> */}
               <Image src="/assets/icons/qr-menu/language.svg" sx={{ width: 28, height: 28 }} />
             </IconButton>
           </Stack>

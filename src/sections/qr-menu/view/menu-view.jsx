@@ -117,24 +117,62 @@ function QrMenuView() {
     );
 
   return (
-    <Stack direction="column" spacing={2} sx={{ pt: 1, pb: 5 }}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ px: 1 }}>
+    <Stack direction="column" spacing={2} sx={{ pt: 1, pb: 5, position: 'relative' }}>
+      <Box
+        sx={{
+          backgroundImage: `url(${branchInfo.cover})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          position: 'absolute',
+          height: 175,
+          top: 0,
+          width: 1,
+          zIndex: -2,
+        }}
+      />
+      <Box
+        sx={{
+          content: "''",
+          position: 'absolute',
+          height: 175,
+          top: 0,
+          width: 1,
+          pointerEvents: 'none',
+          background: 'rgba(0, 0, 0, 0.5)',
+          zIndex: -1,
+        }}
+      />
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={1}
+        sx={{
+          height: 150,
+        }}
+      >
         {(logo || business_Logo) && (
-          <Box sx={{ bgcolor: '#FFFFFF', p: 0.5, borderRadius: 2 }}>
+          <Box sx={{ bgcolor: '#FFFFFF', p: 0.15, borderRadius: 1, ml: 2 }}>
             <Image
               src={logo || business_Logo}
               sx={{
                 width: 100,
                 height: 100,
-                borderRadius: 2,
+                borderRadius: 1,
               }}
             />
           </Box>
         )}
         <Stack direction="column">
-          <Typography variant="h4">{getTitle()}</Typography>
-          <Typography variant="caption">{branchInfo.title}</Typography>
-          <Typography variant="caption">{tableNumber}</Typography>
+          <Typography variant="h4" color="white">
+            {getTitle()}
+          </Typography>
+          <Typography variant="caption" color="white">
+            {branchInfo.title}
+          </Typography>
+          <Typography variant="caption" color="white">
+            {tableNumber}
+          </Typography>
         </Stack>
       </Stack>
       <Divider
