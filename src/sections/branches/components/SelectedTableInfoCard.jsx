@@ -66,6 +66,7 @@ function SelectedTableInfoCard({ tableInfo }) {
       isActive: tableInfo?.isActive,
       note: tableInfo?.note,
       title: tableInfo?.title,
+      mealAlwaysAvailable: tableInfo?.mealAlwaysAvailable,
     }),
     [tableInfo]
   );
@@ -137,18 +138,25 @@ function SelectedTableInfoCard({ tableInfo }) {
             <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
               <Stack direction="column" spacing={2}>
                 <Stack direction="row" alignItems="self-end" justifyContent="space-between">
-                  <Stack direction="column">
-                    <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-                      {tableInfo?.docID}
-                    </Typography>
-                    <Typography variant="h4">Menu Only</Typography>
+                  <Typography variant="h4">Menu View Only</Typography>
+                  <Stack direction="row" spacing={2}>
+                    <RHFSwitch
+                      name="mealAlwaysAvailable"
+                      label={`${
+                        values.mealAlwaysAvailable
+                          ? 'Show All Meals as Available'
+                          : 'Real-time Meals Availability'
+                      }`}
+                      labelPlacement="end"
+                      sx={{ m: 0 }}
+                    />
+                    <RHFSwitch
+                      name="isActive"
+                      label={`QR is ${values.isActive ? 'Active' : 'Disabled'}`}
+                      labelPlacement="end"
+                      sx={{ m: 0 }}
+                    />
                   </Stack>
-                  <RHFSwitch
-                    name="isActive"
-                    label={`QR is ${values.isActive ? 'Active' : 'Disabled'}`}
-                    labelPlacement="end"
-                    sx={{ m: 0 }}
-                  />
                 </Stack>
                 <Stack direction="column" spacing={2}>
                   {menusList?.length !== 0 && menusList !== undefined && (
@@ -237,12 +245,7 @@ function SelectedTableInfoCard({ tableInfo }) {
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack direction="column" spacing={2}>
               <Stack direction="row" alignItems="self-end" justifyContent="space-between">
-                <Stack direction="column">
-                  <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-                    {tableInfo?.docID}
-                  </Typography>
-                  <Typography variant="h4">QR# {tableInfo?.index}</Typography>
-                </Stack>
+                <Typography variant="h4">QR# {tableInfo?.index}</Typography>
                 <RHFSwitch
                   name="isActive"
                   label={`QR is ${values.isActive ? 'Active' : 'Disabled'}`}

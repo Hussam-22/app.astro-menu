@@ -26,6 +26,7 @@
 
 ? Staff Dashboard
 /- either add "search bar" or "filter meals" drawer, or both
+/- auto login for staff
 
 ? Menu
 - Fix Section Title Edit

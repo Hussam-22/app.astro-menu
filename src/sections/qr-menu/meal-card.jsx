@@ -86,7 +86,7 @@ function MealCard({ mealInfo }) {
       <Stack direction="row" spacing={1} alignItems="center" sx={{ py: 0.5 }}>
         <Box
           sx={{
-            bgcolor: 'warning.main',
+            bgcolor: 'success.main',
             width: count === 0 ? 0 : 8,
             height: 100,
             borderRadius: '0 25px 25px 0',
@@ -102,11 +102,31 @@ function MealCard({ mealInfo }) {
             getDescription={getDescription}
             selectedLanguage={selectedLanguage}
           />
-          <Stack direction="row" spacing={0.5} alignSelf="end">
-            <Typography variant="h4">{portions[0].price}</Typography>
-            <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
-              {branchInfo?.currency}
-            </Typography>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack direction="row" spacing={0.5} alignSelf="end">
+              <Typography variant="h4">{portions[0].price}</Typography>
+              <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightLight }}>
+                {branchInfo?.currency}
+              </Typography>
+            </Stack>
+            {allowAddToCart && (
+              <Button
+                type="submit"
+                variant="contained"
+                color="success"
+                onClick={() => setIsOpen(true)}
+                startIcon={<Iconify icon="mdi:hamburger-plus" />}
+                sx={{
+                  whiteSpace: 'nowrap',
+                  borderRadius: 1,
+                  typography: 'caption',
+                  py: 0.5,
+                  fontWeight: 'bold',
+                }}
+              >
+                {count === 0 ? getTranslation('add') : count}
+              </Button>
+            )}
           </Stack>
         </Stack>
         <Box
@@ -124,32 +144,11 @@ function MealCard({ mealInfo }) {
             sx={{
               borderRadius: 1,
               border: `dashed 1px ${theme.palette.divider}`,
-              filter: `grayscale(${isMealActive ? '0' : '100'})`,
+              filter: `grayscale(${isMealActive || tableInfo?.mealAlwaysAvailable ? '0' : '100'})`,
             }}
             onClick={() => allowAddToCart && setIsOpen(true)}
           />
-          {allowAddToCart && (
-            <Button
-              type="submit"
-              variant="contained"
-              color="success"
-              onClick={() => setIsOpen(true)}
-              startIcon={<Iconify icon="mdi:hamburger-plus" />}
-              sx={{
-                position: 'absolute',
-                bottom: 5,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                whiteSpace: 'nowrap',
-                borderRadius: 1,
-                typography: 'caption',
-                py: 0.5,
-                fontWeight: 'bold',
-              }}
-            >
-              {count === 0 ? getTranslation('add') : count}
-            </Button>
-          )}
+
           {isNew && (
             <Box sx={{ position: 'absolute', top: 10, left: -5 }}>
               <Label
@@ -162,7 +161,7 @@ function MealCard({ mealInfo }) {
             </Box>
           )}
 
-          {!isMealActive && (
+          {!isMealActive && !tableInfo?.mealAlwaysAvailable && (
             <Label
               variant="filled"
               color="warning"

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
@@ -13,7 +14,11 @@ import StatisticsOverviewCard from 'src/sections/branches/components/StatisticsO
 const month = new Date().getMonth();
 const year = new Date().getFullYear();
 
-function QRManagement() {
+QRManagement.propTypes = {
+  branchInfo: PropTypes.object,
+};
+
+function QRManagement({ branchInfo }) {
   const theme = useTheme();
   const { id: branchID } = useParams();
   const { fsGetBranchTablesSnapshot, branchTables } = useAuthContext();
@@ -40,9 +45,7 @@ function QRManagement() {
         <StatisticsOverviewCard tableInfo={selectedTable} month={month} year={year} />
       )}
 
-      {selectedTable && (
-        <SelectedTableInfoCard tableInfo={selectedTable} month={month} year={year} />
-      )}
+      {selectedTable && <SelectedTableInfoCard tableInfo={selectedTable} />}
 
       {selectedTable && selectedTable.index !== 0 && (
         <Divider sx={{ borderStyle: 'dashed', borderColor: theme.palette.divider }} />
