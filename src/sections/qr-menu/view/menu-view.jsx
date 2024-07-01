@@ -2,12 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 
 import { Box, Stack, Button, Divider, useTheme, Typography } from '@mui/material';
 
-import Image from 'src/components/image';
 import Label from 'src/components/label';
+import Image from 'src/components/image';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
-import { blinkingElement } from 'src/theme/css';
+import Footer from 'src/layouts/qr-menu/footer';
 import { useAuthContext } from 'src/auth/hooks';
+import { blinkingElement } from 'src/theme/css';
 import MenuSection from 'src/sections/qr-menu/menu-section';
 import { getOrderStatusStyle } from 'src/utils/get-order-status-styles';
 import { useQrMenuContext } from 'src/sections/qr-menu/context/qr-menu-context';
@@ -204,6 +205,7 @@ function QrMenuView() {
           {orderStatus.status}
         </Label>
       )}
+      <Footer />
     </Stack>
   );
 }
