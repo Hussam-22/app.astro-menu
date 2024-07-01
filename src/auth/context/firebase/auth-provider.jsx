@@ -681,6 +681,7 @@ export function AuthProvider({ children }) {
           title: `Menu View only`,
           note: `This virtual table offers a QR-Menu that exclusively displays your menu. You can utilize this QR menu by showcasing it on your restaurant's front door, allowing customers to easily view your offerings. `,
           index: 0,
+          mealAlwaysAvailable: true,
         });
         return;
       }
@@ -702,6 +703,7 @@ export function AuthProvider({ children }) {
               ? `This virtual table offers a QR-Menu that exclusively displays your menu. You can utilize this QR menu by showcasing it on your restaurant's front door, allowing customers to easily view your offerings. `
               : '',
           index,
+          mealAlwaysAvailable: index === 0,
         });
       }
 

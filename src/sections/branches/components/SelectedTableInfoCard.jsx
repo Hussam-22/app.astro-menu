@@ -144,7 +144,7 @@ function SelectedTableInfoCard({ tableInfo }) {
                       name="mealAlwaysAvailable"
                       label={`${
                         values.mealAlwaysAvailable
-                          ? 'Show All Meals as Available'
+                          ? 'Meals are always Available'
                           : 'Real-time Meals Availability'
                       }`}
                       labelPlacement="end"
