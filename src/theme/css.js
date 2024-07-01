@@ -1,8 +1,8 @@
 // @mui
 import { alpha } from '@mui/material/styles';
 import { dividerClasses } from '@mui/material/Divider';
-import { checkboxClasses } from '@mui/material/Checkbox';
 import { menuItemClasses } from '@mui/material/MenuItem';
+import { checkboxClasses } from '@mui/material/Checkbox';
 import { autocompleteClasses } from '@mui/material/Autocomplete';
 
 // ----------------------------------------------------------------------
@@ -167,16 +167,21 @@ export const blinkingElement = {
 export function blinkingBorder(color, id) {
   return {
     animation: `${id} 2s infinite`,
-    border: `2px solid ${color}`, // Initial border style
+    boxShadow: `2px 2px 0 0 ${color}`,
+    border: `solid 2px ${color}`,
+    borderRadius: 3,
     [`@keyframes ${id}`]: {
       '0%': {
-        border: `2px solid ${color}`, // Initial border style
+        border: `solid 2px ${color}`,
+        boxShadow: `2px 2px 0 0 ${color}`,
       },
       '50%': {
-        border: '2px solid transparent', // Blinking border style
+        border: `solid 2px ${color}`,
+        boxShadow: '2px 2px 0 0 transparent',
       },
       '100%': {
-        border: `2px solid ${color}`, // Initial border style
+        border: `solid 2px ${color}`,
+        boxShadow: `2px 2px 0 0 ${color}`,
       },
     },
   };

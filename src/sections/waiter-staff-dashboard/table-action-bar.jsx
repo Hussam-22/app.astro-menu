@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Typography } from '@mui/material';
+import { Box, Card, Stack, Divider, useTheme, Typography } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { delay } from 'src/utils/promise-delay';
@@ -12,6 +12,7 @@ import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/sta
 import DialogCancelOrder from 'src/sections/waiter-staff-dashboard/components/cancel-order-dialog';
 
 function TableActionBar() {
+  const theme = useTheme();
   const { activeOrders, fsUpdateOrderStatus, fsConfirmCartOrder } = useAuthContext();
   const { selectedTable, setSelectedTable, branchInfo } = useStaffContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTable.docID);
@@ -64,12 +65,13 @@ function TableActionBar() {
 
   return (
     <>
-      <Card sx={{ px: 2, bgcolor: 'primary.main' }}>
+      <Divider sx={{ border: 'dashed 1px', borderColor: theme.palette.divider }} />
+      <Card sx={{ px: 2, bgcolor: 'grey.100' }}>
         <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
           <Stack direction="row" spacing={1}>
             <LoadingButton
               variant="contained"
-              color="inherit"
+              color="error"
               onClick={() => setIsCancelOpen(true)}
               startIcon={<Iconify icon="icon-park-twotone:close-one" />}
               disabled={isCancelOrderDisabled}
@@ -88,12 +90,7 @@ function TableActionBar() {
             </LoadingButton>
           </Stack>
 
-          <Stack
-            direction="column"
-            spacing={0}
-            alignItems="flex-end"
-            sx={{ my: 2, color: 'white' }}
-          >
+          <Stack direction="column" spacing={0} alignItems="flex-end" sx={{ my: 2 }}>
             <Typography variant="caption">
               Order : {orderValue}{' '}
               <Box component="span" sx={{ fontSize: 9 }}>
@@ -138,6 +135,7 @@ function TableActionBar() {
         onClose={() => setIsPaymentOpen(false)}
         closeText="close"
       />
+      <Divider sx={{ border: 'dashed 1px', borderColor: theme.palette.divider }} />
     </>
   );
 }

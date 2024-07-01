@@ -1,19 +1,27 @@
 import PropTypes from 'prop-types';
+import { useParams } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
 
 import { Box } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import StaffLoginLayout from 'src/layouts/waiter-staff-dashboard/auth';
+import StaffView from 'src/sections/waiter-staff-dashboard/view/staff-view';
 import TablesColumn from 'src/layouts/waiter-staff-dashboard/tables-column';
 import StaffLoginForm from 'src/sections/waiter-staff-dashboard/login-form';
-import StaffView from 'src/sections/waiter-staff-dashboard/view/staff-view';
 import StaffHorizontalNav from 'src/layouts/waiter-staff-dashboard/table-nav-horizontal';
 import { StaffContextProvider } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function StaffLayout({ children }) {
-  const { staff } = useAuthContext();
+  const { businessProfileID, staffID } = useParams();
+  const { staff, fsGetStaffInfo } = useAuthContext();
 
-  if (!staff?.docID || !staff?.isActive || !staff?.isLoggedIn)
+  const { data: staffInfo = {} } = useQuery({
+    queryFn: () => fsGetStaffInfo(staffID, businessProfileID),
+    queryKey: ['staff', businessProfileID, staffID],
+  });
+
+  if (!staff.isLoggedIn)
     return (
       <StaffContextProvider>
         <StaffLoginLayout>
@@ -29,10 +37,10 @@ function StaffLayout({ children }) {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: '1.5fr 4fr 3.5fr 1fr',
+            gridTemplateColumns: '1.5fr 4fr 3fr 1.5fr',
             mx: 2,
             gap: 1,
-            height: 'calc(100vh - 56px)',
+            pb: 4,
           }}
         >
           <TablesColumn />

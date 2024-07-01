@@ -1839,6 +1839,9 @@ export function AuthProvider({ children }) {
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}/staff/${staffID}/`);
         const docSnap = await getDoc(docRef);
 
+        if (docSnap.data().isLoggedIn)
+          fsGetStaffLogin(businessProfileID, staffID, docSnap.data().passCode);
+
         return docSnap.data();
       } catch (error) {
         throw error;

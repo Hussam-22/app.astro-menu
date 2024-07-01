@@ -141,19 +141,22 @@ const TableOrder = () => {
   if (cachedSectionMeals.length === 0 || !selectedTable.isActive) return null;
 
   return (
-    <Scrollbar sx={{ height: `calc(70vh - 56px)` }}>
+    <Scrollbar sx={{ height: `calc(70vh - 56px)`, py: 2 }}>
       <Stack direction="column-reverse" spacing={2}>
         {orderUpdateToShow.map((orderIndex) => (
           <Card
             key={`${orderID}${orderIndex}`}
             sx={{
               p: 3,
-              bgcolor: 'background.default',
               position: 'relative',
               overflow: 'visible',
               ...(getStatus(+orderIndex) !== 'none' && {
                 ...blinkingBorder(getStatus(+orderIndex).color, `${orderID}${orderIndex}`),
               }),
+              boxShadow: '2px 2px 0 0 #000',
+              border: 'solid 3px #000',
+              borderRadius: 3,
+              mx: 1,
             }}
           >
             <Label
@@ -164,8 +167,8 @@ const TableOrder = () => {
                 top: 0,
                 left: 0,
                 fontSize: 20,
-                borderRadius: '5px 0 5px 0',
-                p: 0,
+                borderRadius: '20px 0 5px 0',
+                px: 1.5,
               }}
             >
               {orderIndex + 1}
@@ -173,6 +176,7 @@ const TableOrder = () => {
 
             {getStatus(orderIndex) !== 'none' && (
               <Label
+                variant="filled"
                 color={getStatus(orderIndex).labelColor}
                 startIcon={<Iconify icon={getStatus(orderIndex).icon} />}
                 sx={{
@@ -180,7 +184,7 @@ const TableOrder = () => {
                   top: 0,
                   right: 0,
                   fontSize: 15,
-                  borderRadius: '0 0 0 20px',
+                  borderRadius: '0 20px 0 20px',
                   p: 2,
                   ...blinkingElement,
                 }}

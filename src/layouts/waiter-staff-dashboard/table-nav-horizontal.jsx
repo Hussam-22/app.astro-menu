@@ -4,8 +4,9 @@ import { useMutation } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import { Stack, useTheme, Typography } from '@mui/material';
 
-import { useAuthContext } from 'src/auth/hooks';
+import Image from 'src/components/image';
 import { delay } from 'src/utils/promise-delay';
+import { useAuthContext } from 'src/auth/hooks';
 import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function StaffHorizontalNav() {
@@ -22,7 +23,7 @@ function StaffHorizontalNav() {
     mutationFn: async () => {
       await delay(500);
       setStaff({});
-      fsUpdateStaffInfo(businessProfileID, staffID, { isLoggedIn: false });
+      fsUpdateStaffInfo({ isLoggedIn: false }, staffID, businessProfileID);
       waiterUnsubscribe();
     },
   });
@@ -57,14 +58,22 @@ function StaffHorizontalNav() {
           {branchInfo.title}
         </Typography>
       </Stack>
-      <LoadingButton
-        variant="contained"
-        color="primary"
-        onClick={() => mutate()}
-        loading={isPending}
-      >
-        Logout
-      </LoadingButton>
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Stack direction="row" spacing={0.5} alignItems="center">
+          <Typography variant="body2" color="white" sx={{ fontWeight: 'bold' }}>
+            Powered by Astro-Menu
+          </Typography>
+          <Image src="/assets/astro-logo.svg" alt="Astro Logo" width={24} height={24} />
+        </Stack>
+        <LoadingButton
+          variant="contained"
+          color="primary"
+          onClick={() => mutate()}
+          loading={isPending}
+        >
+          Logout
+        </LoadingButton>
+      </Stack>
     </Stack>
   );
 }

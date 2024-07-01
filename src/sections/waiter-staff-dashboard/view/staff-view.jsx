@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 
 import { Box, Stack, useTheme, Typography } from '@mui/material';
 
-import Image from 'src/components/image';
 import { useAuthContext } from 'src/auth/hooks';
 import FoodMenu from 'src/sections/waiter-staff-dashboard/food-menu';
 import TableOrder from 'src/sections/waiter-staff-dashboard/table-order';
@@ -29,27 +28,6 @@ function StaffView() {
 
   if (isLoading) return <TableOrderSkeleton />;
 
-  if (!tableInfo?.docID && activeOrders.length === 0)
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          m: 'auto',
-          flexDirection: 'column',
-          alignItems: 'center',
-          bgcolor: 'background.paper',
-          p: 3,
-          gap: 2,
-          borderRadius: 3,
-          boxShadow: '3px 3px 0 0 #000',
-          border: 'solid 3px #000',
-        }}
-      >
-        <Image src="/assets/icons/staff/coffee-love-icon.svg" sx={{ width: 250, height: 250 }} />
-        <Typography variant="h4">All Looks Good, take a break!!</Typography>
-      </Box>
-    );
-
   const tableOrder = (
     <Stack direction="column" spacing={2}>
       <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
@@ -57,9 +35,7 @@ function StaffView() {
           <Typography variant="overline" color="primary">
             Table# {tableInfo?.index}
           </Typography>
-          <Typography variant="caption" sx={{ color: 'warning.main' }}>
-            {tableInfo.note}
-          </Typography>
+          <Typography variant="caption">Note: {tableInfo.note}</Typography>
         </Stack>
 
         <Stack direction="column">
@@ -115,16 +91,8 @@ function StaffView() {
         >
           {foodMenu}
         </Box>
-        <Box
-          sx={{
-            p: 2,
-            borderRadius: 2,
-            bgcolor: 'background.paper',
-            border: `dashed 2px ${theme.palette.divider}`,
-          }}
-        >
-          <MenuNavigation />
-        </Box>
+
+        <MenuNavigation />
       </>
       // </Stack>
     )

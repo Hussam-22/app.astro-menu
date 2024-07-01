@@ -1,10 +1,11 @@
-import { Box, Chip, Stack, Divider, Typography } from '@mui/material';
+import { Box, Chip, Stack, Divider, useTheme, Typography } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/staff-context';
 
 function MenuNavigation() {
+  const theme = useTheme();
   const { menuSections } = useAuthContext();
   const { setLabel, mealsLabel, labels } = useStaffContext();
 
@@ -16,7 +17,15 @@ function MenuNavigation() {
   };
 
   const sections = (
-    <Scrollbar sx={{ height: '42dvh', pb: 1 }}>
+    <Scrollbar
+      sx={{
+        pb: 1,
+        p: 2,
+        borderRadius: 2,
+        bgcolor: 'background.paper',
+        border: `dashed 2px ${theme.palette.divider}`,
+      }}
+    >
       <Typography variant="caption" sx={{ fontWeight: 'bolder' }} color="primary">
         Menu Sections
       </Typography>
@@ -45,7 +54,15 @@ function MenuNavigation() {
   };
 
   const mealsType = (
-    <Scrollbar sx={{ height: '42dvh', pb: 1 }}>
+    <Scrollbar
+      sx={{
+        pb: 1,
+        p: 2,
+        borderRadius: 2,
+        bgcolor: 'background.paper',
+        border: `dashed 2px ${theme.palette.divider}`,
+      }}
+    >
       <Typography variant="caption" sx={{ fontWeight: 'bolder' }} color="primary">
         Meal Types
       </Typography>
@@ -76,9 +93,8 @@ function MenuNavigation() {
   // ----------------------------------------------------------------------------
 
   return (
-    <Box sx={{ display: 'grid', textAlign: 'center', mx: 'auto' }}>
+    <Box sx={{ display: 'grid', textAlign: 'center', gridTemplateRows: '0.5fr 0.5fr', gap: 2 }}>
       {sections}
-      <Divider sx={{ borderStyle: 'dashed', borderWidth: 2 }} />
       {mealsType}
     </Box>
   );

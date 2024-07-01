@@ -85,7 +85,12 @@ function StaffLoginForm() {
             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
           />
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="caption">Powered by ProzEffect Menu</Typography>
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
+                Powered by Astro-Menu
+              </Typography>
+              <Image src="/assets/astro-logo.svg" alt="Astro Logo" width={24} height={24} />
+            </Stack>
             <LoadingButton variant="contained" type="submit" sx={{ px: 2 }} loading={isPending}>
               Login
             </LoadingButton>

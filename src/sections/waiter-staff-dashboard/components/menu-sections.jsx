@@ -34,7 +34,7 @@ function StaffMenuSections({ sectionInfo }) {
   if (sectionMeals.map((mealItem) => mealItem) === undefined) return <MealCardSkeleton />;
 
   return (
-    <Box sx={{ px: 2 }} id={sectionInfo.docID}>
+    <Box id={sectionInfo.docID}>
       <Typography id={sectionID} variant="h5">
         {title}
       </Typography>

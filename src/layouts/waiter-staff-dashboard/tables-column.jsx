@@ -18,13 +18,13 @@ function TablesColumn() {
             flexDirection: 'column',
           },
           bgcolor: 'background.paper',
-          py: 1,
+          py: 2,
           px: 2,
           borderRadius: 2,
           border: `dashed 2px ${theme.palette.divider}`,
         }}
       >
-        <Typography variant="overline" color="primary" sx={{ ml: -1 }}>
+        <Typography variant="overline" color="primary">
           Branch Tables
         </Typography>
         <BranchTables />
