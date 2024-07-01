@@ -75,6 +75,7 @@ function TableActionBar() {
               onClick={() => setIsCancelOpen(true)}
               startIcon={<Iconify icon="icon-park-twotone:close-one" />}
               disabled={isCancelOrderDisabled}
+              size="small"
             >
               Cancel Order
             </LoadingButton>
@@ -85,6 +86,7 @@ function TableActionBar() {
               onClick={() => setIsPaymentOpen(true)}
               startIcon={<Iconify icon="ri:check-double-line" />}
               disabled={isCollectPaymentDisabled}
+              size="small"
             >
               Collect Payment
             </LoadingButton>

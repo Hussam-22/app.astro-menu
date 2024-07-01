@@ -41,6 +41,8 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
           sx={{
             borderRadius: 1,
             filter: `grayscale(${isMealActive ? '0' : '100'})`,
+            width: { lg: '99%', xl: '40%' },
+            height: { lg: '99%', xl: '40%' },
           }}
         />
         {mealInfo.isNew && (

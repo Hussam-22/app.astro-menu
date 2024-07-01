@@ -281,7 +281,7 @@ export default function BranchNewEditForm({ branchInfo }) {
                     name="isActive"
                     labelPlacement="start"
                     label={values.isActive ? `Active` : `Disabled`}
-                    color="error"
+                    color="success"
                   />
                 </Stack>
               </Stack>

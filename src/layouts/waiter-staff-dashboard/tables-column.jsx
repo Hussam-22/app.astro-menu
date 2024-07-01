@@ -12,16 +12,16 @@ function TablesColumn() {
       <Scrollbar
         sx={{
           height: 1,
+          bgcolor: 'background.paper',
+          py: { lg: 1, xl: 2 },
+          px: 2,
+          borderRadius: 2,
+          border: `dashed 2px ${theme.palette.divider}`,
           '& .simplebar-content': {
             height: 1,
             display: 'flex',
             flexDirection: 'column',
           },
-          bgcolor: 'background.paper',
-          py: 2,
-          px: 2,
-          borderRadius: 2,
-          border: `dashed 2px ${theme.palette.divider}`,
         }}
       >
         <Typography variant="overline" color="primary">

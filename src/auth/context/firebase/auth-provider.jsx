@@ -679,7 +679,9 @@ export function AuthProvider({ children }) {
           branchID,
           isActive: true,
           title: `Menu View only`,
-          note: `This virtual table offers a QR-Menu that exclusively displays your menu. You can utilize this QR menu by showcasing it on your restaurant's front door, allowing customers to easily view your offerings. `,
+          note: `This QR is intended to show the menu only and cart will be hidden, use it on your
+              social media or place it on your front door, dont place it on customers tables unless
+              you are intending to let them view the menu only and take orders manually.`,
           index: 0,
           mealAlwaysAvailable: true,
         });

@@ -89,7 +89,7 @@ function StaffLoginForm() {
               <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
                 Powered by Astro-Menu
               </Typography>
-              <Image src="/assets/astro-logo.svg" alt="Astro Logo" width={24} height={24} />
+              <Image src="/assets/astro-logo.svg" alt="Astro Logo" width={30} height={30} />
             </Stack>
             <LoadingButton variant="contained" type="submit" sx={{ px: 2 }} loading={isPending}>
               Login

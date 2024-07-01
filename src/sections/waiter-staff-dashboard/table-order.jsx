@@ -196,7 +196,10 @@ const TableOrder = () => {
               {cartMeals(orderIndex).map((meal) => (
                 <React.Fragment key={meal.docID}>
                   <Stack direction="row" spacing={1}>
-                    <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: theme.typography.fontWeightBold }}
+                    >
                       {meal.title}
                     </Typography>
                     <Box sx={{ color: 'text.disabled' }}>

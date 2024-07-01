@@ -60,10 +60,10 @@ function StaffHorizontalNav() {
       </Stack>
       <Stack direction="row" spacing={2} alignItems="center">
         <Stack direction="row" spacing={0.5} alignItems="center">
-          <Typography variant="body2" color="white" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="caption" color="white" sx={{ fontWeight: 'bold' }}>
             Powered by Astro-Menu
           </Typography>
-          <Image src="/assets/astro-logo.svg" alt="Astro Logo" width={24} height={24} />
+          <Image src="/assets/astro-logo.svg" alt="Astro Logo" width={30} height={30} />
         </Stack>
         <LoadingButton
           variant="contained"
