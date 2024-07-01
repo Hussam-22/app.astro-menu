@@ -129,7 +129,7 @@ function SelectedTableInfoCard({ tableInfo }) {
               <AlertTitle>Menu View Only</AlertTitle>
               This table is set to show the menu only, use it on your social media or place it on
               your front door, dont place it on customers tables unless you are intending to let
-              them view the menu and take orders manually.
+              them view the menu only and take orders manually.
             </Alert>
           </Grid>
         )}

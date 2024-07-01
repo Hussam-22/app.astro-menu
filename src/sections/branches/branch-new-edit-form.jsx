@@ -244,6 +244,7 @@ export default function BranchNewEditForm({ branchInfo }) {
                     labelPlacement="start"
                     label={values.skipKitchen ? `Skip` : `Don't Skip`}
                     sx={{ alignItems: 'center' }}
+                    color="secondary"
                   />
                 </Stack>
 
@@ -263,12 +264,13 @@ export default function BranchNewEditForm({ branchInfo }) {
                     labelPlacement="start"
                     label={values.skipKitchen ? `Enabled` : `Disabled`}
                     sx={{ alignItems: 'center' }}
+                    color="secondary"
                   />
                 </Stack>
 
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
-                    <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                    <Typography color="error" sx={{ fontWeight: theme.typography.fontWeightBold }}>
                       Branch Status
                     </Typography>
                     <Typography variant="caption">
@@ -279,6 +281,7 @@ export default function BranchNewEditForm({ branchInfo }) {
                     name="isActive"
                     labelPlacement="start"
                     label={values.isActive ? `Active` : `Disabled`}
+                    color="error"
                   />
                 </Stack>
               </Stack>
