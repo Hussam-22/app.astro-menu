@@ -36,6 +36,7 @@
 - Show Mock image if no image is uploaded
 - Allow Branch Admin to Close Table Order from dashboard -- Close only, no collect payment is allowed
 /- Add "Skip Kitchen" toggle to the branch
+- branch copy qr link not working on tablet
 
 ? Meals
 /- Translate Meal Portions (Not feasible as it will require a lot of work)

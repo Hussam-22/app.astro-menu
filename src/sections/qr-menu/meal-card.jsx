@@ -213,11 +213,10 @@ function Title({ selectedLanguage, getTitle }) {
   return (
     <Typography
       sx={{
-        // color: 'info.dark',
         direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr',
         lineHeight: 1,
-        fontWeight: 700,
       }}
+      variant="h5"
     >
       {getTitle()}
     </Typography>

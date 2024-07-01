@@ -69,16 +69,21 @@ const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo, m
   };
 
   return (
-    <Drawer anchor="bottom" open={isOpen} onClose={() => onClose()}>
-      <Container maxWidth="sm" sx={{ px: 0 }}>
-        <Scrollbar sx={{ bgcolor: 'background.default', pb: 3 }}>
+    <Drawer
+      anchor="bottom"
+      open={isOpen}
+      onClose={() => onClose()}
+      PaperProps={{ sx: { height: 1 } }}
+    >
+      <Container maxWidth="sm" sx={{ px: 0, height: 1 }}>
+        <Scrollbar sx={{ bgcolor: 'background.default', pb: 3, height: 1 }}>
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={1} direction="column">
-              <Image src={mealInfo.cover} ratio={isMobile ? '4/3' : '21/9'} />
+              <Image src={mealInfo.cover} ratio={isMobile ? '6/4' : '21/9'} />
               <Stack spacing={2} sx={{ px: 2 }}>
                 <Box>
                   <Typography variant="h4">{getTitle()}</Typography>
-                  <TextMaxLine line={5} variant="body2">
+                  <TextMaxLine line={5} variant="caption">
                     {getDescription()}
                   </TextMaxLine>
                 </Box>
@@ -97,7 +102,6 @@ const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo, m
                   name="comment"
                   label={getTranslation('Any Special Requests ?')}
                 />
-
                 <Stack direction="row" spacing={1} justifyContent="flex-end">
                   <Button variant="contained" onClick={onClose}>
                     {getTranslation('close')}

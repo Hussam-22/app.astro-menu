@@ -80,7 +80,7 @@ const CartDrawer = ({ openState, onClose }) => {
       anchor="bottom"
       open={openState}
       onClose={onClose}
-      PaperProps={{ sx: { borderRadius: '25px 25px 0 0' } }}
+      PaperProps={{ sx: { borderRadius: '25px 25px 0 0', height: '99%' } }}
     >
       <Stack
         direction="row"
@@ -100,8 +100,8 @@ const CartDrawer = ({ openState, onClose }) => {
         </Stack>
       </Stack>
       <Container maxWidth="sm">
-        <Stack direction="column" spacing={1} sx={{ py: 2 }}>
-          <Scrollbar sx={{ maxHeight: '80dvh' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '90dvh' }}>
+          <Scrollbar sx={{ flexGrow: 1, maxHeight: '80%', mt: 2 }}>
             <Box
               sx={{
                 bgcolor: 'background.paper',
@@ -169,32 +169,31 @@ const CartDrawer = ({ openState, onClose }) => {
                   <Divider flexItem sx={{ borderStyle: 'dashed' }} />
                 </Box>
               ))}
-
-              <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ my: 2 }}>
-                <Typography variant="caption">
-                  {getTranslation('order')} : {orderValue}{' '}
-                  <Box component="span" sx={{ typography: 'caption' }}>
-                    {branchInfo.currency}
-                  </Box>
-                </Typography>
-                {taxValue !== 0 && (
-                  <Typography variant="caption">
-                    {getTranslation('tax')} ({branchInfo.taxValue}%) : {taxValue}{' '}
-                    <Box component="span" sx={{ typography: 'caption' }}>
-                      {branchInfo.currency}
-                    </Box>
-                  </Typography>
-                )}
-                <Typography variant="h6">
-                  {getTranslation('total bill')} : {totalBill}{' '}
-                  <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
-                    {branchInfo.currency}
-                  </Box>
-                </Typography>
-              </Stack>
             </Box>
           </Scrollbar>
-        </Stack>
+          <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ my: 2, flexGrow: 0 }}>
+            <Typography variant="caption">
+              {getTranslation('order')} : {orderValue}{' '}
+              <Box component="span" sx={{ typography: 'caption' }}>
+                {branchInfo.currency}
+              </Box>
+            </Typography>
+            {taxValue !== 0 && (
+              <Typography variant="caption">
+                {getTranslation('tax')} ({branchInfo.taxValue}%) : {taxValue}{' '}
+                <Box component="span" sx={{ typography: 'caption' }}>
+                  {branchInfo.currency}
+                </Box>
+              </Typography>
+            )}
+            <Typography variant="h6">
+              {getTranslation('total bill')} : {totalBill}{' '}
+              <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
+                {branchInfo.currency}
+              </Box>
+            </Typography>
+          </Stack>
+        </Box>
       </Container>
     </Drawer>
   );
