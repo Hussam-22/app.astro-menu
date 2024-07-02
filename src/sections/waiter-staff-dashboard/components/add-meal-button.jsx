@@ -10,8 +10,8 @@ import { useStaffContext } from 'src/sections/waiter-staff-dashboard/context/sta
 
 function StaffMenuAddMealToCart({ mealInfo, selectedTableID, isActive }) {
   const { branchInfo } = useStaffContext();
-  const { activeOrders } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
+  const { activeOrders } = useAuthContext();
   const orderSnapShot = activeOrders.find((order) => order.tableID === selectedTableID);
 
   const count = useMemo(

@@ -2,10 +2,12 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
+import { LoadingButton } from '@mui/lab';
 import { Box, Stack } from '@mui/material';
 
 import Image from 'src/components/image';
 import Label from 'src/components/label';
+import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import TextMaxLine from 'src/components/text-max-line';
 import AddMealButton from 'src/sections/waiter-staff-dashboard/components/add-meal-button';
@@ -18,10 +20,14 @@ StaffMenuMealCard.propTypes = {
 };
 
 function StaffMenuMealCard({ mealID, sectionInfo }) {
-  const { staff, fsGetMeal } = useAuthContext();
+  const { staff, fsGetMeal, fsUpdateCart } = useAuthContext();
   const { businessProfile, branchInfo, selectedTable } = useStaffContext();
+  const { activeOrders } = useAuthContext();
   const [selectedPortionIndex, _] = useState(0);
-  const [isReadMore, setIsReadMore] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { cart, updateCount, docID, businessProfileID, branchID } = activeOrders.find(
+    (order) => order.tableID === selectedTable.docID
+  );
 
   const { data: mealInfo = {} } = useQuery({
     queryKey: ['meal', mealID, businessProfile.docID],
@@ -30,6 +36,23 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
 
   const isChef = staff?.type === 'chef';
   const isMealActive = !branchInfo.disabledMeals?.includes(mealInfo.docID) && mealInfo.isActive;
+
+  const onQuickAddByPortion = async (portion) => {
+    setLoading(true);
+    const updatedCart = cart;
+    updatedCart.push({
+      ...portion,
+      mealID: mealInfo.docID,
+      qty: 1,
+      comment: '',
+      id: generateID(8),
+      update: updateCount,
+    });
+    fsUpdateCart({ orderID: docID, businessProfileID, branchID, cart: updatedCart });
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  };
 
   if (!mealInfo?.docID) return null;
 
@@ -58,9 +81,16 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
           </TextMaxLine>
           <Stack direction="row" spacing={1}>
             {mealInfo.portions.map((portion, i) => (
-              <Label variant="soft" color="warning" key={`${portion.portionSize}-${i}`}>
+              <LoadingButton
+                loading={loading}
+                variant="soft"
+                color="warning"
+                key={`${portion.portionSize}-${i}`}
+                onClick={() => onQuickAddByPortion(portion)}
+                size="small"
+              >
                 {portion.portionSize} - ${portion.price}
-              </Label>
+              </LoadingButton>
             ))}
           </Stack>
           <Stack

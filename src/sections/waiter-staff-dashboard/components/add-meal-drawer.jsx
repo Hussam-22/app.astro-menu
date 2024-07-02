@@ -11,14 +11,12 @@ import generateID from 'src/utils/generate-id';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import TextMaxLine from 'src/components/text-max-line';
-import { useResponsive } from 'src/hooks/use-responsive';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFTextField, RHFRadioGroup } from 'src/components/hook-form';
 
 const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo }) => {
   const { fsUpdateCart } = useAuthContext();
   const { docID, businessProfileID, branchID, cart, updateCount } = orderSnapShot;
-  const isMobile = useResponsive('down', 'sm');
 
   const defaultValues = useMemo(
     () => ({
