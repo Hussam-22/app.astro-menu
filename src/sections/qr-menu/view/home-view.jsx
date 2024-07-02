@@ -112,9 +112,9 @@ function QRMenuHomeView() {
     );
 
   return (
-    <Box sx={{ mb: 2 }}>
+    <Box>
       <Card sx={{ p: 1 }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
           <Stack direction="row" spacing={1} alignItems="center">
             <Avatar
               variant="rounded"
@@ -144,20 +144,43 @@ function QRMenuHomeView() {
             </IconButton>
           </Stack>
         </Stack>
-        <Divider sx={{ borderStyle: 'dashed', my: 1 }} />
         <Stack direction="column" spacing={1}>
           <Box sx={{ position: 'relative' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              endIcon={
+                <Iconify
+                  icon={isTableActive ? 'game-icons:meal' : 'zondicons:close-solid'}
+                  sx={{ width: 28, height: 28 }}
+                />
+              }
+              onClick={() => router.replace('menu')}
+              disabled={!isTableActive}
+              sx={{
+                px: 1.5,
+                fontSize: '1.2rem',
+                alignSelf: 'center',
+                borderRadius: 1,
+                position: 'absolute',
+                bottom: 8,
+                left: 10,
+                zIndex: 9,
+              }}
+            >
+              {isTableActive ? getTranslation('Go to Menu') : 'Table is not accepting orders'}
+            </Button>
             <Image src={cover} sx={{ borderRadius: 1 }} ratio="16/9" />
             {(logo || business_Logo) && (
               <Box
                 sx={{
                   bgcolor: '#FFFFFF',
-                  p: 0.5,
+                  p: 0.15,
                   borderRadius: 2,
                   position: 'absolute',
                   zindex: 1,
                   bottom: -30,
-                  right: 10,
+                  right: 11,
                 }}
               >
                 <Image
@@ -166,40 +189,22 @@ function QRMenuHomeView() {
                     width: 100,
                     height: 100,
                     borderRadius: 2,
+                    zIndex: 11,
                   }}
                 />
               </Box>
             )}
           </Box>
-          <Stack direction="column" spacing={0} sx={{ px: 2 }}>
-            <Typography variant="h3">{getTitle()}</Typography>
+          <Stack direction="column" spacing={0} sx={{ px: 2, zIndex: 99 }}>
+            <Typography variant="h3" sx={{ maxWidth: '60%' }}>
+              {getTitle()}
+            </Typography>
             <Typography variant="caption">{title}</Typography>
           </Stack>
-          <Typography variant="body2" sx={{ px: 2 }}>
+          <Typography variant="body2" sx={{ px: 2, lineHeight: 1.35, color: 'text.disabled' }}>
             {getDescription() || description}
           </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            endIcon={
-              <Iconify
-                icon={isTableActive ? 'game-icons:meal' : 'zondicons:close-solid'}
-                sx={{ width: 28, height: 28 }}
-              />
-            }
-            onClick={() => router.replace('menu')}
-            disabled={!isTableActive}
-            sx={{
-              my: 1,
-              py: 1.5,
-              px: 3,
-              fontSize: '1.2rem',
-              alignSelf: 'center',
-              borderRadius: 5,
-            }}
-          >
-            {isTableActive ? getTranslation('Go to Menu') : 'Table is not accepting orders'}
-          </Button>
+
           <Stack direction="column" alignItems="center" sx={{ mx: 1 }}>
             <Stack
               direction="row"

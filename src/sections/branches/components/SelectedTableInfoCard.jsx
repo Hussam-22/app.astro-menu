@@ -42,8 +42,6 @@ function SelectedTableInfoCard({ tableInfo }) {
   const [isVisible, setIsVisible] = useState(true);
   const screenSize = useWidth();
 
-  console.log(screenSize);
-
   const isQrMenuOnly = tableInfo?.index === 0;
 
   const { data: menusList = [] } = useQuery({
@@ -70,7 +68,7 @@ function SelectedTableInfoCard({ tableInfo }) {
       isActive: tableInfo?.isActive,
       note: tableInfo?.note,
       title: tableInfo?.title,
-      mealAlwaysAvailable: tableInfo?.mealAlwaysAvailable,
+      mealAlwaysAvailable: !!tableInfo?.mealAlwaysAvailable,
     }),
     [tableInfo]
   );

@@ -68,8 +68,8 @@ function MenuSection({ sectionInfo }) {
         spacing={2}
         sx={{
           bgcolor: order === 0 ? 'rose.50' : 'background.paper',
-          border: `3px solid ${order === 0 ? theme.palette.rose[300] : 'transparent'}`,
-          borderRadius: 2,
+          border: `1px solid ${order === 0 ? theme.palette.rose[300] : 'transparent'}`,
+          borderRadius: 1,
           py: order === 0 ? 0 : 2,
         }}
       >
