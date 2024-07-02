@@ -1,5 +1,5 @@
+import { useCallback } from 'react';
 import { useParams } from 'react-router';
-import { useEffect, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 
 import { Box, Button, Avatar, useTheme } from '@mui/material';
@@ -87,14 +87,15 @@ function BranchTables() {
     },
   });
 
-  useEffect(() => {
-    const tableOrder = activeOrders.find((order) => order.tableID === selectedTable.docID);
-    if (!tableOrder && selectedTable.isActive) mutate(selectedTable);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mutate, selectedTable, isPending]);
+  // useEffect(() => {
+  //   const tableOrder = activeOrders.find((order) => order.tableID === selectedTable.docID);
+  //   if (!tableOrder && selectedTable.isActive) mutate(selectedTable);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [mutate, selectedTable, isPending]);
 
   const onTableSelect = (table) => {
     setIsLoading(true);
+    mutate(table);
     setSelectedTable(table);
     setIsLoading(false);
   };

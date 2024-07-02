@@ -1652,7 +1652,7 @@ export function AuthProvider({ children }) {
   );
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsInitiateNewOrder = useCallback(async (payload) => {
-    const { tableID, menuID, staffID, businessProfileID, branchID } = payload;
+    const { tableID, menuID, staffID, businessProfileID, branchID, initiatedBy } = payload;
 
     const existingDocRef = query(
       collectionGroup(DB, 'orders'),
@@ -1670,6 +1670,7 @@ export function AuthProvider({ children }) {
         collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/orders`)
       );
       await setDoc(docRef, {
+        initiatedBy,
         docID: docRef.id,
         businessProfileID,
         branchID,
