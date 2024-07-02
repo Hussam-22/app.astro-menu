@@ -59,9 +59,9 @@ const AddMealDrawer = ({ isOpen, onClose, mealInfo, orderSnapShot, branchInfo })
     >
       <Scrollbar sx={{ bgcolor: 'background.default', pb: 3, height: 1 }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={1} direction="column">
-            <Image src={mealInfo.cover} ratio="4/3" />
-            <Stack spacing={2} sx={{ px: 2 }}>
+          <Stack spacing={0} direction="column">
+            <Image src={mealInfo.cover} ratio="16/9" />
+            <Stack spacing={1} sx={{ px: 2 }}>
               <Box>
                 <Typography variant="h4">{mealInfo.title}</Typography>
                 <TextMaxLine line={5} variant="body2">
