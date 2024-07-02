@@ -119,6 +119,7 @@ function TableActionBar() {
         onClose={() => setIsCancelOpen(false)}
         tableNo={selectedTable.index}
         payload={{ orderID, businessProfileID, branchID }}
+        closeText="close"
       />
       <ConfirmDialog
         title="Payment Confirmation"

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
-import { Box, Stack, Dialog, MenuItem, Typography, DialogContent } from '@mui/material';
+import { Stack, Button, Dialog, MenuItem, Typography, DialogContent } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
@@ -26,9 +26,10 @@ DialogCancelOrder.propTypes = {
   onClose: PropTypes.func,
   payload: PropTypes.object,
   tableNo: PropTypes.number,
+  closeText: PropTypes.string,
 };
 
-export default function DialogCancelOrder({ isOpen, onClose, tableNo, payload }) {
+export default function DialogCancelOrder({ isOpen, onClose, tableNo, payload, closeText }) {
   const { fsUpdateOrderStatus } = useAuthContext();
   const { setSelectedTable } = useStaffContext();
   const { orderID, businessProfileID, branchID } = payload;
@@ -92,11 +93,14 @@ export default function DialogCancelOrder({ isOpen, onClose, tableNo, payload })
               ))}
             </RHFSelect>
             <RHFTextField name="comment" label="Comment (Optional)" multiline rows={2} />
-            <Box sx={{ alignSelf: 'flex-end' }}>
+            <Stack direction="row" spacing={2} justifyContent="flex-end" alignItems="center">
               <LoadingButton type="submit" variant="contained" color="error" loading={isPending}>
                 Cancel Order
               </LoadingButton>
-            </Box>
+              <Button variant="contained" color="inherit" onClick={onClose}>
+                {closeText}
+              </Button>
+            </Stack>
           </Stack>
         </FormProvider>
       </DialogContent>

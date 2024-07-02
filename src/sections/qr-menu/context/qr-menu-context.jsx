@@ -32,6 +32,9 @@ export function QrMenuContextProvider({ children }) {
   } = useAuthContext();
   const [labels, setLabels] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [orderUnsubscribe, setOrderUnsubscribe] = useState(false);
+
+  console.log({ orderUnsubscribe });
 
   const [orderStatus, setOrderStatus] = useState({
     text: 'Taking Order...',
@@ -100,7 +103,7 @@ export function QrMenuContextProvider({ children }) {
   });
 
   const {
-    data: orderInfo = {},
+    data: orderSnapShotUnsubscribeFn = {},
     error: orderError,
     isPending: orderIsPending,
   } = useQuery({
@@ -112,6 +115,10 @@ export function QrMenuContextProvider({ children }) {
       fsOrderSnapshot({ businessProfileID, branchID, tableID, menuID: tableInfo.menuID }),
     enabled: tableInfo?.docID !== undefined && tableInfo.isActive && tableInfo.menuID !== null,
   });
+
+  useEffect(() => {
+    if (orderUnsubscribe) orderSnapShotUnsubscribeFn();
+  }, [orderSnapShotUnsubscribeFn, orderUnsubscribe]);
 
   const {
     data: mostOrderedMeals,
@@ -205,6 +212,7 @@ export function QrMenuContextProvider({ children }) {
       mostOrderedMeals,
       getTranslation,
       reset,
+      setOrderUnsubscribe,
     }),
     [
       mealsLabel,
@@ -222,6 +230,7 @@ export function QrMenuContextProvider({ children }) {
       mostOrderedMeals,
       getTranslation,
       reset,
+      setOrderUnsubscribe,
     ]
   );
   return <QrMenuContext.Provider value={memoizedValue}>{children}</QrMenuContext.Provider>;
