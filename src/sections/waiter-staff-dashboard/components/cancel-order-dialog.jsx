@@ -44,12 +44,7 @@ export default function DialogCancelOrder({ isOpen, onClose, tableNo, payload })
     defaultValues,
   });
 
-  const {
-    setValue,
-    handleSubmit,
-    reset,
-    formState: { isDirty, dirtyFields, errors },
-  } = methods;
+  const { handleSubmit } = methods;
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (value) => {

@@ -1663,6 +1663,7 @@ export function AuthProvider({ children }) {
       where('isCanceled', '==', false)
     );
     const querySnapshot = await getDocs(existingDocRef);
+
     // Check if the query snapshot is empty
     if (querySnapshot.empty) {
       const docRef = doc(

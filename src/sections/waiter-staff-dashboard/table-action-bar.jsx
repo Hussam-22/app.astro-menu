@@ -68,7 +68,7 @@ function TableActionBar() {
       <Divider sx={{ border: 'dashed 1px', borderColor: theme.palette.divider }} />
       <Card sx={{ px: 2, bgcolor: 'grey.100' }}>
         <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
-          <Stack direction="row" spacing={1}>
+          <Stack direction="column" spacing={1}>
             <LoadingButton
               variant="contained"
               color="error"

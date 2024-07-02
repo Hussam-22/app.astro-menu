@@ -27,6 +27,7 @@
 ? Staff Dashboard
 /- either add "search bar" or "filter meals" drawer, or both
 /- auto login for staff
+/- "quick add" portion directly from meal card
 
 ? Menu
 - Fix Section Title Edit

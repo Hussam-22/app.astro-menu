@@ -155,7 +155,7 @@ const TableOrder = () => {
               }),
               boxShadow: '2px 2px 0 0 #000',
               border: 'solid 3px #000',
-              borderRadius: 3,
+              borderRadius: 1,
               mx: 1,
             }}
           >
@@ -167,8 +167,8 @@ const TableOrder = () => {
                 top: 0,
                 left: 0,
                 fontSize: 20,
-                borderRadius: '20px 0 5px 0',
-                px: 1.5,
+                borderRadius: '4px 0 5px 0',
+                px: 1,
               }}
             >
               {orderIndex + 1}
@@ -181,10 +181,10 @@ const TableOrder = () => {
                 startIcon={<Iconify icon={getStatus(orderIndex).icon} />}
                 sx={{
                   position: 'absolute',
-                  top: 0,
-                  right: 0,
+                  top: 0.5,
+                  right: 0.5,
                   fontSize: 15,
-                  borderRadius: '0 20px 0 20px',
+                  borderRadius: '0 5px 0 20px',
                   p: 2,
                   ...blinkingElement,
                 }}
@@ -295,7 +295,7 @@ const TableOrder = () => {
                 !isReadyToServe.includes(orderIndex) &&
                 orderValue !== 0 && (
                   <LoadingButton
-                    variant="soft"
+                    variant="contained"
                     color="warning"
                     onClick={() => onOrderStatusUpdate()}
                     startIcon={<Iconify icon="ph:cooking-pot-light" />}
@@ -308,7 +308,7 @@ const TableOrder = () => {
 
               {(skipKitchen || isChef) && isInKitchen.includes(orderIndex) && (
                 <LoadingButton
-                  variant="soft"
+                  variant="contained"
                   color="info"
                   onClick={() => onReadyToServe(orderIndex)}
                   startIcon={<Iconify icon="dashicons:food" />}
