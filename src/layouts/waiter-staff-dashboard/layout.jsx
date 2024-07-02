@@ -37,7 +37,7 @@ function StaffLayout({ children }) {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: '1.5fr 4fr 3fr 1.5fr',
+            gridTemplateColumns: '1.25fr 3.75fr 3.75fr 1.5fr',
             mx: 2,
             gap: 1,
             pb: 4,

@@ -115,7 +115,7 @@ function BranchTables() {
         sx={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(25px, 1fr))',
-          gap: 1.5,
+          gap: { sm: 1, lg: 1.25, xl: 1.5 },
           mt: 1,
         }}
       >
