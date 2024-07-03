@@ -54,15 +54,18 @@ function MealCard({ mealInfo }) {
 
   const isMealActive = !branchInfo.disabledMeals?.includes(mealInfo.docID) && mealInfo.isActive;
 
+  console.log(orderSnapShot);
+
   const allowAddToCart =
     isMealActive &&
     branchInfo?.allowSelfOrder &&
     tableInfo.index !== 0 &&
     orderSnapShot?.updateCount === 0 &&
+    orderSnapShot?.closingTime === '' &&
     !isMenuOnly;
 
   useEffect(() => {
-    // Handler for the popstate event
+    // Handler for the popstate event (Closing the Modal when clicking the back button on Mobile devices)
     const handlePopState = (event) => {
       if (event.type === 'popstate') setIsOpen(false);
       // Ensure we push a new state to handle further back button presses

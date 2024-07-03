@@ -64,8 +64,8 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
           sx={{
             borderRadius: 1,
             filter: `grayscale(${isMealActive ? '0' : '100'})`,
-            width: { lg: '30%', xl: '22%' },
-            height: { lg: '30%', xl: '22%' },
+            width: '25%',
+            height: '25%',
           }}
         />
         {mealInfo.isNew && (
@@ -79,21 +79,23 @@ function StaffMenuMealCard({ mealID, sectionInfo }) {
           <TextMaxLine line={1} variant="overline">
             {mealInfo.title}
           </TextMaxLine>
-          <Stack direction="row" spacing={1}>
-            {mealInfo.portions.map((portion, i) => (
-              <LoadingButton
-                loading={loading}
-                variant="soft"
-                color="warning"
-                key={`${portion.portionSize}-${i}`}
-                onClick={() => onQuickAddByPortion(portion)}
-                size="small"
-                sx={{ fontSize: { xs: 6, sm: 8, md: 10, lg: 12, xl: 14 }, px: 0.5 }}
-              >
-                {portion.portionSize} - ${portion.price}
-              </LoadingButton>
-            ))}
-          </Stack>
+          {isMealActive && (
+            <Stack direction="row" spacing={1}>
+              {mealInfo.portions.map((portion, i) => (
+                <LoadingButton
+                  loading={loading}
+                  variant="soft"
+                  color="warning"
+                  key={`${portion.portionSize}-${i}`}
+                  onClick={() => onQuickAddByPortion(portion)}
+                  size="small"
+                  sx={{ fontSize: { xs: 6, sm: 8, md: 10, lg: 12, xl: 14 }, px: 0.5 }}
+                >
+                  {portion.portionSize} - ${portion.price}
+                </LoadingButton>
+              ))}
+            </Stack>
+          )}
           <Stack
             direction="row"
             spacing={1}

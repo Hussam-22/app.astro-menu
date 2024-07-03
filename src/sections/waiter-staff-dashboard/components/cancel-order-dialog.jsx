@@ -50,14 +50,25 @@ export default function DialogCancelOrder({ isOpen, onClose, tableNo, payload, c
   const { mutate, isPending } = useMutation({
     mutationFn: async (value) => {
       await delay(1000);
-      fsUpdateOrderStatus({
+
+      await fsUpdateOrderStatus({
+        orderID,
+        businessProfileID,
+        branchID,
+        toUpdateFields: {
+          cancelReason: value.reason,
+          cancelComment: value.comment,
+          closingTime: new Date(),
+        },
+      });
+
+      // this will cause the snapshot to unsubscribe
+      await fsUpdateOrderStatus({
         orderID,
         businessProfileID,
         branchID,
         toUpdateFields: {
           isCanceled: true,
-          cancelReason: value.reason,
-          cancelComment: value.comment,
         },
       });
     },

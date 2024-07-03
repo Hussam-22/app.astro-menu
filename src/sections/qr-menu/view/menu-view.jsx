@@ -22,8 +22,6 @@ function QrMenuView() {
     businessProfile: { docID, businessName, defaultLanguage, translationEdited, translation, logo },
     selectedLanguage,
     mostOrderedMeals = [],
-    getTranslation,
-    setOrderUnsubscribe,
   } = useQrMenuContext();
   const router = useRouter();
 
@@ -120,9 +118,6 @@ function QrMenuView() {
 
   return (
     <Stack direction="column" spacing={2} sx={{ pt: 1, pb: 5, position: 'relative' }}>
-      <Button variant="contained" onClick={() => setOrderUnsubscribe(true)} color="primary">
-        Unsubscribe
-      </Button>
       <Box
         sx={{
           backgroundImage: `url(${branchInfo.cover})`,

@@ -1,15 +1,13 @@
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
-import { Box, Card, Stack, Button, Container, Typography } from '@mui/material';
+import { Box, Card, useTheme, Container, Typography } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
 import Image from 'src/components/image';
 import Label from 'src/components/label';
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import TextMaxLine from 'src/components/text-max-line';
 import { useSettingsContext } from 'src/components/settings';
 
 function BranchesListView() {
@@ -49,6 +47,7 @@ BranchCard.propTypes = {
 };
 
 function BranchCard({ branchInfo }) {
+  const theme = useTheme();
   const router = useRouter();
   const { title, cover, docID, description, isActive } = branchInfo;
 
@@ -63,26 +62,20 @@ function BranchCard({ branchInfo }) {
   // <CircularProgress sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }} />
 
   return (
-    <Card>
-      {branchCover()}
-      <Stack direction="column" spacing={0.5} sx={{ p: 2 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6">{title}</Typography>
-          <Label color={isActive ? 'success' : 'error'}>{isActive ? 'Active' : 'Disabled'}</Label>
-        </Stack>
-        <TextMaxLine variant="body2">
-          {description || `No Description Available for this branch`}
-        </TextMaxLine>
-        <Button
-          variant="text"
-          color="primary"
-          sx={{ alignSelf: 'flex-start', ml: -1 }}
-          onClick={() => router.push(paths.dashboard.branches.manage(docID))}
-          startIcon={<Iconify icon="ph:gear-thin" />}
+    <Card onClick={() => router.push(paths.dashboard.branches.manage(docID))}>
+      <Box sx={{ position: 'relative', borderBottom: `dashed 1px ${theme.palette.divider}` }}>
+        {branchCover()}
+        <Label
+          variant="filled"
+          color={isActive ? 'success' : 'error'}
+          sx={{ position: 'absolute', right: 10, bottom: 10 }}
         >
-          Manage Branch
-        </Button>
-      </Stack>
+          {isActive ? 'Active' : 'Disabled'}
+        </Label>
+      </Box>
+      <Typography variant="h6" sx={{ p: 1, textAlign: 'center' }}>
+        {title}
+      </Typography>
     </Card>
   );
 }

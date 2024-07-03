@@ -73,6 +73,11 @@ const CartDrawer = ({ openState, onClose }) => {
     mutationFn: (portion) => removeMeal(portion),
   });
 
+  const allowToRemoveMeal =
+    branchInfo?.allowSelfOrder &&
+    orderSnapShot?.updateCount === 0 &&
+    orderSnapShot?.closingTime === '';
+
   if (!cartMeals) return null;
 
   return (
@@ -138,7 +143,7 @@ const CartDrawer = ({ openState, onClose }) => {
                             <Typography variant="overline" sx={{ alignSelf: 'center', mx: 1 }}>
                               {portion.price} {branchInfo.currency}
                             </Typography>
-                            {branchInfo.allowSelfOrder && (
+                            {branchInfo.allowSelfOrder && allowToRemoveMeal && (
                               <IconButton
                                 onClick={() => mutate(portion)}
                                 sx={{ p: 0.5 }}

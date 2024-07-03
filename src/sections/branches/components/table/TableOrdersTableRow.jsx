@@ -21,7 +21,7 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
     docID,
     menuID,
     cart,
-    lastUpdate,
+    closingTime,
     isPaid,
     isCanceled,
     isInKitchen,
@@ -67,7 +67,7 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
           sx={{ color: 'text.disabled', cursor: 'pointer' }}
         >
           <ListItemText
-            primary={fDateTime(new Date(lastUpdate.seconds * 1000))}
+            primary={fDateTime(new Date(closingTime.seconds * 1000))}
             secondary={docID}
             primaryTypographyProps={{ typography: 'body2', color: 'text.primary' }}
             secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}

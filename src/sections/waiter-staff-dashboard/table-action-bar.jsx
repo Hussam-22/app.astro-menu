@@ -37,7 +37,14 @@ function TableActionBar() {
         orderID,
         businessProfileID,
         branchID,
-        toUpdateFields: { isPaid: true, totalBill, lastUpdate: new Date() },
+        toUpdateFields: { totalBill, closingTime: new Date() },
+      });
+      // this will cause the snapshot to unsubscribe
+      await fsUpdateOrderStatus({
+        orderID,
+        businessProfileID,
+        branchID,
+        toUpdateFields: { isPaid: true },
       });
     },
     onSuccess: () => {

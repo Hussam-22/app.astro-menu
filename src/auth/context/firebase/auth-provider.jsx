@@ -104,8 +104,6 @@ export function AuthProvider({ children }) {
   const [branchSnapshot, setBranchSnapshot] = useState({});
   const [staff, setStaff] = useState({});
 
-  console.log(orderSnapShot);
-
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
   const status = state.loading ? 'loading' : checkAuthenticated;
 
@@ -1687,7 +1685,7 @@ export function AuthProvider({ children }) {
         isPaid: false,
         updateCount: 0,
         initiationTime: new Date(),
-        lastUpdate: new Date(),
+        closingTime: '',
         sessionExpiryTime: new Date().getTime() + 45 * 60000,
       });
       return docRef.id;

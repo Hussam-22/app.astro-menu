@@ -65,7 +65,7 @@ export default function OrdersListCard({ tableInfo }) {
     onSort,
     onChangePage,
     onChangeRowsPerPage,
-  } = useTable({ defaultOrderBy: 'LastUpdate', defaultOrder: 'desc', defaultRowsPerPage: 50 });
+  } = useTable({ defaultOrderBy: 'closingTime', defaultOrder: 'desc', defaultRowsPerPage: 50 });
 
   const [month, setMonth] = useState(THIS_MONTH);
   const [year, setYear] = useState(THIS_YEAR);
@@ -167,7 +167,8 @@ export default function OrdersListCard({ tableInfo }) {
                 dataFiltered
                   .sort(
                     (a, b) =>
-                      new Date(b.lastUpdate.seconds * 1000) - new Date(a.lastUpdate.seconds * 1000)
+                      new Date(b.closingTime.seconds * 1000) -
+                      new Date(a.closingTime.seconds * 1000)
                   )
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
