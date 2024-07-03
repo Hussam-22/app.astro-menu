@@ -28,6 +28,7 @@
 /- either add "search bar" or "filter meals" drawer, or both
 /- auto login for staff
 /- "quick add" portion directly from meal card
+- show a dialog when changing meal status, stating that changing the meal to "unable to serve" will remove it from all carts immediately
 
 ? Menu
 - Fix Section Title Edit
@@ -38,18 +39,27 @@
 - Allow Branch Admin to Close Table Order from dashboard -- Close only, no collect payment is allowed
 /- Add "Skip Kitchen" toggle to the branch
 - branch copy qr link not working on tablet
+- tables turnover calculation, add total time to branch document, then divide by total orders to reduce reads
+- for "limit scans" plan, show a message to the user that they have reached their limit
+- for "limit scans" plan, show remaining scans in the dashboard
+- for "limit scans" plan, send an email when the user reaches 80% of their limit
+- for "limit scans" plan, when limit is reached, disable branch
 
 ? Meals
 /- Translate Meal Portions (Not feasible as it will require a lot of work)
 /- Remove "gram"
 
 ? Business Profile
-1- Adding new logo issue when navigating to another tab then coming back
-2- Upgrade/Downgrade Plan
-3- Payment info
-4- Add sub users
-5- Create a firebase schedule function to check if the plan is expired or not
-6- prevent uploading svg images
+/- Adding new logo issue when navigating to another tab then coming back
+- Upgrade/Downgrade Plan
+- Payment info
+- Add sub users
+- Create a firebase schedule function to check if the plan is expired or not
+- prevent uploading svg images
+- add password reset link
+- add "Close account" button
+- add "cancel subscription" button
+
 
 ---------------------------------------------------------------------------
 ! TESTING

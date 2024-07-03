@@ -54,8 +54,6 @@ function MealCard({ mealInfo }) {
 
   const isMealActive = !branchInfo.disabledMeals?.includes(mealInfo.docID) && mealInfo.isActive;
 
-  console.log(orderSnapShot);
-
   const allowAddToCart =
     isMealActive &&
     branchInfo?.allowSelfOrder &&

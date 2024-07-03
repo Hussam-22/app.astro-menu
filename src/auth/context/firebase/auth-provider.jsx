@@ -43,6 +43,7 @@ import {
   getCountFromServer,
 } from 'firebase/firestore';
 
+import { PLANS_INFO } from 'src/_mock/_planes';
 import { FIREBASE_API } from 'src/config-global';
 import {
   DEFAULT_STAFF,
@@ -457,68 +458,63 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const createDefaults = useCallback(async (businessProfileID, planInfo) => {
+  const createDefaults = useCallback(async (businessProfileID) => {
+    // create defaults for new users, default plan = 'Trial'
     const {
       isMenuOnly,
       limits: { branch: branchesCount },
-    } = planInfo.at(-1);
+    } = PLANS_INFO[0];
 
     // 1- ADD MEAL LABELS
-    const mealLabels =
-      false &&
-      (await Promise.all(
-        DEFAULT_LABELS.map(async (label) => ({
-          id: await fsAddNewMealLabel(label, businessProfileID),
-          label,
-        }))
-      ));
+    const mealLabels = await Promise.all(
+      DEFAULT_LABELS.map(async (label) => ({
+        id: await fsAddNewMealLabel(label, businessProfileID),
+        label,
+      }))
+    );
 
     // 2- ADD MEALS
-    const meals =
-      false &&
-      (await Promise.all(
-        DEFAULT_MEALS(businessProfileID)
-          // .splice(0, 3)
-          .map(async (meal, index) => {
-            const modifiedMeal = {
-              ...meal,
-              cover: await fsGetImgDownloadUrl('_mock/meals', `meal_${index + 1}_800x800.webp`),
-              mealLabels: meal.mealLabels.map(
-                (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
-              ),
-            };
-            const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
-            return {
-              id: mealID,
-              meal,
-            };
-          })
-      ));
+    const meals = await Promise.all(
+      DEFAULT_MEALS(businessProfileID)
+        // .splice(0, 3)
+        .map(async (meal, index) => {
+          const modifiedMeal = {
+            ...meal,
+            cover: await fsGetImgDownloadUrl('_mock/meals', `meal_${index + 1}_800x800.webp`),
+            mealLabels: meal.mealLabels.map(
+              (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
+            ),
+          };
+          const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
+          return {
+            id: mealID,
+            meal,
+          };
+        })
+    );
 
     // 3- ADD MENUS
-    const menus =
-      false &&
-      (await Promise.all(
-        DEFAULT_MENUS(businessProfileID).map(async (menu) => ({
-          id: await fsAddNewMenu(menu, businessProfileID),
-          menu,
-        }))
-      ));
+    const menus = await Promise.all(
+      DEFAULT_MENUS(businessProfileID).map(async (menu) => ({
+        id: await fsAddNewMenu(menu, businessProfileID),
+        menu,
+      }))
+    );
 
     // 3- ADD MENU SECTIONS
     // eslint-disable-next-line no-unused-expressions
-    false &&
-      (await Promise.all(
-        DEFAULT_MENU_SECTIONS.map(async (section, order) => {
-          const sectionMeals = meals
-            .filter((item) => item.meal.section === section)
-            .map((meal) => meal.id);
 
-          menus.map(async (menu) =>
-            fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
-          );
-        })
-      ));
+    await Promise.all(
+      DEFAULT_MENU_SECTIONS.map(async (section, order) => {
+        const sectionMeals = meals
+          .filter((item) => item.meal.section === section)
+          .map((meal) => meal.id);
+
+        menus.map(async (menu) =>
+          fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
+        );
+      })
+    );
 
     // 4- ADD BRANCHES
     const branches = await Promise.all(
@@ -689,7 +685,7 @@ export function AuthProvider({ children }) {
       }
 
       const batch = writeBatch(DB);
-      for (let index = 0; index < +MAX_ALLOWED_USER_TABLES + 2; index += 1) {
+      for (let index = 0; index < +MAX_ALLOWED_USER_TABLES + 1; index += 1) {
         const newDocRef = doc(
           collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
         );

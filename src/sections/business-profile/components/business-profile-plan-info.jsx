@@ -4,9 +4,9 @@ import { Card, Stack, Button, Divider, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-import { fDate } from 'src/utils/format-time';
 import Image from 'src/components/image/image';
 import { useAuthContext } from 'src/auth/hooks';
+import { fDate, fDistance } from 'src/utils/format-time';
 
 // BusinessProfilePlanInfo.propTypes = {
 //   businessProfile: PropTypes.object,
@@ -24,27 +24,37 @@ function BusinessProfilePlanInfo() {
     isTrial,
     isActive,
     isMenuOnly,
-    limits: { analytics, scans, subUser, branch, languages, tables },
+    limits: { analytics, scans, subUser, branch, languages, tables,pos },
   } = businessProfile.planInfo.at(-1);
   const paymentInfo = businessProfile.paymentInfo.at(-1);
 
   const trialExpirationDate = fDate(new Date(trialExpiration.seconds * 1000));
-  const remainingDays = Math.floor((trialExpiration.seconds - Date.now() / 1000) / 86400);
+  const remainingDaysInNumbers = Math.floor((trialExpiration.seconds - Date.now() / 1000) / 86400);
+  const remainingDays = fDistance(new Date(trialExpiration.seconds * 1000),new Date())
+
+  
 
   const labelContent = () => {
-    if (isTrial) return { label: 'Trial', color: 'info' };
-    if (isActive) return { label: 'Active', color: 'success' };
+    if (remainingDaysInNumbers >0) return { label: 'Active', color: 'success' };
     return { label: 'Expired', color: 'error' };
   };
 
   return (
     <Card sx={{ p: 3, position: 'relative' }}>
+      <Stack direction="row" spacing={2} justifyContent="space-between" sx={{position: 'absolute', top: 25, right: 25}}>
+     {isTrial &&  <Label
+        color={isTrial ? 'warning' : "primary"}
+        sx={{ fontSize: 16, p: 2,  }}
+      >
+        {isTrial ? 'Trial' : "Subscribed"}
+      </Label>}
       <Label
         color={labelContent().color}
-        sx={{ fontSize: 16, p: 2, position: 'absolute', top: 25, right: 25 }}
+        sx={{ fontSize: 16, p: 2, }}
       >
         {labelContent().label}
       </Label>
+      </Stack>
       <Stack
         spacing={3}
         direction="row"
@@ -65,7 +75,7 @@ function BusinessProfilePlanInfo() {
             </Typography>
             <Typography variant="h4">{name}</Typography>
             <Typography variant="overline">
-              {`${paymentInfo.amount}$ / ${paymentInfo.term}`}
+              {isTrial ? 'Free' : `${paymentInfo.amount}$ / ${paymentInfo.term}`}
             </Typography>
           </Stack>
           <Image src={`/assets/icons/plans/${media.icon}.svg`} sx={{ borderRadius: 1, mx: 2 }} />
@@ -81,7 +91,7 @@ function BusinessProfilePlanInfo() {
           {isTrial && (
             <PlanInfoItem
               title="Trial Expiration Date"
-              content={`${trialExpirationDate} | ${remainingDays} Day(s) Remaining`}
+              content={`${trialExpirationDate} | In ${remainingDays}`}
             />
           )}
 
@@ -100,6 +110,7 @@ function BusinessProfilePlanInfo() {
             />
             <FeatureItem icon="lucide:qr-code" value={`${tables} per branch`} title="QR Codes" />
             <FeatureItem icon="hugeicons:translate" value={`${languages}`} title="Languages" />
+            <FeatureItem icon="mdi:network-pos" value={!!pos} title="POS Dashboard" />
             {/* <FeatureItem
               icon="heroicons:users"
               value={subUser > 1 ? `${subUser} users` : false}
@@ -112,11 +123,12 @@ function BusinessProfilePlanInfo() {
               title="Self Order"
             />
           </Stack>
-        </Stack>
-      </Stack>
-      <Typography variant="body2" sx={{ mt: 2, color: 'grey.600' }}>
+          <Typography variant="body2" sx={{ color: 'grey.600' }}>
         * Unlimited scans are subject to fair use policy
       </Typography>
+        </Stack>
+      </Stack>
+      
     </Card>
   );
 }

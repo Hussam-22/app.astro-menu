@@ -1,5 +1,26 @@
 export const PLANS_INFO = [
   {
+    name: 'Trial Plan',
+    description:
+      'Get a taste of our platform with a 30-day free trial. No credit card required. Upgrade to a paid plan at any time to unlock more features and benefits.',
+    cost: { monthly: 0, annualDiscount: 0 },
+    limits: {
+      branch: 1,
+      tables: 30,
+      languages: 3,
+      subUser: 1,
+      scans: '500,000 /per month',
+      analytics: true,
+      pos:true
+    },
+    isMenuOnly: false,
+    isFav: false,
+    media: {
+      icon: 'trial',
+      cover: '',
+    },
+  },
+  {
     name: 'Coffee Cup',
     description:
       'Ideal for small businesses like cafes or coffee shops with up to 15 tables. This plan offers basic digital menu features to streamline your operations and enhance customer experience.',
@@ -11,6 +32,7 @@ export const PLANS_INFO = [
       subUser: 1,
       scans: '1 million /per month',
       analytics: false,
+      pos:false
     },
     isMenuOnly: true,
     isFav: false,
@@ -31,6 +53,7 @@ export const PLANS_INFO = [
       subUser: 2,
       scans: 0,
       analytics: true,
+      pos:true
     },
     isMenuOnly: false,
     isFav: false,
@@ -51,6 +74,7 @@ export const PLANS_INFO = [
       subUser: 3,
       scans: 5000000,
       analytics: true,
+      pos:true
     },
     isMenuOnly: false,
     isFav: true,
@@ -71,6 +95,7 @@ export const PLANS_INFO = [
       subUser: 5,
       scans: 10000000,
       analytics: true,
+      pos:true
     },
     isMenuOnly: false,
     isFav: false,

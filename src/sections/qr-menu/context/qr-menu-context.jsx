@@ -34,8 +34,6 @@ export function QrMenuContextProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [orderUnsubscribe, setOrderUnsubscribe] = useState(false);
 
-  console.log({ orderUnsubscribe });
-
   const [orderStatus, setOrderStatus] = useState({
     text: 'Taking Order...',
     icon: 'solar:pen-new-square-bold',

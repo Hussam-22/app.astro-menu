@@ -5,8 +5,8 @@ import { Link, TableRow, TableCell, ListItemText } from '@mui/material';
 
 import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
-import { fDateTime } from 'src/utils/format-time';
 import getCartTotal from 'src/utils/getCartTotal';
+import { fDateTime, fDistance } from 'src/utils/format-time';
 // ----------------------------------------------------------------------
 
 TableOrdersTableRow.propTypes = {
@@ -28,6 +28,7 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
     isReadyToServe,
     staffID,
     totalBill,
+    initiationTime,
   } = row;
 
   const { data: menuInfo } = useQuery({
@@ -67,12 +68,17 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
           sx={{ color: 'text.disabled', cursor: 'pointer' }}
         >
           <ListItemText
-            primary={fDateTime(new Date(closingTime.seconds * 1000))}
+            primary={fDateTime(new Date(initiationTime.seconds * 1000))}
             secondary={docID}
             primaryTypographyProps={{ typography: 'body2', color: 'text.primary' }}
             secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
           />
         </Link>
+      </TableCell>
+      <TableCell>{closingTime !== '' && fDateTime(new Date(closingTime.seconds * 1000))}</TableCell>
+      <TableCell>
+        {closingTime !== '' &&
+          fDistance(new Date(initiationTime.seconds * 1000), new Date(closingTime.seconds * 1000))}
       </TableCell>
       <TableCell>
         <Link
