@@ -379,7 +379,7 @@ export function AuthProvider({ children }) {
         await updateDoc(userProfile, { businessProfileID });
 
         // 4- Create Default Data
-        await createDefaults(businessProfileID, businessProfileInfo.planInfo);
+        await createDefaults(businessProfileID);
       } catch (error) {
         console.log(error);
       }
@@ -503,7 +503,6 @@ export function AuthProvider({ children }) {
 
     // 3- ADD MENU SECTIONS
     // eslint-disable-next-line no-unused-expressions
-
     await Promise.all(
       DEFAULT_MENU_SECTIONS.map(async (section, order) => {
         const sectionMeals = meals

@@ -104,16 +104,16 @@ export default function FirebaseRegisterView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const selectedPlan = PLANS_INFO.find((plan) => plan.name === data.plan);
+      // const selectedPlan = PLANS_INFO.find((plan) => plan.name === data.plan);
+      const trialPlan = PLANS_INFO[0];
       const { plan, ...formData } = data;
       const businessProfile = {
         ...formData,
         planInfo: [
           {
-            ...selectedPlan,
+            ...trialPlan,
             isTrial: true,
             activationDate: new Date(),
-            trialExpiration: addOneMonth(),
             isActive: true,
           },
         ],

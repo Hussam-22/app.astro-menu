@@ -1,6 +1,4 @@
-export function addOneMonth() {
-  // Get the current date
-  const date = new Date();
+export function addOneMonth(date = new Date()) {
   // Get the current month and year
   let month = date.getMonth();
   let year = date.getFullYear();
