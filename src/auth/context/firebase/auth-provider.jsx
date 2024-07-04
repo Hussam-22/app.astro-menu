@@ -679,6 +679,7 @@ export function AuthProvider({ children }) {
               you are intending to let them view the menu only and take orders manually.`,
           index: 0,
           mealAlwaysAvailable: true,
+          isVisible: true,
         });
         return;
       }
@@ -701,6 +702,7 @@ export function AuthProvider({ children }) {
               : '',
           index,
           mealAlwaysAvailable: index === 0,
+          isVisible: true,
         });
       }
 

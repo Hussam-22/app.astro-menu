@@ -16,10 +16,10 @@ import { Box, Card, Stack, Divider, MenuItem, useTheme, Typography } from '@mui/
 import { paths } from 'src/routes/paths';
 import { fetcher } from 'src/utils/axios';
 import { useRouter } from 'src/routes/hook';
-import { useAuthContext } from 'src/auth/hooks';
 import { fData } from 'src/utils/format-number';
+import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import { useAccountLimits } from 'src/hooks/use-account-limits';
+import { useGetAccountLimits } from 'src/hooks/use-get-account-limits';
 import BranchSocialLinks from 'src/sections/branches/components/BranchSocialLinks';
 import FormProvider, {
   RHFSelect,
@@ -39,11 +39,7 @@ export default function BranchNewEditForm({ branchInfo }) {
   const { enqueueSnackbar } = useSnackbar();
   const { fsAddNewBranch, fsUpdateBranch, businessProfile } = useAuthContext();
   const queryClient = useQueryClient();
-  const accountLimits = useAccountLimits()
-
-  console.log(accountLimits);
-
-
+  const { allowPoS } = useGetAccountLimits();
 
   const { data, isLoading } = useSWR(`https://restcountries.com/v3.1/all`, fetcher);
 
@@ -225,73 +221,79 @@ export default function BranchNewEditForm({ branchInfo }) {
               <BranchSocialLinks />
             </Card>
 
-            <Card sx={{ p: 3 }}>
-              <Typography variant="h3" sx={{ mb: 1 }}>
-                Branch Settings
-              </Typography>
-              <Stack
-                direction="column"
-                spacing={1}
-                divider={
-                  <Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />
-                }
-              >
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
-                    <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                      Skip Kitchen
-                    </Typography>
-                    <Typography variant="caption">
-                      {`Activate "Skip Kitchen" when you want your waiter/ess to be in control of the order process. without waiting for the kitchen to confirm when the order is ready.`}
-                    </Typography>
+            {allowPoS && (
+              <Card sx={{ p: 3 }}>
+                <Typography variant="h3" sx={{ mb: 1 }}>
+                  Branch Settings
+                </Typography>
+                <Stack
+                  direction="column"
+                  spacing={1}
+                  divider={
+                    <Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />
+                  }
+                >
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
+                      <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                        Skip Kitchen
+                      </Typography>
+                      <Typography variant="caption">
+                        {`Activate "Skip Kitchen" when you want your waiter/ess to be in control of the order process. without waiting for the kitchen to confirm when the order is ready.`}
+                      </Typography>
+                    </Stack>
+                    <RHFSwitch
+                      name="skipKitchen"
+                      labelPlacement="start"
+                      label={values.skipKitchen ? `Skip` : `Don't Skip`}
+                      sx={{ alignItems: 'center' }}
+                      color="secondary"
+                    />
                   </Stack>
-                  <RHFSwitch
-                    name="skipKitchen"
-                    labelPlacement="start"
-                    label={values.skipKitchen ? `Skip` : `Don't Skip`}
-                    sx={{ alignItems: 'center' }}
-                    color="secondary"
-                  />
-                </Stack>
 
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
-                    <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                      Self-Order
-                    </Typography>
-                    <Typography variant="caption">
-                      Disable self-order to prevent customers from ordering directly from the menu,
-                      customers can still view the cart when the waiter adds items from their
-                      dashboard
-                    </Typography>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
+                      <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                        Self-Order
+                      </Typography>
+                      <Typography variant="caption">
+                        Disable self-order to prevent customers from ordering directly from the
+                        menu, customers can still view the cart when the waiter adds items from
+                        their dashboard
+                      </Typography>
+                    </Stack>
+                    <RHFSwitch
+                      name="allowSelfOrder"
+                      labelPlacement="start"
+                      label={values.skipKitchen ? `Enabled` : `Disabled`}
+                      sx={{ alignItems: 'center' }}
+                      color="secondary"
+                    />
                   </Stack>
-                  <RHFSwitch
-                    name="allowSelfOrder"
-                    labelPlacement="start"
-                    label={values.skipKitchen ? `Enabled` : `Disabled`}
-                    sx={{ alignItems: 'center' }}
-                    color="secondary"
-                  />
-                </Stack>
 
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
-                    <Typography color="error" sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                      Branch Status
-                    </Typography>
-                    <Typography variant="caption">
-                      When branch is inactive, customers cant view menu and waiters cant take orders
-                    </Typography>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
+                      <Typography
+                        color="error"
+                        sx={{ fontWeight: theme.typography.fontWeightBold }}
+                      >
+                        Branch Status
+                      </Typography>
+                      <Typography variant="caption">
+                        When branch is inactive, customers cant view menu and waiters cant take
+                        orders
+                      </Typography>
+                    </Stack>
+                    <RHFSwitch
+                      name="isActive"
+                      labelPlacement="start"
+                      label={values.isActive ? `Active` : `Disabled`}
+                      color="success"
+                    />
                   </Stack>
-                  <RHFSwitch
-                    name="isActive"
-                    labelPlacement="start"
-                    label={values.isActive ? `Active` : `Disabled`}
-                    color="success"
-                  />
                 </Stack>
-              </Stack>
-            </Card>
+              </Card>
+            )}
           </Stack>
         </Grid>
 

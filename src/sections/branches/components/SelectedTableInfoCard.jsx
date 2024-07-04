@@ -26,7 +26,7 @@ import {
 
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import { useWidth } from 'src/hooks/use-responsive';
+import { useGetAccountLimits } from 'src/hooks/use-get-account-limits';
 import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 
 SelectedTableInfoCard.propTypes = {
@@ -40,7 +40,7 @@ function SelectedTableInfoCard({ tableInfo }) {
   const { enqueueSnackbar } = useSnackbar();
   const { fsUpdateBranchTable, user, fsGetAllMenus } = useAuthContext();
   const [isVisible, setIsVisible] = useState(true);
-  const screenSize = useWidth();
+  const { isMenuOnly } = useGetAccountLimits();
 
   const isQrMenuOnly = tableInfo?.index === 0;
 
@@ -120,7 +120,7 @@ function SelectedTableInfoCard({ tableInfo }) {
   if (isQrMenuOnly)
     return (
       <Grid container spacing={2}>
-        {isVisible && (
+        {!isMenuOnly && isVisible && (
           <Grid xs={12}>
             <Alert
               severity="warning"
@@ -128,7 +128,7 @@ function SelectedTableInfoCard({ tableInfo }) {
               onClose={() => setIsVisible(false)}
               sx={{ width: 1 }}
             >
-              <AlertTitle>Menu View Only {screenSize}</AlertTitle>
+              <AlertTitle>Menu View Only</AlertTitle>
               This QR is intended to show the menu only and cart will be hidden, use it on your
               social media or place it on your front door, dont place it on customers tables unless
               you are intending to let them view the menu only and take orders manually.

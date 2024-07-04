@@ -22,7 +22,6 @@ function QRManagement({ branchInfo }) {
   const theme = useTheme();
   const { id: branchID } = useParams();
   const { fsGetBranchTablesSnapshot, branchTables } = useAuthContext();
-
   const [selectedTable, setSelectedTable] = useState();
 
   const { data: branchTablesUnsubscribe = {}, error } = useQuery({

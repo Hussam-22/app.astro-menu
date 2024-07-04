@@ -13,6 +13,7 @@ import { useSettingsContext } from 'src/components/settings';
 import QRManagement from 'src/sections/branches/QR-Management';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import BranchStatistics from 'src/sections/branches/BranchStatistics';
+import { useGetAccountLimits } from 'src/hooks/use-get-account-limits';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 
@@ -22,6 +23,7 @@ function BranchManageView() {
   const { themeStretch } = useSettingsContext();
   const { fsGetBranch, businessProfile } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
+  const { allowAnalytics, allowPoS } = useGetAccountLimits();
 
   const {
     data: branchInfo = {},
@@ -43,7 +45,7 @@ function BranchManageView() {
       icon: <Iconify icon="clarity:qr-code-line" width={20} height={20} />,
       component: <QRManagement branchInfo={branchInfo} />,
     },
-    {
+    allowPoS && {
       value: 'Staffs Dashboard Link',
       icon: (
         <Iconify
@@ -54,12 +56,16 @@ function BranchManageView() {
       ),
       component: <StaffLink />,
     },
-    {
+    allowAnalytics && {
       value: 'Statistics',
       icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
       component: <BranchStatistics />,
     },
-  ].splice(0, businessProfile?.planInfo?.at(-1)?.isMenuOnly ? 2 : 4);
+  ]
+    .filter((tab) => tab)
+    .splice(0, businessProfile?.planInfo?.at(-1)?.isMenuOnly ? 2 : 4);
+
+  console.log(TABS);
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
