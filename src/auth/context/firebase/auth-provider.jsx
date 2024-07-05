@@ -1627,6 +1627,8 @@ export function AuthProvider({ children }) {
       try {
         if (limitCount === 0) return [];
 
+        console.log('test vercel');
+
         const docRef = query(
           collectionGroup(DB, 'meals'),
           where('businessProfileID', '==', businessProfileID),
