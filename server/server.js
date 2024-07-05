@@ -5,7 +5,7 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-app.use(express.static('public'));
+// app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors({ origin: 'http://localhost:3035' }));
@@ -19,6 +19,7 @@ app.post('/create-checkout-session', async (req, res) => {
   });
 
   const session = await stripe.checkout.sessions.create({
+    billing_address_collection: 'auto',
     line_items: [
       {
         price: prices.data[2].id,
