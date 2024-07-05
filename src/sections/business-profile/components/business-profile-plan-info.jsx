@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types';
+import { useMutation } from '@tanstack/react-query';
 
-import { Card, Stack, Button, Divider, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Card, Stack, Divider, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
+import { STRIPE } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
 import { useAuthContext } from 'src/auth/hooks';
@@ -24,36 +27,83 @@ function BusinessProfilePlanInfo() {
     isTrial,
     isActive,
     isMenuOnly,
-    limits: { analytics, scans, subUser, branch, languages, tables,pos },
+    limits: { analytics, scans, subUser, branch, languages, tables, pos },
   } = businessProfile.planInfo.at(-1);
   const paymentInfo = businessProfile.paymentInfo.at(-1);
 
   const trialExpirationDate = fDate(new Date(trialExpiration.seconds * 1000));
   const remainingDaysInNumbers = Math.floor((trialExpiration.seconds - Date.now() / 1000) / 86400);
-  const remainingDays = fDistance(new Date(trialExpiration.seconds * 1000),new Date())
-
-  
+  const remainingDays = fDistance(new Date(trialExpiration.seconds * 1000), new Date());
 
   const labelContent = () => {
-    if (remainingDaysInNumbers >0) return { label: 'Active', color: 'success' };
+    if (remainingDaysInNumbers > 0) return { label: 'Active', color: 'success' };
     return { label: 'Expired', color: 'error' };
   };
 
+  // ----------------------------------------------------------------------------
+
+  const { isPending, mutate, error } = useMutation({
+    mutationFn: async () => {
+      const body = {
+        items: [{ id: 'prod_Q9pp1fjgXC82sy', quantity: 2 }],
+      };
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${STRIPE.secretKey}`,
+      };
+
+      const response = await fetch('http://localhost:4242/create-checkout-session', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+      return response.json();
+    },
+  });
+
+  console.log(error, isPending);
+
+  // const makePayment = async () => {
+  //   const stripe = await loadStripe(STRIPE.publicKey);
+  //   const body = {
+  //     items: [
+  //       { id: 1, quantity: 2 },
+  //       { id: 2, quantity: 1 },
+  //     ],
+  //   };
+  //   const headers = {
+  //     'Content-Type': 'application/json',
+  //     Authorization: `Bearer ${STRIPE.secretKey}`,
+  //   };
+
+  //   const response = await fetch('http://localhost:4242/create-checkout-session', {
+  //     method: 'POST',
+  //     headers,
+  //     body: JSON.stringify(body),
+  //   });
+
+  //   const session = await response.json();
+  //   const result = await stripe.redirectToCheckout({ sessionId: session.id });
+
+  //   console.log({ session, result });
+  // };
+
   return (
     <Card sx={{ p: 3, position: 'relative' }}>
-      <Stack direction="row" spacing={2} justifyContent="space-between" sx={{position: 'absolute', top: 25, right: 25}}>
-     {isTrial &&  <Label
-        color={isTrial ? 'warning' : "primary"}
-        sx={{ fontSize: 16, p: 2,  }}
+      <Stack
+        direction="row"
+        spacing={2}
+        justifyContent="space-between"
+        sx={{ position: 'absolute', top: 25, right: 25 }}
       >
-        {isTrial ? 'Trial' : "Subscribed"}
-      </Label>}
-      <Label
-        color={labelContent().color}
-        sx={{ fontSize: 16, p: 2, }}
-      >
-        {labelContent().label}
-      </Label>
+        {isTrial && (
+          <Label color={isTrial ? 'warning' : 'primary'} sx={{ fontSize: 16, p: 2 }}>
+            {isTrial ? 'Trial' : 'Subscribed'}
+          </Label>
+        )}
+        <Label color={labelContent().color} sx={{ fontSize: 16, p: 2 }}>
+          {labelContent().label}
+        </Label>
       </Stack>
       <Stack
         spacing={3}
@@ -79,13 +129,15 @@ function BusinessProfilePlanInfo() {
             </Typography>
           </Stack>
           <Image src={`/assets/icons/plans/${media.icon}.svg`} sx={{ borderRadius: 1, mx: 2 }} />
-          <Button
+          <LoadingButton
             variant="contained"
             color="primary"
             startIcon={<Iconify icon="heroicons-solid:switch-vertical" />}
+            onClick={() => mutate()}
+            loading={isPending}
           >
             Change Plan
-          </Button>
+          </LoadingButton>
         </Stack>
         <Stack direction="column" spacing={2} flexGrow={1}>
           {isTrial && (
@@ -124,23 +176,17 @@ function BusinessProfilePlanInfo() {
             />
           </Stack>
           <Typography variant="body2" sx={{ color: 'grey.600' }}>
-        * Unlimited scans are subject to fair use policy
-      </Typography>
+            * Unlimited scans are subject to fair use policy
+          </Typography>
         </Stack>
       </Stack>
-      
     </Card>
   );
 }
 
 export default BusinessProfilePlanInfo;
-// ----------------------------------------------------------------------------
 
-PlanInfoItem.propTypes = {
-  title: PropTypes.string,
-  content: PropTypes.string,
-};
-
+// eslint-disable-next-line react/prop-types
 function PlanInfoItem({ title, content }) {
   return (
     <Stack direction="column" spacing={0}>

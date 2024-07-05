@@ -34,3 +34,9 @@ export const MAPBOX_API = import.meta.env.VITE_MAPBOX_API;
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = paths.dashboard.root; // as '/dashboard'
+
+// STRIPE
+export const STRIPE = {
+  publicKey: import.meta.env.VITE_STRIPE_PUBLIC_KEY,
+  secretKey: import.meta.env.VITE_STRIPE_SECRET_KEY,
+};

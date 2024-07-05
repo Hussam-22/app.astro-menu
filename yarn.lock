@@ -3326,6 +3326,11 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
+"@stripe/stripe-js@^4.1.0":
+  "integrity" "sha512-HhstGRUz/4JdbZpb26OcOf8Qb/cFR02arvHvgz4sPFLSnI6ZNHC53Jc6JP/FGNwxtrF719YyUnK0gGy4oyhucQ=="
+  "resolved" "https://registry.npmjs.org/@stripe/stripe-js/-/stripe-js-4.1.0.tgz"
+  "version" "4.1.0"
+
 "@swc/helpers@^0.4.2":
   "integrity" "sha512-5lxnyLEYFskErRPenYItLRSge5DjrJngYKdVjRSrWfza9G6KkgHEXi0vUZiyUeMU5JfXH1YnvXZzSp8ul88o2Q=="
   "resolved" "https://registry.npmjs.org/@swc/helpers/-/helpers-0.4.36.tgz"
