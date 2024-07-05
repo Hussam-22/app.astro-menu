@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // app.use(cors({ origin: 'http://localhost:3035' }));
 
-const YOUR_DOMAIN = 'http://app-astro-menu.vercel.app/';
+const YOUR_DOMAIN = 'https://app-astro-menu.vercel.app/';
 
 app.post('/create-checkout-session', async (req, res) => {
   const prices = await stripe.prices.list({

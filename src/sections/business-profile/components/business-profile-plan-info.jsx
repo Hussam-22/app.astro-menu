@@ -51,7 +51,7 @@ function BusinessProfilePlanInfo() {
         // Authorization: `Bearer ${STRIPE.secretKey}`,
       };
 
-      const response = await fetch('http://app-astro-menu.vercel.app/create-checkout-session', {
+      const response = await fetch('https://app-astro-menu.vercel.app/create-checkout-session', {
         method: 'POST',
         headers,
         body: JSON.stringify(body),
