@@ -8,9 +8,10 @@ const app = express();
 // app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// app.use(cors({ origin: 'http://localhost:3035' }));
+app.use(cors({ origin: 'http://localhost:3035' }));
 
-const YOUR_DOMAIN = 'http://app-astro-menu.vercel.app/';
+// const YOUR_DOMAIN = 'http://app-astro-menu.vercel.app/';
+const YOUR_DOMAIN = 'http://localhost:3035';
 
 app.post('/create-checkout-session', async (req, res) => {
   const prices = await stripe.prices.list({
@@ -31,6 +32,8 @@ app.post('/create-checkout-session', async (req, res) => {
     success_url: `${YOUR_DOMAIN}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${YOUR_DOMAIN}?canceled=true`,
   });
+
+  console.log(session);
 
   res.redirect(303, session.url);
 });

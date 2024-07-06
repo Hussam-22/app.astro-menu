@@ -5,6 +5,7 @@ import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
+import { STRIPE } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
 import { useAuthContext } from 'src/auth/hooks';
@@ -48,10 +49,10 @@ function BusinessProfilePlanInfo() {
       };
       const headers = {
         'Content-Type': 'application/json',
-        // Authorization: `Bearer ${STRIPE.secretKey}`,
+        Authorization: `Bearer ${STRIPE.secretKey}`,
       };
 
-      const response = await fetch('http://app-astro-menu.vercel.app/create-checkout-session', {
+      const response = await fetch('http://localhost:4242/create-checkout-session', {
         method: 'POST',
         headers,
         body: JSON.stringify(body),
