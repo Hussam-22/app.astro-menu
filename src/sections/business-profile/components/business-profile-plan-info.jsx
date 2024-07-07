@@ -53,16 +53,17 @@ function BusinessProfilePlanInfo() {
         Authorization: `Bearer ${STRIPE.secretKey}`,
       };
 
-      const response = await fetch(
-        'https://stripe-astro-menu.vercel.app/api/create-checkout-session',
-        {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(body),
-        }
-      );
+      const response = await fetch('http://localhost:4242/create-checkout-session', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
 
-      window.location = response.url;
+      const res = await response.json();
+
+      console.log(res);
+
+      window.location = res.url;
     },
   });
 
@@ -81,14 +82,11 @@ function BusinessProfilePlanInfo() {
       Authorization: `Bearer ${STRIPE.secretKey}`,
     };
 
-    const response = await fetch(
-      'https://stripe-astro-menu.vercel.app/api/create-checkout-session',
-      {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(body),
-      }
-    );
+    const response = await fetch('http://localhost:4242', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    });
 
     const session = await response.json();
     const result = await stripe.redirectToCheckout({ sessionId: session.id });
