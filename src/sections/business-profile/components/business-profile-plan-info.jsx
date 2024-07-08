@@ -63,7 +63,7 @@ function BusinessProfilePlanInfo() {
 
       console.log(res);
 
-      window.location = res.url;
+      // window.location = res.url;
     },
   });
 
