@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { loadStripe } from '@stripe/stripe-js';
 import { useMutation } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
@@ -53,6 +52,8 @@ function BusinessProfilePlanInfo() {
         Authorization: `Bearer ${STRIPE.secretKey}`,
       };
 
+      // https://stripe-astro-menu.vercel.app/create-portal-session
+
       const response = await fetch('https://stripe-astro-menu.vercel.app/create-checkout-session', {
         method: 'POST',
         headers,
@@ -63,35 +64,39 @@ function BusinessProfilePlanInfo() {
 
       console.log(res);
 
-      // window.location = res.url;
+      window.location = res.url;
     },
   });
 
   console.log(error, isPending);
 
   const makePayment = async () => {
-    const stripe = await loadStripe(STRIPE.publicKey);
-    const body = {
-      items: [
-        { id: 1, quantity: 2 },
-        { id: 2, quantity: 1 },
-      ],
-    };
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${STRIPE.secretKey}`,
-    };
+    // const stripe = await loadStripe(STRIPE.publicKey);
+    // const body = {
+    //   items: [
+    //     { id: 1, quantity: 2 },
+    //     { id: 2, quantity: 1 },
+    //   ],
+    // };
+    // const headers = {
+    //   'Content-Type': 'application/json',
+    //   Authorization: `Bearer ${STRIPE.secretKey}`,
+    // };
 
-    const response = await fetch('http://localhost:4242', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-    });
+    // const response = await fetch('http://localhost:4242', {
+    //   method: 'POST',
+    //   headers,
+    //   body: JSON.stringify(body),
+    // });
 
-    const session = await response.json();
-    const result = await stripe.redirectToCheckout({ sessionId: session.id });
+    // const session = await response.json();
+    // const result = await stripe.redirectToCheckout({ sessionId: session.id });
 
-    console.log({ session, result });
+    // console.log({ session, result });
+
+    const response = await fetch('http://localhost:4422');
+    const res = await response.json();
+    console.log(res);
   };
 
   return (
