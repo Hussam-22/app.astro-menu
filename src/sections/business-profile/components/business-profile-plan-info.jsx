@@ -43,60 +43,59 @@ function BusinessProfilePlanInfo() {
   // ----------------------------------------------------------------------------
 
   const { isPending, mutate, error } = useMutation({
-    mutationFn: async () => {
-      const body = {
-        items: [{ id: 'prod_Q9pp1fjgXC82sy', quantity: 2 }],
-      };
-      const headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${STRIPE.secretKey}`,
-      };
-
-      // https://stripe-astro-menu.vercel.app/create-portal-session
-
-      const response = await fetch('https://stripe-astro-menu.vercel.app/create-checkout-session', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(body),
-      });
-
-      const res = await response.json();
-
-      console.log(res);
-
-      window.location = res.url;
-    },
+    mutationFn: (mutateFn) => mutateFn(),
   });
 
-  console.log(error, isPending);
+  const getCheckoutUrl = async () => {
+    const body = {
+      items: [{ id: 'prod_Q9pp1fjgXC82sy', quantity: 2 }],
+    };
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${STRIPE.secretKey}`,
+    };
 
-  const makePayment = async () => {
-    // const stripe = await loadStripe(STRIPE.publicKey);
-    // const body = {
-    //   items: [
-    //     { id: 1, quantity: 2 },
-    //     { id: 2, quantity: 1 },
-    //   ],
-    // };
-    // const headers = {
-    //   'Content-Type': 'application/json',
-    //   Authorization: `Bearer ${STRIPE.secretKey}`,
-    // };
+    // https://stripe-astro-menu.vercel.app/create-checkout-session
+    // http://localhost:4242/create-checkout-session
+    // gebp-dgbh-dfpy-dsor-szfs
 
-    // const response = await fetch('http://localhost:4242', {
-    //   method: 'POST',
-    //   headers,
-    //   body: JSON.stringify(body),
-    // });
+    const response = await fetch('https://stripe-astro-menu.vercel.app/create-checkout-session', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    });
 
-    // const session = await response.json();
-    // const result = await stripe.redirectToCheckout({ sessionId: session.id });
-
-    // console.log({ session, result });
-
-    const response = await fetch('http://localhost:4422');
     const res = await response.json();
+
     console.log(res);
+
+    window.location = res.url;
+  };
+
+  const getPortalSessionUrl = async () => {
+    const body = {
+      customerEmail: 'hussam@hotmail.co.uka',
+    };
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${STRIPE.secretKey}`,
+    };
+
+    // https://stripe-astro-menu.vercel.app/create-checkout-session
+    // http://localhost:4242/create-checkout-session
+    // gebp-dgbh-dfpy-dsor-szfs
+
+    const response = await fetch('http://localhost:4242/create-portal-session', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    });
+
+    const res = await response.json();
+
+    console.log(res);
+
+    // window.location = res.url;
   };
 
   return (
@@ -144,19 +143,20 @@ function BusinessProfilePlanInfo() {
             variant="contained"
             color="primary"
             startIcon={<Iconify icon="heroicons-solid:switch-vertical" />}
-            onClick={() => makePayment()}
+            onClick={() => mutate(getCheckoutUrl)}
             loading={isPending}
           >
             Change Plan
           </LoadingButton>
+
           <LoadingButton
             variant="contained"
-            color="secondary"
+            color="primary"
             startIcon={<Iconify icon="heroicons-solid:switch-vertical" />}
-            onClick={() => mutate()}
+            onClick={() => mutate(getPortalSessionUrl)}
             loading={isPending}
           >
-            switch
+            Manage Subscription
           </LoadingButton>
         </Stack>
         <Stack direction="column" spacing={2} flexGrow={1}>
