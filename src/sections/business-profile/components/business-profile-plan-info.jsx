@@ -5,11 +5,15 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
-import { STRIPE } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
 import { useAuthContext } from 'src/auth/hooks';
 import { fDate, fDistance } from 'src/utils/format-time';
+import {
+  stripeCreateCustomer,
+  stripeCreatePortalSession,
+  stripeCreateCheckoutSession,
+} from 'src/stripe/functions';
 
 // BusinessProfilePlanInfo.propTypes = {
 //   businessProfile: PropTypes.object,
@@ -41,59 +45,18 @@ function BusinessProfilePlanInfo() {
 
   // ----------------------------------------------------------------------------
 
-  const { isPending, mutate, error } = useMutation({
+  const { isPending, mutate, isError, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
+    onSuccess: (data) => console.log(data),
   });
 
-  const getCheckoutUrl = async () => {
-    const body = {
-      items: [{ id: 'prod_Q9pp1fjgXC82sy', quantity: 2 }],
-    };
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${STRIPE.secretKey}`,
-    };
+  console.log({ isError, error });
 
-    // https://stripe-astro-menu.vercel.app/create-checkout-session
-    // http://localhost:4242/create-checkout-session
-    // gebp-dgbh-dfpy-dsor-szfs
+  const createCheckoutSession = async () => stripeCreateCheckoutSession([], true);
 
-    const response = await fetch('https://stripe-astro-menu.vercel.app/create-checkout-session', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-    });
+  const openPortalSession = async () => stripeCreatePortalSession('hussam@hotmail.co.uk');
 
-    const res = await response.json();
-
-    console.log(res);
-
-    window.location = res.url;
-  };
-
-  const getPortalSessionUrl = async () => {
-    const body = {
-      customerEmail: 'hussam@hotmail.co.uk',
-    };
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${STRIPE.secretKey}`,
-    };
-
-    // https://stripe-astro-menu.vercel.app/create-checkout-session
-    // http://localhost:4242/create-checkout-session
-    // gebp-dgbh-dfpy-dsor-szfs
-
-    const response = await fetch('https://stripe-astro-menu.vercel.app/create-portal-session', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-    });
-
-    const res = await response.json();
-
-    window.location = res.url;
-  };
+  const createCustomer = async () => stripeCreateCustomer('hussam@hotmail.co.uk', 'Hussam');
 
   return (
     <>
@@ -195,11 +158,37 @@ function BusinessProfilePlanInfo() {
             variant="contained"
             color="secondary"
             startIcon={<Iconify icon="akar-icons:gear" />}
-            onClick={() => mutate(getPortalSessionUrl)}
+            onClick={() => mutate(openPortalSession)}
             loading={isPending}
-            sx={{ whiteSpace: 'nowrap', px: 5 }}
+            sx={{ whiteSpace: 'nowrap', px: 5, minWidth: '25%' }}
           >
             Open Subscription Portal
+          </LoadingButton>
+        </Stack>
+      </Card>
+
+      <Card sx={{ mt: 2 }}>
+        <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center" p={3}>
+          <LoadingButton
+            variant="contained"
+            color="secondary"
+            startIcon={<Iconify icon="akar-icons:gear" />}
+            onClick={() => mutate(createCustomer)}
+            loading={isPending}
+            sx={{ whiteSpace: 'nowrap', px: 5, minWidth: '25%' }}
+          >
+            Create Customer
+          </LoadingButton>
+
+          <LoadingButton
+            variant="contained"
+            color="secondary"
+            startIcon={<Iconify icon="akar-icons:gear" />}
+            onClick={() => mutate(createCheckoutSession)}
+            loading={isPending}
+            sx={{ whiteSpace: 'nowrap', px: 5, minWidth: '25%' }}
+          >
+            Create Checkout Session
           </LoadingButton>
         </Stack>
       </Card>
