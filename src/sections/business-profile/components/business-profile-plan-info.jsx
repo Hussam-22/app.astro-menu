@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, Typography } from '@mui/material';
@@ -9,11 +9,7 @@ import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
 import { useAuthContext } from 'src/auth/hooks';
 import { fDate, fDistance } from 'src/utils/format-time';
-import {
-  stripeCreateCustomer,
-  stripeCreatePortalSession,
-  stripeCreateCheckoutSession,
-} from 'src/stripe/functions';
+import { stripeCreatePortalSession } from 'src/stripe/functions';
 
 // BusinessProfilePlanInfo.propTypes = {
 //   businessProfile: PropTypes.object,
@@ -21,7 +17,7 @@ import {
 // };
 
 function BusinessProfilePlanInfo() {
-  const { businessProfile } = useAuthContext();
+  const { businessProfile, fsGetStripePayments, fsGetStripePlan } = useAuthContext();
   const {
     media,
     name,
@@ -43,20 +39,28 @@ function BusinessProfilePlanInfo() {
     return { label: 'Expired', color: 'error' };
   };
 
-  // ----------------------------------------------------------------------------
-
-  const { isPending, mutate, isError, error } = useMutation({
+  const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: (data) => console.log(data),
   });
 
-  console.log({ isError, error });
+  const { data: stripePaymentsData, error: stripePaymentsError } = useQuery({
+    queryKey: ['stripePayments'],
+    queryFn: async () => fsGetStripePayments('cus_QSJrj2wHrcqD9b'),
+  });
 
-  const createCheckoutSession = async () => stripeCreateCheckoutSession([], true);
+  const { data: stripePlanData, error: stripePlanError } = useQuery({
+    queryKey: ['stripePlanInfo', stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product],
+    queryFn: async () => fsGetStripePlan(stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product),
+    enabled: stripePaymentsData?.length > 0 && stripePaymentsData !== undefined,
+  });
+
+  console.log({ stripePlanData, stripePlanError });
 
   const openPortalSession = async () => stripeCreatePortalSession('hussam@hotmail.co.uk');
 
-  const createCustomer = async () => stripeCreateCustomer('hussam@hotmail.co.uk', 'Hussam', true);
+  // const createCheckoutSession = async () => stripeCreateCheckoutSession([], true);
+  // const createCustomer = async () => stripeCreateCustomer('hussam@hotmail.co.uk', 'Hussam', true);
 
   return (
     <>
@@ -94,12 +98,12 @@ function BusinessProfilePlanInfo() {
               <Typography variant="overline" sx={{ color: 'grey.400' }}>
                 current plan
               </Typography>
-              <Typography variant="h4">{name}</Typography>
+              <Typography variant="h4">{stripePlanData?.name}</Typography>
               <Typography variant="overline">
                 {isTrial ? 'Free' : `${paymentInfo.amount}$ / ${paymentInfo.term}`}
               </Typography>
             </Stack>
-            <Image src={`/assets/icons/plans/${media.icon}.svg`} sx={{ borderRadius: 1, mx: 2 }} />
+            <Image src={stripePlanData?.images[0]} sx={{ borderRadius: 1, mx: 2 }} />
           </Stack>
           <Stack direction="column" spacing={2} flexGrow={1}>
             {isTrial && (
@@ -109,7 +113,7 @@ function BusinessProfilePlanInfo() {
               />
             )}
 
-            <PlanInfoItem title="Description" content={description} />
+            <PlanInfoItem title="Description" content={stripePlanData?.description} />
             <Divider sx={{ borderStyle: 'dashed' }} />
             <Stack direction="row" spacing={2} justifyContent="space-evenly" flexWrap>
               <FeatureItem
@@ -167,7 +171,7 @@ function BusinessProfilePlanInfo() {
         </Stack>
       </Card>
 
-      <Card sx={{ mt: 2 }}>
+      {/* <Card sx={{ mt: 2 }}>
         <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center" p={3}>
           <LoadingButton
             variant="contained"
@@ -191,7 +195,7 @@ function BusinessProfilePlanInfo() {
             Create Checkout Session
           </LoadingButton>
         </Stack>
-      </Card>
+      </Card> */}
     </>
   );
 }

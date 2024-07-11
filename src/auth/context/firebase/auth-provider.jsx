@@ -646,6 +646,47 @@ export function AuthProvider({ children }) {
 
     // return translations;
   }, []);
+  // ----------------------- Stripe -------------------
+  const fsGetStripePayments = useCallback(
+    async (stripeCustomerID) => {
+      try {
+        const docRef = query(
+          collectionGroup(DB, 'payments'),
+          where('customer', '==', stripeCustomerID),
+          orderBy('createdAt', 'desc'),
+          limit(1)
+          // where('isDeleted', '==', false)
+        );
+        const querySnapshot = await getDocs(docRef);
+        const dataArr = [];
+
+        querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+
+        return dataArr;
+      } catch (error) {
+        throw error;
+      }
+    },
+    [state]
+  );
+  const fsGetStripePlans = useCallback(async () => {
+    try {
+      const docRef = query(collectionGroup(DB, 'plans'), where('active', '==', true));
+      const querySnapshot = await getDocs(docRef);
+      const dataArr = [];
+
+      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+
+      return dataArr;
+    } catch (error) {
+      throw error;
+    }
+  }, []);
+  const fsGetStripePlan = useCallback(async (planID) => {
+    const docRef = doc(DB, `/plans/${planID}`);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  }, []);
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
     const docRef = doc(DB, docPath);
@@ -1951,6 +1992,10 @@ export function AuthProvider({ children }) {
       fsUpdateBusinessProfile,
       createDefaults,
       fsGetSystemTranslations,
+      // --- STRIPE ----
+      fsGetStripePayments,
+      fsGetStripePlans,
+      fsGetStripePlan,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
@@ -2042,6 +2087,10 @@ export function AuthProvider({ children }) {
       fsUpdateBusinessProfile,
       createDefaults,
       fsGetSystemTranslations,
+      // --- STRIPE ----
+      fsGetStripePayments,
+      fsGetStripePlans,
+      fsGetStripePlan,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
