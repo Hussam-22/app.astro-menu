@@ -56,7 +56,7 @@ function BusinessProfilePlanInfo() {
 
   const openPortalSession = async () => stripeCreatePortalSession('hussam@hotmail.co.uk');
 
-  const createCustomer = async () => stripeCreateCustomer('hussam@hotmail.co.uk', 'Hussam');
+  const createCustomer = async () => stripeCreateCustomer('hussam@hotmail.co.uk', 'Hussam', true);
 
   return (
     <>

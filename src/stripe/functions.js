@@ -70,7 +70,7 @@ export const stripeCreateCheckoutSession = async (items, useLocalUrl = false) =>
 
   try {
     const response = await axios.post(url, body, { headers });
-    window.location = response.data.url;
+    window.location = response.data.session.url;
   } catch (error) {
     if (error.response) {
       // Server responded with a status other than 200 range
