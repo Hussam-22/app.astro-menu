@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { m } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 
 import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
@@ -18,10 +19,27 @@ function BusinessProfileManageView() {
   const theme = useTheme();
   const searchParams = useSearchParams();
   const { themeStretch } = useSettingsContext();
-  const { businessProfile } = useAuthContext();
+  const { businessProfile, fsGetStripePayments, fsGetStripePlan } = useAuthContext();
   const [currentTab, setCurrentTab] = useState(
     searchParams.get('activeTab') === null ? 'Business Info' : 'Subscription & Payment Info'
   );
+
+  const {
+    data: stripePaymentsData,
+    error: stripePaymentsError,
+    isLoading: stripePaymentIsLoading,
+  } = useQuery({
+    queryKey: ['stripePayments'],
+    queryFn: async () => fsGetStripePayments('cus_QSJrj2wHrcqD9b'),
+  });
+
+  const { isLoading: stripePlanInfoIsLoading } = useQuery({
+    queryKey: ['stripePlanInfo', stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product],
+    queryFn: async () => fsGetStripePlan(stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product),
+    enabled: stripePaymentsData?.length > 0 && stripePaymentsData !== undefined,
+  });
+
+  console.log(stripePlanInfoIsLoading, stripePaymentIsLoading);
 
   const TABS = [
     {
@@ -57,7 +75,7 @@ function BusinessProfileManageView() {
         }
       />
 
-      {businessProfile?.docID && (
+      {businessProfile?.docID && (!stripePaymentIsLoading || !stripePlanInfoIsLoading) && (
         <>
           <Tabs
             allowScrollButtonsMobile
@@ -81,6 +99,7 @@ function BusinessProfileManageView() {
           <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
 
           {businessProfile?.docID &&
+            (!stripePaymentIsLoading || !stripePlanInfoIsLoading) &&
             TABS.map((tab) => {
               const isMatched = tab.value === currentTab;
               return (

@@ -1,4 +1,4 @@
-import { format, getTime, formatDistanceToNow ,formatDistanceStrict } from 'date-fns';
+import { format, getTime, formatDistanceToNow, formatDistanceStrict } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -26,8 +26,6 @@ export function fToNow(date) {
     : '';
 }
 
-export function fDistance(date1,date2) {
-  return date1 && date2
-    ? formatDistanceStrict(date2,date1,)
-    : '';
+export function fDistance(date1, date2) {
+  return date1 && date2 ? formatDistanceStrict(date2, date1, { unit: 'day' }) : '';
 }

@@ -2,14 +2,14 @@ import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, Typography } from '@mui/material';
+import { Box, Card, Stack, Button, Divider, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
 import { useAuthContext } from 'src/auth/hooks';
 import { fDate, fDistance } from 'src/utils/format-time';
-import { stripeCreatePortalSession } from 'src/stripe/functions';
+import { stripeCreateCustomer, stripeCreatePortalSession } from 'src/stripe/functions';
 
 // BusinessProfilePlanInfo.propTypes = {
 //   businessProfile: PropTypes.object,
@@ -19,25 +19,9 @@ import { stripeCreatePortalSession } from 'src/stripe/functions';
 function BusinessProfilePlanInfo() {
   const { businessProfile, fsGetStripePayments, fsGetStripePlan } = useAuthContext();
   const {
-    media,
-    name,
-    description,
-    trialExpiration,
-    isTrial,
-    isActive,
     isMenuOnly,
-    limits: { analytics, scans, subUser, branch, languages, tables, pos },
+    limits: { analytics, scans, branch, languages, tables, pos },
   } = businessProfile.planInfo.at(-1);
-  const paymentInfo = businessProfile.paymentInfo.at(-1);
-
-  const trialExpirationDate = fDate(new Date(trialExpiration.seconds * 1000));
-  const remainingDaysInNumbers = Math.floor((trialExpiration.seconds - Date.now() / 1000) / 86400);
-  const remainingDays = fDistance(new Date(trialExpiration.seconds * 1000), new Date());
-
-  const labelContent = () => {
-    if (remainingDaysInNumbers > 0) return { label: 'Active', color: 'success' };
-    return { label: 'Expired', color: 'error' };
-  };
 
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -52,18 +36,48 @@ function BusinessProfilePlanInfo() {
   const { data: stripePlanData, error: stripePlanError } = useQuery({
     queryKey: ['stripePlanInfo', stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product],
     queryFn: async () => fsGetStripePlan(stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product),
-    enabled: stripePaymentsData?.length > 0 && stripePaymentsData !== undefined,
   });
 
-  console.log({ stripePlanData, stripePlanError });
+  const isTrial = stripePaymentsData[0]?.status === 'trialing';
+
+  console.log(stripePaymentsData[0]);
+
+  console.log(new Date(stripePaymentsData[0].trial_end * 1000));
+
+  const startDate = fDate(new Date(stripePaymentsData[0].current_period_start * 1000));
+  const endDate = fDate(new Date(stripePaymentsData[0].current_period_end * 1000));
+  const remainingDays = fDistance(
+    new Date(),
+    new Date(stripePaymentsData[0].current_period_end * 1000)
+  );
+
+  const trialStart = stripePaymentsData[0]?.trial_start
+    ? fDate(new Date(stripePaymentsData[0].trial_start * 1000))
+    : undefined;
+  const trialEnd = stripePaymentsData[0]?.trial_end
+    ? fDate(new Date(stripePaymentsData[0].trial_end * 1000))
+    : undefined;
+  const trialRemainingDays =
+    trialStart && trialEnd
+      ? fDistance(new Date(), new Date(stripePaymentsData[0].trial_end * 1000))
+      : undefined;
+
+  const labelContent = () => {
+    if (remainingDays > 0) return { label: 'Active', color: 'success' };
+    return { label: 'Expired', color: 'error' };
+  };
 
   const openPortalSession = async () => stripeCreatePortalSession('hussam@hotmail.co.uk');
 
   // const createCheckoutSession = async () => stripeCreateCheckoutSession([], true);
-  // const createCustomer = async () => stripeCreateCustomer('hussam@hotmail.co.uk', 'Hussam', true);
+  const createCustomer = async () =>
+    stripeCreateCustomer('hussam.alkhudari@gmail.com', 'Hussam Al Khudari');
 
   return (
     <>
+      <Button variant="soft" onClick={createCustomer}>
+        Create Customer
+      </Button>
       <Card sx={{ p: 3, position: 'relative' }}>
         <Stack
           direction="row"
@@ -73,7 +87,7 @@ function BusinessProfilePlanInfo() {
         >
           {isTrial && (
             <Label color={isTrial ? 'warning' : 'primary'} sx={{ fontSize: 16, p: 2 }}>
-              {isTrial ? 'Trial' : 'Subscribed'}
+              {trialStart && trialEnd ? 'Trial' : 'Subscribed'}
             </Label>
           )}
           <Label color={labelContent().color} sx={{ fontSize: 16, p: 2 }}>
@@ -99,8 +113,10 @@ function BusinessProfilePlanInfo() {
                 current plan
               </Typography>
               <Typography variant="h4">{stripePlanData?.name}</Typography>
-              <Typography variant="overline">
-                {isTrial ? 'Free' : `${paymentInfo.amount}$ / ${paymentInfo.term}`}
+              <Typography variant="h5">
+                {stripePlanData?.price_details &&
+                  stripePlanData.price_details.unit_amount.toFixed(2) / 100}{' '}
+                AED
               </Typography>
             </Stack>
             <Image src={stripePlanData?.images[0]} sx={{ borderRadius: 1, mx: 2 }} />
@@ -108,8 +124,21 @@ function BusinessProfilePlanInfo() {
           <Stack direction="column" spacing={2} flexGrow={1}>
             {isTrial && (
               <PlanInfoItem
-                title="Trial Expiration Date"
-                content={`${trialExpirationDate} | In ${remainingDays}`}
+                title="Trail Period"
+                titleColor="warning.main"
+                content={`${trialStart} to ${trialEnd}`}
+                subContent={`${trialRemainingDays} remaining`}
+                subContentColor="grey.600"
+              />
+            )}
+
+            {!isTrial && (
+              <PlanInfoItem
+                title="Subscription Period"
+                titleColor="success.main"
+                content={`${startDate} to ${endDate}`}
+                subContent={`${remainingDays} remaining`}
+                subContentColor="grey.600"
               />
             )}
 
@@ -202,14 +231,33 @@ function BusinessProfilePlanInfo() {
 
 export default BusinessProfilePlanInfo;
 
-// eslint-disable-next-line react/prop-types
-function PlanInfoItem({ title, content }) {
+PlanInfoItem.propTypes = {
+  title: PropTypes.string,
+  content: PropTypes.string,
+  subContent: PropTypes.string,
+  subContentColor: PropTypes.string,
+  titleColor: PropTypes.string,
+};
+function PlanInfoItem({
+  title,
+  content,
+  subContent,
+  subContentColor = 'common.black',
+  titleColor = 'grey.400',
+}) {
   return (
     <Stack direction="column" spacing={0}>
-      <Typography variant="overline" sx={{ color: 'grey.400' }}>
+      <Typography variant="overline" sx={{ color: titleColor }}>
         {title}
       </Typography>
-      <Typography>{content}</Typography>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Typography>{content}</Typography>
+        {subContent && (
+          <Typography variant="body2" sx={{ color: subContentColor }}>
+            {subContent}
+          </Typography>
+        )}
+      </Stack>
     </Stack>
   );
 }
