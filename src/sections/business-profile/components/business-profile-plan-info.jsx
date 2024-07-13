@@ -2,14 +2,14 @@ import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Button, Divider, Typography } from '@mui/material';
+import { Box, Card, Stack, Divider, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
 import { useAuthContext } from 'src/auth/hooks';
-import { fDate, fDistance } from 'src/utils/format-time';
-import { stripeCreateCustomer, stripeCreatePortalSession } from 'src/stripe/functions';
+import { stripeCreatePortalSession } from 'src/stripe/functions';
+import { fDate, fDistance, calculateDistanceInNumbers } from 'src/utils/format-time';
 
 // BusinessProfilePlanInfo.propTypes = {
 //   businessProfile: PropTypes.object,
@@ -17,7 +17,7 @@ import { stripeCreateCustomer, stripeCreatePortalSession } from 'src/stripe/func
 // };
 
 function BusinessProfilePlanInfo() {
-  const { businessProfile, fsGetStripePayments, fsGetStripePlan } = useAuthContext();
+  const { businessProfile, fsGetStripePayments, fsGetStripeSubscription } = useAuthContext();
   const {
     isMenuOnly,
     limits: { analytics, scans, branch, languages, tables, pos },
@@ -28,56 +28,38 @@ function BusinessProfilePlanInfo() {
     onSuccess: (data) => console.log(data),
   });
 
-  const { data: stripePaymentsData, error: stripePaymentsError } = useQuery({
-    queryKey: ['stripePayments'],
-    queryFn: async () => fsGetStripePayments('cus_QSJrj2wHrcqD9b'),
+  const { data: subscriptionInfo = {}, error: stripePlanError } = useQuery({
+    queryKey: ['stripeSubscriptionInfo', 'sub_1Pc3GFRoHLqbtaTl65pE00Pf'],
+    queryFn: async () => fsGetStripeSubscription('sub_1Pc3GFRoHLqbtaTl65pE00Pf'),
   });
 
-  const { data: stripePlanData, error: stripePlanError } = useQuery({
-    queryKey: ['stripePlanInfo', stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product],
-    queryFn: async () => fsGetStripePlan(stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product),
-  });
+  if (!subscriptionInfo.id) return null;
 
-  const isTrial = stripePaymentsData[0]?.status === 'trialing';
+  console.log(subscriptionInfo);
 
-  console.log(stripePaymentsData[0]);
+  const startDate = fDate(new Date(subscriptionInfo.current_period_start * 1000));
+  const endDate = fDate(new Date(subscriptionInfo.current_period_end * 1000));
+  const remainingDays = fDistance(new Date(), new Date(subscriptionInfo.current_period_end * 1000));
 
-  console.log(new Date(stripePaymentsData[0].trial_end * 1000));
+  console.log(remainingDays);
 
-  const startDate = fDate(new Date(stripePaymentsData[0].current_period_start * 1000));
-  const endDate = fDate(new Date(stripePaymentsData[0].current_period_end * 1000));
-  const remainingDays = fDistance(
-    new Date(),
-    new Date(stripePaymentsData[0].current_period_end * 1000)
-  );
+  const isTrial = subscriptionInfo?.status === 'trialing';
 
-  const trialStart = stripePaymentsData[0]?.trial_start
-    ? fDate(new Date(stripePaymentsData[0].trial_start * 1000))
-    : undefined;
-  const trialEnd = stripePaymentsData[0]?.trial_end
-    ? fDate(new Date(stripePaymentsData[0].trial_end * 1000))
-    : undefined;
+  const trialStart = isTrial && fDate(new Date(subscriptionInfo.trial_start * 1000));
+  const trialEnd = isTrial && fDate(new Date(subscriptionInfo.trial_end * 1000));
   const trialRemainingDays =
-    trialStart && trialEnd
-      ? fDistance(new Date(), new Date(stripePaymentsData[0].trial_end * 1000))
-      : undefined;
+    isTrial && fDistance(new Date(), new Date(subscriptionInfo.trial_end * 1000));
 
   const labelContent = () => {
-    if (remainingDays > 0) return { label: 'Active', color: 'success' };
+    if (calculateDistanceInNumbers(new Date(), new Date(subscriptionInfo.trial_end * 1000)) > 0)
+      return { label: 'Active', color: 'success' };
     return { label: 'Expired', color: 'error' };
   };
 
-  const openPortalSession = async () => stripeCreatePortalSession('hussam@hotmail.co.uk');
-
-  // const createCheckoutSession = async () => stripeCreateCheckoutSession([], true);
-  const createCustomer = async () =>
-    stripeCreateCustomer('hussam.alkhudari@gmail.com', 'Hussam Al Khudari');
+  const openPortalSession = async () => stripeCreatePortalSession('hussam.alkhudari@gmail.com');
 
   return (
     <>
-      <Button variant="soft" onClick={createCustomer}>
-        Create Customer
-      </Button>
       <Card sx={{ p: 3, position: 'relative' }}>
         <Stack
           direction="row"
@@ -112,14 +94,15 @@ function BusinessProfilePlanInfo() {
               <Typography variant="overline" sx={{ color: 'grey.400' }}>
                 current plan
               </Typography>
-              <Typography variant="h4">{stripePlanData?.name}</Typography>
+              <Typography variant="h4">{subscriptionInfo.product_details.name}</Typography>
               <Typography variant="h5">
-                {stripePlanData?.price_details &&
-                  stripePlanData.price_details.unit_amount.toFixed(2) / 100}{' '}
-                AED
+                {subscriptionInfo.price_details.unit_amount.toFixed(2) / 100} AED
               </Typography>
             </Stack>
-            <Image src={stripePlanData?.images[0]} sx={{ borderRadius: 1, mx: 2 }} />
+            <Image
+              src={subscriptionInfo.product_details.images[0]}
+              sx={{ borderRadius: 1, mx: 2 }}
+            />
           </Stack>
           <Stack direction="column" spacing={2} flexGrow={1}>
             {isTrial && (
@@ -142,7 +125,7 @@ function BusinessProfilePlanInfo() {
               />
             )}
 
-            <PlanInfoItem title="Description" content={stripePlanData?.description} />
+            <PlanInfoItem title="Description" content={subscriptionInfo?.description} />
             <Divider sx={{ borderStyle: 'dashed' }} />
             <Stack direction="row" spacing={2} justifyContent="space-evenly" flexWrap>
               <FeatureItem

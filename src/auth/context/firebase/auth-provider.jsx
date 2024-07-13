@@ -682,8 +682,8 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-  const fsGetStripePlan = useCallback(async (planID) => {
-    const docRef = doc(DB, `/plans/${planID}`);
+  const fsGetStripeSubscription = useCallback(async (subscriptionID) => {
+    const docRef = doc(DB, `/subscriptions/${subscriptionID}`);
     const docSnap = await getDoc(docRef);
     return docSnap.data();
   }, []);
@@ -1995,7 +1995,7 @@ export function AuthProvider({ children }) {
       // --- STRIPE ----
       fsGetStripePayments,
       fsGetStripePlans,
-      fsGetStripePlan,
+      fsGetStripeSubscription,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
@@ -2090,7 +2090,7 @@ export function AuthProvider({ children }) {
       // --- STRIPE ----
       fsGetStripePayments,
       fsGetStripePlans,
-      fsGetStripePlan,
+      fsGetStripeSubscription,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,

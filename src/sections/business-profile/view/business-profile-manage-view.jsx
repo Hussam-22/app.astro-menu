@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { m } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
 
-import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
+import { Box, Tab, Tabs, Button, Divider, useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSearchParams } from 'src/routes/hook';
+import { stripeCreateCustomer } from 'src/stripe/functions';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
@@ -24,22 +24,25 @@ function BusinessProfileManageView() {
     searchParams.get('activeTab') === null ? 'Business Info' : 'Subscription & Payment Info'
   );
 
-  const {
-    data: stripePaymentsData,
-    error: stripePaymentsError,
-    isLoading: stripePaymentIsLoading,
-  } = useQuery({
-    queryKey: ['stripePayments'],
-    queryFn: async () => fsGetStripePayments('cus_QSJrj2wHrcqD9b'),
-  });
+  const createCustomer = async () =>
+    stripeCreateCustomer('hussam.alkhudari@gmail.com', 'Hussam Al Khudari', true);
 
-  const { isLoading: stripePlanInfoIsLoading } = useQuery({
-    queryKey: ['stripePlanInfo', stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product],
-    queryFn: async () => fsGetStripePlan(stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product),
-    enabled: stripePaymentsData?.length > 0 && stripePaymentsData !== undefined,
-  });
+  // const {
+  //   data: stripePaymentsData,
+  //   error: stripePaymentsError,
+  //   isLoading: stripePaymentIsLoading,
+  // } = useQuery({
+  //   queryKey: ['stripePayments', 'cus_QSjTa2fJGnHzek'],
+  //   queryFn: async () => fsGetStripePayments('cus_QSjTa2fJGnHzek'),
+  // });
 
-  console.log(stripePlanInfoIsLoading, stripePaymentIsLoading);
+  // const { isLoading: stripePlanInfoIsLoading } = useQuery({
+  //   queryKey: ['stripePlanInfo', stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product],
+  //   queryFn: async () => fsGetStripePlan(stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product),
+  //   enabled: stripePaymentsData?.length > 0 && stripePaymentsData !== undefined,
+  // });
+
+  // console.log(stripePlanInfoIsLoading, stripePaymentIsLoading);
 
   const TABS = [
     {
@@ -56,6 +59,11 @@ function BusinessProfileManageView() {
       value: 'Subscription & Payment Info',
       icon: <Iconify icon="solar:box-line-duotone" width={20} height={20} />,
       component: businessProfile?.docID && <BusinessProfilePlanInfo />,
+    },
+    {
+      value: 'Create Customer',
+      component: <Button onClick={createCustomer}>Create Customer</Button>,
+      icon: <Iconify icon="solar:box-line-duotone" width={20} height={20} />,
     },
   ];
 
@@ -75,7 +83,7 @@ function BusinessProfileManageView() {
         }
       />
 
-      {businessProfile?.docID && (!stripePaymentIsLoading || !stripePlanInfoIsLoading) && (
+      {businessProfile?.docID && (
         <>
           <Tabs
             allowScrollButtonsMobile
@@ -99,7 +107,6 @@ function BusinessProfileManageView() {
           <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
 
           {businessProfile?.docID &&
-            (!stripePaymentIsLoading || !stripePlanInfoIsLoading) &&
             TABS.map((tab) => {
               const isMatched = tab.value === currentTab;
               return (
