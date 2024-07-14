@@ -140,7 +140,7 @@ export default function StaffsNewEditForm({ staffInfo }) {
               name="type"
               options={[
                 { label: 'Chef', value: 'chef' },
-                { label: 'Waiter/ess', value: 'waiter' },
+                { label: 'Waitstaff', value: 'waiter' },
               ]}
             />
             <RHFSwitch name="isActive" label="Status" />

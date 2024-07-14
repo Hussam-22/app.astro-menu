@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
-import { Box, Card, useTheme, Container, Typography } from '@mui/material';
+import { Box, Card, Stack, useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Image from 'src/components/image';
@@ -49,7 +49,10 @@ BranchCard.propTypes = {
 function BranchCard({ branchInfo }) {
   const theme = useTheme();
   const router = useRouter();
-  const { title, cover, docID, description, isActive } = branchInfo;
+  const { title, cover, docID, description, isActive, allowSerfOrder, currency, defaultLanguage } =
+    branchInfo;
+
+  const qrCounts = 25;
 
   const branchCover = () => {
     if (cover === undefined)
@@ -73,9 +76,21 @@ function BranchCard({ branchInfo }) {
           {isActive ? 'Active' : 'Disabled'}
         </Label>
       </Box>
-      <Typography variant="h6" sx={{ p: 1, textAlign: 'center' }}>
-        {title}
-      </Typography>
+      <Stack sx={{ p: 2 }}>
+        <Typography variant="h6">{title}</Typography>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            Customers Self Order :
+          </Typography>
+          <Label
+            variant="filled"
+            color={allowSerfOrder ? 'success' : 'error'}
+            sx={{ borderRadius: 1.5 }}
+          >
+            {allowSerfOrder ? 'Enabled' : 'Disabled'}
+          </Label>
+        </Stack>
+      </Stack>
     </Card>
   );
 }

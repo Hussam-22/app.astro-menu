@@ -61,7 +61,7 @@ export default function BranchNewEditForm({ branchInfo }) {
               spacing={1}
               divider={<Divider orientation="vertical" flexItem />}
             >
-              <Typography variant="caption">{item.name.official}</Typography>
+              <Typography variant="body2">{item.name.official}</Typography>
               <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightBold }}>
                 {Object.values(item?.currencies)[0]?.symbol}
               </Typography>
@@ -81,7 +81,7 @@ export default function BranchNewEditForm({ branchInfo }) {
   const defaultValues = useMemo(
     () => ({
       title: branchInfo?.title || '',
-      description: branchInfo?.description || '',
+      // description: branchInfo?.description || '',
       wifiPassword: branchInfo?.wifiPassword || '',
       isActive: !!branchInfo?.isActive,
       allowSelfOrder: !!branchInfo?.allowSelfOrder,
@@ -193,7 +193,7 @@ export default function BranchNewEditForm({ branchInfo }) {
                   <Typography variant="h3">Branch Info</Typography>
                 </Stack>
                 <RHFTextField name="title" label="Name" />
-                <RHFTextField name="description" label="About" multiline rows={3} />
+                {/* <RHFTextField name="description" label="About" multiline rows={3} /> */}
                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
                   <RHFTextField name="wifiPassword" label="Wifi Password" />
                   <RHFTextField name="taxValue" label="Tax Value" type="number" />
