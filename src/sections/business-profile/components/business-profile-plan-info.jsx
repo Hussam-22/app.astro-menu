@@ -144,7 +144,7 @@ function BusinessProfilePlanInfo() {
             {!isTrial && (
               <PlanInfoItem
                 title="Subscription Period"
-                titleColor="success.main"
+                titleColor="primary.main"
                 content={`${startDate} to ${endDate}`}
                 subContent={`${remainingDays} remaining`}
                 subContentColor="grey.600"
@@ -152,7 +152,13 @@ function BusinessProfilePlanInfo() {
             )}
 
             <Divider sx={{ borderStyle: 'dashed' }} />
-            <Stack direction="row" spacing={2} justifyContent="space-evenly" flexWrap>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, minmax(25px, 1fr))',
+                rowGap: 3,
+              }}
+            >
               <FeatureItem icon="lucide:scan-search" value="Unlimited*" title="Total Scans" />
               <FeatureItem
                 icon="heroicons:building-storefront"
@@ -168,7 +174,7 @@ function BusinessProfilePlanInfo() {
                 value={!!selfOrder}
                 title="Self Order"
               />
-            </Stack>
+            </Box>
             <Stack direction="row" spacing={1}>
               <Typography variant="caption" sx={{ color: 'grey.600' }}>
                 * Unlimited scans are subject to fair use policy
@@ -260,8 +266,8 @@ function PlanInfoItem({
       <Typography variant="overline" sx={{ color: titleColor }}>
         {title}
       </Typography>
-      <Stack direction="row" spacing={1} alignItems="center">
-        <Typography>{content}</Typography>
+      <Stack direction="row" spacing={3}>
+        <Typography variant="body2">{content}</Typography>
         {subContent && (
           <Typography variant="body2" sx={{ color: subContentColor }}>
             {subContent}
@@ -292,11 +298,11 @@ function FeatureItem({ icon, value, title }) {
     );
 
   return (
-    <Stack direction="column" spacing={1} alignItems="center">
+    <Stack direction="column" spacing={0.5} alignItems="center">
       <Iconify icon={icon} color={value ? 'success' : 'grey.400'} sx={{ width: 28, height: 28 }} />
       <Typography
         variant="overline"
-        sx={{ color: value ? 'success.main' : 'grey.400', whiteSpace: 'wrap', textAlign: 'center' }}
+        sx={{ color: value ? 'primary.main' : 'grey.400', whiteSpace: 'wrap', textAlign: 'center' }}
       >
         {title}
       </Typography>
