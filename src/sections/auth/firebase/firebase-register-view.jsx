@@ -7,31 +7,25 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Box, Card, MenuItem } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Box, Card, Button, MenuItem, useTheme } from '@mui/material';
 
-import Image from 'src/components/image';
+import Logo from 'src/components/logo';
 // routes
 import { paths } from 'src/routes/paths';
-import Label from 'src/components/label';
 import { useRouter } from 'src/routes/hook';
 // components
 import Iconify from 'src/components/iconify';
-import { PLANS_INFO } from 'src/_mock/_planes';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
-import { COUNTRIES } from 'src/_mock/_countries';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { LANGUAGES } from 'src/_mock/translation-languages';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import { addOneMonth } from 'src/utils/get-next-payment-date';
 import FormProvider, { RHFSelect, RHFTextField, RHFMultiSelect } from 'src/components/hook-form';
 
 const OPTIONS = LANGUAGES.map((language) => ({
@@ -42,31 +36,21 @@ const OPTIONS = LANGUAGES.map((language) => ({
 // ----------------------------------------------------------------------
 
 export default function FirebaseRegisterView() {
-  const {
-    register,
-    loginWithGoogle,
-    loginWithGithub,
-    loginWithTwitter,
-    fsCreateBusinessProfile,
-    createDefaults,
-  } = useAuthContext();
+  const { register, loginWithGoogle, fsCreateBusinessProfile, createDefaults } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
   const password = useBoolean();
-  const isDialogOpen = useBoolean(false);
-  const theme = useTheme();
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
     lastName: Yup.string().required('Last name required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
-    country: Yup.string().required('Country is required'),
-    plan: Yup.string().required('Plan is required'),
     businessName: Yup.string().required('Plan is required'),
     languages: Yup.array()
       .min(1, 'Choose at least one option')
       .max(3, 'max 3 translation languages allowed in the trial plan'),
+    defaultLanguage: Yup.string().required('Default language is required'),
   });
 
   const defaultValues = {
@@ -76,9 +60,8 @@ export default function FirebaseRegisterView() {
     password: '',
     businessName: '',
     address: '',
-    country: '',
-    plan: '',
     languages: [],
+    defaultLanguage: '',
   };
 
   const methods = useForm({
@@ -90,8 +73,10 @@ export default function FirebaseRegisterView() {
     watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isDirty, errors },
   } = methods;
+
+  console.log(errors);
 
   const {
     mutate,
@@ -102,80 +87,21 @@ export default function FirebaseRegisterView() {
   });
   const values = watch();
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async (formData) => {
     try {
       // const selectedPlan = PLANS_INFO.find((plan) => plan.name === data.plan);
-      const trialPlan = PLANS_INFO[0];
-      const { plan, ...formData } = data;
-      const businessProfile = {
-        ...formData,
-        planInfo: [
-          {
-            ...trialPlan,
-            isTrial: true,
-            activationDate: new Date(),
-            isActive: true,
-          },
-        ],
-        paymentInfo: [
-          {
-            isPaid: true,
-            amount: 0,
-            term: 'monthly',
-            paymentDate: new Date(),
-            nextPaymentDate: addOneMonth(),
-          },
-        ],
-      };
 
-      mutate(() => fsCreateBusinessProfile(businessProfile));
+      mutate(() =>
+        fsCreateBusinessProfile({
+          ...formData,
+        })
+      );
     } catch (error) {
       console.error(error);
       reset();
       setErrorMsg(typeof error === 'string' ? error : error.message);
     }
   });
-
-  const handleGoogleLogin = async () => {
-    try {
-      await loginWithGoogle?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleGithubLogin = async () => {
-    try {
-      await loginWithGithub?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleTwitterLogin = async () => {
-    try {
-      await loginWithTwitter?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const renderHead = (
-    <Stack spacing={1} sx={{ mb: 4, position: 'relative' }}>
-      {/* <Typography variant="overline">All plans come with 1 month free trial</Typography> */}
-      <Typography variant="h4" sx={{ mt: -1 }}>
-        Get started absolutely free
-      </Typography>
-
-      <Stack direction="row" spacing={0.5} alignItems="center">
-        <Typography variant="body2"> Already have an account? </Typography>
-
-        <Link href={paths.auth.firebase.login} component={RouterLink} variant="body2">
-          Sign in
-        </Link>
-      </Stack>
-    </Stack>
-  );
 
   const renderTerms = (
     <Typography
@@ -195,60 +121,9 @@ export default function FirebaseRegisterView() {
   );
 
   const renderForm = (
-    <Stack spacing={2}>
+    <Stack spacing={1.5} sx={{ p: 2 }}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
-
-      <Stack direction="row" spacing={1} alignItems="center">
-        <Typography variant="overline" sx={{ color: 'secondary.main' }}>
-          Not sure which plan suits you
-        </Typography>
-        <Button
-          variant="soft"
-          color="secondary"
-          size="small"
-          onClick={() => isDialogOpen.onTrue()}
-          endIcon={<Iconify icon="iconamoon:compare-duotone" />}
-        >
-          Compare Plans
-        </Button>
-      </Stack>
-      <RHFSelect name="plan" label="Plan">
-        <MenuItem value="">None</MenuItem>
-        <Divider sx={{ borderStyle: 'dashed' }} />
-        {PLANS_INFO.map((plan) => (
-          <MenuItem value={plan.name} key={plan.name}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Image
-                src={`/assets/icons/plans/${plan.media.icon}.svg`}
-                sx={{ width: 24, height: 24 }}
-              />
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography variant="overline">{`${plan.name} - ${plan.cost.monthly} AED`}</Typography>
-                {plan.isFav && <Label color="primary">Popular</Label>}
-              </Stack>
-            </Stack>
-          </MenuItem>
-        ))}
-      </RHFSelect>
-      <Typography variant="body2" sx={{ mt: -1, color: 'text.disabled' }}>
-        No Credit Card is Required, All Plans start with 1 month free trial !!
-      </Typography>
-
-      <RHFMultiSelect chip checkbox name="languages" label="Menu Languages" options={OPTIONS} />
-
       <RHFTextField name="businessName" label="Business Name" />
-      <Stack direction="row" spacing={2}>
-        <RHFTextField name="address" label="Address" />
-        <RHFSelect name="country" label="Country">
-          <MenuItem value="">None</MenuItem>
-          <Divider sx={{ borderStyle: 'dashed' }} />
-          {COUNTRIES.map((country) => (
-            <MenuItem key={country} value={country}>
-              {country}
-            </MenuItem>
-          ))}
-        </RHFSelect>
-      </Stack>
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
         <RHFTextField name="firstName" label="First name" />
@@ -271,198 +146,72 @@ export default function FirebaseRegisterView() {
           ),
         }}
       />
+      <RHFSelect name="defaultLanguage" label="Default Languages">
+        <MenuItem value="">None</MenuItem>
+        {OPTIONS.map((option) => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </RHFSelect>
+      <RHFMultiSelect
+        chip
+        checkbox
+        name="languages"
+        label="Menu Target Languages"
+        options={OPTIONS.filter((option) => option.value !== values.defaultLanguage)}
+        disabled={values.defaultLanguage === ''}
+      />
 
       <LoadingButton
         fullWidth
-        color="inherit"
+        color="primary"
         size="large"
         type="submit"
         variant="contained"
         loading={isPending}
+        disabled={!isDirty}
       >
         Create account
       </LoadingButton>
     </Stack>
   );
 
-  const plansCards = (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { sm: 'repeat(4,1fr)', xs: 'repeat(1,1fr)' },
-        gap: 1,
-      }}
-    >
-      {PLANS_INFO.map((plan) => (
-        <Card
-          sx={{
-            p: 3,
-            border: plan.isFav ? `solid 3px ${theme.palette.secondary.light}` : 'solid 2px #000000',
-            boxShadow: `3px 3px 0 0 ${plan.isFav ? theme.palette.secondary.light : '#000000'}`,
-            borderRadius: 1,
-          }}
-          key={plan.name}
-        >
-          <Stack direction="column" spacing={1}>
-            <Stack direction="column" spacing={1} sx={{ height: 140 }}>
-              <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Image
-                    src={`/assets/icons/plans/${plan.media.icon}.svg`}
-                    sx={{ width: 34, height: 34, borderRadius: 1 }}
-                  />
-                  <Typography variant="h5" sx={{ whiteSpace: 'nowrap' }}>
-                    {plan.name}
-                  </Typography>
-                  <Box>{plan.isFav && <Label color="secondary">Popular</Label>}</Box>
-                </Stack>
-                <Typography variant="h5">
-                  {plan.cost.monthly} <sup style={{ fontSize: '9px' }}>AED</sup>
-                </Typography>
-              </Stack>
-              <Typography variant="body2">{plan.description}</Typography>
-            </Stack>
-
-            <Divider sx={{ borderStyle: 'dashed' }} flexItem />
-
-            <Typography variant="h6">Features</Typography>
-
-            <Stack direction="column" spacing={0.5} sx={{ ml: 2 }}>
-              <Stack direction="row" spacing={0.5}>
-                <Typography variant="body2">
-                  <strong>Digital Menu</strong>
-                </Typography>
-                <Iconify icon="ph:check-circle-bold" sx={{ color: 'success.main' }} />
-              </Stack>
-              <Stack direction="row" spacing={0.5}>
-                <Typography variant="body2">
-                  <strong>Analytics</strong>
-                </Typography>
-                <Iconify
-                  icon="ph:check-circle-bold"
-                  sx={{ color: plan.limits.analytics ? 'success.main' : 'grey.400' }}
-                />
-              </Stack>
-              <Stack direction="row" spacing={0.5}>
-                <Typography variant="body2">
-                  <strong>Waiter/ess Dashboard</strong>
-                </Typography>
-                <Iconify
-                  icon="ph:check-circle-bold"
-                  sx={{ color: plan.isMenuOnly ? 'grey.400' : 'success.main' }}
-                />
-              </Stack>
-              <Stack direction="row" spacing={0.5}>
-                <Typography variant="body2">
-                  <strong>Kitchen Dashboard</strong>
-                </Typography>
-                <Iconify
-                  icon="ph:check-circle-bold"
-                  sx={{ color: plan.isMenuOnly ? 'grey.400' : 'success.main' }}
-                />
-              </Stack>
-
-              <Stack direction="row" spacing={0.5}>
-                <Typography variant="body2">
-                  <strong>Customer Self Order</strong>
-                </Typography>
-                <Iconify
-                  icon="ph:check-circle-bold"
-                  sx={{ color: plan.isMenuOnly ? 'grey.400' : 'success.main' }}
-                />
-              </Stack>
-
-              <Typography variant="body2">
-                <strong>QR Codes: </strong> {plan.limits.tables} /per branch
-              </Typography>
-              <Typography variant="body2">
-                <strong>Branches: </strong>
-                {plan.limits.branch}
-              </Typography>
-              <Typography variant="body2">
-                <strong>Translation Languages: </strong>
-                {plan.limits.languages}
-              </Typography>
-              <Typography variant="body2">
-                <strong>System Users: </strong>
-                {plan.limits.subUser}
-              </Typography>
-              <Typography variant="body2">
-                <strong>Meals: </strong> unlimited
-              </Typography>
-              <Typography variant="body2">
-                <strong>Menus: </strong> unlimited
-              </Typography>
-              <Typography variant="body2">
-                <strong>Scans: </strong> {plan.isMenuOnly ? plan.limits.scans : 'unlimited*'}
-              </Typography>
-            </Stack>
-          </Stack>
-        </Card>
-      ))}
-    </Box>
-  );
-
-  const renderPlansDialog = (
-    <ConfirmDialog
-      title="Compare Plans"
-      content={plansCards}
-      open={isDialogOpen.value}
-      onClose={() => isDialogOpen.onFalse()}
-      maxWidth="xl"
-    />
-  );
-
-  const renderLoginOption = (
-    <div>
-      <Divider
-        sx={{
-          my: 2.5,
-          typography: 'overline',
-          color: 'text.disabled',
-          '&::before, ::after': {
-            borderTopStyle: 'dashed',
-          },
-        }}
-      >
-        OR
-      </Divider>
-
-      <Stack direction="row" justifyContent="center" spacing={2}>
-        <IconButton onClick={handleGoogleLogin}>
-          <Iconify icon="eva:google-fill" color="#DF3E30" />
-        </IconButton>
-
-        <IconButton color="inherit" onClick={handleGithubLogin}>
-          <Iconify icon="eva:github-fill" />
-        </IconButton>
-
-        <IconButton onClick={handleTwitterLogin}>
-          <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
-        </IconButton>
-      </Stack>
-    </div>
-  );
-
-  const runWorkflow = async () => {
-    const businessProfileID = 'sZ8cqIq1ceNOPDAwDB18';
-    const selectedPlan = PLANS_INFO.find((plan) => plan.name === values.plan);
-    mutate(() => createDefaults(businessProfileID, [selectedPlan]));
-  };
-
   return (
-    <>
-      <LoadingButton onClick={runWorkflow} variant="contained" color="error" loading={isPending}>
-        Run Workflow
-      </LoadingButton>
+    <Card sx={{ pt: 2 }}>
+      <Logo sx={{ mx: 4 }} />
+      <Typography variant="h6" color="secondary" sx={{ textAlign: 'left', px: 3 }}>
+        Create your{' '}
+        <Box component="span" sx={{ color: 'primary.main' }}>
+          Astro-Menu
+        </Box>{' '}
+        account
+      </Typography>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        {renderHead}
-
         {renderForm}
-
-        {renderTerms}
-        {renderPlansDialog}
       </FormProvider>
-    </>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        sx={{ p: 2, bgcolor: 'grey.100', mt: 1 }}
+      >
+        <Stack direction="row" spacing={0.5} alignItems="center">
+          <Typography variant="caption"> Already have an account? </Typography>
+          <Link href={paths.auth.firebase.login} component={RouterLink} variant="caption">
+            Sign in
+          </Link>
+        </Stack>
+
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Link underline="always" color="text.primary" variant="caption">
+            Terms of Service
+          </Link>
+
+          <Link underline="always" color="text.primary" variant="caption">
+            Privacy Policy
+          </Link>
+        </Stack>
+      </Stack>
+    </Card>
   );
 }

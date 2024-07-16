@@ -43,7 +43,6 @@ import {
   getCountFromServer,
 } from 'firebase/firestore';
 
-import { PLANS_INFO } from 'src/_mock/_planes';
 import { FIREBASE_API } from 'src/config-global';
 import { stripeCreateCustomer } from 'src/stripe/functions';
 import {
@@ -176,12 +175,7 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (email, password) => {
     await signInWithEmailAndPassword(AUTH, email, password);
   }, []);
-  // UPDATE USER PROFILE
-  const updateUserProfile = useCallback(async (displayName) => {
-    const userProfile = await updateProfile(AUTH.currentUser, { displayName });
-    return userProfile;
-  }, []);
-  // REGISTER
+
   const register = useCallback(async (email, password, displayName) => {
     const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
     await sendEmailVerification(newUser.user);
@@ -200,18 +194,8 @@ export function AuthProvider({ children }) {
 
     return newUser.user?.uid;
   }, []);
-  // LOGOUT
   const logout = useCallback(async () => {
     await signOut(AUTH);
-  }, []);
-  // FORGOT PASSWORD
-  const forgotPassword = useCallback(async (email) => {
-    if (!email.endsWith('@kojak-group.com')) throw new Error('Email Domain Not Allowed !!');
-    await sendPasswordResetEmail(AUTH, email);
-  }, []);
-  const updateUserAccessPaths = useCallback(async (userID, allowedPaths) => {
-    const docRef = doc(DB, `/users/${userID}`);
-    await updateDoc(docRef, { allowedPaths });
   }, []);
   const fsGetUser = useCallback(async (userID) => {
     try {
@@ -223,7 +207,14 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-
+  const forgotPassword = useCallback(async (email) => {
+    if (!email.endsWith('@kojak-group.com')) throw new Error('Email Domain Not Allowed !!');
+    await sendPasswordResetEmail(AUTH, email);
+  }, []);
+  const updateUserAccessPaths = useCallback(async (userID, allowedPaths) => {
+    const docRef = doc(DB, `/users/${userID}`);
+    await updateDoc(docRef, { allowedPaths });
+  }, []);
   const fsGetUsers = useCallback(async () => {
     const docRef = collection(DB, 'users');
     const queryRef = query(docRef);
@@ -235,13 +226,15 @@ export function AuthProvider({ children }) {
 
     return documents.filter((user) => user.email !== 'hussam@hotmail.co.uk');
   }, []);
-
+  const updateUserProfile = useCallback(async (displayName) => {
+    const userProfile = await updateProfile(AUTH.currentUser, { displayName });
+    return userProfile;
+  }, []);
   // ------------------------- Firebase Functions -----------------
   const fbTranslate = httpsCallable(FUNCTIONS, 'fbTranslateSectionTitle');
   const fbTranslateMeal = httpsCallable(FUNCTIONS, 'fbTranslateMeal');
   const fbTranslateBranchDesc = httpsCallable(FUNCTIONS, 'fbTranslateBranchDesc');
   const fbTranslateMealLabelTitle = httpsCallable(FUNCTIONS, 'fbTranslateMealLabelTitle');
-  const fbTranslateKeywords = httpsCallable(FUNCTIONS, 'fbTranslateKeyword');
   // ------------------------ Image Handling ----------------------
   const fsGetImgDownloadUrl = useCallback(async (bucketPath, imgID) => {
     // eslint-disable-next-line no-useless-catch
@@ -349,12 +342,15 @@ export function AuthProvider({ children }) {
     async (data) => {
       try {
         // 1- REGISTER OWNER
+        const { email, password, firstName, lastName, ...businessProfileInfo } = data;
 
         // create a stripe customer and add a trial subscription 'Menu Master'
-        const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`, true);
-        const { customerID: stripeCustomerID, subscriptionId } = stripeData;
+        // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
+        const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`);
+        const { customerId: stripeCustomerID, subscriptionId } = stripeData;
 
-        const { email, password, firstName, lastName, ...businessProfileInfo } = data;
+        console.log({ stripeCustomerID, subscriptionId });
+
         const ownerID = await register?.(email, password, firstName, lastName);
 
         // 2- CREATE BUSINESS PROFILE
@@ -387,7 +383,7 @@ export function AuthProvider({ children }) {
         await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
 
         // 4- Create Default Data
-        await createDefaults(businessProfileID);
+        await createDefaults(businessProfileID, newDocRef.subscriptionID);
       } catch (error) {
         console.log(error);
       }
@@ -466,12 +462,9 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const createDefaults = useCallback(async (businessProfileID) => {
+  const createDefaults = useCallback(async (businessProfileID, subscriptionID) => {
     // create defaults for new users, default plan = 'Trial'
-    const {
-      isMenuOnly,
-      limits: { branch: branchesCount },
-    } = PLANS_INFO[0];
+    const stripeSubscription = await fsGetProduct(subscriptionID);
 
     // 1- ADD MEAL LABELS
     const mealLabels = await Promise.all(
@@ -677,28 +670,30 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetStripePlans = useCallback(async () => {
-    try {
-      const docRef = query(collectionGroup(DB, 'plans'), where('active', '==', true));
-      const querySnapshot = await getDocs(docRef);
-      const dataArr = [];
-
-      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
-
-      return dataArr;
-    } catch (error) {
-      throw error;
-    }
-  }, []);
   const fsGetStripeSubscription = useCallback(async (subscriptionID) => {
     const docRef = doc(DB, `/subscriptions/${subscriptionID}`);
     const docSnap = await getDoc(docRef);
     return docSnap.data();
   }, []);
-  const fsCreateStripeCustomer = useCallback(async (subscriptionID) => {
-    const docRef = doc(DB, `/subscriptions/${subscriptionID}`);
+  const fsGetProduct = useCallback(async (productID) => {
+    const docRef = doc(DB, `/product/${productID}`);
     const docSnap = await getDoc(docRef);
     return docSnap.data();
+  }, []);
+  const fsGetProducts = useCallback(async () => {
+    try {
+      const docRef = query(collection(DB, 'product'));
+      const querySnapshot = await getDocs(docRef);
+      const dataArr = [];
+
+      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+
+      console.log(dataArr);
+
+      return dataArr;
+    } catch (error) {
+      throw error;
+    }
   }, []);
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
@@ -2009,6 +2004,7 @@ export function AuthProvider({ children }) {
       fsGetStripePayments,
       fsGetStripePlans,
       fsGetStripeSubscription,
+      fsGetProducts,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
@@ -2104,6 +2100,7 @@ export function AuthProvider({ children }) {
       fsGetStripePayments,
       fsGetStripePlans,
       fsGetStripeSubscription,
+      fsGetProducts,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,

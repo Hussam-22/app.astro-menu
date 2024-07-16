@@ -1,7 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
+
 import { useAuthContext } from 'src/auth/hooks';
 
 export function useGetAccountLimits() {
-  const { businessProfile } = useAuthContext();
+  const { businessProfile, fsGetPlans } = useAuthContext();
+  const { data, error } = useQuery({ queryKey: ['plans'], queryFn: fsGetPlans });
+
   if (!businessProfile?.docID) return {};
   //   const { paymentDate, nextPaymentDate, isPaid } = businessProfile.paymentInfo.at(-1);
   const {
