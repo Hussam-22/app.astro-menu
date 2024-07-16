@@ -1,13 +1,15 @@
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
-import { Box, Card, Stack, useTheme, Container, Typography } from '@mui/material';
+import { Box, Card, Stack, Button, useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
-import Image from 'src/components/image';
 import Label from 'src/components/label';
+import Image from 'src/components/image';
 import { useRouter } from 'src/routes/hook';
+import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import { useSettingsContext } from 'src/components/settings';
 
 function BranchesListView() {
@@ -52,7 +54,7 @@ function BranchCard({ branchInfo }) {
   const { title, cover, docID, description, isActive, allowSerfOrder, currency, defaultLanguage } =
     branchInfo;
 
-  const qrCounts = 25;
+  const qrCounts = '25';
 
   const branchCover = () => {
     if (cover === undefined)
@@ -62,10 +64,8 @@ function BranchCard({ branchInfo }) {
     return <Image disabledEffect alt={title} src={cover} ratio="4/3" />;
   };
 
-  // <CircularProgress sx={{ borderRadius: 1.5, width: 48, height: 48, mr: 2 }} />
-
   return (
-    <Card onClick={() => router.push(paths.dashboard.branches.manage(docID))}>
+    <Card sx={{ pb: 1 }}>
       <Box sx={{ position: 'relative', borderBottom: `dashed 1px ${theme.palette.divider}` }}>
         {branchCover()}
         <Label
@@ -76,21 +76,53 @@ function BranchCard({ branchInfo }) {
           {isActive ? 'Active' : 'Disabled'}
         </Label>
       </Box>
-      <Stack sx={{ p: 2 }}>
+
+      <Stack direction="column" spacing={0.5} sx={{ p: 1 }}>
         <Typography variant="h6">{title}</Typography>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            Customers Self Order :
-          </Typography>
-          <Label
-            variant="filled"
-            color={allowSerfOrder ? 'success' : 'error'}
-            sx={{ borderRadius: 1.5 }}
-          >
-            {allowSerfOrder ? 'Enabled' : 'Disabled'}
-          </Label>
-        </Stack>
+        <CardItem
+          title="Customers Self Order"
+          color={allowSerfOrder ? 'success' : 'error'}
+          content={allowSerfOrder ? 'Enabled' : 'Disabled'}
+        />
+        <CardItem
+          title="Default Language"
+          color="inherit"
+          content={LANGUAGE_CODES[branchInfo.defaultLanguage].name}
+        />
+        <CardItem title="Currency" color="inherit" content={branchInfo.currency} />
+        <CardItem title="QR Codes" color="inherit" content={qrCounts} />
+      </Stack>
+
+      <Stack sx={{ px: 1 }}>
+        <Button
+          variant="contained"
+          color="secondary"
+          endIcon={<Iconify icon="iconamoon:arrow-right-2-bold" />}
+          onClick={() => router.push(paths.dashboard.branches.manage(docID))}
+        >
+          Manage
+        </Button>
       </Stack>
     </Card>
+  );
+}
+
+// ----------------------------------------------------------------------------
+
+CardItem.propTypes = {
+  title: PropTypes.string,
+  color: PropTypes.string,
+  content: PropTypes.string,
+};
+function CardItem({ title, color, content }) {
+  return (
+    <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+        {title}
+      </Typography>
+      <Typography variant="caption" color={color} sx={{ borderRadius: 1.5 }}>
+        {content}
+      </Typography>
+    </Stack>
   );
 }

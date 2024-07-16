@@ -11,9 +11,9 @@ import { stripeCreateCustomer } from 'src/stripe/functions';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
+import BusinessProfilePlanInfo from 'src/sections/business-profile/business-profile-plan-info';
 import BusinessProfileEditForm from 'src/sections/business-profile/business-profile-edit-form';
 import BusinessProfileTranslation from 'src/sections/business-profile/business-profile-translation';
-import BusinessProfilePlanInfo from 'src/sections/business-profile/components/business-profile-plan-info';
 
 function BusinessProfileManageView() {
   const theme = useTheme();

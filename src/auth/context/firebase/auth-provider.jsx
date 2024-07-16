@@ -45,6 +45,7 @@ import {
 
 import { PLANS_INFO } from 'src/_mock/_planes';
 import { FIREBASE_API } from 'src/config-global';
+import { stripeCreateCustomer } from 'src/stripe/functions';
 import {
   DEFAULT_STAFF,
   DEFAULT_MENUS,
@@ -348,6 +349,11 @@ export function AuthProvider({ children }) {
     async (data) => {
       try {
         // 1- REGISTER OWNER
+
+        // create a stripe customer and add a trial subscription 'Menu Master'
+        const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`, true);
+        const { customerID: stripeCustomerID, subscriptionId } = stripeData;
+
         const { email, password, firstName, lastName, ...businessProfileInfo } = data;
         const ownerID = await register?.(email, password, firstName, lastName);
 
@@ -355,6 +361,8 @@ export function AuthProvider({ children }) {
         const newDocRef = doc(collection(DB, `businessProfiles`));
         await setDoc(newDocRef, {
           ...businessProfileInfo,
+          stripeCustomerID,
+          subscriptionId,
           defaultLanguage: businessProfileInfo?.defaultLanguage || 'en',
           docID: newDocRef.id,
           ownerID,
@@ -376,7 +384,7 @@ export function AuthProvider({ children }) {
 
         // 3- Update Assign Business-Profile to User
         const userProfile = doc(collection(DB, 'users'), ownerID);
-        await updateDoc(userProfile, { businessProfileID });
+        await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
 
         // 4- Create Default Data
         await createDefaults(businessProfileID);
@@ -683,6 +691,11 @@ export function AuthProvider({ children }) {
     }
   }, []);
   const fsGetStripeSubscription = useCallback(async (subscriptionID) => {
+    const docRef = doc(DB, `/subscriptions/${subscriptionID}`);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  }, []);
+  const fsCreateStripeCustomer = useCallback(async (subscriptionID) => {
     const docRef = doc(DB, `/subscriptions/${subscriptionID}`);
     const docSnap = await getDoc(docRef);
     return docSnap.data();
