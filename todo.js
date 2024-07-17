@@ -44,6 +44,8 @@
 - for "limit scans" plan, show remaining scans in the dashboard
 - for "limit scans" plan, send an email when the user reaches 80% of their limit
 - for "limit scans" plan, when limit is reached, disable branch
+- when switching plan to coffee cup, hide extra tables and disable them
+- when switching plan to coffee cup, remove extra languages
 
 ? Meals
 /- Translate Meal Portions (Not feasible as it will require a lot of work)

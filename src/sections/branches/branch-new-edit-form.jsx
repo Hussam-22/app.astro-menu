@@ -19,7 +19,7 @@ import { useRouter } from 'src/routes/hook';
 import { fData } from 'src/utils/format-number';
 import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import { useGetAccountLimits } from 'src/hooks/use-get-account-limits';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import BranchSocialLinks from 'src/sections/branches/components/BranchSocialLinks';
 import FormProvider, {
   RHFSelect,
@@ -39,7 +39,7 @@ export default function BranchNewEditForm({ branchInfo }) {
   const { enqueueSnackbar } = useSnackbar();
   const { fsAddNewBranch, fsUpdateBranch, businessProfile } = useAuthContext();
   const queryClient = useQueryClient();
-  const { allowPoS } = useGetAccountLimits();
+  const { allowPoS } = useGetProductInfo();
 
   const { data, isLoading } = useSWR(`https://restcountries.com/v3.1/all`, fetcher);
 
@@ -61,7 +61,7 @@ export default function BranchNewEditForm({ branchInfo }) {
               spacing={1}
               divider={<Divider orientation="vertical" flexItem />}
             >
-              <Typography variant="caption">{item.name.official}</Typography>
+              <Typography variant="body2">{item.name.official}</Typography>
               <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightBold }}>
                 {Object.values(item?.currencies)[0]?.symbol}
               </Typography>
@@ -81,7 +81,7 @@ export default function BranchNewEditForm({ branchInfo }) {
   const defaultValues = useMemo(
     () => ({
       title: branchInfo?.title || '',
-      description: branchInfo?.description || '',
+      // description: branchInfo?.description || '',
       wifiPassword: branchInfo?.wifiPassword || '',
       isActive: !!branchInfo?.isActive,
       allowSelfOrder: !!branchInfo?.allowSelfOrder,
@@ -193,7 +193,7 @@ export default function BranchNewEditForm({ branchInfo }) {
                   <Typography variant="h3">Branch Info</Typography>
                 </Stack>
                 <RHFTextField name="title" label="Name" />
-                <RHFTextField name="description" label="About" multiline rows={3} />
+                {/* <RHFTextField name="description" label="About" multiline rows={3} /> */}
                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
                   <RHFTextField name="wifiPassword" label="Wifi Password" />
                   <RHFTextField name="taxValue" label="Tax Value" type="number" />

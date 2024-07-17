@@ -43,14 +43,14 @@ import {
   getCountFromServer,
 } from 'firebase/firestore';
 
-import { PLANS_INFO } from 'src/_mock/_planes';
 import { FIREBASE_API } from 'src/config-global';
+import { stripeCreateCustomer } from 'src/stripe/functions';
 import {
-  DEFAULT_STAFF,
-  DEFAULT_MENUS,
   DEFAULT_MEALS,
+  DEFAULT_MENUS,
+  DEFAULT_STAFF,
+  DEFAULT_BRANCH,
   DEFAULT_LABELS,
-  DEFAULT_BRANCHES,
   DEFAULT_MENU_SECTIONS,
 } from 'src/_mock/business-profile-default-values';
 
@@ -175,12 +175,7 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (email, password) => {
     await signInWithEmailAndPassword(AUTH, email, password);
   }, []);
-  // UPDATE USER PROFILE
-  const updateUserProfile = useCallback(async (displayName) => {
-    const userProfile = await updateProfile(AUTH.currentUser, { displayName });
-    return userProfile;
-  }, []);
-  // REGISTER
+
   const register = useCallback(async (email, password, displayName) => {
     const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
     await sendEmailVerification(newUser.user);
@@ -199,18 +194,8 @@ export function AuthProvider({ children }) {
 
     return newUser.user?.uid;
   }, []);
-  // LOGOUT
   const logout = useCallback(async () => {
     await signOut(AUTH);
-  }, []);
-  // FORGOT PASSWORD
-  const forgotPassword = useCallback(async (email) => {
-    if (!email.endsWith('@kojak-group.com')) throw new Error('Email Domain Not Allowed !!');
-    await sendPasswordResetEmail(AUTH, email);
-  }, []);
-  const updateUserAccessPaths = useCallback(async (userID, allowedPaths) => {
-    const docRef = doc(DB, `/users/${userID}`);
-    await updateDoc(docRef, { allowedPaths });
   }, []);
   const fsGetUser = useCallback(async (userID) => {
     try {
@@ -222,7 +207,14 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }, []);
-
+  const forgotPassword = useCallback(async (email) => {
+    if (!email.endsWith('@kojak-group.com')) throw new Error('Email Domain Not Allowed !!');
+    await sendPasswordResetEmail(AUTH, email);
+  }, []);
+  const updateUserAccessPaths = useCallback(async (userID, allowedPaths) => {
+    const docRef = doc(DB, `/users/${userID}`);
+    await updateDoc(docRef, { allowedPaths });
+  }, []);
   const fsGetUsers = useCallback(async () => {
     const docRef = collection(DB, 'users');
     const queryRef = query(docRef);
@@ -234,13 +226,15 @@ export function AuthProvider({ children }) {
 
     return documents.filter((user) => user.email !== 'hussam@hotmail.co.uk');
   }, []);
-
+  const updateUserProfile = useCallback(async (displayName) => {
+    const userProfile = await updateProfile(AUTH.currentUser, { displayName });
+    return userProfile;
+  }, []);
   // ------------------------- Firebase Functions -----------------
   const fbTranslate = httpsCallable(FUNCTIONS, 'fbTranslateSectionTitle');
   const fbTranslateMeal = httpsCallable(FUNCTIONS, 'fbTranslateMeal');
   const fbTranslateBranchDesc = httpsCallable(FUNCTIONS, 'fbTranslateBranchDesc');
   const fbTranslateMealLabelTitle = httpsCallable(FUNCTIONS, 'fbTranslateMealLabelTitle');
-  const fbTranslateKeywords = httpsCallable(FUNCTIONS, 'fbTranslateKeyword');
   // ------------------------ Image Handling ----------------------
   const fsGetImgDownloadUrl = useCallback(async (bucketPath, imgID) => {
     // eslint-disable-next-line no-useless-catch
@@ -324,15 +318,21 @@ export function AuthProvider({ children }) {
           }
         }
 
+        const subscriptionInfo = await fsGetStripeSubscription(docSnapshot.data().subscriptionId);
+        const productInfo = await fsGetProduct(subscriptionInfo.product_details.id);
+
         dispatch({
           type: 'INITIAL',
           payload: {
             ...state,
             businessProfile: {
               ...docSnapshot.data(),
+              ...subscriptionInfo,
+              ...productInfo,
               logo,
               ownerInfo: businessOwnerInfo,
-              role: docSnapshot.data().planInfo.at(-1).isMenuOnly ? 'menuOnly' : 'full',
+              // role: docSnapshot.data().planInfo.at(-1).isMenuOnly ? 'menuOnly' : 'full',
+              role: 'full',
             },
           },
         });
@@ -349,12 +349,21 @@ export function AuthProvider({ children }) {
       try {
         // 1- REGISTER OWNER
         const { email, password, firstName, lastName, ...businessProfileInfo } = data;
+
+        // create a stripe customer and add a trial subscription 'Menu Master'
+        // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
+        const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`, true);
+        console.log(stripeData);
+        const { customerId: stripeCustomerID, subscriptionId } = stripeData;
+
         const ownerID = await register?.(email, password, firstName, lastName);
 
         // 2- CREATE BUSINESS PROFILE
         const newDocRef = doc(collection(DB, `businessProfiles`));
         await setDoc(newDocRef, {
           ...businessProfileInfo,
+          stripeCustomerID,
+          subscriptionId,
           defaultLanguage: businessProfileInfo?.defaultLanguage || 'en',
           docID: newDocRef.id,
           ownerID,
@@ -376,10 +385,10 @@ export function AuthProvider({ children }) {
 
         // 3- Update Assign Business-Profile to User
         const userProfile = doc(collection(DB, 'users'), ownerID);
-        await updateDoc(userProfile, { businessProfileID });
+        await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
 
         // 4- Create Default Data
-        await createDefaults(businessProfileID);
+        await createDefaults(businessProfileID, subscriptionId);
       } catch (error) {
         console.log(error);
       }
@@ -458,90 +467,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const createDefaults = useCallback(async (businessProfileID) => {
-    // create defaults for new users, default plan = 'Trial'
-    const {
-      isMenuOnly,
-      limits: { branch: branchesCount },
-    } = PLANS_INFO[0];
-
-    // 1- ADD MEAL LABELS
-    const mealLabels = await Promise.all(
-      DEFAULT_LABELS.map(async (label) => ({
-        id: await fsAddNewMealLabel(label, businessProfileID),
-        label,
-      }))
-    );
-
-    // 2- ADD MEALS
-    const meals = await Promise.all(
-      DEFAULT_MEALS(businessProfileID)
-        // .splice(0, 3)
-        .map(async (meal, index) => {
-          const modifiedMeal = {
-            ...meal,
-            cover: await fsGetImgDownloadUrl('_mock/meals', `meal_${index + 1}_800x800.webp`),
-            mealLabels: meal.mealLabels.map(
-              (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
-            ),
-          };
-          const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
-          return {
-            id: mealID,
-            meal,
-          };
-        })
-    );
-
-    // 3- ADD MENUS
-    const menus = await Promise.all(
-      DEFAULT_MENUS(businessProfileID).map(async (menu) => ({
-        id: await fsAddNewMenu(menu, businessProfileID),
-        menu,
-      }))
-    );
-
-    // 3- ADD MENU SECTIONS
-    // eslint-disable-next-line no-unused-expressions
-    await Promise.all(
-      DEFAULT_MENU_SECTIONS.map(async (section, order) => {
-        const sectionMeals = meals
-          .filter((item) => item.meal.section === section)
-          .map((meal) => meal.id);
-
-        menus.map(async (menu) =>
-          fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
-        );
-      })
-    );
-
-    // 4- ADD BRANCHES
-    const branches = await Promise.all(
-      DEFAULT_BRANCHES(businessProfileID)
-        .splice(0, branchesCount > 3 ? 3 : branchesCount)
-        .map(async (branch, index) => {
-          const modifiedBranch = {
-            ...branch,
-            cover: await fsGetImgDownloadUrl('_mock/branches', `branch-${index + 1}_800x800.webp`),
-          };
-          const branchID = await fsAddNewBranch(modifiedBranch, businessProfileID);
-          return branchID;
-        })
-    );
-
-    // 5- ADD STAFF
-    // eslint-disable-next-line no-unused-expressions
-    !isMenuOnly &&
-      (await Promise.all(
-        DEFAULT_STAFF(businessProfileID).map(async (staff) => {
-          const modifiedStaff = {
-            ...staff,
-            branchID: branches[0],
-          };
-          await fsAddNewStaff(modifiedStaff, businessProfileID);
-        })
-      ));
-  }, []);
   const fsBatchUpdateBusinessProfileLanguages = useCallback(
     async (languages, businessProfileID = state.businessProfile.docID) => {
       try {
@@ -646,6 +571,104 @@ export function AuthProvider({ children }) {
 
     // return translations;
   }, []);
+  const createDefaults = useCallback(async (businessProfileID) => {
+    // create defaults for new users, default plan = 'Trial'
+
+    // 1- ADD MEAL LABELS
+    const mealLabels = await Promise.all(
+      DEFAULT_LABELS.map(async (label) => ({
+        id: await fsAddNewMealLabel(label, businessProfileID),
+        label,
+      }))
+    );
+
+    // 2- ADD MEALS
+    const meals = await Promise.all(
+      DEFAULT_MEALS(businessProfileID)
+        // .splice(0, 3)
+        .map(async (meal, index) => {
+          const modifiedMeal = {
+            ...meal,
+            cover: await fsGetImgDownloadUrl('_mock/meals', `meal_${index + 1}_800x800.webp`),
+            mealLabels: meal.mealLabels.map(
+              (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
+            ),
+          };
+          const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
+          return {
+            id: mealID,
+            meal,
+          };
+        })
+    );
+
+    // 3- ADD MENUS
+    const menus = await Promise.all(
+      DEFAULT_MENUS(businessProfileID).map(async (menu) => ({
+        id: await fsAddNewMenu(menu, businessProfileID),
+        menu,
+      }))
+    );
+
+    // 3- ADD MENU SECTIONS
+    await Promise.all(
+      DEFAULT_MENU_SECTIONS.map(async (section, order) => {
+        const sectionMeals = meals
+          .filter((item) => item.meal.section === section)
+          .map((meal) => meal.id);
+
+        menus.map(async (menu) =>
+          fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
+        );
+      })
+    );
+
+    const branchID = await fsAddNewBranch(
+      {
+        ...DEFAULT_BRANCH,
+        businessProfileID,
+        cover: await fsGetImgDownloadUrl('_mock/branches', `branch-1_800x800.webp`),
+      },
+      businessProfileID
+    );
+
+    // 5- ADD STAFF
+    await Promise.all(
+      DEFAULT_STAFF(businessProfileID).map(async (staff) => {
+        const modifiedStaff = {
+          ...staff,
+          branchID,
+        };
+        await fsAddNewStaff(modifiedStaff, businessProfileID);
+      })
+    );
+  }, []);
+  // ----------------------- Stripe -------------------
+  const fsGetStripeSubscription = useCallback(async (subscriptionID) => {
+    const docRef = doc(DB, `/subscriptions/${subscriptionID}`);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  }, []);
+  const fsGetProduct = useCallback(async (productID) => {
+    const docRef = doc(DB, `/products/${productID}`);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  }, []);
+  const fsGetProducts = useCallback(async () => {
+    try {
+      const docRef = query(collection(DB, 'products'));
+      const querySnapshot = await getDocs(docRef);
+      const dataArr = [];
+
+      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+
+      console.log(dataArr);
+
+      return dataArr;
+    } catch (error) {
+      throw error;
+    }
+  }, []);
   // ----------------------- Tables -----------------------------
   const fsUpdateTable = useCallback(async (docPath, payload) => {
     const docRef = doc(DB, docPath);
@@ -656,14 +679,18 @@ export function AuthProvider({ children }) {
       // Get Business Profile Plan
       const businessProfileDoc = doc(DB, `/businessProfiles/${businessProfileID}`);
       const businessProfileSnap = await getDoc(businessProfileDoc);
-      const plans = businessProfileSnap.data().planInfo;
-      const MAX_ALLOWED_USER_TABLES = plans.at(-1).limits.tables;
+      const subscriptionInfo = await fsGetStripeSubscription(
+        businessProfileSnap.data().subscriptionId
+      );
+      const productInfo = await fsGetProduct(subscriptionInfo.product_details.id);
+
+      const tablesCount = +productInfo.metadata.tables;
 
       // Get menus
       const menus = await fsGetAllMenus(businessProfileID);
       const menuID = menus.find((menu) => menu.title === 'Main Menu')?.docID || menus[0].docID;
 
-      if (+MAX_ALLOWED_USER_TABLES === 1) {
+      if (+tablesCount === 1) {
         const newDocRef = doc(
           collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
         );
@@ -685,7 +712,7 @@ export function AuthProvider({ children }) {
       }
 
       const batch = writeBatch(DB);
-      for (let index = 0; index < +MAX_ALLOWED_USER_TABLES + 1; index += 1) {
+      for (let index = 0; index < tablesCount + 1; index += 1) {
         const newDocRef = doc(
           collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
         );
@@ -1953,6 +1980,10 @@ export function AuthProvider({ children }) {
       fsUpdateBusinessProfile,
       createDefaults,
       fsGetSystemTranslations,
+      // --- STRIPE ----
+      fsGetStripeSubscription,
+      fsGetProduct,
+      fsGetProducts,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,
@@ -2044,6 +2075,10 @@ export function AuthProvider({ children }) {
       fsUpdateBusinessProfile,
       createDefaults,
       fsGetSystemTranslations,
+      // --- STRIPE ----
+      fsGetStripeSubscription,
+      fsGetProduct,
+      fsGetProducts,
       // ---- FUNCTIONS ----
       fbTranslate,
       fbTranslateMeal,

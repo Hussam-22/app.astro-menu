@@ -9,6 +9,7 @@ import AuthModernLayout from 'src/layouts/auth/modern';
 import AuthClassicLayout from 'src/layouts/auth/classic';
 // components
 import { SplashScreen } from 'src/components/loading-screen';
+import AuthModernCompactLayout from 'src/layouts/auth/modern-compact';
 
 // ----------------------------------------------------------------------
 
@@ -126,9 +127,9 @@ const authFirebase = {
     {
       path: 'register',
       element: (
-        <AuthModernLayout title="Manage the job more effectively with Minimal">
+        <AuthModernCompactLayout title="Manage the job more effectively with Minimal">
           <FirebaseRegisterPage />
-        </AuthModernLayout>
+        </AuthModernCompactLayout>
       ),
     },
     {

@@ -5,7 +5,7 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Box, Card, Stack, Button, Avatar, useTheme } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
-import { useGetAccountLimits } from 'src/hooks/use-get-account-limits';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import DownloadAllQRs from 'src/sections/branches/components/DownloadAllQRs';
 
 import ChangeDefaultMenu from './dialogs/ChangeDefaultMenu';
@@ -19,7 +19,7 @@ TablesCard.propTypes = {
 function TablesCard({ tables, onTableClick, selectedTableID }) {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const { isMenuOnly } = useGetAccountLimits();
+  const { isMenuOnly, maxTables } = useGetProductInfo();
 
   const onClose = () => setIsOpen(false);
 

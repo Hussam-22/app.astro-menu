@@ -1,23 +1,27 @@
 import { useState } from 'react';
 import { m } from 'framer-motion';
 
-import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
+import { Box, Tab, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { useSearchParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
+import BusinessProfilePlanInfo from 'src/sections/business-profile/business-profile-plan-info';
 import BusinessProfileEditForm from 'src/sections/business-profile/business-profile-edit-form';
 import BusinessProfileTranslation from 'src/sections/business-profile/business-profile-translation';
-import BusinessProfilePlanPaymentInfo from 'src/sections/business-profile/business-profile-plan-payment-info';
 
 function BusinessProfileManageView() {
   const theme = useTheme();
+  const searchParams = useSearchParams();
   const { themeStretch } = useSettingsContext();
   const { businessProfile } = useAuthContext();
-  const [currentTab, setCurrentTab] = useState('Business Info');
+  const [currentTab, setCurrentTab] = useState(
+    searchParams.get('activeTab') === null ? 'Business Info' : 'Subscription & Payment Info'
+  );
 
   const TABS = [
     {
@@ -31,9 +35,9 @@ function BusinessProfileManageView() {
       component: businessProfile?.docID && <BusinessProfileTranslation />,
     },
     {
-      value: 'Subscription info',
+      value: 'Subscription & Payment Info',
       icon: <Iconify icon="solar:box-line-duotone" width={20} height={20} />,
-      component: businessProfile?.docID && <BusinessProfilePlanPaymentInfo />,
+      component: businessProfile?.docID && <BusinessProfilePlanInfo />,
     },
   ];
 

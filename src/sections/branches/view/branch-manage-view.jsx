@@ -10,10 +10,10 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import StaffLink from 'src/sections/branches/staff-link';
 import { useSettingsContext } from 'src/components/settings';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import QRManagement from 'src/sections/branches/QR-Management';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import BranchStatistics from 'src/sections/branches/BranchStatistics';
-import { useGetAccountLimits } from 'src/hooks/use-get-account-limits';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 
@@ -23,7 +23,7 @@ function BranchManageView() {
   const { themeStretch } = useSettingsContext();
   const { fsGetBranch, businessProfile } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
-  const { allowAnalytics, allowPoS } = useGetAccountLimits();
+  const { allowAnalytics, allowPoS } = useGetProductInfo();
 
   const {
     data: branchInfo = {},

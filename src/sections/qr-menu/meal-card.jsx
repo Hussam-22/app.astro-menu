@@ -47,10 +47,12 @@ function MealCard({ mealInfo }) {
     [mealInfo.docID, orderSnapShot.cart]
   );
 
-  const isMenuOnly = useMemo(
-    () => businessProfile?.planInfo?.at(-1)?.isMenuOnly,
-    [businessProfile.planInfo]
-  );
+  // const isMenuOnly = useMemo(
+  //   () => businessProfile?.planInfo?.at(-1)?.isMenuOnly,
+  //   [businessProfile.planInfo]
+  // );
+
+  const isMenuOnly = false;
 
   const isMealActive = !branchInfo.disabledMeals?.includes(mealInfo.docID) && mealInfo.isActive;
 
