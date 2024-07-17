@@ -26,7 +26,7 @@ import {
 
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetAccountLimits } from 'src/hooks/use-get-account-limits';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 
 SelectedTableInfoCard.propTypes = {
@@ -40,7 +40,7 @@ function SelectedTableInfoCard({ tableInfo }) {
   const { enqueueSnackbar } = useSnackbar();
   const { fsUpdateBranchTable, user, fsGetAllMenus } = useAuthContext();
   const [isVisible, setIsVisible] = useState(true);
-  const { isMenuOnly } = useGetAccountLimits();
+  const { isMenuOnly } = useGetProductInfo();
 
   const isQrMenuOnly = tableInfo?.index === 0;
 

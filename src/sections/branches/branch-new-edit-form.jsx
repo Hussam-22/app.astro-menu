@@ -19,7 +19,7 @@ import { useRouter } from 'src/routes/hook';
 import { fData } from 'src/utils/format-number';
 import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import { useGetAccountLimits } from 'src/hooks/use-get-account-limits';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import BranchSocialLinks from 'src/sections/branches/components/BranchSocialLinks';
 import FormProvider, {
   RHFSelect,
@@ -39,7 +39,7 @@ export default function BranchNewEditForm({ branchInfo }) {
   const { enqueueSnackbar } = useSnackbar();
   const { fsAddNewBranch, fsUpdateBranch, businessProfile } = useAuthContext();
   const queryClient = useQueryClient();
-  const { pos: allowPoS } = useGetAccountLimits();
+  const { allowPoS } = useGetProductInfo();
 
   const { data, isLoading } = useSWR(`https://restcountries.com/v3.1/all`, fetcher);
 
