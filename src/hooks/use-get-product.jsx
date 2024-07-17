@@ -16,7 +16,7 @@ export function useGetProductInfo() {
   const allowPoS = metadata.pos === 'true';
   const branches = +metadata.branches;
   const languages = +metadata.languages;
-  const tables = +metadata.tables;
+  const maxTables = +metadata.tables;
   const { version } = metadata;
 
   return {
@@ -32,7 +32,7 @@ export function useGetProductInfo() {
     allowPoS,
     branches,
     languages,
-    tables,
+    maxTables,
     version,
   };
 }
