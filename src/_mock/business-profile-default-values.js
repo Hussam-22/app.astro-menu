@@ -382,6 +382,7 @@ export const DEFAULT_BRANCH = {
   taxValue: 5,
   title: 'Dubai Branch',
   wifiPassword: 'Connect@2024',
+  skipKitchen: false,
 };
 
 export const DEFAULT_STAFF = (businessProfileID) => [

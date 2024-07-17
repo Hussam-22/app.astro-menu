@@ -265,7 +265,7 @@ export default function BranchNewEditForm({ branchInfo }) {
                     <RHFSwitch
                       name="allowSelfOrder"
                       labelPlacement="start"
-                      label={values.skipKitchen ? `Enabled` : `Disabled`}
+                      label={values.allowSelfOrder ? `Enabled` : `Disabled`}
                       sx={{ alignItems: 'center' }}
                       color="secondary"
                     />

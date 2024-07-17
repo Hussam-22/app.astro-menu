@@ -171,6 +171,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     initialize();
   }, [initialize]);
+
   // LOGIN
   const login = useCallback(async (email, password) => {
     await signInWithEmailAndPassword(AUTH, email, password);
