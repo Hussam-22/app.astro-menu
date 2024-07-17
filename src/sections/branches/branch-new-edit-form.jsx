@@ -39,7 +39,7 @@ export default function BranchNewEditForm({ branchInfo }) {
   const { enqueueSnackbar } = useSnackbar();
   const { fsAddNewBranch, fsUpdateBranch, businessProfile } = useAuthContext();
   const queryClient = useQueryClient();
-  const { allowPoS } = useGetAccountLimits();
+  const { pos: allowPoS } = useGetAccountLimits();
 
   const { data, isLoading } = useSWR(`https://restcountries.com/v3.1/all`, fetcher);
 

@@ -56,6 +56,8 @@ function BranchCard({ branchInfo }) {
 
   const qrCounts = '25';
 
+  console.log(branchInfo);
+
   const branchCover = () => {
     if (cover === undefined)
       return (

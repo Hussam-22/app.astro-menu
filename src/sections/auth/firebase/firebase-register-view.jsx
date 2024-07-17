@@ -76,8 +76,6 @@ export default function FirebaseRegisterView() {
     formState: { isSubmitting, isDirty, errors },
   } = methods;
 
-  console.log(errors);
-
   const {
     mutate,
     isPending,
@@ -102,23 +100,6 @@ export default function FirebaseRegisterView() {
       setErrorMsg(typeof error === 'string' ? error : error.message);
     }
   });
-
-  const renderTerms = (
-    <Typography
-      component="div"
-      sx={{ color: 'text.secondary', mt: 2.5, typography: 'caption', textAlign: 'center' }}
-    >
-      {'By signing up, I agree to '}
-      <Link underline="always" color="text.primary">
-        Terms of Service
-      </Link>
-      {' and '}
-      <Link underline="always" color="text.primary">
-        Privacy Policy
-      </Link>
-      .
-    </Typography>
-  );
 
   const renderForm = (
     <Stack spacing={1.5} sx={{ p: 2 }}>
@@ -176,6 +157,8 @@ export default function FirebaseRegisterView() {
       </LoadingButton>
     </Stack>
   );
+
+  // const createDefaults = async () => await createDefaults()
 
   return (
     <Card sx={{ pt: 2 }}>

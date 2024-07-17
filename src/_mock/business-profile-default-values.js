@@ -366,62 +366,24 @@ export const DEFAULT_MENU_SECTIONS = [
   'Salads',
   'Vegetarian ',
 ];
-export const DEFAULT_BRANCHES = (businessProfileID) => [
-  {
-    allowSelfOrder: true,
-    currency: 'د.إ',
-    defaultLanguage: 'en',
-    description: 'Main Branch - Dubai',
-    email: 'hello@cool-restaurant.com',
-    imgUrl:
-      'https://firebasestorage.googleapis.com/v0/b/menu-app-b268b/o/_mock%2Fbranches%2Fbranch-1_800x800.webp?alt=media&token=fb35cd0a-8c90-4500-b9de-9862b3dfc3f8',
-    isActive: true,
-    isDeleted: false,
-    lastUpdatedAt: new Date(),
-    lastUpdatedBy: '',
-    number: '97141234567',
-    taxValue: 5,
-    title: 'Main Branch',
-    wifiPassword: 'Connect@2024',
-    businessProfileID,
-  },
-  {
-    allowSelfOrder: true,
-    currency: 'د.إ',
-    defaultLanguage: 'en',
-    description: 'Abu Dhabi Branch - Cornish St.',
-    email: 'hello@cool-restaurant.com',
-    imgUrl:
-      'https://firebasestorage.googleapis.com/v0/b/menu-app-b268b/o/_mock%2Fbranches%2Fbranch-3_800x800.webp?alt=media&token=4a90180c-280c-4c52-94ee-3aba5ee2ac50',
-    isActive: true,
-    isDeleted: false,
-    lastUpdatedAt: new Date(),
-    lastUpdatedBy: '',
-    number: '97121234567',
-    taxValue: 5,
-    title: 'Abu Dhabi Branch',
-    wifiPassword: 'HelloWifi_01234',
-    businessProfileID,
-  },
-  {
-    allowSelfOrder: true,
-    currency: 'د.إ',
-    defaultLanguage: 'en',
-    description: 'Sharjah Branch - University Street',
-    email: 'hello@cool-restaurant.com',
-    imgUrl:
-      'https://firebasestorage.googleapis.com/v0/b/menu-app-b268b/o/_mock%2Fbranches%2Fbranch-4_800x800.webp?alt=media&token=97f82a0c-78e5-439f-bd3a-d19c8595b459',
-    isActive: true,
-    isDeleted: false,
-    lastUpdatedAt: new Date(),
-    lastUpdatedBy: '',
-    number: '97161234567',
-    taxValue: 5,
-    title: 'Sharjah Branch',
-    wifiPassword: 'BranchPass^701',
-    businessProfileID,
-  },
-];
+export const DEFAULT_BRANCH = {
+  allowSelfOrder: true,
+  currency: 'د.إ',
+  defaultLanguage: 'en',
+  description: 'Main Branch - Dubai',
+  email: 'hello@astro-menu.com',
+  imgUrl:
+    'https://firebasestorage.googleapis.com/v0/b/menu-app-b268b/o/_mock%2Fbranches%2Fbranch-1_800x800.webp?alt=media&token=fb35cd0a-8c90-4500-b9de-9862b3dfc3f8',
+  isActive: true,
+  isDeleted: false,
+  lastUpdatedAt: new Date(),
+  lastUpdatedBy: 'system',
+  number: '97141234567',
+  taxValue: 5,
+  title: 'Dubai Branch',
+  wifiPassword: 'Connect@2024',
+};
+
 export const DEFAULT_STAFF = (businessProfileID) => [
   {
     fullname: 'Emma Johnson',

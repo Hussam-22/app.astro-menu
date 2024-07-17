@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { m } from 'framer-motion';
 
-import { Box, Tab, Tabs, Button, Divider, useTheme, Container, Typography } from '@mui/material';
+import { Box, Tab, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSearchParams } from 'src/routes/hook';
-import { stripeCreateCustomer } from 'src/stripe/functions';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
@@ -19,30 +18,10 @@ function BusinessProfileManageView() {
   const theme = useTheme();
   const searchParams = useSearchParams();
   const { themeStretch } = useSettingsContext();
-  const { businessProfile, fsGetStripePayments, fsGetStripePlan } = useAuthContext();
+  const { businessProfile } = useAuthContext();
   const [currentTab, setCurrentTab] = useState(
     searchParams.get('activeTab') === null ? 'Business Info' : 'Subscription & Payment Info'
   );
-
-  const createCustomer = async () =>
-    stripeCreateCustomer('hussam.alkhudari@gmail.com', 'Hussam Al Khudari', true);
-
-  // const {
-  //   data: stripePaymentsData,
-  //   error: stripePaymentsError,
-  //   isLoading: stripePaymentIsLoading,
-  // } = useQuery({
-  //   queryKey: ['stripePayments', 'cus_QSjTa2fJGnHzek'],
-  //   queryFn: async () => fsGetStripePayments('cus_QSjTa2fJGnHzek'),
-  // });
-
-  // const { isLoading: stripePlanInfoIsLoading } = useQuery({
-  //   queryKey: ['stripePlanInfo', stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product],
-  //   queryFn: async () => fsGetStripePlan(stripePaymentsData?.[0]?.items?.data?.[0]?.price?.product),
-  //   enabled: stripePaymentsData?.length > 0 && stripePaymentsData !== undefined,
-  // });
-
-  // console.log(stripePlanInfoIsLoading, stripePaymentIsLoading);
 
   const TABS = [
     {
@@ -59,11 +38,6 @@ function BusinessProfileManageView() {
       value: 'Subscription & Payment Info',
       icon: <Iconify icon="solar:box-line-duotone" width={20} height={20} />,
       component: businessProfile?.docID && <BusinessProfilePlanInfo />,
-    },
-    {
-      value: 'Create Customer',
-      component: <Button onClick={createCustomer}>Create Customer</Button>,
-      icon: <Iconify icon="solar:box-line-duotone" width={20} height={20} />,
     },
   ];
 

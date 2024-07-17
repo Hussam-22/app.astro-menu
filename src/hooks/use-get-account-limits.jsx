@@ -1,31 +1,38 @@
-import { useQuery } from '@tanstack/react-query';
-
 import { useAuthContext } from 'src/auth/hooks';
 
 export function useGetAccountLimits() {
-  const { businessProfile, fsGetPlans } = useAuthContext();
-  const { data, error } = useQuery({ queryKey: ['plans'], queryFn: fsGetPlans });
+  const { businessProfile } = useAuthContext();
+
+  console.log(businessProfile);
 
   if (!businessProfile?.docID) return {};
+
+  const { active, images, description, id, metadata, name, updated } =
+    businessProfile.product_details;
   //   const { paymentDate, nextPaymentDate, isPaid } = businessProfile.paymentInfo.at(-1);
-  const {
-    activationDate,
-    isTrial,
-    isMenuOnly,
-    name: planName,
-    limits: { analytics: allowAnalytics, branch, languages, pos: allowPoS, scans, tables },
-  } = businessProfile.planInfo.at(-1);
+
+  const analytics = metadata.analytics === 'true';
+  const isMenuOnly = metadata.isMenuOnly === 'true';
+  const pos = metadata.pos === 'true';
+  const branches = +metadata.branches;
+  const languages = +metadata.languages;
+  const tables = +metadata.tables;
+  const { version } = metadata;
 
   return {
-    planName,
-    allowAnalytics,
-    branch,
-    languages,
-    allowPoS,
-    scans,
-    tables,
-    isTrial,
-    activationDate,
+    active,
+    images,
+    description,
+    id,
+    metadata,
+    name,
+    updated,
+    analytics,
     isMenuOnly,
+    pos,
+    branches,
+    languages,
+    tables,
+    version,
   };
 }

@@ -38,7 +38,8 @@ function BusinessProfileEditForm() {
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
   const [isOpen, setIsOpen] = useState(false);
-  const maxLanguages = businessProfile.planInfo.at(-1).limits.languages;
+  // const maxLanguages = businessProfile.planInfo.at(-1).limits.languages;
+  const maxLanguages = 3;
 
   const availableLanguages =
     (businessProfile?.languages &&

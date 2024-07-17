@@ -25,14 +25,11 @@ function BusinessProfilePlanInfo() {
   });
 
   const { data: subscriptionInfo = {}, error: stripePlanError } = useQuery({
-    queryKey: ['stripeSubscriptionInfo', 'sub_1Pc3GFRoHLqbtaTl65pE00Pf'],
-    queryFn: async () => fsGetStripeSubscription('sub_1Pc3GFRoHLqbtaTl65pE00Pf'),
+    queryKey: ['stripeSubscriptionInfo', businessProfile.subscriptionId],
+    queryFn: async () => fsGetStripeSubscription(businessProfile.subscriptionId),
   });
 
   if (!subscriptionInfo.id) return null;
-
-  console.log(subscriptionInfo);
-  console.log(subscriptionInfo.items.data[0].plan.interval);
 
   const branch = subscriptionInfo.product_details.marketing_features.find((feature) =>
     feature.name.toLowerCase().includes('branch')
@@ -81,7 +78,7 @@ function BusinessProfilePlanInfo() {
     return { label: 'Expired', color: 'error' };
   };
 
-  const openPortalSession = async () => stripeCreatePortalSession('hussam.alkhudari@gmail.com');
+  const openPortalSession = async () => stripeCreatePortalSession(businessProfile.email);
 
   return (
     <>
