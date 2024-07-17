@@ -352,7 +352,7 @@ export function AuthProvider({ children }) {
 
         // create a stripe customer and add a trial subscription 'Menu Master'
         // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
-        const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`, true);
+        const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`);
         console.log(stripeData);
         const { customerId: stripeCustomerID, subscriptionId } = stripeData;
 
