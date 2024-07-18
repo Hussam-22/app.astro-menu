@@ -122,7 +122,7 @@ function SectionsDrawer({ openState, onClose }) {
             sx={{
               display: 'grid',
               gridTemplateColumns: 'repeat(1,1fr)',
-              gap: 1,
+              gap: 0.25,
             }}
           >
             {[...menuSectionsWithMostOrderedMeals]
@@ -136,6 +136,7 @@ function SectionsDrawer({ openState, onClose }) {
               .sort((a, b) => a.order - b.order)
               .map((section) => (
                 <Typography
+                  variant="body2"
                   key={section.docID}
                   onClick={() => onSectionClickHandler(section.docID)}
                   sx={{

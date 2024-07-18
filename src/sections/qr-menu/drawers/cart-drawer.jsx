@@ -4,14 +4,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Box } from '@mui/system';
 import {
+  Card,
   Stack,
-  Button,
   Drawer,
+  Button,
   Divider,
   useTheme,
   Container,
-  Typography,
   IconButton,
+  Typography,
   CircularProgress,
 } from '@mui/material';
 
@@ -117,7 +118,7 @@ const CartDrawer = ({ openState, onClose }) => {
             >
               {cartMeals.map((meal) => (
                 <Box key={meal.docID}>
-                  <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                  <Typography variant="body2" sx={{ fontWeight: theme.typography.fontWeightBold }}>
                     {getTitle(meal)}
                   </Typography>
                   <Box>
@@ -137,7 +138,7 @@ const CartDrawer = ({ openState, onClose }) => {
                               }}
                               alignItems="center"
                             >
-                              <Typography variant="body2">- {portion.portionSize}</Typography>
+                              <Typography variant="caption">- {portion.portionSize}</Typography>
                             </Stack>
 
                             <Typography variant="overline" sx={{ alignSelf: 'center', mx: 1 }}>
@@ -176,28 +177,30 @@ const CartDrawer = ({ openState, onClose }) => {
               ))}
             </Box>
           </Scrollbar>
-          <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ my: 2, flexGrow: 0 }}>
-            <Typography variant="caption">
-              {getTranslation('order')} : {orderValue}{' '}
-              <Box component="span" sx={{ typography: 'caption' }}>
-                {branchInfo.currency}
-              </Box>
-            </Typography>
-            {taxValue !== 0 && (
+          <Card sx={{ px: 2, py: 1 }}>
+            <Stack direction="column" spacing={0.5} alignItems="flex-end" sx={{ flexGrow: 0 }}>
               <Typography variant="caption">
-                {getTranslation('tax')} ({branchInfo.taxValue}%) : {taxValue}{' '}
+                {getTranslation('order')} : {orderValue}{' '}
                 <Box component="span" sx={{ typography: 'caption' }}>
                   {branchInfo.currency}
                 </Box>
               </Typography>
-            )}
-            <Typography variant="h6">
-              {getTranslation('total bill')} : {totalBill}{' '}
-              <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
-                {branchInfo.currency}
-              </Box>
-            </Typography>
-          </Stack>
+              {taxValue !== 0 && (
+                <Typography variant="caption">
+                  {getTranslation('tax')} ({branchInfo.taxValue}%) : {taxValue}{' '}
+                  <Box component="span" sx={{ typography: 'caption' }}>
+                    {branchInfo.currency}
+                  </Box>
+                </Typography>
+              )}
+              <Typography variant="h6" color="primary">
+                {getTranslation('total bill')} : {totalBill}{' '}
+                <Box component="span" sx={{ typography: 'caption', color: 'common.black' }}>
+                  {branchInfo.currency}
+                </Box>
+              </Typography>
+            </Stack>
+          </Card>
         </Box>
       </Container>
     </Drawer>

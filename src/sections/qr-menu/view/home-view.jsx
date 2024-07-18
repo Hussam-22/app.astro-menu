@@ -113,7 +113,7 @@ function QRMenuHomeView() {
 
   return (
     <Box>
-      <Card sx={{ p: 1 }}>
+      <Card sx={{ p: 1, m: 1 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
           <Stack direction="row" spacing={1} alignItems="center">
             <Avatar
@@ -151,7 +151,7 @@ function QRMenuHomeView() {
               color="primary"
               endIcon={
                 <Iconify
-                  icon={isTableActive ? 'game-icons:meal' : 'zondicons:close-solid'}
+                  icon={isTableActive ? 'tabler:circle-arrow-right' : 'zondicons:close-solid'}
                   sx={{ width: 28, height: 28 }}
                 />
               }
@@ -159,12 +159,12 @@ function QRMenuHomeView() {
               disabled={!isTableActive}
               sx={{
                 px: 1.5,
-                fontSize: '1.2rem',
+                fontSize: '1.0rem',
                 alignSelf: 'center',
                 borderRadius: 1,
                 position: 'absolute',
-                bottom: 8,
-                left: 10,
+                bottom: 5,
+                right: 5,
                 zIndex: 9,
               }}
             >
@@ -179,8 +179,8 @@ function QRMenuHomeView() {
                   borderRadius: 2,
                   position: 'absolute',
                   zindex: 1,
-                  bottom: -30,
-                  right: 11,
+                  bottom: 5,
+                  left: 10,
                 }}
               >
                 <Image
@@ -196,38 +196,35 @@ function QRMenuHomeView() {
             )}
           </Box>
           <Stack direction="column" spacing={0} sx={{ px: 2, zIndex: 99 }}>
-            <Typography variant="h3" sx={{ maxWidth: '60%' }}>
-              {getTitle()}
-            </Typography>
+            <Typography variant="h3">{getTitle()}</Typography>
             <Typography variant="caption">{title}</Typography>
           </Stack>
-          <Typography variant="body2" sx={{ px: 2, lineHeight: 1.35, color: 'text.disabled' }}>
+          <Typography variant="body2" sx={{ px: 2, lineHeight: 1.35 }}>
             {getDescription() || description}
           </Typography>
-
-          <Stack direction="column" alignItems="center" sx={{ mx: 1 }}>
-            <Stack
-              direction="row"
-              spacing={1}
-              divider={<Divider flexItem orientation="vertical" />}
-            >
-              {email && <Typography variant="caption">{email}</Typography>}
-              {number && <Typography variant="caption">{number}</Typography>}
-            </Stack>
-            <SocialLinks />
-          </Stack>
-          <Box>
-            <Divider sx={{ borderStyle: 'dashed', mb: 1 }} />
-            <Stack direction="row" spacing={0.5} alignItems="center" justifyContent="center">
-              <Typography variant="caption" component="div" sx={{ textAlign: 'center' }}>
-                {getTranslation('provided by')}
-                <Link href="https://astro-menu.com/"> Astro-Menu</Link>
-              </Typography>
-              <Image src="/assets/astro-logo.svg" sx={{ width: 20, height: 1 }} />
-            </Stack>
-          </Box>
         </Stack>
       </Card>
+
+      <Card sx={{ m: 1, py: 1 }}>
+        <Stack direction="column" alignItems="center" sx={{ mx: 1 }}>
+          <Stack direction="row" spacing={1} divider={<Divider flexItem orientation="vertical" />}>
+            {email && <Typography variant="caption">{email}</Typography>}
+            {number && <Typography variant="caption">{number}</Typography>}
+          </Stack>
+          <SocialLinks />
+        </Stack>
+      </Card>
+
+      <Card sx={{ m: 1, py: 1 }}>
+        <Stack direction="row" spacing={0.5} alignItems="center" justifyContent="center">
+          <Typography variant="caption" component="div" sx={{ textAlign: 'center' }}>
+            {getTranslation('provided by')}
+            <Link href="https://astro-menu.com/"> Astro-Menu</Link>
+          </Typography>
+          <Image src="/assets/astro-logo.svg" sx={{ width: 25, height: 1 }} />
+        </Stack>
+      </Card>
+
       <LanguageDrawer openState={isLangOpen} onClose={() => setIsLangOpen(false)} />
       <ConfirmDialog
         title={getTranslation('wifi Password')}
