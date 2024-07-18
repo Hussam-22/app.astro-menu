@@ -3,13 +3,7 @@ import { useAuthContext } from 'src/auth/hooks';
 export function useGetProductInfo() {
   const { businessProfile } = useAuthContext();
 
-  console.log(businessProfile);
-
-  if (!businessProfile?.docID) return {};
-
-  const { active, images, description, id, metadata, name, updated } =
-    businessProfile.product_details;
-  //   const { paymentDate, nextPaymentDate, isPaid } = businessProfile.paymentInfo.at(-1);
+  const { active, images, description, id, metadata, name, updated } = businessProfile.productInfo;
 
   const allowAnalytics = metadata.analytics === 'true';
   const isMenuOnly = metadata.isMenuOnly === 'true';
@@ -34,5 +28,6 @@ export function useGetProductInfo() {
     languages,
     maxTables,
     version,
+    status: businessProfile.subscriptionInfo.status,
   };
 }

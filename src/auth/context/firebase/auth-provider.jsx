@@ -2,7 +2,6 @@
 /* eslint-disable no-shadow */
 import PropTypes from 'prop-types';
 import { initializeApp } from 'firebase/app';
-import { useQuery } from '@tanstack/react-query';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useMemo, useState, useEffect, useReducer, useCallback } from 'react';
 import {
@@ -108,11 +107,6 @@ export function AuthProvider({ children }) {
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
   const status = state.loading ? 'loading' : checkAuthenticated;
 
-  const { error } = useQuery({
-    queryKey: ['businessProfile', state.user?.businessProfileID],
-    queryFn: () => fsGetBusinessProfile(state.user?.businessProfileID),
-  });
-
   const initialize = useCallback(() => {
     try {
       onAuthStateChanged(AUTH, async (user) => {
@@ -129,18 +123,7 @@ export function AuthProvider({ children }) {
 
             // update user last login time.
             await updateDoc(userProfile, { lastLogin: new Date() });
-
-            dispatch({
-              type: 'INITIAL',
-              payload: {
-                user: {
-                  ...user,
-                  ...profile,
-                  id: user.uid,
-                },
-                businessProfile: state?.businessProfile || {},
-              },
-            });
+            await fsGetBusinessProfile(profile.businessProfileID, user, profile);
           } else {
             dispatch({
               type: 'INITIAL',
@@ -298,7 +281,7 @@ export function AuthProvider({ children }) {
   }, []);
   // ----------------------- Business Profile -------------------
   const fsGetBusinessProfile = useCallback(
-    async (businessProfileID) => {
+    async (businessProfileID, user, profile) => {
       try {
         // await fbTranslateKeywords();
 
@@ -325,11 +308,15 @@ export function AuthProvider({ children }) {
         dispatch({
           type: 'INITIAL',
           payload: {
-            ...state,
+            user: {
+              ...user,
+              ...profile,
+              id: user.uid,
+            },
             businessProfile: {
               ...docSnapshot.data(),
-              ...subscriptionInfo,
-              ...productInfo,
+              subscriptionInfo: { ...subscriptionInfo },
+              productInfo: { ...productInfo },
               logo,
               ownerInfo: businessOwnerInfo,
               // role: docSnapshot.data().planInfo.at(-1).isMenuOnly ? 'menuOnly' : 'full',

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import { Box, Link, Card, Stack, Divider, Typography } from '@mui/material';
@@ -17,19 +17,14 @@ import { fDate, fDistance, calculateDistanceInNumbers } from 'src/utils/format-t
 // };
 
 function BusinessProfilePlanInfo() {
-  const { businessProfile, fsGetStripeSubscription } = useAuthContext();
+  const {
+    businessProfile: { subscriptionInfo, email },
+  } = useAuthContext();
 
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: (data) => console.log(data),
   });
-
-  const { data: subscriptionInfo = {}, error: stripePlanError } = useQuery({
-    queryKey: ['stripeSubscriptionInfo', businessProfile.subscriptionId],
-    queryFn: async () => fsGetStripeSubscription(businessProfile.subscriptionId),
-  });
-
-  if (!subscriptionInfo.id) return null;
 
   const branch = subscriptionInfo.product_details.marketing_features.find((feature) =>
     feature.name.toLowerCase().includes('branch')
@@ -78,7 +73,7 @@ function BusinessProfilePlanInfo() {
     return { label: 'Expired', color: 'error' };
   };
 
-  const openPortalSession = async () => stripeCreatePortalSession(businessProfile.email);
+  const openPortalSession = async () => stripeCreatePortalSession(email);
 
   return (
     <>
