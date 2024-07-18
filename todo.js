@@ -52,15 +52,16 @@
 /- Remove "gram"
 
 ? Business Profile
-/- Adding new logo issue when navigating to another tab then coming back
-- Upgrade/Downgrade Plan
-- Payment info
 - Add sub users
-- Create a firebase schedule function to check if the plan is expired or not
 - prevent uploading svg images
 - add password reset link
 - add "Close account" button
-- add "cancel subscription" button
+!- Fix Default Language incase the user has default language other than English
+/- Adding new logo issue when navigating to another tab then coming back
+/- Upgrade/Downgrade Plan --> available in stripe
+/- Payment info --> available in stripe
+/- Create a firebase schedule function to check if the plan is expired or not --> available in stripe
+/- add "cancel subscription" button --> available in stripe
 
 
 ---------------------------------------------------------------------------
