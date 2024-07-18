@@ -281,7 +281,7 @@ export function AuthProvider({ children }) {
   }, []);
   // ----------------------- Business Profile -------------------
   const fsGetBusinessProfile = useCallback(
-    async (businessProfileID, user, profile) => {
+    async (businessProfileID, user = {}, profile = {}) => {
       try {
         // await fbTranslateKeywords();
 
@@ -376,7 +376,7 @@ export function AuthProvider({ children }) {
         await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
 
         // 4- Create Default Data
-        await createDefaults(businessProfileID, subscriptionId);
+        await createDefaults(businessProfileID);
       } catch (error) {
         console.log(error);
       }
@@ -559,7 +559,7 @@ export function AuthProvider({ children }) {
 
     // return translations;
   }, []);
-  const createDefaults = useCallback(async (businessProfileID) => {
+  const createDefaults = useCallback(async (businessProfileID, defaultLanguage) => {
     // create defaults for new users, default plan = 'Trial'
 
     // 1- ADD MEAL LABELS

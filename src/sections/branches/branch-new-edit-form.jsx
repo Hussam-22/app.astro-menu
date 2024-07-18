@@ -71,6 +71,13 @@ export default function BranchNewEditForm({ branchInfo }) {
     [data, isLoading, theme]
   );
 
+  const availableLanguages =
+    (businessProfile?.languages &&
+      Object.entries(LANGUAGE_CODES).filter((code) =>
+        [...businessProfile.languages, businessProfile.defaultLanguage].includes(code[0])
+      )) ||
+    [];
+
   const NewUserSchema = Yup.object().shape({
     title: Yup.string().required('Menu title is required'),
     imgUrl: Yup.mixed().required('Cover Image is required'),
@@ -87,7 +94,7 @@ export default function BranchNewEditForm({ branchInfo }) {
       allowSelfOrder: !!branchInfo?.allowSelfOrder,
       cover: branchInfo?.cover || '',
       imgUrl: branchInfo?.cover || null,
-      defaultLanguage: branchInfo?.defaultLanguage || businessProfile.defaultLanguage,
+      defaultLanguage: branchInfo?.defaultLanguage || 'en',
       currency: branchInfo?.currency || '',
       taxValue: branchInfo?.taxValue || 0,
       email: branchInfo.email || '',
@@ -106,7 +113,7 @@ export default function BranchNewEditForm({ branchInfo }) {
         // useMasterLinks: branchInfo?.socialLinks?.useMasterLinks || false,
       },
     }),
-    [branchInfo, businessProfile]
+    [branchInfo]
   );
 
   const methods = useForm({
@@ -174,13 +181,6 @@ export default function BranchNewEditForm({ branchInfo }) {
       mutate(() => fsAddNewBranch(formData));
     }
   };
-
-  const availableLanguages =
-    (businessProfile?.languages &&
-      Object.entries(LANGUAGE_CODES).filter((code) =>
-        [...businessProfile.languages, businessProfile.defaultLanguage].includes(code[0])
-      )) ||
-    [];
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>

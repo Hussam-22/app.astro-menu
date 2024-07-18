@@ -7,11 +7,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import { Box, Card } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Box, Card, MenuItem } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import Logo from 'src/components/logo';
@@ -22,11 +22,11 @@ import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
-import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { RouterLink } from 'src/routes/components';
 import { LANGUAGES } from 'src/_mock/translation-languages';
-import FormProvider, { RHFSelect, RHFTextField, RHFMultiSelect } from 'src/components/hook-form';
+import FormProvider, { RHFTextField, RHFMultiSelect } from 'src/components/hook-form';
 
 const OPTIONS = LANGUAGES.map((language) => ({
   value: language.code,
@@ -50,7 +50,6 @@ export default function FirebaseRegisterView() {
     languages: Yup.array()
       .min(1, 'Choose at least one option')
       .max(3, 'max 3 translation languages allowed in the trial plan'),
-    defaultLanguage: Yup.string().required('Default language is required'),
   });
 
   const defaultValues = {
@@ -61,7 +60,6 @@ export default function FirebaseRegisterView() {
     businessName: '',
     address: '',
     languages: [],
-    defaultLanguage: '',
   };
 
   const methods = useForm({
@@ -127,21 +125,20 @@ export default function FirebaseRegisterView() {
           ),
         }}
       />
-      <RHFSelect name="defaultLanguage" label="Default Languages">
+      {/* <RHFSelect name="defaultLanguage" label="Default Languages">
         <MenuItem value="">None</MenuItem>
         {OPTIONS.map((option) => (
           <MenuItem key={option.value} value={option.value}>
             {option.label}
           </MenuItem>
         ))}
-      </RHFSelect>
+      </RHFSelect> */}
       <RHFMultiSelect
         chip
         checkbox
         name="languages"
         label="Menu Target Languages"
         options={OPTIONS.filter((option) => option.value !== values.defaultLanguage)}
-        disabled={values.defaultLanguage === ''}
       />
 
       <LoadingButton
