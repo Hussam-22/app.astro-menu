@@ -34,22 +34,9 @@ export default function Router() {
 
     // Auth routes
     ...authRoutes,
-    ...authDemoRoutes,
 
     // Dashboard routes
     ...dashboardRoutes,
-
-    // Main routes
-    ...mainRoutes,
-
-    // Components routes
-    ...componentsRoutes,
-
-    // Qr Menu
-    ...qrMenuRoutes,
-
-    // Staff
-    ...staffRoutes,
 
     // No match 404
     { path: '*', element: <Navigate to="/404" replace /> },
