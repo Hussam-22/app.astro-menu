@@ -117,6 +117,13 @@ function SelectedTableInfoCard({ tableInfo }) {
     document.body.removeChild(downloadLink);
   };
 
+  const selectedMenu = useMemo(
+    () => menusList.find((menu) => menu.docID === tableInfo.menuID),
+    [menusList, tableInfo.menuID]
+  );
+
+  console.log(selectedMenu);
+
   if (isQrMenuOnly)
     return (
       <Grid container spacing={2}>
@@ -256,21 +263,10 @@ function SelectedTableInfoCard({ tableInfo }) {
                 />
               </Stack>
               <Stack direction="column" spacing={2}>
+                <Typography variant="body2" sx={{ alignSelf: 'flex-end' }}>
+                  Menu: {selectedMenu?.title}
+                </Typography>
                 <RHFTextField name="title" label="QR Nickname (Shows on Customers Menu)" />
-                {/* {menusList?.length !== 0 && menusList !== undefined && (
-                  <RHFSelect
-                    name="menuID"
-                    label="Default Menu"
-                    placeholder="Default Menu"
-                    defaultValue={tableInfo?.menuID}
-                  >
-                    {menusList.map((menu) => (
-                      <MenuItem key={menu.docID} value={menu.docID}>
-                        {menu.title}
-                      </MenuItem>
-                    ))}
-                  </RHFSelect>
-                )} */}
               </Stack>
               <RHFTextField
                 name="note"

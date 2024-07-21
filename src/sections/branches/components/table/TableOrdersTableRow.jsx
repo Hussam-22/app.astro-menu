@@ -68,8 +68,8 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
           sx={{ color: 'text.disabled', cursor: 'pointer' }}
         >
           <ListItemText
-            primary={fDateTime(new Date(initiationTime.seconds * 1000))}
-            secondary={docID}
+            primary={docID}
+            secondary={fDateTime(new Date(initiationTime.seconds * 1000))}
             primaryTypographyProps={{ typography: 'body2', color: 'text.primary' }}
             secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
           />
@@ -91,7 +91,10 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
             primary={`${calculatedTotalBill || 0} 
             ${branchInfo.currency}`}
             secondary={menuInfo?.title}
-            primaryTypographyProps={{ typography: 'body2', color: 'text.primary' }}
+            primaryTypographyProps={{
+              typography: 'body2',
+              color: orderStatus()[0] === 'Paid' ? 'success.main' : 'text.disabled',
+            }}
             secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
           />
         </Link>

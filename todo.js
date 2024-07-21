@@ -46,6 +46,7 @@
 - for "limit scans" plan, when limit is reached, disable branch
 - when switching plan to coffee cup, hide extra tables and disable them
 - when switching plan to coffee cup, remove extra languages
+- fix table order details, and use minutes instead of days for duration
 
 ? Meals
 /- Translate Meal Portions (Not feasible as it will require a lot of work)

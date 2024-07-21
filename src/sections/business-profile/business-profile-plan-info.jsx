@@ -21,6 +21,8 @@ function BusinessProfilePlanInfo() {
     businessProfile: { subscriptionInfo, email },
   } = useAuthContext();
 
+  console.log(subscriptionInfo);
+
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: (data) => console.log(data),

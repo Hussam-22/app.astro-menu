@@ -45,6 +45,11 @@ function BranchManageView() {
       icon: <Iconify icon="clarity:qr-code-line" width={20} height={20} />,
       component: <QRManagement branchInfo={branchInfo} />,
     },
+    allowAnalytics && {
+      value: 'Statistics',
+      icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
+      component: <BranchStatistics />,
+    },
     allowPoS && {
       value: 'Staffs Dashboard Link',
       icon: (
@@ -56,16 +61,9 @@ function BranchManageView() {
       ),
       component: <StaffLink />,
     },
-    allowAnalytics && {
-      value: 'Statistics',
-      icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
-      component: <BranchStatistics />,
-    },
   ]
     .filter((tab) => tab)
     .splice(0, businessProfile?.planInfo?.at(-1)?.isMenuOnly ? 2 : 4);
-
-  console.log(TABS);
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>

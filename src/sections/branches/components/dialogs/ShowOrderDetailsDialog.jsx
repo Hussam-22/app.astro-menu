@@ -28,7 +28,7 @@ ShowOrderDetailsDialog.propTypes = {
 };
 
 function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
-  const { cart, closingTime, docID, totalBill } = orderInfo;
+  const { cart, closingTime, docID, initiationTime } = orderInfo;
   const theme = useTheme();
   const { fsGetAllMeals, fsGetBranch } = useAuthContext();
 
@@ -55,7 +55,10 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
 
   const calculatedTotalBill = getCartTotal(cart, branchInfo.taxValue);
 
-  const orderDate = new Date(closingTime.seconds * 1000);
+  const orderDate =
+    typeof closingTime === 'string'
+      ? new Date(initiationTime.seconds * 1000)
+      : new Date(closingTime.seconds * 1000);
 
   const orderStatus = () => {
     if (orderInfo.isPaid) return ['Paid', 'success'];
