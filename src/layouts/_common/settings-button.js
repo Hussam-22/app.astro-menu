@@ -27,8 +27,6 @@ export default function SettingsButton({ sx }) {
     >
       <Box>
         <IconButton
-          whileTap="tap"
-          whileHover="hover"
           aria-label="settings"
           onClick={settings.onToggle}
           sx={{

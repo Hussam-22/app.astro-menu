@@ -46,9 +46,7 @@ export default function SplashScreen({ sx, ...other }) {
           animationDuration: '400ms',
         }}
       />
-      <Typography gr sx={{ ...blinkingElement }}>
-        Loading Menu...
-      </Typography>
+      <Typography sx={{ ...blinkingElement }}>Loading Menu...</Typography>
 
       <style>
         {`

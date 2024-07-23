@@ -22,11 +22,11 @@ const OPTIONS = [
   },
   {
     label: 'Profile',
-    linkTo: paths.dashboard.user.profile,
+    linkTo: paths.dashboard.root,
   },
   {
     label: 'Settings',
-    linkTo: paths.dashboard.user.account,
+    linkTo: paths.dashboard.root,
   },
 ];
 
@@ -57,8 +57,6 @@ export default function AccountPopover() {
   return (
     <>
       <IconButton
-        whileTap="tap"
-        whileHover="hover"
         onClick={popover.onOpen}
         sx={{
           width: 40,

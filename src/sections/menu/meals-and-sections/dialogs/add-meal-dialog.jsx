@@ -74,12 +74,7 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
           {sectionAvailableMeals
             .sort((a, b) => a.title.localeCompare(b.title))
             .map((meal) => (
-              <Box
-                key={meal.docID}
-                whileHover={{
-                  paddingLeft: '15px',
-                }}
-              >
+              <Box key={meal.docID}>
                 <MealRow
                   mealInfo={meal}
                   currentSectionMeals={currentSectionMeals}
