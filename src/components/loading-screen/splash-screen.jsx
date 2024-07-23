@@ -1,73 +1,95 @@
-import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
-// @mui
-import { alpha } from '@mui/material/styles';
+import { Typography, CircularProgress } from '@mui/material';
 
-//
-import Logo from '../logo';
+import Logo from 'src/components/logo';
+import { blinkingElement } from 'src/theme/css';
 
 // ----------------------------------------------------------------------
 
 export default function SplashScreen({ sx, ...other }) {
+  const myStyle = {
+    animation: 'upDownFade 3s infinite',
+  };
+
   return (
     <Box
       sx={{
-        right: 0,
         width: 1,
-        bottom: 0,
-        height: 1,
-        zIndex: 9998,
+        flexGrow: 1,
+        minHeight: 1,
         display: 'flex',
-        position: 'fixed',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: 'background.default',
+        height: '95vh',
+        flexDirection: 'column',
+        gap: 1,
         ...sx,
       }}
       {...other}
     >
-      <>
-        <m.div
-          animate={{
-            scale: [1, 0.75, 0.75, 0.65],
-            opacity: [1, 0.75, 0.5, 0],
-            x: ['0%', '60%', '60%', '60%'],
-            y: ['0%', '-60%', '-60%', '-60%'],
-          }}
-          transition={{
-            duration: 2,
-            ease: 'easeInOut',
-            repeat: Infinity,
-          }}
-          sx={{ opacity: 0.25 }}
-        >
-          <Logo disabledLink sx={{ width: 64, height: 64 }} />
-        </m.div>
+      <Box style={myStyle}>
+        <Logo disabledLink sx={{ width: 64, height: 64 }} />
+      </Box>
+      <svg width={0} height={0}>
+        <defs>
+          <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#e11d48" />
+            <stop offset="100%" stopColor="#FFFFFF" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <CircularProgress
+        sx={{
+          'svg circle': { stroke: 'url(#my_gradient)' },
+          animationDuration: '400ms',
+        }}
+      />
+      <Typography gr sx={{ ...blinkingElement }}>
+        Loading Menu...
+      </Typography>
 
-        <Box
-          component={m.div}
-          animate={{
-            scale: [1, 1.2, 1.2, 1, 1],
-            // rotate: [0, 270, 270, 0, 0],
-            opacity: [1, 0.25, 0.25, 0.25, 1],
-            borderRadius: ['25%', '25%', '50%', '50%', '25%'],
-          }}
-          transition={{
-            ease: 'linear',
-            duration: 1.2,
-            repeat: Infinity,
-          }}
-          sx={{
-            width: 120,
-            height: 120,
-            position: 'absolute',
-            border: (theme) => `solid 3px ${alpha(theme.palette.primary.dark, 0.24)}`,
-          }}
-        />
-      </>
+      <style>
+        {`
+          @keyframes upDownFade {
+            0% {
+              transform: translateY(0);
+              opacity: 1;
+            }
+            70% {
+              transform: translateY(-20px);
+              opacity: 1;
+            }
+            100% {
+              transform: translateY(-20px);
+              opacity: 0;
+            }
+          }
+        `}
+      </style>
     </Box>
+
+    // <Box
+    //   sx={{
+    //     right: 0,
+    //     width: 1,
+    //     bottom: 0,
+    //     height: 1,
+    //     zIndex: 9998,
+    //     display: 'flex',
+    //     position: 'fixed',
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    //     bgcolor: 'background.default',
+    //     ...sx,
+    //   }}
+    //   {...other}
+    // >
+    //   <Box>
+    //     <Logo disabledLink sx={{ width: 64, height: 64 }} />
+    //   </Box>
+    // </Box>
   );
 }
 

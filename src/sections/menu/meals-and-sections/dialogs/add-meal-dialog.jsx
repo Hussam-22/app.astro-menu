@@ -1,10 +1,10 @@
-import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { Stack } from '@mui/system';
 import {
+  Box,
+  Stack,
   Dialog,
   Avatar,
   Divider,
@@ -18,7 +18,6 @@ import {
 import Iconify from 'src/components/iconify';
 // _mock
 import { useAuthContext } from 'src/auth/hooks';
-import { MotionViewport } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 
@@ -64,38 +63,32 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
             <Iconify icon="ic:twotone-error" width={22} height={22} sx={{ ml: 1 }} />
           </Typography>
         )}
-        <MotionViewport>
-          <Stack
-            direction="column"
-            spacing={0.5}
-            sx={{ mb: 2, pl: 2 }}
-            divider={
-              <Divider
-                variant="fullWidth"
-                orientation="horizontal"
-                sx={{ borderStyle: 'dashed' }}
-              />
-            }
-          >
-            {sectionAvailableMeals
-              .sort((a, b) => a.title.localeCompare(b.title))
-              .map((meal) => (
-                <m.div
-                  key={meal.docID}
-                  whileHover={{
-                    paddingLeft: '15px',
-                  }}
-                >
-                  <MealRow
-                    mealInfo={meal}
-                    currentSectionMeals={currentSectionMeals}
-                    sectionID={sectionID}
-                    menuInfo={menuInfo}
-                  />
-                </m.div>
-              ))}
-          </Stack>
-        </MotionViewport>
+        <Stack
+          direction="column"
+          spacing={0.5}
+          sx={{ mb: 2, pl: 2 }}
+          divider={
+            <Divider variant="fullWidth" orientation="horizontal" sx={{ borderStyle: 'dashed' }} />
+          }
+        >
+          {sectionAvailableMeals
+            .sort((a, b) => a.title.localeCompare(b.title))
+            .map((meal) => (
+              <Box
+                key={meal.docID}
+                whileHover={{
+                  paddingLeft: '15px',
+                }}
+              >
+                <MealRow
+                  mealInfo={meal}
+                  currentSectionMeals={currentSectionMeals}
+                  sectionID={sectionID}
+                  menuInfo={menuInfo}
+                />
+              </Box>
+            ))}
+        </Stack>
       </DialogContent>
     </Dialog>
   );

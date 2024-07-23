@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { m } from 'framer-motion';
+// import { m } from 'framer-motion';
 
 import { Box, Tab, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
@@ -9,7 +9,6 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useSearchParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 import BusinessProfilePlanInfo from 'src/sections/business-profile/business-profile-plan-info';
 import BusinessProfileEditForm from 'src/sections/business-profile/business-profile-edit-form';
 import BusinessProfileTranslation from 'src/sections/business-profile/business-profile-translation';
@@ -85,7 +84,8 @@ function BusinessProfileManageView() {
               const isMatched = tab.value === currentTab;
               return (
                 isMatched && (
-                  <Box component={m.div} {...getVariant('fadeInUp')} key={tab.value} id={tab.value}>
+                  // <Box component={m.div} {...getVariant('fadeInUp')} key={tab.value} id={tab.value}>
+                  <Box key={tab.value} id={tab.value}>
                     {tab.component}
                   </Box>
                 )

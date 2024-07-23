@@ -13,19 +13,17 @@ import Scrollbar from 'src/components/scrollbar';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
 import { NavSectionVertical } from 'src/components/nav-section';
 
 //
 import { NAV } from '../config-layout';
-import { NavUpgrade, NavToggleButton } from '../_common';
+import { NavToggleButton } from '../_common';
 
 import { useNavData } from './config-navigation';
 
 // ----------------------------------------------------------------------
 
 export default function NavVertical({ openNav, onCloseNav }) {
-  const { user } = useMockedUser();
   const pathname = usePathname();
   const lgUp = useResponsive('up', 'lg');
 
@@ -54,13 +52,11 @@ export default function NavVertical({ openNav, onCloseNav }) {
       <NavSectionVertical
         data={navData}
         config={{
-          currentRole: user?.role || 'admin',
+          currentRole: 'admin',
         }}
       />
 
       <Box sx={{ flexGrow: 1 }} />
-
-      <NavUpgrade />
     </Scrollbar>
   );
 

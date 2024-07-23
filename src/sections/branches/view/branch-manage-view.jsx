@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { m } from 'framer-motion';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
@@ -15,7 +14,6 @@ import QRManagement from 'src/sections/branches/QR-Management';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import BranchStatistics from 'src/sections/branches/BranchStatistics';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
-import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 
 function BranchManageView() {
   const { id: branchID } = useParams();
@@ -109,7 +107,8 @@ function BranchManageView() {
               const isMatched = tab.value === currentTab;
               return (
                 isMatched && (
-                  <Box component={m.div} {...getVariant('fadeInUp')} key={tab.value} id={tab.value}>
+                  // <Box component={m.div} {...getVariant('fadeInUp')} key={tab.value} id={tab.value}>
+                  <Box key={tab.value} id={tab.value}>
                     {tab.component}
                   </Box>
                 )

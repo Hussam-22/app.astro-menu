@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
 
 import {
   Box,
@@ -14,7 +12,6 @@ import {
   DialogTitle,
 } from '@mui/material';
 
-import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 
 import TranslationTextField from '../TranslationTextField';
@@ -28,13 +25,12 @@ TranslationDialog.propTypes = {
 };
 
 function TranslationDialog({ sectionID, isOpen, onClose, languagesLength }) {
-  const { menuID } = useParams();
-  const dispatch = useDispatch();
-  const { fsGetSection } = useAuthContext();
   const [formIsSubmitting, setFormIsSubmitting] = useState(false);
-  const sectionInfo = useSelector((state) =>
-    state.menu.menu.sections.find((section) => section.id === sectionID)
-  );
+  // const sectionInfo = useSelector((state) =>
+  //   state.menu.menu.sections.find((section) => section.id === sectionID)
+  // );
+
+  const sectionInfo = {};
 
   const formStateHandler = (state) => {
     setFormIsSubmitting(state);

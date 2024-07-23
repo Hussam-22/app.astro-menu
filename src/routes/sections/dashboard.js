@@ -51,7 +51,8 @@ export const dashboardRoutes = [
       </AuthGuard>
     ),
     children: [
-      { element: <IndexPage />, index: true },
+      // { element: <IndexPage />, index: true },
+      { element: <BranchesListPage />, index: true },
       {
         path: 'branch',
         children: [

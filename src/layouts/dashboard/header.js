@@ -19,14 +19,7 @@ import { useSettingsContext } from 'src/components/settings';
 
 //
 import { NAV, HEADER } from '../config-layout';
-import {
-  Searchbar,
-  AccountPopover,
-  SettingsButton,
-  LanguagePopover,
-  ContactsPopover,
-  NotificationsPopover,
-} from '../_common';
+import { AccountPopover, SettingsButton } from '../_common';
 
 // ----------------------------------------------------------------------
 
@@ -55,8 +48,6 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
 
-      <Searchbar />
-
       <Stack
         flexGrow={1}
         direction="row"
@@ -64,14 +55,7 @@ export default function Header({ onOpenNav }) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
       >
-        <LanguagePopover />
-
-        <NotificationsPopover />
-
-        <ContactsPopover />
-
         <SettingsButton />
-
         <AccountPopover />
       </Stack>
     </>

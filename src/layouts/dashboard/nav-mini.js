@@ -7,7 +7,6 @@ import Logo from 'src/components/logo';
 // theme
 import { hideScroll } from 'src/theme/css';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
 import { NavSectionMini } from 'src/components/nav-section';
 
 //
@@ -19,8 +18,6 @@ import { useNavData } from './config-navigation';
 // ----------------------------------------------------------------------
 
 export default function NavMini() {
-  const { user } = useMockedUser();
-
   const navData = useNavData();
 
   return (
@@ -53,7 +50,7 @@ export default function NavMini() {
         <NavSectionMini
           data={navData}
           config={{
-            currentRole: user?.role || 'admin',
+            currentRole: 'admin',
           }}
         />
       </Stack>

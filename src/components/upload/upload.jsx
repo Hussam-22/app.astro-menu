@@ -15,7 +15,6 @@ import { UploadIllustration } from 'src/assets/illustrations';
 //
 import Iconify from '../iconify';
 
-import MultiFilePreview from './preview-multi-file';
 import SingleFilePreview from './preview-single-file';
 //
 import RejectionFiles from './errors-rejection-files';
@@ -101,9 +100,9 @@ export default function Upload({
 
   const renderMultiPreview = hasFiles && (
     <>
-      <Box sx={{ my: 3 }}>
+      {/* <Box sx={{ my: 3 }}>
         <MultiFilePreview files={files} thumbnail={thumbnail} onRemove={onRemove} />
-      </Box>
+      </Box> */}
 
       <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
         {onRemoveAll && (

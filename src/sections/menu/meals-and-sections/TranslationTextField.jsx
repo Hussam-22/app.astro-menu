@@ -2,7 +2,6 @@ import * as Yup from 'yup';
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
-import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -13,10 +12,6 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import {
-  rdxUpdateSectionTranslation,
-  rdxResetSectionTranslationSingleLanguage,
-} from 'src/redux/slices/menu';
 
 TranslationTextField.propTypes = {
   languageKey: PropTypes.string,
@@ -27,7 +22,6 @@ TranslationTextField.propTypes = {
 function TranslationTextField({ languageKey, sectionInfo, isLoading }) {
   const { enqueueSnackbar } = useSnackbar();
   const { fsUpdateSectionTranslation } = useAuthContext();
-  const dispatch = useDispatch();
 
   const schema = Yup.object().shape({
     translation: Yup.string().required('Translation cant be empty !!'),
@@ -56,13 +50,6 @@ function TranslationTextField({ languageKey, sectionInfo, isLoading }) {
     isLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    dispatch(
-      rdxUpdateSectionTranslation({
-        key: languageKey,
-        value: values.translation,
-        sectionID: sectionInfo.id,
-      })
-    );
     // UPDATE FIREBASE
     fsUpdateSectionTranslation(sectionInfo.menuID, sectionInfo.id, {
       translationEdited: { ...sectionInfo.translationEdited, [languageKey]: values.translation },
@@ -83,14 +70,6 @@ function TranslationTextField({ languageKey, sectionInfo, isLoading }) {
         [languageKey]: sectionInfo.translation[languageKey],
       },
     });
-
-    // UPDATE REDUX
-    dispatch(
-      rdxResetSectionTranslationSingleLanguage({
-        key: languageKey,
-        sectionID: sectionInfo.id,
-      })
-    );
 
     await new Promise((resolve) =>
       setTimeout(() => {

@@ -1,42 +1,30 @@
-import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 
-// @mui
+import { Box } from '@mui/material';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
 import Image from 'src/components/image';
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-// assets
-// components
-import { varBounce, MotionContainer } from 'src/components/animate';
 
 // ----------------------------------------------------------------------
 
 export default function RoleBasedGuard({ hasContent, roles, children, sx }) {
-  // Logic here to get current user role
-  const { user } = useMockedUser();
-
-  // const currentRole = 'user';
-  // const currentRole = user?.role; // admin;
-
   if (typeof roles !== 'undefined' && !roles.includes('full')) {
     return hasContent ? (
-      <Container component={MotionContainer} sx={{ textAlign: 'center', ...sx }}>
-        <m.div variants={varBounce().in}>
+      <Container sx={{ textAlign: 'center', ...sx }}>
+        <Box>
           <Typography variant="h3" paragraph>
             Permission Denied
           </Typography>
-        </m.div>
+        </Box>
 
-        <m.div variants={varBounce().in}>
+        <Box>
           <Typography sx={{ color: 'text.secondary' }}>
             You do not have permission to access this page
           </Typography>
-        </m.div>
+        </Box>
 
-        <m.div variants={varBounce().in}>
+        <Box>
           {/* <ForbiddenIllustration
             sx={{
               height: 260,
@@ -51,7 +39,7 @@ export default function RoleBasedGuard({ hasContent, roles, children, sx }) {
               my: { xs: 5, sm: 10 },
             }}
           />
-        </m.div>
+        </Box>
       </Container>
     ) : null;
   }
