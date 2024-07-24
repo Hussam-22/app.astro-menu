@@ -422,8 +422,6 @@ export function AuthProvider({ children }) {
           JSON.stringify(payload.languages.sort()) ===
           JSON.stringify(state?.businessProfile.languages.sort());
 
-        console.log(isLanguagesEqual);
-
         if (!isLanguagesEqual) {
           await fsBatchUpdateBusinessProfileLanguages(languages);
         }

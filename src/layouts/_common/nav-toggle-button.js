@@ -41,9 +41,9 @@ export default function NavToggleButton({ sx, ...other }) {
         left: NAV.W_VERTICAL - 12,
         zIndex: theme.zIndex.appBar + 1,
         border: `dashed 1px ${theme.palette.divider}`,
-        ...bgBlur({ opacity: 0.48, color: theme.palette.background.default }),
+        ...bgBlur({ opacity: 0.48, color: theme.palette.primary.main }),
         '&:hover': {
-          bgcolor: 'background.default',
+          bgcolor: 'primary.main',
         },
         ...sx,
       }}
@@ -56,6 +56,7 @@ export default function NavToggleButton({ sx, ...other }) {
             ? 'eva:arrow-ios-back-fill'
             : 'eva:arrow-ios-forward-fill'
         }
+        sx={{ color: '#FFFFFF' }}
       />
     </IconButton>
   );

@@ -24,22 +24,6 @@ export const paths = {
       forgotPassword: `${ROOTS.AUTH}/firebase/forgot-password`,
     },
   },
-  authDemo: {
-    classic: {
-      login: `${ROOTS.AUTH_DEMO}/classic/login`,
-      register: `${ROOTS.AUTH_DEMO}/classic/register`,
-      forgotPassword: `${ROOTS.AUTH_DEMO}/classic/forgot-password`,
-      newPassword: `${ROOTS.AUTH_DEMO}/classic/new-password`,
-      verify: `${ROOTS.AUTH_DEMO}/classic/verify`,
-    },
-    modern: {
-      login: `${ROOTS.AUTH_DEMO}/modern/login`,
-      register: `${ROOTS.AUTH_DEMO}/modern/register`,
-      forgotPassword: `${ROOTS.AUTH_DEMO}/modern/forgot-password`,
-      newPassword: `${ROOTS.AUTH_DEMO}/modern/new-password`,
-      verify: `${ROOTS.AUTH_DEMO}/modern/verify`,
-    },
-  },
   // DASHBOARD
   dashboard: {
     root: ROOTS.DASHBOARD,
@@ -78,6 +62,9 @@ export const paths = {
     },
     businessProfile: {
       manage: (id) => `${ROOTS.DASHBOARD}/business-profile/${id}/manage`,
+    },
+    subscription: {
+      root: `${ROOTS.DASHBOARD}/subscription-info`,
     },
   },
 };

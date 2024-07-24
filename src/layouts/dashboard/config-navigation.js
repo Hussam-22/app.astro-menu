@@ -4,6 +4,7 @@ import { paths } from 'src/routes/paths';
 import { useLocales } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
 import SvgColor from 'src/components/svg-color';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 
 // ----------------------------------------------------------------------
 
@@ -16,30 +17,7 @@ const icon = (name) => (
 );
 
 const ICONS = {
-  job: icon('ic_job'),
-  blog: icon('ic_blog'),
-  chat: icon('ic_chat'),
-  mail: icon('ic_mail'),
-  user: icon('ic_user'),
-  file: icon('ic_file'),
-  lock: icon('ic_lock'),
-  tour: icon('ic_tour'),
-  order: icon('ic_order'),
-  label: icon('ic_label'),
   blank: icon('ic_blank'),
-  kanban: icon('ic_kanban'),
-  folder: icon('ic_folder'),
-  banking: icon('ic_banking'),
-  booking: icon('ic_booking'),
-  invoice: icon('ic_invoice'),
-  product: icon('ic_product'),
-  calendar: icon('ic_calendar'),
-  disabled: icon('ic_disabled'),
-  external: icon('ic_external'),
-  menuItem: icon('ic_menu_item'),
-  ecommerce: icon('ic_ecommerce'),
-  analytics: icon('ic_analytics'),
-  dashboard: icon('ic_dashboard'),
   branch: icon('ic_branch'),
   menu: icon('ic_menu'),
   meal: icon('ic_meal'),
@@ -52,12 +30,13 @@ const ICONS = {
 export function useNavData() {
   const { t } = useLocales();
   const { businessProfile } = useAuthContext();
+  const { isMenuOnly } = useGetProductInfo();
 
   const data = useMemo(
     () => [
       // MANAGEMENT
       {
-        subheader: t('management'),
+        // subheader: t('management'),
         items: [
           // Branches
           {
@@ -92,11 +71,17 @@ export function useNavData() {
             path: paths.dashboard.staffs.root,
             icon: ICONS.staffs,
           },
-          // Branches
+          // Business Profile
           {
             title: t('Business Profile'),
             path: paths.dashboard.businessProfile.manage(businessProfile.docID),
             icon: ICONS.businessProfile,
+            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
+          },
+          {
+            title: t('Subscription & Payments'),
+            path: paths.dashboard.subscription.root,
+            icon: ICONS.blank,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
         ],
@@ -109,14 +94,14 @@ export function useNavData() {
   const filteredData = useMemo(
     () =>
       (businessProfile?.docID &&
-        (businessProfile?.planInfo?.at(-1)?.isMenuOnly
+        (isMenuOnly
           ? data.map((item) => ({
               subheader: item.subheader,
               items: item.items.filter((tab) => tab.path !== paths.dashboard.staffs.root),
             }))
           : data)) ||
       [],
-    [businessProfile?.docID, businessProfile?.planInfo, data]
+    [businessProfile?.docID, data, isMenuOnly]
   );
 
   return filteredData;

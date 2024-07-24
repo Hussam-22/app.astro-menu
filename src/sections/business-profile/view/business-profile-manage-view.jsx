@@ -6,21 +6,16 @@ import { Box, Tab, Tabs, Divider, useTheme, Container, Typography } from '@mui/m
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import { useSearchParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import BusinessProfilePlanInfo from 'src/sections/business-profile/business-profile-plan-info';
 import BusinessProfileEditForm from 'src/sections/business-profile/business-profile-edit-form';
 import BusinessProfileTranslation from 'src/sections/business-profile/business-profile-translation';
 
 function BusinessProfileManageView() {
   const theme = useTheme();
-  const searchParams = useSearchParams();
   const { themeStretch } = useSettingsContext();
   const { businessProfile } = useAuthContext();
-  const [currentTab, setCurrentTab] = useState(
-    searchParams.get('activeTab') === null ? 'Business Info' : 'Subscription & Payment Info'
-  );
+  const [currentTab, setCurrentTab] = useState('Business Info');
 
   const TABS = [
     {
@@ -32,11 +27,6 @@ function BusinessProfileManageView() {
       value: 'Translation',
       icon: <Iconify icon="ph:globe-light" width={20} height={20} />,
       component: businessProfile?.docID && <BusinessProfileTranslation />,
-    },
-    {
-      value: 'Subscription & Payment Info',
-      icon: <Iconify icon="solar:box-line-duotone" width={20} height={20} />,
-      component: businessProfile?.docID && <BusinessProfilePlanInfo />,
     },
   ];
 

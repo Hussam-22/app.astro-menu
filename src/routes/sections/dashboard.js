@@ -36,6 +36,11 @@ const BusinessProfileManagePage = lazy(() =>
   import('src/pages/dashboard/business-profile/branch-manage-page')
 );
 
+// SUBSCRIPTION INFO
+const SubscriptionInfoPage = lazy(() =>
+  import('src/pages/dashboard/subscription-payment/subscription-info-page')
+);
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -92,6 +97,7 @@ export const dashboardRoutes = [
         ],
       },
       { path: 'business-profile/:id/manage', element: <BusinessProfileManagePage /> },
+      { path: 'subscription-info', element: <SubscriptionInfoPage /> },
     ],
   },
 ];
