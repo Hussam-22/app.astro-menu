@@ -3,7 +3,9 @@ import { useAuthContext } from 'src/auth/hooks';
 export function useGetProductInfo() {
   const { businessProfile } = useAuthContext();
 
-  const { active, images, description, id, metadata, name, updated } = businessProfile.productInfo;
+  const { images, description, id, metadata, name, updated } = businessProfile.productInfo;
+
+  const { status } = businessProfile.subscriptionInfo;
 
   const allowAnalytics = metadata.analytics === 'true';
   const isMenuOnly = metadata.isMenuOnly === 'true';
@@ -13,8 +15,45 @@ export function useGetProductInfo() {
   const maxTables = +metadata.tables;
   const { version } = metadata;
 
+  const statusName = () => {
+    // Active: "active"
+    // Past Due: "past_due"
+    // Unpaid: "unpaid"
+    // Canceled: "canceled"
+    // Incomplete: "incomplete"
+    // Incomplete Expired: "incomplete_expired"
+    // Trialing: "trialing"
+    // Paused: "paused"
+
+    if (status === 'active') {
+      return 'Active';
+    }
+    if (status === 'past_due') {
+      return 'Past Due';
+    }
+    if (status === 'unpaid') {
+      return 'Unpaid';
+    }
+    if (status === 'canceled') {
+      return 'Canceled';
+    }
+    if (status === 'incomplete') {
+      return 'Incomplete';
+    }
+    if (status === 'incomplete_expired') {
+      return 'Incomplete Expired';
+    }
+    if (status === 'trialing') {
+      return 'Trialing';
+    }
+    if (status === 'paused') {
+      return 'Paused';
+    }
+    return 'Unknown';
+  };
+
   return {
-    active,
+    active: status === 'active',
     images,
     description,
     id,
@@ -28,6 +67,6 @@ export function useGetProductInfo() {
     languages,
     maxTables,
     version,
-    status: businessProfile.subscriptionInfo.status,
+    status: statusName(),
   };
 }

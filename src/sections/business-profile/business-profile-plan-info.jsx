@@ -8,8 +8,9 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
 import { useAuthContext } from 'src/auth/hooks';
+import { fDate, fDistance } from 'src/utils/format-time';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import { stripeCreatePortalSession } from 'src/stripe/functions';
-import { fDate, fDistance, calculateDistanceInNumbers } from 'src/utils/format-time';
 
 // BusinessProfilePlanInfo.propTypes = {
 //   businessProfile: PropTypes.object,
@@ -20,8 +21,7 @@ function BusinessProfilePlanInfo() {
   const {
     businessProfile: { subscriptionInfo, email },
   } = useAuthContext();
-
-  console.log(subscriptionInfo);
+  const { status, active } = useGetProductInfo();
 
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -70,9 +70,8 @@ function BusinessProfilePlanInfo() {
     isTrial && fDistance(new Date(), new Date(subscriptionInfo.trial_end * 1000));
 
   const labelContent = () => {
-    if (calculateDistanceInNumbers(new Date(), new Date(subscriptionInfo.trial_end * 1000)) > 0)
-      return { label: 'Active', color: 'success' };
-    return { label: 'Expired', color: 'error' };
+    if (status === 'Active') return { label: 'Active', color: 'success' };
+    return { label: status, color: 'error' };
   };
 
   const openPortalSession = async () => stripeCreatePortalSession(email);
@@ -140,7 +139,7 @@ function BusinessProfilePlanInfo() {
                 title="Subscription Period"
                 titleColor="primary.main"
                 content={`${startDate} to ${endDate}`}
-                subContent={`${remainingDays} remaining`}
+                subContent={active ? `${remainingDays} remaining` : 'Expired'}
                 subContentColor="grey.600"
               />
             )}

@@ -8,14 +8,14 @@ import TranslationTextField from './TranslationTextField';
 
 // ----------------------------------------------------------------------
 
-LanguageCard.propTypes = {
+TranslationCard.propTypes = {
   languageKey: PropTypes.string,
   showTitleField: PropTypes.bool,
   showDescriptionField: PropTypes.bool,
   data: PropTypes.object,
 };
 
-export default function LanguageCard({
+export default function TranslationCard({
   languageKey,
   showTitleField = true,
   showDescriptionField = true,

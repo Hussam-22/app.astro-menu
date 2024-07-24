@@ -383,11 +383,33 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsUpdateBusinessProfileTranslation = useCallback(
+    async (description) => {
+      try {
+        const businessProfileID = state?.businessProfile.docID;
+
+        const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
+        await updateDoc(docRef, { description, translation: '', translationEdited: '' });
+
+        await fbTranslateBranchDesc({
+          title: state.businessProfile.businessName,
+          desc: description,
+          businessProfileID,
+        });
+
+        await fsGetBusinessProfile(businessProfileID);
+      } catch (error) {
+        throw error;
+      }
+    },
+    [state]
+  );
+
   const fsUpdateBusinessProfile = useCallback(
     async (
       payload,
       shouldUpdateTranslation = false,
-      isLogoDirty,
+      isLogoDirty = false,
       businessProfileID = state?.businessProfile.docID
     ) => {
       try {
@@ -399,6 +421,8 @@ export function AuthProvider({ children }) {
         const isLanguagesEqual =
           JSON.stringify(payload.languages.sort()) ===
           JSON.stringify(state?.businessProfile.languages.sort());
+
+        console.log(isLanguagesEqual);
 
         if (!isLanguagesEqual) {
           await fsBatchUpdateBusinessProfileLanguages(languages);
@@ -1964,6 +1988,7 @@ export function AuthProvider({ children }) {
       // --- BUSINESS PROFILE ----
       fsCreateBusinessProfile,
       fsUpdateBusinessProfile,
+      fsUpdateBusinessProfileTranslation,
       createDefaults,
       fsGetSystemTranslations,
       // --- STRIPE ----
@@ -2059,6 +2084,7 @@ export function AuthProvider({ children }) {
       // --- BUSINESS PROFILE ----
       fsCreateBusinessProfile,
       fsUpdateBusinessProfile,
+      fsUpdateBusinessProfileTranslation,
       createDefaults,
       fsGetSystemTranslations,
       // --- STRIPE ----
