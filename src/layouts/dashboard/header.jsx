@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 
-import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 // @mui
@@ -17,7 +16,6 @@ import { useOffSetTop } from 'src/hooks/use-off-set-top';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useSettingsContext } from 'src/components/settings';
 
-import { AccountPopover } from '../_common';
 //
 import { NAV, HEADER } from '../config-layout';
 
@@ -42,7 +40,7 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
 
-      <Stack
+      {/* <Stack
         flexGrow={1}
         direction="row"
         alignItems="center"
@@ -50,7 +48,7 @@ export default function Header({ onOpenNav }) {
         spacing={{ xs: 0.5, sm: 1 }}
       >
         <AccountPopover />
-      </Stack>
+      </Stack> */}
     </>
   );
 

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 // @mui
 import Box from '@mui/material/Box';
 
+import Header from 'src/layouts/dashboard/header';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -28,41 +29,25 @@ export default function DashboardLayout({ children }) {
   const renderHorizontal = <NavHorizontal />;
   const renderNavVertical = <NavVertical openNav={nav.value} onCloseNav={nav.onFalse} />;
 
-  if (isHorizontal) {
-    return (
-      <>
-        {/* <Header onOpenNav={nav.onTrue} /> */}
-
-        {lgUp ? renderHorizontal : renderNavVertical}
-
-        <Main>{children}</Main>
-      </>
-    );
-  }
-
   if (isMini) {
     return (
-      <>
-        {/* <Header onOpenNav={nav.onTrue} /> */}
+      <Box
+        sx={{
+          minHeight: 1,
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+        }}
+      >
+        {lgUp ? renderNavMini : renderNavVertical}
 
-        <Box
-          sx={{
-            minHeight: 1,
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-          }}
-        >
-          {lgUp ? renderNavMini : renderNavVertical}
-
-          <Main>{children}</Main>
-        </Box>
-      </>
+        <Main>{children}</Main>
+      </Box>
     );
   }
 
   return (
     <>
-      {/* <Header onOpenNav={nav.onTrue} /> */}
+      {!lgUp && <Header onOpenNav={nav.onTrue} />}
 
       <Box
         sx={{

@@ -31,7 +31,7 @@ export default function Main({ children, sx, ...other }) {
         // onClose={() => setIsVisible(false)}
       >
         <AlertTitle>Check your subscription</AlertTitle>
-        {`Your Subscription status is ${status}, please renew your subscription to continue using the service`}
+        {`Your Subscription status is ${status}, please renew your subscription to continue using the Astro-Menu`}
       </Alert>
     </Container>
   );

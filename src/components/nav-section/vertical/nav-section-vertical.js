@@ -8,7 +8,6 @@ import Collapse from '@mui/material/Collapse';
 import { navVerticalConfig } from '../config';
 
 import NavList from './nav-list';
-import { StyledSubheader } from './styles';
 
 // ----------------------------------------------------------------------
 
@@ -55,18 +54,8 @@ function Group({ subheader, items, config }) {
   ));
 
   return (
-    <List disablePadding sx={{ px: 2 }}>
-      {subheader ? (
-        <>
-          <StyledSubheader disableGutters disableSticky onClick={handleToggle} config={config}>
-            {subheader}
-          </StyledSubheader>
-
-          <Collapse in={open}>{renderContent}</Collapse>
-        </>
-      ) : (
-        renderContent
-      )}
+    <List disablePadding sx={{ px: 1 }}>
+      <Collapse in={open}>{renderContent}</Collapse>
     </List>
   );
 }

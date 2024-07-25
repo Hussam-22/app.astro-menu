@@ -10,11 +10,12 @@ import { Button, Divider, Typography } from '@mui/material';
 
 // components
 import Logo from 'src/components/logo';
+import SvgColor from 'src/components/svg-color';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
+import { useRouter, usePathname } from 'src/routes/hook';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
-import { useRouter, usePathname } from 'src/routes/hook';
 // hooks
 import { NavSectionVertical } from 'src/components/nav-section';
 
@@ -28,12 +29,10 @@ import { useNavData } from './config-navigation';
 
 export default function NavVertical({ openNav, onCloseNav }) {
   const pathname = usePathname();
+  const router = useRouter();
   const lgUp = useResponsive('up', 'lg');
   const { enqueueSnackbar } = useSnackbar();
-  const router = useRouter();
-
   const { logout } = useAuthContext();
-
   const navData = useNavData();
 
   const handleLogout = async () => {
@@ -88,7 +87,13 @@ export default function NavVertical({ openNav, onCloseNav }) {
 
       <Divider sx={{ borderStyle: 'dashed', my: 2 }} />
 
-      <Button variant="contained" color="secondary" onClick={handleLogout} sx={{ mx: 2, my: 2 }}>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleLogout}
+        sx={{ mx: 2, my: 2 }}
+        endIcon={<SvgColor src="/assets/icons/system/logout.svg" />}
+      >
         Log Out
       </Button>
 
