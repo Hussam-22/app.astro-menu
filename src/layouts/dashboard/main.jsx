@@ -1,25 +1,40 @@
-import PropTypes from 'prop-types';
-
 // @mui
 import Box from '@mui/material/Box';
+import { Alert, Container, AlertTitle } from '@mui/material';
 
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import { useSettingsContext } from 'src/components/settings';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 
 //
 import { NAV, HEADER } from '../config-layout';
 
 // ----------------------------------------------------------------------
 
-const SPACING = 32;
+const SPACING = 0;
 
+// eslint-disable-next-line react/prop-types
 export default function Main({ children, sx, ...other }) {
   const settings = useSettingsContext();
   const lgUp = useResponsive('up', 'lg');
   const isNavHorizontal = settings.themeLayout === 'horizontal';
   const isNavMini = settings.themeLayout === 'mini';
+  const { status } = useGetProductInfo();
+
+  const subscriptionIssue = (
+    <Container maxWidth="lg">
+      <Alert
+        severity="error"
+        variant="outlined"
+        // onClose={() => setIsVisible(false)}
+      >
+        <AlertTitle>Check your subscription</AlertTitle>
+        {`Your Subscription status is ${status}, please renew your subscription to continue using the service`}
+      </Alert>
+    </Container>
+  );
 
   if (isNavHorizontal) {
     return (
@@ -37,6 +52,7 @@ export default function Main({ children, sx, ...other }) {
           }),
         }}
       >
+        {status !== 'Active' && subscriptionIssue}
         {children}
       </Box>
     );
@@ -63,12 +79,8 @@ export default function Main({ children, sx, ...other }) {
       }}
       {...other}
     >
+      {status !== 'Active' && subscriptionIssue}
       {children}
     </Box>
   );
 }
-
-Main.propTypes = {
-  children: PropTypes.node,
-  sx: PropTypes.object,
-};

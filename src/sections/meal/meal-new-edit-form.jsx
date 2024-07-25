@@ -26,7 +26,7 @@ import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import MealPortionAdd from 'src/sections/meal/meal-portion-add';
-import MealLabelNewEditForm from 'src/sections/meal/meal-label-new-edit-form';
+import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
 import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components/hook-form';
 
 MealNewEditForm.propTypes = { mealInfo: PropTypes.object };

@@ -12,6 +12,7 @@
 8- Translate all static text
 9- Improve snackbars colors and text
 1- improve the loading for all components visually
+- All Notifications should be in the same place (Bottom center)
 /- Prevent Refreshing the page when user pulls down the page
 
 ? QR Menu

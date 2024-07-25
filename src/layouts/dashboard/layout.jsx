@@ -1,10 +1,8 @@
 import PropTypes from 'prop-types';
-import { useQuery } from '@tanstack/react-query';
 
 // @mui
 import Box from '@mui/material/Box';
 
-import { useAuthContext } from 'src/auth/hooks';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -13,7 +11,6 @@ import { useSettingsContext } from 'src/components/settings';
 
 //
 import Main from './main';
-import Header from './header';
 import NavMini from './nav-mini';
 import NavVertical from './nav-vertical';
 import NavHorizontal from './nav-horizontal';
@@ -26,9 +23,6 @@ export default function DashboardLayout({ children }) {
   const nav = useBoolean();
   const isHorizontal = settings.themeLayout === 'horizontal';
   const isMini = settings.themeLayout === 'mini';
-  const { fsGetPlans } = useAuthContext();
-
-  const { data, error } = useQuery({ queryKey: ['plans'], queryFn: fsGetPlans });
 
   const renderNavMini = <NavMini />;
   const renderHorizontal = <NavHorizontal />;

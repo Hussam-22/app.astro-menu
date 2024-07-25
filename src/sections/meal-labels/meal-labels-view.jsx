@@ -22,8 +22,8 @@ import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import MealTableToolbar from 'src/sections/meal/list/MealTableToolbar';
-import MealLabelTableRow from 'src/sections/meal/list/MealLabelTableRow';
-import MealLabelNewEditForm from 'src/sections/meal/meal-label-new-edit-form';
+import MealLabelTableRow from 'src/sections/meal-labels/MealLabelTableRow';
+import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import {
   useTable,

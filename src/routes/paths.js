@@ -52,8 +52,8 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/meal/list`,
       new: `${ROOTS.DASHBOARD}/meal/new`,
       manage: (id) => `${ROOTS.DASHBOARD}/meal/${id}/manage`,
-      labels: `${ROOTS.DASHBOARD}/meal/labels`,
     },
+    labels: { root: `${ROOTS.DASHBOARD}/labels` },
     staffs: {
       root: `${ROOTS.DASHBOARD}/staffs`,
       list: `${ROOTS.DASHBOARD}/staffs/list`,
@@ -61,7 +61,7 @@ export const paths = {
       manage: (id) => `${ROOTS.DASHBOARD}/staffs/${id}/manage`,
     },
     businessProfile: {
-      manage: (id) => `${ROOTS.DASHBOARD}/business-profile/${id}/manage`,
+      manage: `${ROOTS.DASHBOARD}/business-profile/manage`,
     },
     subscription: {
       root: `${ROOTS.DASHBOARD}/subscription-info`,

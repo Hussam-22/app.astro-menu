@@ -2,9 +2,7 @@ import { useMemo } from 'react';
 
 import { paths } from 'src/routes/paths';
 import { useLocales } from 'src/locales';
-import { useAuthContext } from 'src/auth/hooks';
 import SvgColor from 'src/components/svg-color';
-import { useGetProductInfo } from 'src/hooks/use-get-product';
 
 // ----------------------------------------------------------------------
 
@@ -23,14 +21,14 @@ const ICONS = {
   meal: icon('ic_meal'),
   staffs: icon('ic_staffs'),
   businessProfile: icon('ic_businessProfile'),
+  label: icon('ic_label'),
+  subscription: icon('ic_subscription'),
 };
 
 // ----------------------------------------------------------------------
 
 export function useNavData() {
   const { t } = useLocales();
-  const { businessProfile } = useAuthContext();
-  const { isMenuOnly } = useGetProductInfo();
 
   const data = useMemo(
     () => [
@@ -59,11 +57,9 @@ export function useNavData() {
             title: t('Meals'),
             path: paths.dashboard.meal.root,
             icon: ICONS.meal,
-            children: [
-              { title: t('list'), path: paths.dashboard.meal.list },
-              { title: t('labels'), path: paths.dashboard.meal.labels },
-            ],
           },
+
+          { title: t('Meal Labels'), path: paths.dashboard.labels.root, icon: ICONS.label },
 
           // Staffs
           {
@@ -74,35 +70,21 @@ export function useNavData() {
           // Business Profile
           {
             title: t('Business Profile'),
-            path: paths.dashboard.businessProfile.manage(businessProfile.docID),
+            path: paths.dashboard.businessProfile.manage,
             icon: ICONS.businessProfile,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
           {
             title: t('Subscription & Payments'),
             path: paths.dashboard.subscription.root,
-            icon: ICONS.blank,
+            icon: ICONS.subscription,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
         ],
       },
     ],
-    [t, businessProfile]
+    [t]
   );
 
-  // MenuOnly Plans don't have access to "Staffs" page
-  const filteredData = useMemo(
-    () =>
-      (businessProfile?.docID &&
-        (isMenuOnly
-          ? data.map((item) => ({
-              subheader: item.subheader,
-              items: item.items.filter((tab) => tab.path !== paths.dashboard.staffs.root),
-            }))
-          : data)) ||
-      [],
-    [businessProfile?.docID, data, isMenuOnly]
-  );
-
-  return filteredData;
+  return data;
 }

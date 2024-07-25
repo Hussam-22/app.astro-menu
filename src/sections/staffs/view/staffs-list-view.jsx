@@ -24,6 +24,7 @@ import { RoleBasedGuard } from 'src/auth/guard';
 import Scrollbar from 'src/components/scrollbar';
 // hooks
 import { useSettingsContext } from 'src/components/settings';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import TableToolbar from 'src/sections/staffs/list/TableToolbar';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import TableDataRows from 'src/sections/staffs/list/TableDataRows';
@@ -53,10 +54,8 @@ const TABLE_HEAD = [
 export default function StaffsListView() {
   const router = useRouter();
   const { themeStretch } = useSettingsContext();
-  const {
-    fsGetStaffList,
-    businessProfile: { role },
-  } = useAuthContext();
+  const { fsGetStaffList } = useAuthContext();
+  const { isMenuOnly } = useGetProductInfo();
   const [filterName, setFilterName] = useState('');
   const { dense, page, order, orderBy, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } =
     useTable({
@@ -85,6 +84,8 @@ export default function StaffsListView() {
   });
 
   const isNotFound = !dataFiltered.length && !!filterName;
+
+  const role = isMenuOnly ? 'basic' : 'full';
 
   return (
     <RoleBasedGuard hasContent roles={[role]} sx={{ py: 10 }}>

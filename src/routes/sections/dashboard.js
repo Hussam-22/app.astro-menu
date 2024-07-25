@@ -24,7 +24,9 @@ const MenuNewPage = lazy(() => import('src/pages/dashboard/menu/menu-new-page'))
 const MealListPage = lazy(() => import('src/pages/dashboard/meal/meal-list-page'));
 const MealManagePage = lazy(() => import('src/pages/dashboard/meal/meal-manage-page'));
 const MealNewPage = lazy(() => import('src/pages/dashboard/meal/meal-new-page'));
-const MealLabelsPage = lazy(() => import('src/pages/dashboard/meal/meal-labels-page'));
+
+// Meal Labels
+const MealLabelsPage = lazy(() => import('src/pages/dashboard/meal-labels/meal-labels-page'));
 
 // STAFFS
 const StaffsListPage = lazy(() => import('src/pages/dashboard/staffs/staffs-list-page'));
@@ -84,8 +86,11 @@ export const dashboardRoutes = [
           { path: 'list', element: <MealListPage /> },
           { path: 'new', element: <MealNewPage /> },
           { path: ':id/manage', element: <MealManagePage /> },
-          { path: 'labels', element: <MealLabelsPage /> },
         ],
+      },
+      {
+        path: 'labels',
+        element: <MealLabelsPage />,
       },
       {
         path: 'staffs',
@@ -96,7 +101,7 @@ export const dashboardRoutes = [
           { path: ':id/manage', element: <StaffsManagePage /> },
         ],
       },
-      { path: 'business-profile/:id/manage', element: <BusinessProfileManagePage /> },
+      { path: 'business-profile/manage', element: <BusinessProfileManagePage /> },
       { path: 'subscription-info', element: <SubscriptionInfoPage /> },
     ],
   },
