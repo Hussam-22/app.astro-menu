@@ -19,7 +19,7 @@ import { NAV, HEADER } from '../config-layout';
 
 // ----------------------------------------------------------------------
 
-const SPACING = 0;
+const SPACING = 13;
 
 // eslint-disable-next-line react/prop-types
 export default function Main({ children, sx, ...other }) {
