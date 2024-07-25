@@ -15,7 +15,7 @@ function StaffsManageView() {
   const { id: staffID } = useParams();
   const theme = useTheme();
   const { themeStretch } = useSettingsContext();
-  const { isMenuOnly } = useGetProductInfo();
+  const { role, isMenuOnly } = useGetProductInfo();
   const { fsGetStaffInfo } = useAuthContext();
 
   const {
@@ -27,10 +27,8 @@ function StaffsManageView() {
     queryFn: () => fsGetStaffInfo(staffID),
   });
 
-  const role = isMenuOnly ? 'basic' : 'full';
-
   return (
-    <RoleBasedGuard hasContent roles={[role]} sx={{ py: 10 }}>
+    <RoleBasedGuard hasContent roles={[role, isMenuOnly ? 'menuOnly' : '']} sx={{ py: 10 }}>
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
           heading={staffInfo?.fullname || ''}

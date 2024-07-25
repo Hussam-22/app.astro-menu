@@ -53,7 +53,7 @@ export function useGetProductInfo() {
   };
 
   return {
-    active: status === 'active',
+    isActive: status === 'active',
     images,
     description,
     id,
@@ -68,5 +68,6 @@ export function useGetProductInfo() {
     maxTables,
     version,
     status: statusName(),
+    role: status === 'active' ? 'full' : 'deny',
   };
 }

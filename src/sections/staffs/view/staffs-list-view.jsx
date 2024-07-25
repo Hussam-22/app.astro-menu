@@ -55,9 +55,8 @@ export default function StaffsListView() {
   const router = useRouter();
   const { themeStretch } = useSettingsContext();
   const { fsGetStaffList } = useAuthContext();
-  const { isMenuOnly } = useGetProductInfo();
   const [filterName, setFilterName] = useState('');
-  const { dense, page, order, orderBy, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } =
+  const { page, order, orderBy, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } =
     useTable({
       defaultOrderBy: 'fullname',
       defaultRowsPerPage: 10,
@@ -85,87 +84,83 @@ export default function StaffsListView() {
 
   const isNotFound = !dataFiltered.length && !!filterName;
 
-  const role = isMenuOnly ? 'basic' : 'full';
-
   return (
-    <RoleBasedGuard hasContent roles={[role]} sx={{ py: 10 }}>
-      <Container maxWidth={themeStretch ? false : 'lg'}>
-        <CustomBreadcrumbs
-          heading="Staffs List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.staffs.root },
-            {
-              name: 'Staffs',
-            },
-          ]}
-          action={
-            <Button
-              variant="contained"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-              component={RouterLink}
-              to={paths.dashboard.staffs.new}
-            >
-              New Staff
-            </Button>
-          }
-        />
+    <Container maxWidth={themeStretch ? false : 'lg'}>
+      <CustomBreadcrumbs
+        heading="Staffs List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.staffs.root },
+          {
+            name: 'Staffs',
+          },
+        ]}
+        action={
+          <Button
+            variant="contained"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            component={RouterLink}
+            to={paths.dashboard.staffs.new}
+          >
+            New Staff
+          </Button>
+        }
+      />
 
-        <Card sx={{ mt: 4 }}>
-          <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
+      <Card sx={{ mt: 4 }}>
+        <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
-              <Table size="small">
-                <TableHeadCustom
-                  disableSelectAllRows
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  // numSelected={selected.length}
-                  // onSort={onSort}
+        <Scrollbar>
+          <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
+            <Table size="small">
+              <TableHeadCustom
+                disableSelectAllRows
+                order={order}
+                orderBy={orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={tableData.length}
+                // numSelected={selected.length}
+                // onSort={onSort}
+              />
+
+              <TableBody>
+                {dataFiltered
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) =>
+                    row ? (
+                      <TableDataRows
+                        key={row.docID}
+                        row={row}
+                        onEditRow={() => handleEditRow(row.docID)}
+                      />
+                    ) : (
+                      !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
+                    )
+                  )}
+
+                <TableEmptyRows
+                  height={60}
+                  emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
                 />
 
-                <TableBody>
-                  {dataFiltered
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) =>
-                      row ? (
-                        <TableDataRows
-                          key={row.docID}
-                          row={row}
-                          onEditRow={() => handleEditRow(row.docID)}
-                        />
-                      ) : (
-                        !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
-                      )
-                    )}
+                <TableNoData isNotFound={isNotFound} />
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Scrollbar>
 
-                  <TableEmptyRows
-                    height={60}
-                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                  />
-
-                  <TableNoData isNotFound={isNotFound} />
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Scrollbar>
-
-          <Box sx={{ position: 'relative' }}>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={dataFiltered.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={onChangePage}
-              onRowsPerPageChange={onChangeRowsPerPage}
-            />
-          </Box>
-        </Card>
-      </Container>
-    </RoleBasedGuard>
+        <Box sx={{ position: 'relative' }}>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={dataFiltered.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={onChangePage}
+            onRowsPerPageChange={onChangeRowsPerPage}
+          />
+        </Box>
+      </Card>
+    </Container>
   );
 }
 

@@ -5,18 +5,23 @@ import { STRIPE } from 'src/config-global';
 const LOCAL_URL = 'http://localhost:4242';
 const LIVE_URL = 'https://stripe-astro-menu.vercel.app';
 
+const CLIENT_LOCAL_URL = 'http://localhost:3035';
+const CLIENT_LIVE_URL = 'https://app-astro-menu.vercel.app';
+
 const headers = {
   'Content-Type': 'application/json',
   Authorization: `Bearer ${STRIPE.secretKey}`,
 };
 
+const isLocal = window.location.hostname === 'localhost';
+const returnUrl = `${isLocal ? CLIENT_LOCAL_URL : CLIENT_LIVE_URL}/dashboard/subscription-info`;
+
 export const stripeCreateCustomer = async (email, name, useLocalUrl = false) => {
+  const url = `${useLocalUrl ? LOCAL_URL : LIVE_URL}/create-customer`;
   const body = {
     email,
     name,
   };
-
-  const url = `${useLocalUrl ? LOCAL_URL : LIVE_URL}/create-customer`;
 
   try {
     const response = await axios.post(url, body, { headers });
@@ -39,6 +44,7 @@ export const stripeCreateCustomer = async (email, name, useLocalUrl = false) => 
 export const stripeCreatePortalSession = async (customerEmail, useLocalUrl = false) => {
   const body = {
     customerEmail,
+    returnUrl,
   };
 
   const url = `${useLocalUrl ? LOCAL_URL : LIVE_URL}/create-portal-session`;

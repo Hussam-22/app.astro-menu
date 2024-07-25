@@ -7,7 +7,9 @@ import { Box, Tab, Card, Tabs, Divider, useTheme, Container, Typography } from '
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { RoleBasedGuard } from 'src/auth/guard';
 import { useSettingsContext } from 'src/components/settings';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import MenuNewEditForm from 'src/sections/menu/menu-new-edit-form';
 import MealsAndSections from 'src/sections/menu/meals-and-sections';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';

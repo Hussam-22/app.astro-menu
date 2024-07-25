@@ -1,15 +1,26 @@
 import PropTypes from 'prop-types';
+import { useLocation } from 'react-router';
 
 import { Box } from '@mui/material';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
 import Image from 'src/components/image';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 
 // ----------------------------------------------------------------------
 
-export default function RoleBasedGuard({ hasContent, roles, children, sx }) {
-  if (typeof roles !== 'undefined' && !roles.includes('full')) {
+export default function RoleBasedGuard({ hasContent, roles = [], children, sx }) {
+  const location = useLocation();
+  const { role, isMenuOnly } = useGetProductInfo();
+  const accessRoles = location.pathname.includes('subscription-info')
+    ? ['full']
+    : [...roles, role, isMenuOnly && location.pathname.includes('staffs') ? 'menuOnly' : ''];
+
+  if (
+    typeof accessRoles !== 'undefined' &&
+    (!accessRoles.includes('full') || accessRoles.includes('menuOnly'))
+  ) {
     return hasContent ? (
       <Container sx={{ textAlign: 'center', ...sx }}>
         <Box>
@@ -25,12 +36,6 @@ export default function RoleBasedGuard({ hasContent, roles, children, sx }) {
         </Box>
 
         <Box>
-          {/* <ForbiddenIllustration
-            sx={{
-              height: 260,
-              my: { xs: 5, sm: 10 },
-            }}
-          /> */}
           <Image
             src="/assets/illustrations/no-access.svg"
             alt="No Access"

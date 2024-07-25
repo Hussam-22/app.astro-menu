@@ -1,12 +1,18 @@
 // @mui
+import { useState } from 'react';
+
 import Box from '@mui/material/Box';
+import { LoadingButton } from '@mui/lab';
 import { Alert, Container, AlertTitle } from '@mui/material';
 
+import { delay } from 'src/utils/promise-delay';
+import { useAuthContext } from 'src/auth/hooks';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
+import { stripeCreatePortalSession } from 'src/stripe/functions';
 
 //
 import { NAV, HEADER } from '../config-layout';
@@ -22,16 +28,36 @@ export default function Main({ children, sx, ...other }) {
   const isNavHorizontal = settings.themeLayout === 'horizontal';
   const isNavMini = settings.themeLayout === 'mini';
   const { status } = useGetProductInfo();
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    businessProfile: { ownerInfo },
+  } = useAuthContext();
+
+  const openPortalSession = async () => {
+    setIsLoading(true);
+    delay(1000);
+    stripeCreatePortalSession(ownerInfo.email);
+  };
 
   const subscriptionIssue = (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={{ mb: 3 }}>
       <Alert
         severity="error"
         variant="outlined"
         // onClose={() => setIsVisible(false)}
       >
         <AlertTitle>Check your subscription</AlertTitle>
-        {`Your Subscription status is ${status}, please renew your subscription to continue using the Astro-Menu`}
+        {`Your Subscription status is ${status}, please renew your subscription to continue using the Astro-Menu, all services and QRs are disabled, customers cant view your menu.`}
+        <br />
+        <LoadingButton
+          loading={isLoading}
+          variant="contained"
+          color="primary"
+          onClick={openPortalSession}
+          sx={{ fontWeight: 'bold' }}
+        >
+          Open Subscription Portal
+        </LoadingButton>
       </Alert>
     </Container>
   );

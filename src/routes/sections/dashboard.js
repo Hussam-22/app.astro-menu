@@ -1,10 +1,10 @@
 import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 
-// auth
-import { AuthGuard } from 'src/auth/guard';
 // layouts
 import DashboardLayout from 'src/layouts/dashboard';
+// auth
+import { AuthGuard, RoleBasedGuard } from 'src/auth/guard';
 // components
 import { LoadingScreen } from 'src/components/loading-screen';
 
@@ -18,7 +18,6 @@ const BranchNewPage = lazy(() => import('src/pages/dashboard/branch/branch-new-p
 // MENU
 const MenuListPage = lazy(() => import('src/pages/dashboard/menu/menu-list-page'));
 const MenuManagePage = lazy(() => import('src/pages/dashboard/menu/menu-manage-page'));
-const MenuNewPage = lazy(() => import('src/pages/dashboard/menu/menu-new-page'));
 
 // MEAL
 const MealListPage = lazy(() => import('src/pages/dashboard/meal/meal-list-page'));
@@ -52,7 +51,9 @@ export const dashboardRoutes = [
       <AuthGuard>
         <DashboardLayout>
           <Suspense fallback={<LoadingScreen />}>
-            <Outlet />
+            <RoleBasedGuard hasContent sx={{ py: 10 }}>
+              <Outlet />
+            </RoleBasedGuard>
           </Suspense>
         </DashboardLayout>
       </AuthGuard>
@@ -74,7 +75,6 @@ export const dashboardRoutes = [
         children: [
           { element: <MenuListPage />, index: true },
           { path: 'list', element: <MenuListPage /> },
-          { path: 'new', element: <MenuNewPage /> },
           { path: ':id/manage', element: <MenuManagePage /> },
         ],
       },
