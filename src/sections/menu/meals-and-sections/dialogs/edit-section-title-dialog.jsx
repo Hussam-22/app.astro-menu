@@ -24,7 +24,7 @@ import {
 import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import LanguageCard from 'src/components/translation-cards/LanguageCard';
+import TranslationCard from 'src/components/translation-cards/translation-card';
 // ----------------------------------------------------------------------
 
 EditSectionTitleDialog.propTypes = {
@@ -150,7 +150,7 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
             {languageKeys
               .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
               .map((key) => (
-                <LanguageCard
+                <TranslationCard
                   languageKey={key}
                   key={key}
                   data={sectionInfo}
