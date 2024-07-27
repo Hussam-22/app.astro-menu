@@ -13,12 +13,9 @@ import { useGetProductInfo } from 'src/hooks/use-get-product';
 export default function RoleBasedGuard({ hasContent, children, sx }) {
   const location = useLocation();
   const { role, isMenuOnly } = useGetProductInfo();
-  console.log(role);
   const accessRoles = location.pathname.includes('subscription-info')
     ? ['full']
     : [role, isMenuOnly && location.pathname.includes('staffs') ? 'menuOnly' : ''];
-
-  console.log(accessRoles);
 
   if (
     typeof accessRoles !== 'undefined' &&

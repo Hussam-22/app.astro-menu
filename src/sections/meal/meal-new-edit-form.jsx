@@ -152,6 +152,7 @@ function MealNewEditForm({ mealInfo }) {
             translation: dirtyFields.title || dirtyFields.description ? '' : mealInfo.translation,
             translationEdited:
               dirtyFields.title || dirtyFields.description ? '' : mealInfo.translationEdited,
+            lastUpdatedAt: new Date(),
           },
           dirtyFields.imageFile
         )
@@ -180,16 +181,42 @@ function MealNewEditForm({ mealInfo }) {
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
+          <Grid xs={12}>
+            <Stack>
+              <LoadingButton
+                type="submit"
+                color="success"
+                variant="contained"
+                loading={isPending}
+                disabled={!isDirty}
+                sx={{ alignSelf: 'self-end' }}
+              >
+                {mealInfo?.docID ? 'Update Meal' : 'Add Meal'}
+              </LoadingButton>
+            </Stack>
+          </Grid>
           <Grid xs={12} sm={7}>
-            <Stack spacing={3}>
-              <Card sx={{ p: 3 }}>
-                <Stack direction="column" spacing={3}>
-                  <Typography variant="h4">Meal Labels</Typography>
-                  <RHFTextField name="title" label="Meal Title" />
-                  <RHFTextField name="description" label="Description" multiline rows={5} />
-                </Stack>
-              </Card>
+            <Card sx={{ p: 3 }}>
+              <Stack direction="column" spacing={3}>
+                <Typography variant="h4">Meal Labels</Typography>
+                <RHFTextField name="title" label="Meal Title" />
+                <RHFTextField name="description" label="Description" multiline rows={5} />
+              </Stack>
+            </Card>
+          </Grid>
 
+          <Grid xs={12} sm={5}>
+            <RHFUpload
+              name="imageFile"
+              maxSize={3145728}
+              onDrop={handleDrop}
+              onDelete={handleRemoveFile}
+              paddingValue="40% 0"
+            />
+          </Grid>
+
+          <Grid xs={12}>
+            <Stack spacing={3}>
               <Card sx={{ p: 3 }}>
                 <Stack
                   direction="row"
@@ -214,7 +241,7 @@ function MealNewEditForm({ mealInfo }) {
                 <Box
                   sx={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(5,1fr)',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
                     gap: 1,
                     mt: 3,
                     mb: 1.5,
@@ -225,7 +252,7 @@ function MealNewEditForm({ mealInfo }) {
                     .map((label) => (
                       <Button
                         key={label.docID}
-                        variant={selectedMealLabels.includes(label.docID) ? 'contained' : 'soft'}
+                        variant={selectedMealLabels.includes(label.docID) ? 'soft' : 'soft'}
                         color={selectedMealLabels.includes(label.docID) ? 'primary' : 'inherit'}
                         onClick={() => handleAddTag(label)}
                       >
@@ -257,9 +284,7 @@ function MealNewEditForm({ mealInfo }) {
                     alignItems="center"
                     sx={{ px: 1 }}
                   >
-                    <Typography
-                      sx={{ fontWeight: theme.typography.fontWeightBold }}
-                    >{`Show "New" Label on Meal`}</Typography>
+                    <Typography sx={{ fontWeight: 500 }}>{`Show "New" Label on Meal`}</Typography>
                     <RHFSwitch name="isNew" label="New" labelPlacement="start" />
                   </Stack>
 
@@ -270,9 +295,7 @@ function MealNewEditForm({ mealInfo }) {
                     sx={{ px: 1 }}
                   >
                     <Stack direction="column">
-                      <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                        Whats the Meal Status?
-                      </Typography>
+                      <Typography sx={{ fontWeight: 500 }}>Whats the Meal Status?</Typography>
                       <Typography variant="caption">
                         Disabling the meal will remove it from all menus
                       </Typography>
@@ -289,17 +312,20 @@ function MealNewEditForm({ mealInfo }) {
                     justifyContent="space-between"
                     alignItems="center"
                     sx={{
-                      bgcolor: 'error.main',
-                      borderRadius: 1,
-                      p: 1,
-                      color: 'common.white',
+                      bgcolor: 'secondary.main',
+                      borderRadius: 0.5,
+                      py: 1,
+                      px: 2,
                     }}
                   >
                     <Stack direction="column">
-                      <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
+                      <Typography
+                        color="error"
+                        sx={{ fontWeight: theme.typography.fontWeightBold }}
+                      >
                         Delete Meal
                       </Typography>
-                      <Typography variant="caption">
+                      <Typography variant="caption" color="white">
                         Deleting the meal will completely remove it from the system and all menus
                       </Typography>
                     </Stack>
@@ -308,7 +334,8 @@ function MealNewEditForm({ mealInfo }) {
                         loading={isPending}
                         variant="contained"
                         onClick={handleDeleteMeal}
-                        sx={{ bgcolor: 'common.white', color: 'error.main', whiteSpace: 'nowrap' }}
+                        color="error"
+                        sx={{ whiteSpace: 'nowrap' }}
                       >
                         Delete Meal
                       </LoadingButton>
@@ -316,29 +343,6 @@ function MealNewEditForm({ mealInfo }) {
                   </Stack>
                 </Stack>
               </Card>
-            </Stack>
-          </Grid>
-
-          <Grid xs={12} sm={5}>
-            <Stack spacing={2}>
-              <RHFUpload
-                name="imageFile"
-                maxSize={3145728}
-                onDrop={handleDrop}
-                onDelete={handleRemoveFile}
-                paddingValue="50% 0"
-              />
-
-              <LoadingButton
-                type="submit"
-                color="success"
-                variant="contained"
-                loading={isPending}
-                disabled={!isDirty}
-                sx={{ alignSelf: 'center' }}
-              >
-                {mealInfo?.docID ? 'Update Meal' : 'Add Meal'}
-              </LoadingButton>
             </Stack>
           </Grid>
         </Grid>

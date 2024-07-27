@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { memo, useState, useCallback } from 'react';
+import { memo, useState } from 'react';
 
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
@@ -38,10 +38,6 @@ export default memo(NavSectionVertical);
 
 function Group({ subheader, items, config }) {
   const [open, setOpen] = useState(true);
-
-  const handleToggle = useCallback(() => {
-    setOpen((prev) => !prev);
-  }, []);
 
   const renderContent = items.map((list) => (
     <NavList

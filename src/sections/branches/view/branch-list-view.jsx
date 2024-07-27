@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import {
   Box,
   Card,
   Table,
-  Button,
   TableBody,
   Container,
   TableContainer,
@@ -14,12 +13,11 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
-import MealTableRow from 'src/sections/meal/list/MealTableRow';
-import MealTableToolbar from 'src/sections/meal/list/MealTableToolbar';
+import MenusTableToolbar from 'src/sections/menu/list/menu-table-toolbar';
+import BranchTableRow from 'src/sections/branches/components/table/branch-table-row';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import {
   useTable,
@@ -32,33 +30,50 @@ import {
 } from 'src/components/table';
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Meal', align: 'center', width: '40%' },
-  { id: 'lastUpdate', label: 'Last Update', align: 'center', width: '15%' },
-  { id: 'meal-labels', label: 'Meal Labels', align: 'center', width: '15%' },
-  { id: 'isNew', label: 'New', align: 'center', width: '7.5%' },
-  { id: 'status', label: 'Status', align: 'center', width: '7.5%' },
+  { id: 'title', label: 'Menu Name', align: 'left', width: '40%' },
+  { id: 'lastUpdate', label: 'Last Update', align: 'center', width: '30%' },
+  { id: 'selfOrder', label: 'Self-Order', align: 'center', width: '15%' },
+  { id: 'skipKitchen', label: 'Skip Kitchen', align: 'center', width: '15%' },
+  { id: 'status', label: 'Status', align: 'center', width: '15%' },
 ];
+
 // ----------------------------------------------------------------------
 
-function MealListView() {
-  const { page, order, orderBy, rowsPerPage, setPage, onSort, onChangePage, onChangeRowsPerPage } =
-    useTable({
-      defaultOrderBy: 'title',
-    });
-  const { themeStretch } = useSettingsContext();
+function BranchListView() {
+  const {
+    dense,
+    page,
+    order,
+    orderBy,
+    rowsPerPage,
+    setPage,
+    //
+    selected,
+    //
+    onSort,
+    onChangePage,
+    onChangeRowsPerPage,
+  } = useTable({
+    defaultOrderBy: 'title',
+    defaultRowsPerPage: 25,
+  });
+
   const router = useRouter();
-  const { fsGetAllMeals, fsGetMealLabels } = useAuthContext();
+  const { themeStretch } = useSettingsContext();
+  const { fsGetAllBranches } = useAuthContext();
+  const [tableData, setTableData] = useState([]);
   const [filterName, setFilterName] = useState('');
 
-  const { data: allMeals = [], failureCount } = useQuery({
-    queryKey: [`meals`],
-    queryFn: () => fsGetAllMeals(),
+  const { data, isLoading } = useQuery({
+    queryKey: ['branches'],
+    queryFn: fsGetAllBranches,
   });
 
-  const { data: mealLabelsList = [] } = useQuery({
-    queryKey: ['meal-labels'],
-    queryFn: () => fsGetMealLabels(),
-  });
+  useEffect(() => {
+    if (data?.length !== 0) {
+      setTableData(data);
+    }
+  }, [data]);
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
@@ -66,70 +81,54 @@ function MealListView() {
   };
 
   const handleEditRow = (id) => {
-    router.push(paths.dashboard.meal.manage(id));
+    router.push(paths.dashboard.branches.manage(id));
   };
 
   const dataFiltered = applySortFilter({
-    allMeals,
+    tableData,
     comparator: getComparator(order, orderBy),
     filterName,
   });
 
-  const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
+  const isNotFound = (!dataFiltered.length && !!filterName) || (!isLoading && !dataFiltered.length);
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Meals List"
+        heading="Branches List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Meals List',
+            name: 'Branches List',
           },
         ]}
-        action={
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() => router.push(paths.dashboard.meal.new)}
-          >
-            New Meal
-          </Button>
-        }
       />
 
       <Card>
-        <MealTableToolbar filterName={filterName} onFilterName={handleFilterName} />
+        <MenusTableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
         <Scrollbar>
           <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
             <Table size="small">
               <TableHeadCustom
+                disableSelectAllRows
                 order={order}
                 orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={allMeals.length}
+                rowCount={tableData?.length}
+                numSelected={selected.length}
                 onSort={onSort}
               />
-              {failureCount !== 0 && (
-                <TableBody>
-                  {[...Array(rowsPerPage)].map((_, index) => (
-                    <TableSkeleton key={index} sx={{ height: 60 }} />
-                  ))}
-                </TableBody>
-              )}
 
               <TableBody>
-                {(allMeals.length === 0 ? [...Array(rowsPerPage)] : dataFiltered)
+                {(isLoading ? [...Array(rowsPerPage)] : dataFiltered)
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .sort((a, b) => a.title.localeCompare(b.title))
                   .map((row, index) =>
                     row ? (
-                      <MealTableRow
+                      <BranchTableRow
                         key={row.docID}
                         row={row}
                         onEditRow={() => handleEditRow(row.docID)}
-                        mealLabelsList={mealLabelsList}
                       />
                     ) : (
                       !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
@@ -138,7 +137,7 @@ function MealListView() {
 
                 <TableEmptyRows
                   height={60}
-                  emptyRows={emptyRows(page, rowsPerPage, allMeals.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, tableData?.length)}
                 />
 
                 <TableNoData isNotFound={isNotFound} />
@@ -149,7 +148,7 @@ function MealListView() {
 
         <Box sx={{ position: 'relative' }}>
           <TablePagination
-            rowsPerPageOptions={[25, 50, 100]}
+            rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={dataFiltered.length}
             rowsPerPage={rowsPerPage}
@@ -162,11 +161,11 @@ function MealListView() {
     </Container>
   );
 }
-export default MealListView;
-// MealListView.propTypes = { tables: PropTypes.array };
+export default BranchListView;
+// BranchListView.propTypes = { tables: PropTypes.array };
 
-function applySortFilter({ allMeals, comparator, filterName }) {
-  const stabilizedThis = allMeals?.map((el, index) => [el, index]) || [];
+function applySortFilter({ tableData, comparator, filterName }) {
+  const stabilizedThis = tableData?.map((el, index) => [el, index]) || [];
 
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -174,13 +173,13 @@ function applySortFilter({ allMeals, comparator, filterName }) {
     return a[1] - b[1];
   });
 
-  allMeals = stabilizedThis.map((el) => el[0]);
+  tableData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    allMeals = allMeals.filter(
+    tableData = tableData.filter(
       (item) => item.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 
-  return allMeals;
+  return tableData;
 }

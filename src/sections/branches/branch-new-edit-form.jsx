@@ -185,38 +185,64 @@ export default function BranchNewEditForm({ branchInfo }) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={2}>
+        <Grid xs={12}>
+          <Stack>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              color="success"
+              loading={isPending}
+              disabled={!isDirty}
+              sx={{ alignSelf: 'flex-end' }}
+            >
+              {branchInfo?.docID ? 'Update Branch' : 'Add Branch'}
+            </LoadingButton>
+          </Stack>
+        </Grid>
         <Grid xs={12} md={7}>
-          <Stack direction="column" spacing={2}>
-            <Card sx={{ p: 3 }}>
-              <Stack spacing={2}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography variant="h3">Branch Info</Typography>
-                </Stack>
-                <RHFTextField name="title" label="Name" />
-                {/* <RHFTextField name="description" label="About" multiline rows={3} /> */}
-                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
-                  <RHFTextField name="wifiPassword" label="Wifi Password" />
-                  <RHFTextField name="taxValue" label="Tax Value" type="number" />
-
-                  {!isLoading && (
-                    <RHFSelect name="currency" label="Currency">
-                      {currencies}
-                    </RHFSelect>
-                  )}
-                  <RHFSelect name="defaultLanguage" label="Default Menu Language">
-                    {availableLanguages.map((code) => (
-                      <MenuItem key={code[1].name} value={code[0]}>
-                        {code[1].value}
-                      </MenuItem>
-                    ))}
-                  </RHFSelect>
-
-                  <RHFTextField type="email" name="email" label="Contact Email" />
-                  <RHFTextField type="number" name="number" label="Contact Number" />
-                </Box>
+          <Card sx={{ p: 3 }}>
+            <Stack spacing={2}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="h3">Branch Info</Typography>
               </Stack>
-            </Card>
+              <RHFTextField name="title" label="Name" />
+              {/* <RHFTextField name="description" label="About" multiline rows={3} /> */}
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
+                <RHFTextField name="wifiPassword" label="Wifi Password" />
+                <RHFTextField name="taxValue" label="Tax Value" type="number" />
 
+                {!isLoading && (
+                  <RHFSelect name="currency" label="Currency">
+                    {currencies}
+                  </RHFSelect>
+                )}
+                <RHFSelect name="defaultLanguage" label="Default Menu Language">
+                  {availableLanguages.map((code) => (
+                    <MenuItem key={code[1].name} value={code[0]}>
+                      {code[1].value}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
+
+                <RHFTextField type="email" name="email" label="Contact Email" />
+                <RHFTextField type="number" name="number" label="Contact Number" />
+              </Box>
+            </Stack>
+          </Card>
+        </Grid>
+        <Grid xs={12} md={5}>
+          <RHFUpload
+            name="cover"
+            maxSize={3145728}
+            onDrop={handleDrop}
+            onRemove={handelRemove}
+            helperText={`Allowed *.jpeg, *.jpg, *.png, *.webp | max size of ${fData(3145728)}`}
+            paddingValue="40% 0"
+          />
+        </Grid>
+
+        <Grid xs={12}>
+          <Stack direction="column" spacing={2}>
             <Card sx={{ p: 3 }}>
               <BranchSocialLinks />
             </Card>
@@ -294,29 +320,6 @@ export default function BranchNewEditForm({ branchInfo }) {
                 </Stack>
               </Card>
             )}
-          </Stack>
-        </Grid>
-
-        <Grid xs={12} md={5}>
-          <Stack spacing={2}>
-            <RHFUpload
-              name="cover"
-              maxSize={3145728}
-              onDrop={handleDrop}
-              onRemove={handelRemove}
-              helperText={`Allowed *.jpeg, *.jpg, *.png, *.webp | max size of ${fData(3145728)}`}
-              paddingValue="30% 0"
-            />
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              color="success"
-              loading={isPending}
-              disabled={!isDirty}
-              sx={{ alignSelf: 'center' }}
-            >
-              {branchInfo?.docID ? 'Update Branch' : 'Add Branch'}
-            </LoadingButton>
           </Stack>
         </Grid>
       </Grid>

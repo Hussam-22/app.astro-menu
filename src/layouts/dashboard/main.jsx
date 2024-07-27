@@ -107,8 +107,6 @@ export default function Main({ children, sx, ...other }) {
     );
   }
 
-  console.log(status);
-
   return (
     <Box
       component="main"

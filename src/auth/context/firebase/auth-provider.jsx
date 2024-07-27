@@ -2,6 +2,7 @@
 /* eslint-disable no-shadow */
 import PropTypes from 'prop-types';
 import { initializeApp } from 'firebase/app';
+import { useQueryClient } from '@tanstack/react-query';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useMemo, useState, useEffect, useReducer, useCallback } from 'react';
 import {
@@ -104,6 +105,8 @@ export function AuthProvider({ children }) {
   const [branchSnapshot, setBranchSnapshot] = useState({});
   const [staff, setStaff] = useState({});
 
+  const queryClient = useQueryClient();
+
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
   const status = state.loading ? 'loading' : checkAuthenticated;
 
@@ -123,7 +126,11 @@ export function AuthProvider({ children }) {
 
             // update user last login time.
             await updateDoc(userProfile, { lastLogin: new Date() });
-            await fsGetBusinessProfile(profile.businessProfileID, user, profile);
+
+            queryClient.fetchQuery({
+              queryKey: ['businessProfile'],
+              queryFn: async () => fsGetBusinessProfile(profile.businessProfileID, user, profile),
+            });
           } else {
             dispatch({
               type: 'INITIAL',

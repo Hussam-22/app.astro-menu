@@ -52,6 +52,7 @@
 ? Meals
 /- Translate Meal Portions (Not feasible as it will require a lot of work)
 /- Remove "gram"
+- Think about meal price and how will affecting branches from different countries
 
 ? Business Profile
 - Add sub users
