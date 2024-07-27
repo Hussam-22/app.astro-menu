@@ -68,6 +68,6 @@ export function useGetProductInfo() {
     maxTables,
     version,
     status: statusName(),
-    role: status === 'active' ? 'full' : 'deny',
+    role: status === 'active' || status === 'trialing' ? 'full' : 'deny',
   };
 }

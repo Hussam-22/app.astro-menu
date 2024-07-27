@@ -10,12 +10,15 @@ import { useGetProductInfo } from 'src/hooks/use-get-product';
 
 // ----------------------------------------------------------------------
 
-export default function RoleBasedGuard({ hasContent, roles = [], children, sx }) {
+export default function RoleBasedGuard({ hasContent, children, sx }) {
   const location = useLocation();
   const { role, isMenuOnly } = useGetProductInfo();
+  console.log(role);
   const accessRoles = location.pathname.includes('subscription-info')
     ? ['full']
-    : [...roles, role, isMenuOnly && location.pathname.includes('staffs') ? 'menuOnly' : ''];
+    : [role, isMenuOnly && location.pathname.includes('staffs') ? 'menuOnly' : ''];
+
+  console.log(accessRoles);
 
   if (
     typeof accessRoles !== 'undefined' &&
@@ -55,6 +58,6 @@ export default function RoleBasedGuard({ hasContent, roles = [], children, sx })
 RoleBasedGuard.propTypes = {
   children: PropTypes.node,
   hasContent: PropTypes.bool,
-  roles: PropTypes.arrayOf(PropTypes.string),
+  // roles: PropTypes.arrayOf(PropTypes.string),
   sx: PropTypes.object,
 };

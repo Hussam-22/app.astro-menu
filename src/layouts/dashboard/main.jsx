@@ -52,7 +52,30 @@ export default function Main({ children, sx, ...other }) {
         <LoadingButton
           loading={isLoading}
           variant="contained"
-          color="primary"
+          color="secondary"
+          onClick={openPortalSession}
+          sx={{ fontWeight: 'bold' }}
+        >
+          Open Subscription Portal
+        </LoadingButton>
+      </Alert>
+    </Container>
+  );
+
+  const trialPlan = (
+    <Container maxWidth="lg" sx={{ mb: 3 }}>
+      <Alert
+        severity="info"
+        variant="outlined"
+        // onClose={() => setIsVisible(false)}
+      >
+        <AlertTitle>Enjoying Astro-Menu?</AlertTitle>
+        Subscribe to paid plan to continue using the Astro-Menu
+        <br />
+        <LoadingButton
+          loading={isLoading}
+          variant="contained"
+          color="info"
           onClick={openPortalSession}
           sx={{ fontWeight: 'bold' }}
         >
@@ -84,6 +107,8 @@ export default function Main({ children, sx, ...other }) {
     );
   }
 
+  console.log(status);
+
   return (
     <Box
       component="main"
@@ -105,7 +130,8 @@ export default function Main({ children, sx, ...other }) {
       }}
       {...other}
     >
-      {status !== 'Active' && subscriptionIssue}
+      {status !== 'Active' && status !== 'Trialing' && subscriptionIssue}
+      {status === 'Trialing' && trialPlan}
       {children}
     </Box>
   );
