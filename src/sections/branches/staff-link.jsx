@@ -29,7 +29,7 @@ function StaffLink() {
 
   const copUrlHandler = (staffID) => {
     navigator.clipboard.writeText(
-      `${window.location.protocol}//${window.location.host}/staff/${user.businessProfileID}/${staffID}`
+      `https://menu-astro-menu.vercel.app/staff/${user.businessProfileID}/${staffID}`
     );
   };
 

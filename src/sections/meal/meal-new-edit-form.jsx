@@ -196,7 +196,7 @@ function MealNewEditForm({ mealInfo }) {
             </Stack>
           </Grid>
           <Grid xs={12} sm={7}>
-            <Card sx={{ p: 3 }}>
+            <Card sx={{ p: 3, height: 1 }}>
               <Stack direction="column" spacing={3}>
                 <Typography variant="h4">Meal Labels</Typography>
                 <RHFTextField name="title" label="Meal Title" />

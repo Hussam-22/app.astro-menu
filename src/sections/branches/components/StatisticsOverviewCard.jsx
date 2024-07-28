@@ -1,12 +1,13 @@
+import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
 import { Card, Stack, Divider, useTheme } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { fShortenNumber } from 'src/utils/format-number';
 import { useResponsive } from 'src/hooks/use-responsive';
-import TotalScans from 'src/sections/branches/components/analytic/TotalScans';
-import TotalOrders from 'src/sections/branches/components/analytic/TotalOrders';
+import OverviewCard from 'src/sections/branches/components/analytic/Overview-card';
 
 StatisticsOverviewCard.propTypes = {
   tableInfo: PropTypes.object,
@@ -17,7 +18,7 @@ StatisticsOverviewCard.propTypes = {
 function StatisticsOverviewCard({ tableInfo, month, year }) {
   const theme = useTheme();
   const isMobile = useResponsive('down', 'sm');
-  const { fsGetTableOrdersByPeriod, fsGetBranch, fsGetTableInfo } = useAuthContext();
+  const { fsGetTableOrdersByPeriod, fsGetBranch, fsGetTableInfo, fsGetAllMenus } = useAuthContext();
 
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', tableInfo.branchID],
@@ -35,6 +36,11 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
     queryFn: () => fsGetTableOrdersByPeriod(tableInfo.docID, tableInfo.branchID, month, year),
   });
 
+  const { data: menusList = [] } = useQuery({
+    queryKey: ['menus'],
+    queryFn: () => fsGetAllMenus(),
+  });
+
   const totalOrdersThisMonth =
     orders
       ?.filter(
@@ -47,6 +53,12 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
 
   const totalOrdersCountThisMonth = orders?.filter((order) => order.isPaid)?.length || 0;
   const totalScans = tableData?.statisticsSummary?.scans?.[year]?.[month] || 0;
+
+  const selectedMenu = useMemo(
+    () => menusList.find((menu) => menu.docID === tableInfo.menuID),
+    [menusList, tableInfo.menuID]
+  );
+
   return (
     <Card sx={{ py: 1 }}>
       <Stack
@@ -60,23 +72,32 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
         }
         justifyContent="space-evenly"
       >
+        <OverviewCard
+          title="Active Menu"
+          subtitle={selectedMenu?.title}
+          icon="fluent:food-32-regular"
+        />
+
         {tableData?.index !== 0 && (
-          <TotalOrders
-            title="Total Orders"
-            total={totalOrdersCountThisMonth}
-            price={+totalOrdersThisMonth.toFixed(2)}
-            icon="fluent-emoji-high-contrast:money-bag"
-            color={theme.palette.success.main}
-            currency={branchInfo?.currency}
+          <OverviewCard
+            title="Total Income"
+            subtitle={+totalOrdersThisMonth.toFixed(2)}
+            icon="solar:money-bag-line-duotone"
           />
         )}
-        <TotalScans
+
+        {tableData?.index !== 0 && (
+          <OverviewCard
+            title="Total Orders"
+            subtitle={totalOrdersCountThisMonth ? fShortenNumber(totalOrdersCountThisMonth) : 0}
+            icon="line-md:circle-to-confirm-circle-transition"
+          />
+        )}
+
+        <OverviewCard
           title="Total Scans"
-          total={totalScans}
-          percent={0}
-          price={0}
+          subtitle={totalScans ? fShortenNumber(totalScans) : 0}
           icon="clarity:qr-code-line"
-          color={theme.palette.info.main}
         />
       </Stack>
     </Card>

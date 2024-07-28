@@ -28,13 +28,7 @@ export default function MenusTableRow({ row, onEditRow }) {
         >
           <ListItemText
             primary={title}
-            secondary={docID}
             primaryTypographyProps={{ typography: 'body1', fontWeight: 'bold' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-              typography: 'body2',
-            }}
           />
         </Box>
       </TableCell>
