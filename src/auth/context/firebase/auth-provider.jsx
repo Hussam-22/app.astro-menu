@@ -876,6 +876,28 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsUpdateQRsMenuID = useCallback(
+    // this function is used to update all QRs menuID across all branches after deleting their menu
+    async (oldMenuID, newMenuID) => {
+      const docRef = query(
+        collectionGroup(DB, 'tables'),
+        where('businessProfileID', '==', state.user.businessProfileID),
+        where('menuID', '==', oldMenuID)
+      );
+
+      const querySnapshot = await getDocs(docRef);
+
+      const batch = writeBatch(DB);
+
+      querySnapshot.forEach((doc) => {
+        const tableRef = doc.ref;
+        batch.update(tableRef, { menuID: newMenuID });
+      });
+
+      await batch.commit();
+    },
+    [state]
+  );
   // ------------------------ Orders -----------------------------
   const fsGetTableOrdersByPeriod = useCallback(
     async (
@@ -1111,30 +1133,18 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetAllMenus = useCallback(
-    async (businessProfileID = state.user.businessProfileID) => {
-      const docRef = query(
-        collectionGroup(DB, 'menus'),
-        where('businessProfileID', '==', businessProfileID),
-        where('isDeleted', '==', false)
-      );
+  const fsGetAllMenus = useCallback(async () => {
+    const docRef = query(
+      collectionGroup(DB, 'menus'),
+      where('businessProfileID', '==', state.user.businessProfileID),
+      where('isDeleted', '==', false)
+    );
 
-      const dataArr = [];
-      const querySnapshot = await getDocs(docRef);
-      querySnapshot.forEach((doc) =>
-        dataArr.push({
-          ...doc.data(),
-          lastUpdatedAt: `${new Date(
-            doc.data().lastUpdatedAt.seconds * 1000
-          ).toDateString()} | ${new Date(
-            doc.data().lastUpdatedAt.seconds * 1000
-          ).toLocaleTimeString()}`,
-        })
-      );
-      return dataArr;
-    },
-    [state]
-  );
+    const dataArr = [];
+    const querySnapshot = await getDocs(docRef);
+    querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+    return dataArr;
+  }, [state]);
   const fsAddNewMenu = useCallback(
     async (data, businessProfileID = state.user.businessProfileID) => {
       const newDocRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/menus/`));
@@ -1165,8 +1175,13 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsDeleteMenu = useCallback(
-    async (docID) => {
-      const docRef = doc(DB, `/businessProfiles/${state.user.businessProfileID}/menus/${docID}`);
+    async (oldMenuID, newMenuID) => {
+      await fsUpdateQRsMenuID(oldMenuID, newMenuID);
+
+      const docRef = doc(
+        DB,
+        `/businessProfiles/${state.user.businessProfileID}/menus/${oldMenuID}`
+      );
       await deleteDoc(docRef);
     },
     [state]

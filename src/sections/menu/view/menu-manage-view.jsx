@@ -2,14 +2,12 @@ import { useState } from 'react';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { Box, Tab, Card, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
+import { Box, Tab, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import { RoleBasedGuard } from 'src/auth/guard';
 import { useSettingsContext } from 'src/components/settings';
-import { useGetProductInfo } from 'src/hooks/use-get-product';
 import MenuNewEditForm from 'src/sections/menu/menu-new-edit-form';
 import MealsAndSections from 'src/sections/menu/meals-and-sections';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
@@ -21,7 +19,7 @@ function MenuManageView() {
   const [currentTab, setCurrentTab] = useState('Menu Info');
   const { fsGetMenu } = useAuthContext();
 
-  const { data: menuData = {} } = useQuery({
+  const { data: menuInfo = {} } = useQuery({
     queryKey: [`menu-${id}`],
     queryFn: () => fsGetMenu(id),
   });
@@ -30,11 +28,7 @@ function MenuManageView() {
     {
       value: 'Menu Info',
       icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
-      component: (
-        <Card sx={{ p: 3 }}>
-          <MenuNewEditForm menuData={menuData} />
-        </Card>
-      ),
+      component: <MenuNewEditForm menuInfo={menuInfo} />,
     },
     {
       value: 'Meals and Sections',
@@ -46,19 +40,19 @@ function MenuManageView() {
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={menuData?.title || ''}
+        heading={menuInfo?.title || ''}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Menus', href: paths.dashboard.menu.list },
-          { name: menuData?.title || '' },
+          { name: menuInfo?.title || '' },
         ]}
         action={
           <Typography variant="caption" sx={{ color: theme.palette.grey[600] }}>
-            ID: {menuData?.docID}
+            ID: {menuInfo?.docID}
           </Typography>
         }
       />
-      {menuData?.docID && (
+      {menuInfo?.docID && (
         <>
           <Tabs
             allowScrollButtonsMobile
@@ -81,7 +75,7 @@ function MenuManageView() {
 
           <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
 
-          {menuData?.docID &&
+          {menuInfo?.docID &&
             TABS.map((tab) => {
               const isMatched = tab.value === currentTab;
               return isMatched && <Box key={tab.value}>{tab.component}</Box>;

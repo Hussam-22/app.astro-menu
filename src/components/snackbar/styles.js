@@ -28,16 +28,17 @@ export const StyledNotistack = styled(MaterialDesignContent)(({ theme }) => {
       backgroundColor: isLight ? theme.palette.grey[800] : theme.palette.common.white,
     },
     '&.notistack-MuiContent-info': {
-      backgroundColor: theme.palette.info.lighter,
+      border: `2px solid ${theme.palette.info.main}`,
     },
     '&.notistack-MuiContent-success': {
-      backgroundColor: theme.palette.success.lighter,
+      backgroundColor: theme.palette.common.white,
+      border: `2px solid ${theme.palette.success.main}`,
     },
     '&.notistack-MuiContent-warning': {
-      backgroundColor: theme.palette.warning.lighter,
+      border: `2px solid ${theme.palette.warning.main}`,
     },
     '&.notistack-MuiContent-error': {
-      backgroundColor: theme.palette.error.lighter,
+      border: `2px solid ${theme.palette.error.main}`,
     },
     '&.notistack-MuiContent-inKitchen': {
       backgroundColor: theme.palette.error.lighter,

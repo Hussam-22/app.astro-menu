@@ -16,10 +16,8 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
-import { RoleBasedGuard } from 'src/auth/guard';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
-import { useGetProductInfo } from 'src/hooks/use-get-product';
 import MenuNewDialog from 'src/sections/menu/menu-new-dialog';
 import MenusTableRow from 'src/sections/menu/list/menu-table-row';
 import MenusTableToolbar from 'src/sections/menu/list/menu-table-toolbar';
@@ -36,11 +34,10 @@ import {
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Menu Name', align: 'left', width: '40%' },
+  { id: 'mostOrderedMeals', label: 'Most Ordered Meals', align: 'center', width: '15%' },
   { id: 'lastUpdate', label: 'Last Update', align: 'center', width: '30%' },
-  { id: 'status', label: 'Status', align: 'center', width: '15%' },
+  // { id: 'status', label: 'Status', align: 'center', width: '15%' },
 ];
-
-console.log('//TODO: Remove Total Meals from the list table');
 
 // ----------------------------------------------------------------------
 
@@ -77,7 +74,7 @@ function MenuListView() {
     error,
   } = useQuery({
     queryKey: ['menus'],
-    queryFn: () => fsGetAllMenus(),
+    queryFn: fsGetAllMenus,
   });
 
   useEffect(() => {
