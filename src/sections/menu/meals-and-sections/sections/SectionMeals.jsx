@@ -23,7 +23,6 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { titleCase } from 'src/utils/change-case';
-import TextMaxLine from 'src/components/text-max-line';
 import AddMealDialog from 'src/sections/menu/meals-and-sections/dialogs/add-meal-dialog';
 import RemoveSectionDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-section-dialog';
 import EditSectionTitleDialog from 'src/sections/menu/meals-and-sections/dialogs/edit-section-title-dialog';
@@ -102,7 +101,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
       >
         <CardHeader
           title={titleCase(sectionInfo.title)}
-          sx={{ backgroundColor: 'background.neutral', pb: 2 }}
+          sx={{ backgroundColor: 'background.neutral', py: 1, px: 2 }}
           action={
             <FormGroup row>
               <FormControlLabel
@@ -114,7 +113,13 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                     </Label>
                   )
                 }
-                control={<Switch onChange={handleStatusChange} checked={sectionInfo?.isActive} />}
+                control={
+                  <Switch
+                    onChange={handleStatusChange}
+                    checked={sectionInfo?.isActive}
+                    color="success"
+                  />
+                }
               />
               <Tooltip title="delete section">
                 <IconButton
@@ -122,7 +127,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                   size="small"
                   onClick={() => handleDialogIsOpenState('removeSection', true)}
                 >
-                  <Iconify icon="ci:trash-empty" width={22} height={22} />
+                  <Iconify icon="f7:trash" width={22} height={22} />
                 </IconButton>
               </Tooltip>
 
@@ -195,39 +200,20 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                     <Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />
                   }
                 >
-                  <Stack direction="column" spacing={1} sx={{ maxWidth: '10%' }}>
-                    <Box sx={{ position: 'relative', mr: 1 }}>
-                      <Avatar
-                        src={meal.cover}
-                        alt={meal.title}
-                        sx={{
-                          width: 72,
-                          height: 72,
-                          borderRadius: 1,
-
-                          filter: `grayscale(${meal.isActive ? 0 : '100'})`,
-                        }}
-                        variant="square"
-                      />
-                    </Box>
-                  </Stack>
-                  <Stack
-                    direction="column"
-                    sx={{ px: 2, maxWidth: '75%' }}
-                    spacing={1}
-                    flexGrow={1}
-                  >
-                    <Box>
-                      {/* <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                        {meal.docID}
-                      </Typography> */}
-                      <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
-                        {meal.title}
-                      </Typography>
-                      <TextMaxLine line={1} variant="body2">
-                        {meal.description}
-                      </TextMaxLine>
-                    </Box>
+                  <Avatar
+                    src={meal.cover}
+                    alt={meal.title}
+                    sx={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: 0.5,
+                      mr: 1,
+                      filter: `grayscale(${meal.isActive ? 0 : '100'})`,
+                    }}
+                    variant="square"
+                  />
+                  <Stack direction="column" spacing={0.25} sx={{ px: 1, maxWidth: '75%' }}>
+                    <Typography variant="subtitle2">{meal.title}</Typography>
                     <Stack direction="row" spacing={2}>
                       {meal.portions.map((portion, i) => (
                         <Label variant="soft" color="warning" key={`${portion.portionSize}-${i}`}>

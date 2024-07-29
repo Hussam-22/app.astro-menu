@@ -76,6 +76,7 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
           title="Active Menu"
           subtitle={selectedMenu?.title}
           icon="fluent:food-32-regular"
+          color="primary.main"
         />
 
         {tableData?.index !== 0 && (

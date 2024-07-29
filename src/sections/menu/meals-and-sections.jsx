@@ -46,7 +46,7 @@ function MealsAndSections() {
           [...menuSections]
             .sort((a, b) => a.order - b.order)
             .map((section, index) => (
-              <Box key={section.docID} layout>
+              <Box key={section.docID}>
                 <SectionMeals
                   id={section.docID}
                   menuID={menuID}

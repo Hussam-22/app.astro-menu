@@ -137,10 +137,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
             </Stack>
 
             <Stack
-              direction="row"
-              spacing={2}
-              justifyContent="space-between"
-              alignItems="center"
+              direction="column"
               sx={{
                 bgcolor: 'secondary.main',
                 borderRadius: 0.5,
@@ -148,35 +145,34 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
                 px: 2,
               }}
             >
-              <Stack direction="column">
-                <Typography color="error" sx={{ fontWeight: 700 }}>
-                  Delete Menu
-                </Typography>
+              <Typography color="error" sx={{ fontWeight: 700 }}>
+                Delete Menu
+              </Typography>
+              <Typography variant="caption" color="white">
+                - The system must have at least 1 menu, if&nbsp;
+                <Label variant="soft" color="primary">
+                  {menuInfo.title}
+                </Label>
+                &nbsp;is your only menu, you must create a new menu before deleting it.
+              </Typography>
+              {menusList.length !== 1 && (
                 <Typography variant="caption" color="white">
-                  - The system must have at least 1 menu, if&nbsp;
+                  {` - You must specify the 'Revert to Menu' to delete this menu, QRs across all
+                  branches using`}
                   <Label variant="soft" color="primary">
                     {menuInfo.title}
                   </Label>
-                  &nbsp;is your only menu, you must create a new menu before deleting it.
+                  menu will revert to the selected menu
                 </Typography>
-                {menusList.length !== 1 && (
-                  <Typography variant="caption" color="white">
-                    {` - You must specify the 'Revert to Menu' to delete this menu, QRs across all
-                  branches using`}
-                    <Label variant="soft" color="primary">
-                      {menuInfo.title}
-                    </Label>
-                    menu will revert to the selected menu
-                  </Typography>
-                )}
-              </Stack>
+              )}
 
-              <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ width: '40%' }}>
+              <Stack direction="row" spacing={2} alignSelf="flex-end" sx={{ mt: 2, width: '35%' }}>
                 {menusList.length !== 0 && menusList.length > 1 && (
                   <RHFSelect
                     name="newMenuID"
                     label="Revert to Menu"
                     sx={{ bgcolor: 'common.white', borderRadius: 1 }}
+                    size="small"
                   >
                     <MenuItem value="" />
                     {menusList
@@ -194,7 +190,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
                   variant="contained"
                   onClick={deleteMenu}
                   color="error"
-                  sx={{ whiteSpace: 'nowrap', maxWidth: '50%' }}
+                  sx={{ whiteSpace: 'nowrap' }}
                   disabled={isLoading || menusList.length <= 1 || values.newMenuID === ''}
                   fullWidth
                 >
