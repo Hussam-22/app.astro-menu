@@ -14,6 +14,7 @@ MealTableRow.propTypes = {
 
 export default function MealTableRow({ row, onEditRow, mealLabelsList }) {
   const { docID, cover, title, isActive, mealLabels, portions, isNew, lastUpdatedAt } = row;
+
   const queryClient = useQueryClient();
 
   const lastUpdate = lastUpdatedAt?.seconds

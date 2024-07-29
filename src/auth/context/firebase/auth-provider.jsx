@@ -27,10 +27,8 @@ import {
   doc,
   query,
   where,
-  limit,
   getDoc,
   setDoc,
-  orderBy,
   getDocs,
   updateDoc,
   deleteDoc,
@@ -1418,6 +1416,8 @@ export function AuthProvider({ children }) {
 
       const { imageFile, ...mealData } = mealInfo;
 
+      console.log({ imageFile, ...mealData });
+
       await setDoc(newDocRef, {
         ...mealData,
         docID: newDocRef.id,
@@ -1433,13 +1433,18 @@ export function AuthProvider({ children }) {
       });
 
       if (imageFile) {
-        const storageRef = ref(STORAGE, `gs://${businessProfileID}/meals/${newDocRef.id}/`);
+        const storageRef = ref(
+          STORAGE,
+          `gs://${BUCKET}/${state.user.businessProfileID}/meals/${newDocRef.id}/`
+        );
         const fileExtension = imageFile.name.substring(imageFile.name.lastIndexOf('.') + 1);
         const imageRef = ref(storageRef, `${newDocRef.id}.${fileExtension}`);
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
           'state_changed',
-          (snapshot) => {},
+          (snapshot) => {
+            console.log(snapshot);
+          },
           (error) => {},
           () => {}
         );
@@ -1681,31 +1686,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetMostOrderedMeals = useCallback(
-    async (menuMeals, limitCount = 0, businessProfileID = state.user.businessProfileID) => {
-      try {
-        if (limitCount === 0) return [];
 
-        const docRef = query(
-          collectionGroup(DB, 'meals'),
-          where('businessProfileID', '==', businessProfileID),
-          where('docID', 'in', menuMeals),
-          where('isDeleted', '==', false),
-          where('isActive', '==', true),
-          where('orderCount', '>', 0),
-          orderBy('orderCount', 'desc'),
-          limit(limitCount)
-        );
-        const querySnapshot = await getDocs(docRef);
-
-        return querySnapshot.docs.map((doc) => doc.data().docID);
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
-    },
-    [state]
-  );
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsInitiateNewOrder = useCallback(async (payload) => {
     const { tableID, menuID, staffID, businessProfileID, branchID, initiatedBy } = payload;
@@ -2072,7 +2053,7 @@ export function AuthProvider({ children }) {
       fsAddNewMealLabel,
       fsUpdateMealLabel,
       fsDeleteMealLabel,
-      fsGetMostOrderedMeals,
+
       // ---- QR Menu ----
       fsConfirmCartOrder,
       fsUpdateScanLog,
@@ -2164,7 +2145,7 @@ export function AuthProvider({ children }) {
       fsAddNewMealLabel,
       fsUpdateMealLabel,
       fsDeleteMealLabel,
-      fsGetMostOrderedMeals,
+
       // ---- QR Menu ----
       fsConfirmCartOrder,
       fsUpdateScanLog,

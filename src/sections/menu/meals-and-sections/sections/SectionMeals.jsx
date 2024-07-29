@@ -198,6 +198,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                 alignItems="center"
                 sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
                 divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
+                spacing={1}
               >
                 <Avatar
                   src={meal.cover}
@@ -211,7 +212,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                   }}
                   variant="square"
                 />
-                <Stack direction="column" spacing={0.25} sx={{ px: 1, maxWidth: '75%' }}>
+                <Stack direction="column" spacing={0.25} sx={{ px: 1, flexGrow: 1 }}>
                   <Typography variant="subtitle2">{meal.title}</Typography>
                   <Stack direction="row" spacing={2}>
                     {meal.portions.map((portion, i) => (
@@ -221,7 +222,11 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                     ))}
                   </Stack>
                 </Stack>
-                <Stack direction="row" spacing={1} sx={{ flexGrow: 1, justifyContent: 'flex-end' }}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{ flexShrink: 1, justifyContent: 'flex-end' }}
+                >
                   <Button variant="contained" size="small">
                     Edit Prices
                   </Button>

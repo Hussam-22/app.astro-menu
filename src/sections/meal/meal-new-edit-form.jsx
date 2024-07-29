@@ -235,7 +235,7 @@ function MealNewEditForm({ mealInfo }) {
                   </Button>
                 </Stack>
                 <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-                  {` empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
+                  {`Empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
                 </Typography>
                 <Divider sx={{ mt: 1, border: `dashed 1px ${theme.palette.divider}` }} />
                 <Box

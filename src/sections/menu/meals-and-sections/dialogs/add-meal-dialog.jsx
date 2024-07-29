@@ -151,7 +151,16 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
 
       {isPending && <CircularProgress size={24} />}
       {!isPending && (
-        <IconButton onClick={() => handleAddMealToSection(mealInfo.docID)}>
+        <IconButton
+          onClick={() =>
+            handleAddMealToSection({
+              mealID: mealInfo.docID,
+              isActive: mealInfo.isActive,
+              portions: mealInfo.portions,
+              isNew: mealInfo.isNew,
+            })
+          }
+        >
           {currentSectionMeals.flatMap((meal) => meal)?.includes(mealInfo.docID) ? (
             <Iconify icon="mdi:minus-circle" width={24} height={24} sx={{ color: 'error.main' }} />
           ) : (
