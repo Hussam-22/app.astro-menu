@@ -21,14 +21,14 @@ import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
-AddMealDialog.propTypes = {
+EditPricesDialog.propTypes = {
   onClose: PropTypes.func,
   isOpen: PropTypes.bool,
   sectionID: PropTypes.string,
   allMeals: PropTypes.array,
 };
 
-function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
+function EditPricesDialog({ onClose, isOpen, sectionID, allMeals }) {
   const { id: menuID } = useParams();
   const { menuSections, fsGetMenu } = useAuthContext();
 
@@ -89,7 +89,7 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
   );
 }
 
-export default AddMealDialog;
+export default EditPricesDialog;
 
 // ----------------------------------------------------------------------------
 

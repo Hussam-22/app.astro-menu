@@ -7,15 +7,16 @@ import {
   Box,
   Card,
   Stack,
-  Switch,
+  Button,
   Avatar,
-  Tooltip,
+  Switch,
   Divider,
+  Tooltip,
   useTheme,
   FormGroup,
-  Typography,
-  CardHeader,
   IconButton,
+  CardHeader,
+  Typography,
   FormControlLabel,
 } from '@mui/material';
 
@@ -180,7 +181,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
           }
         />
 
-        <Stack spacing={1} sx={{ p: 2 }}>
+        <Stack spacing={1} sx={{ p: 2 }} divider={<Divider sx={{ borderStyle: 'dashed' }} />}>
           {sectionMeals.length === 0 && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               Please add meals from the top right corner action button
@@ -191,45 +192,49 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
           {sectionMeals
             .sort((a, b) => a.title.localeCompare(b.title))
             .map((meal, index) => (
-              <React.Fragment key={meal.docID}>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
-                  divider={
-                    <Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />
-                  }
-                >
-                  <Avatar
-                    src={meal.cover}
-                    alt={meal.title}
-                    sx={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: 0.5,
-                      mr: 1,
-                      filter: `grayscale(${meal.isActive ? 0 : '100'})`,
-                    }}
-                    variant="square"
-                  />
-                  <Stack direction="column" spacing={0.25} sx={{ px: 1, maxWidth: '75%' }}>
-                    <Typography variant="subtitle2">{meal.title}</Typography>
-                    <Stack direction="row" spacing={2}>
-                      {meal.portions.map((portion, i) => (
-                        <Label variant="soft" color="warning" key={`${portion.portionSize}-${i}`}>
-                          {portion.portionSize} - {portion.gram}g - ${portion.price}
-                        </Label>
-                      ))}
-                    </Stack>
+              <Stack
+                key={meal.docID}
+                direction="row"
+                alignItems="center"
+                sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
+                divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
+              >
+                <Avatar
+                  src={meal.cover}
+                  alt={meal.title}
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 0.5,
+                    mr: 1,
+                    filter: `grayscale(${meal.isActive ? 0 : '100'})`,
+                  }}
+                  variant="square"
+                />
+                <Stack direction="column" spacing={0.25} sx={{ px: 1, maxWidth: '75%' }}>
+                  <Typography variant="subtitle2">{meal.title}</Typography>
+                  <Stack direction="row" spacing={2}>
+                    {meal.portions.map((portion, i) => (
+                      <Label variant="soft" color="warning" key={`${portion.portionSize}-${i}`}>
+                        {portion.portionSize} - {portion.gram}g - ${portion.price}
+                      </Label>
+                    ))}
                   </Stack>
                 </Stack>
-                {sectionMeals.length > 1 && index + 1 !== sectionMeals.length && (
-                  <Divider sx={{ borderStyle: 'dashed' }} />
-                )}
-              </React.Fragment>
+                <Stack direction="row" spacing={1} sx={{ flexGrow: 1, justifyContent: 'flex-end' }}>
+                  <Button variant="contained" size="small">
+                    Edit Prices
+                  </Button>
+                  <Button variant="contained" size="small">
+                    Remove Meal
+                  </Button>
+                </Stack>
+              </Stack>
             ))}
         </Stack>
       </Card>
+
+      {/* <EditPricesDialog isOpen={dialogsState.editPrices} onClose={() => handleDialogIsOpenState('editPrices', false)} mealID={mealID} /> */}
 
       {dialogsState.addMeal && (
         <AddMealDialog
