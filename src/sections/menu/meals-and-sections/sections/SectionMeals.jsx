@@ -52,7 +52,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
   });
 
   const sectionMeals = allMeals.filter((meal) =>
-    sectionInfo.meals.some((sectionMeal) => sectionMeal === meal.docID)
+    sectionInfo.meals.some((sectionMeal) => sectionMeal.docID === meal.docID)
   );
 
   const { mutate, isPending, isError } = useMutation({

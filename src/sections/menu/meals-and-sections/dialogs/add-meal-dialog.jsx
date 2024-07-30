@@ -39,13 +39,20 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
 
   const currentSectionInfo = menuSections.filter((section) => section.docID === sectionID)[0];
   const currentSectionMeals = currentSectionInfo?.meals;
+
   const otherSectionsMeals = menuSections
     .filter((section) => section.docID !== sectionID)
     .flatMap((section) => section.meals.flatMap((meal) => meal))
-    .filter((mealID) => !currentSectionMeals.includes(mealID));
+    .filter(
+      (mealID) =>
+        !currentSectionMeals.map((currentSectionMeal) => currentSectionMeal.docID).includes(mealID)
+    );
 
   const sectionAvailableMeals = allMeals.filter(
-    (meal) => !otherSectionsMeals.includes(meal.docID) && meal.isActive
+    (meal) =>
+      !otherSectionsMeals
+        .map((otherSectionsMeal) => otherSectionsMeal.docID)
+        .includes(meal.docID) && meal.isActive
   );
 
   return (
@@ -112,31 +119,41 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
     },
   });
 
-  const handleAddMealToSection = (mealID) => {
+  const handleAddMealToSection = (meal) => {
     const menuMeals = menuInfo?.meals || [];
 
-    if (currentSectionMeals.includes(mealID)) {
+    if (currentSectionMeals.map((sectionMeal) => sectionMeal.docID).includes(meal.docID)) {
+      // remove meal from section
+      const filteredMeals = currentSectionMeals.find(
+        (sectionMeal) => sectionMeal.docID === meal.docID
+      );
+      const updatedMeals = currentSectionMeals.filter(
+        (currentSectionMeal, index) => currentSectionMeal.docID !== filteredMeals.docID
+      );
       mutate(() =>
         fsUpdateSection(menuInfo.docID, sectionID, {
-          meals: currentSectionMeals.filter((sectionMeal) => sectionMeal !== mealID),
+          meals: updatedMeals,
         })
       );
 
+      // remove meal from menu's meals array
       mutate(() => {
-        const updateMeals = menuMeals.filter((meal) => meal !== mealID);
+        const updateMeals = menuMeals.filter((menuMeal) => menuMeal !== meal.docID);
         fsUpdateMenu({ ...menuInfo, meals: updateMeals });
       });
     }
 
-    if (!currentSectionMeals.includes(mealID)) {
+    if (!currentSectionMeals.map((sectionMeal) => sectionMeal.docID).includes(meal.docID)) {
+      // add meal to section
       mutate(() =>
         fsUpdateSection(menuInfo.docID, sectionID, {
-          meals: [...currentSectionMeals, mealID],
+          meals: [...currentSectionMeals, meal],
         })
       );
 
+      // add meal to menu's meals array
       mutate(() => {
-        const updateMeals = [...menuMeals, mealID];
+        const updateMeals = [...menuMeals, meal.docID];
         fsUpdateMenu({ ...menuInfo, meals: updateMeals });
       });
     }
@@ -154,14 +171,14 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
         <IconButton
           onClick={() =>
             handleAddMealToSection({
-              mealID: mealInfo.docID,
+              docID: mealInfo.docID,
               isActive: mealInfo.isActive,
               portions: mealInfo.portions,
               isNew: mealInfo.isNew,
             })
           }
         >
-          {currentSectionMeals.flatMap((meal) => meal)?.includes(mealInfo.docID) ? (
+          {currentSectionMeals.flatMap((meal) => meal.docID)?.includes(mealInfo.docID) ? (
             <Iconify icon="mdi:minus-circle" width={24} height={24} sx={{ color: 'error.main' }} />
           ) : (
             <Iconify

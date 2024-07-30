@@ -136,37 +136,32 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
               />
             </Stack>
 
-            <Stack
-              direction="column"
-              sx={{
-                bgcolor: 'secondary.main',
-                borderRadius: 0.5,
-                py: 1,
-                px: 2,
-              }}
-            >
-              <Typography color="error" sx={{ fontWeight: 700 }}>
-                Delete Menu
-              </Typography>
-              <Typography variant="caption" color="white">
-                - The system must have at least 1 menu, if&nbsp;
-                <Label variant="soft" color="primary">
-                  {menuInfo.title}
-                </Label>
-                &nbsp;is your only menu, you must create a new menu before deleting it.
-              </Typography>
-              {menusList.length !== 1 && (
-                <Typography variant="caption" color="white">
-                  {` - You must specify the 'Revert to Menu' to delete this menu, QRs across all
-                  branches using`}
-                  <Label variant="soft" color="primary">
-                    {menuInfo.title}
-                  </Label>
-                  menu will revert to the selected menu
+            <Stack direction="row" spacing={3}>
+              <Stack direction="column">
+                <Typography color="error" sx={{ fontWeight: 700 }}>
+                  Delete Menu
                 </Typography>
-              )}
-
-              <Stack direction="row" spacing={2} alignSelf="flex-end" sx={{ mt: 2, width: '35%' }}>
+                {menusList.length === 1 && (
+                  <Typography variant="caption">
+                    The system must have at least 1 menu, &nbsp;
+                    <Label variant="soft" color="primary">
+                      {menuInfo.title}
+                    </Label>
+                    &nbsp;is your only menu, you must create a new menu before deleting it.
+                  </Typography>
+                )}
+                {menusList.length !== 1 && (
+                  <Typography variant="caption">
+                    {`You must specify the 'Revert to Menu' to delete this menu, QRs across all
+                  branches using `}
+                    <Label variant="soft" color="primary">
+                      {menuInfo.title}
+                    </Label>
+                    &nbsp;menu will revert to the selected menu
+                  </Typography>
+                )}
+              </Stack>
+              <Stack direction="column" spacing={2} alignSelf="flex-end" sx={{ flexGrow: 1 }}>
                 {menusList.length !== 0 && menusList.length > 1 && (
                   <RHFSelect
                     name="newMenuID"

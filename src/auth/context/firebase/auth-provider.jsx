@@ -1228,6 +1228,7 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsDeleteSection = useCallback(
+    //! Remove section meals from menu Meals Array
     async (menuID, sectionID, orderValue, businessProfileID = state.user.businessProfileID) => {
       const docRef = doc(
         DB,
@@ -1396,13 +1397,6 @@ export function AuthProvider({ children }) {
       });
 
       await batch.commit();
-    },
-    [state]
-  );
-  const deleteMenu = useCallback(
-    async (menuID) => {
-      const docRef = doc(DB, `/businessProfiles/${state.user.businessProfileID}/menus/`, menuID);
-      await deleteDoc(docRef);
     },
     [state]
   );
