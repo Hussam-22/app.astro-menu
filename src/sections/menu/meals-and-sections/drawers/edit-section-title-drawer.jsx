@@ -24,15 +24,15 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import TranslationCard from 'src/components/translation-cards/translation-card';
 // ----------------------------------------------------------------------
 
-EditSectionTitleDialog.propTypes = {
+EditSectionTitleDrawer.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   sectionID: PropTypes.string,
 };
 
-function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
+function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
   const { id: menuID } = useParams();
-  const { fsUpdateSectionTitle, fsGetSections, fsGetSection, menuSections } = useAuthContext();
+  const { fsUpdateSectionTitle, fsGetSection, menuSections } = useAuthContext();
   const queryClient = useQueryClient();
 
   const { data: sectionInfo = [], isFetching } = useQuery({
@@ -49,14 +49,10 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
         translation: '',
         translationEdit: '',
       }),
-    onSuccess: () => {
-      const queryKeys = ['section', menuID];
-      queryClient.invalidateQueries(queryKeys);
-    },
+    onSuccess: () => queryClient.invalidateQueries(['section', menuID]),
   });
 
   const schema = Yup.object().shape({
-    // title: Yup.string().required('Title cant be empty'),
     title: Yup.string()
       .required('Title cant be empty')
       .notOneOf(
@@ -68,11 +64,13 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
         return !existingTitles.includes(value.toLowerCase());
       }),
   });
+
   const defaultValues = useMemo(
     () => ({
       title: sectionInfo?.title || '',
     }),
-    [sectionInfo?.title]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   const methods = useForm({
@@ -87,8 +85,9 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
   } = methods;
 
   useEffect(() => {
-    if (sectionInfo) reset(defaultValues);
-  }, [defaultValues, reset, sectionInfo]);
+    if (sectionInfo.length !== 0) reset({ title: sectionInfo.title });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sectionInfo]);
 
   const onSubmit = async (formData) => {
     mutate(formData);
@@ -171,4 +170,4 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
   );
 }
 
-export default EditSectionTitleDialog;
+export default EditSectionTitleDrawer;

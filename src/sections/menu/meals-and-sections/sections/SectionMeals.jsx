@@ -25,8 +25,9 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { titleCase } from 'src/utils/change-case';
 import AddMealDrawer from 'src/sections/menu/meals-and-sections/drawers/add-meal-drawer';
+import EditPricesDrawer from 'src/sections/menu/meals-and-sections/drawers/edit-prices-drawer';
 import RemoveSectionDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-section-dialog';
-import EditSectionTitleDialog from 'src/sections/menu/meals-and-sections/dialogs/edit-section-title-dialog';
+import EditSectionTitleDrawer from 'src/sections/menu/meals-and-sections/drawers/edit-section-title-drawer';
 
 // ----------------------------------------------------------------------
 
@@ -48,8 +49,9 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
     addMeal: false,
     removeSection: false,
     editSectionTitle: false,
-    visibility: false,
+    prices: false,
   });
+  const [selectedMealInfo, setSelectedMealInfo] = useState(null);
 
   const sectionMeals = allMeals.filter((meal) =>
     sectionInfo.meals.some((sectionMeal) => sectionMeal.docID === meal.docID)
@@ -61,6 +63,11 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
       queryClient.invalidateQueries(['sections', menuID]);
     },
   });
+
+  const openEditPricesDrawer = (meal) => {
+    setSelectedMealInfo(meal);
+    handleDialogIsOpenState('prices', true);
+  };
 
   const handleStatusChange = () =>
     mutate(() => fsUpdateSection(menuID, sectionInfo.docID, { isActive: !sectionInfo.isActive }));
@@ -227,7 +234,11 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                   spacing={1}
                   sx={{ flexShrink: 1, justifyContent: 'flex-end' }}
                 >
-                  <Button variant="contained" size="small">
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => openEditPricesDrawer(meal)}
+                  >
                     Edit Prices
                   </Button>
                   <Button variant="contained" size="small">
@@ -239,28 +250,28 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
         </Stack>
       </Card>
 
-      {/* <EditPricesDialog isOpen={dialogsState.editPrices} onClose={() => handleDialogIsOpenState('editPrices', false)} mealID={mealID} /> */}
-
       <AddMealDrawer
         isOpen={dialogsState.addMeal}
         onClose={() => handleDialogIsOpenState('addMeal', false)}
         sectionID={id}
         allMeals={allMeals}
       />
-
       <RemoveSectionDialog
         isOpen={dialogsState.removeSection}
         onClose={() => handleDialogIsOpenState('removeSection', false)}
         sectionInfo={sectionInfo}
       />
-
-      {dialogsState.editSectionTitle && (
-        <EditSectionTitleDialog
-          isOpen={dialogsState.editSectionTitle}
-          onClose={() => handleDialogIsOpenState('editSectionTitle', false)}
-          sectionID={sectionInfo.docID}
-        />
-      )}
+      <EditSectionTitleDrawer
+        isOpen={dialogsState.editSectionTitle}
+        onClose={() => handleDialogIsOpenState('editSectionTitle', false)}
+        sectionID={sectionInfo.docID}
+      />
+      <EditPricesDrawer
+        isOpen={dialogsState.prices}
+        onClose={() => handleDialogIsOpenState('prices', false)}
+        sectionInfo={sectionInfo}
+        mealInfo={selectedMealInfo}
+      />
     </>
   );
 }
