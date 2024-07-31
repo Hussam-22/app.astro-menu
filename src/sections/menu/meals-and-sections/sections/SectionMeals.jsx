@@ -24,7 +24,7 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { titleCase } from 'src/utils/change-case';
-import AddMealDialog from 'src/sections/menu/meals-and-sections/dialogs/add-meal-dialog';
+import AddMealDrawer from 'src/sections/menu/meals-and-sections/drawers/add-meal-drawer';
 import RemoveSectionDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-section-dialog';
 import EditSectionTitleDialog from 'src/sections/menu/meals-and-sections/dialogs/edit-section-title-dialog';
 
@@ -40,10 +40,10 @@ SectionMeals.propTypes = {
 };
 
 export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeals, allSections }) {
-  const theme = useTheme();
   const { id: menuID } = useParams();
-  const { fsUpdateSection, fsUpdateSectionsOrder } = useAuthContext();
+  const theme = useTheme();
   const queryClient = useQueryClient();
+  const { fsUpdateSection, fsUpdateSectionsOrder } = useAuthContext();
   const [dialogsState, setDialogsState] = useState({
     addMeal: false,
     removeSection: false,
@@ -58,7 +58,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
   const { mutate, isPending, isError } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      queryClient.invalidateQueries([`sections-${menuID}`]);
+      queryClient.invalidateQueries(['sections', menuID]);
     },
   });
 
@@ -241,21 +241,19 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
 
       {/* <EditPricesDialog isOpen={dialogsState.editPrices} onClose={() => handleDialogIsOpenState('editPrices', false)} mealID={mealID} /> */}
 
-      {dialogsState.addMeal && (
-        <AddMealDialog
-          isOpen={dialogsState.addMeal}
-          onClose={() => handleDialogIsOpenState('addMeal', false)}
-          sectionID={id}
-          allMeals={allMeals}
-        />
-      )}
-      {dialogsState.removeSection && (
-        <RemoveSectionDialog
-          isOpen={dialogsState.removeSection}
-          onClose={() => handleDialogIsOpenState('removeSection', false)}
-          sectionInfo={sectionInfo}
-        />
-      )}
+      <AddMealDrawer
+        isOpen={dialogsState.addMeal}
+        onClose={() => handleDialogIsOpenState('addMeal', false)}
+        sectionID={id}
+        allMeals={allMeals}
+      />
+
+      <RemoveSectionDialog
+        isOpen={dialogsState.removeSection}
+        onClose={() => handleDialogIsOpenState('removeSection', false)}
+        sectionInfo={sectionInfo}
+      />
+
       {dialogsState.editSectionTitle && (
         <EditSectionTitleDialog
           isOpen={dialogsState.editSectionTitle}

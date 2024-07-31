@@ -8,16 +8,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import {
+  Box,
   Grid,
   Card,
   Stack,
-  Dialog,
-  Button,
+  Drawer,
   Skeleton,
   Typography,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
   InputAdornment,
 } from '@mui/material';
 
@@ -35,16 +32,11 @@ EditSectionTitleDialog.propTypes = {
 
 function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
   const { id: menuID } = useParams();
-  const { fsUpdateSectionTitle, fsGetSections, fsGetSection } = useAuthContext();
+  const { fsUpdateSectionTitle, fsGetSections, fsGetSection, menuSections } = useAuthContext();
   const queryClient = useQueryClient();
 
-  const { data: sections = [] } = useQuery({
-    queryKey: [`sections-${menuID}`],
-    queryFn: () => fsGetSections(menuID),
-  });
-
   const { data: sectionInfo = [], isFetching } = useQuery({
-    queryKey: [`menu/${menuID}/section/${sectionID}`],
+    queryKey: ['section', sectionID, menuID],
     queryFn: () => fsGetSection(menuID, sectionID),
   });
 
@@ -58,16 +50,23 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
         translationEdit: '',
       }),
     onSuccess: () => {
-      const queryKeys = [`sections-${menuID}`];
+      const queryKeys = ['section', menuID];
       queryClient.invalidateQueries(queryKeys);
     },
   });
 
-  const NewUserSchema = Yup.object().shape({
+  const schema = Yup.object().shape({
     // title: Yup.string().required('Title cant be empty'),
     title: Yup.string()
       .required('Title cant be empty')
-      .notOneOf(sections.map((section) => section.title)),
+      .notOneOf(
+        menuSections.map((section) => section.title),
+        'Title already exists'
+      )
+      .test('unique-title', 'Title already exists', (value) => {
+        const existingTitles = menuSections.map((section) => section.title.toLowerCase());
+        return !existingTitles.includes(value.toLowerCase());
+      }),
   });
   const defaultValues = useMemo(
     () => ({
@@ -77,7 +76,7 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+    resolver: yupResolver(schema),
     defaultValues,
   });
 
@@ -111,61 +110,64 @@ function EditSectionTitleDialog({ isOpen, onClose, sectionID }) {
   );
 
   return (
-    <Dialog fullWidth maxWidth="md" open={isOpen} onClose={onClose} scroll="paper">
-      <DialogTitle>Edit Section Title</DialogTitle>
+    <Drawer
+      anchor="right"
+      open={isOpen}
+      onClose={() => onClose()}
+      PaperProps={{
+        sx: { borderRadius: '25px 0 0 25px', width: '35%' },
+      }}
+    >
+      <Box sx={{ bgcolor: 'secondary.main', p: 2, mb: 2 }}>
+        <Typography variant="h6" color="primary">
+          Edit Section Title
+        </Typography>
+      </Box>
 
-      <DialogContent>
-        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-          <Card sx={{ p: 3 }}>
-            <RHFTextField
-              name="title"
-              label="Section Title"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <LoadingButton
-                      type="submit"
-                      variant="text"
-                      color="success"
-                      loading={isPending}
-                      disabled={!isDirty}
-                    >
-                      Update
-                    </LoadingButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Typography variant="caption">
-              Editing section title will overwrite current translations to match the new updated
-              title
-            </Typography>
-          </Card>
-        </FormProvider>
+      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+        <Card sx={{ p: 2 }}>
+          <RHFTextField
+            name="title"
+            label="Section Title"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <LoadingButton
+                    type="submit"
+                    variant="text"
+                    color="success"
+                    loading={isPending}
+                    disabled={!isDirty}
+                  >
+                    Update
+                  </LoadingButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+          <Typography variant="caption">
+            Editing section title will overwrite current translations to match the new updated title
+          </Typography>
+        </Card>
+      </FormProvider>
 
-        {isFetching && skeletonLanguageCards}
+      {isFetching && skeletonLanguageCards}
 
-        {!isFetching && (
-          <Stack direction="column" spacing={1} sx={{ mt: 1 }}>
-            {languageKeys
-              .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
-              .map((key) => (
-                <TranslationCard
-                  languageKey={key}
-                  key={key}
-                  data={sectionInfo}
-                  showDescriptionField={false}
-                />
-              ))}
-          </Stack>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button color="inherit" variant="outlined" onClick={onClose}>
-          close
-        </Button>
-      </DialogActions>
-    </Dialog>
+      {!isFetching && (
+        <Stack direction="column" spacing={1} sx={{ mt: 1 }}>
+          {languageKeys
+            .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
+            .map((key) => (
+              <TranslationCard
+                languageKey={key}
+                key={key}
+                data={sectionInfo}
+                showDescriptionField={false}
+              />
+            ))}
+        </Stack>
+      )}
+    </Drawer>
   );
 }
 

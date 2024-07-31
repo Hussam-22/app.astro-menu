@@ -1229,29 +1229,49 @@ export function AuthProvider({ children }) {
   );
   const fsDeleteSection = useCallback(
     //! Remove section meals from menu Meals Array
-    async (menuID, sectionID, orderValue, businessProfileID = state.user.businessProfileID) => {
-      const docRef = doc(
-        DB,
-        `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${sectionID}`
-      );
-      await deleteDoc(docRef);
+    async (
+      menuID,
+      sectionID,
+      orderValue,
+      sectionMealsIDs,
+      businessProfileID = state.user.businessProfileID
+    ) => {
+      try {
+        const docRef = doc(
+          DB,
+          `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${sectionID}`
+        );
+        await deleteDoc(docRef);
 
-      // get all sections that order index is above the one is being deleted and reduce it
-      const docsRef = query(
-        collectionGroup(DB, 'sections'),
-        where('businessProfileID', '==', businessProfileID),
-        where('menuID', '==', menuID),
-        where('order', '>', orderValue)
-      );
-      const snapshot = await getDocs(docsRef);
+        // get all sections that order index is above the one is being deleted and reduce it
+        const docsRef = query(
+          collectionGroup(DB, 'sections'),
+          where('businessProfileID', '==', businessProfileID),
+          where('menuID', '==', menuID),
+          where('order', '>', orderValue)
+        );
+        const snapshot = await getDocs(docsRef);
 
-      // Update sections order
-      const batch = writeBatch(DB);
-      snapshot.docs.forEach((doc) => {
-        batch.update(doc.ref, { order: increment(-1) });
-      });
+        // remove section meals from menu meals array
+        const menuRef = doc(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}`);
+        const menuSnap = await getDoc(menuRef);
+        const menuMeals = menuSnap
+          .data()
+          .meals.filter((mealID) => !sectionMealsIDs.includes(mealID));
+        const menuPayload = { meals: menuMeals };
+        await updateDoc(menuRef, menuPayload);
 
-      await batch.commit();
+        // Update sections order
+        const batch = writeBatch(DB);
+        snapshot.docs.forEach((doc) => {
+          batch.update(doc.ref, { order: increment(-1) });
+        });
+
+        await batch.commit();
+      } catch (error) {
+        return error;
+      }
+      return true;
     },
     [state]
   );

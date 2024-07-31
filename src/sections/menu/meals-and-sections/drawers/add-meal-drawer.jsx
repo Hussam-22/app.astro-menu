@@ -5,35 +5,36 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Box,
   Stack,
-  Dialog,
+  Drawer,
   Avatar,
   Divider,
+  Skeleton,
   Typography,
   IconButton,
-  DialogTitle,
-  DialogContent,
   CircularProgress,
 } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 // _mock
 import { useAuthContext } from 'src/auth/hooks';
+import { delay } from 'src/utils/promise-delay';
 
 // ----------------------------------------------------------------------
 
-AddMealDialog.propTypes = {
+AddMealDrawer.propTypes = {
   onClose: PropTypes.func,
   isOpen: PropTypes.bool,
   sectionID: PropTypes.string,
   allMeals: PropTypes.array,
 };
 
-function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
+function AddMealDrawer({ onClose, isOpen, sectionID, allMeals }) {
   const { id: menuID } = useParams();
   const { menuSections, fsGetMenu } = useAuthContext();
+  const queryClient = useQueryClient();
 
   const { data: menuInfo = {} } = useQuery({
-    queryKey: [`menu-${menuID}`],
+    queryKey: ['menu', menuID],
     queryFn: () => fsGetMenu(menuID),
   });
 
@@ -56,29 +57,52 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
   );
 
   return (
-    <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose} scroll="paper">
-      <IconButton sx={{ position: 'absolute', top: 15, right: 20 }} onClick={onClose}>
-        <Iconify icon="material-symbols:close-rounded" />
-      </IconButton>
+    <Drawer
+      anchor="right"
+      open={isOpen}
+      onClose={() => onClose()}
+      PaperProps={{
+        sx: { borderRadius: '25px 0 0 25px', width: '25%' },
+      }}
+    >
+      <Box sx={{ bgcolor: 'secondary.main', p: 2 }}>
+        <Typography variant="h6" color="primary">
+          {currentSectionInfo?.title}
+        </Typography>
+      </Box>
 
-      <DialogTitle>{currentSectionInfo?.title}</DialogTitle>
-
-      <DialogContent>
-        {sectionAvailableMeals.length === 0 && (
-          <Typography variant="body1">
-            All Meals are selected by other sections
-            <Iconify icon="ic:twotone-error" width={22} height={22} sx={{ ml: 1 }} />
-          </Typography>
-        )}
-        <Stack
-          direction="column"
-          spacing={0.5}
-          sx={{ mb: 2, pl: 2 }}
-          divider={
-            <Divider variant="fullWidth" orientation="horizontal" sx={{ borderStyle: 'dashed' }} />
-          }
-        >
-          {sectionAvailableMeals
+      {sectionAvailableMeals.length === 0 && (
+        <Typography variant="body1">
+          All Meals are selected by other sections
+          <Iconify icon="ic:twotone-error" width={22} height={22} sx={{ ml: 1 }} />
+        </Typography>
+      )}
+      <Stack
+        direction="column"
+        spacing={0.5}
+        sx={{ p: 3 }}
+        divider={
+          <Divider variant="fullWidth" orientation="horizontal" sx={{ borderStyle: 'dashed' }} />
+        }
+      >
+        {queryClient.isMutating(['sections', menuInfo.docID]) !== 0 &&
+          [...Array(sectionAvailableMeals.length)].map((_, index) => (
+            <Stack
+              direction="row"
+              key={index}
+              sx={{ height: 32, my: 0.5 }}
+              spacing={1}
+              justifyContent="space-between"
+            >
+              <Stack direction="row" spacing={1} flexGrow={1}>
+                <Skeleton variant="circular" sx={{ height: 32, width: 32 }} />
+                <Skeleton variant="text" sx={{ width: 1 }} />
+              </Stack>
+              <Skeleton variant="circular" sx={{ height: 24, width: 24, my: 0.5, mx: 0.85 }} />
+            </Stack>
+          ))}
+        {queryClient.isMutating(['sections', menuInfo.docID]) === 0 &&
+          sectionAvailableMeals
             .sort((a, b) => a.title.localeCompare(b.title))
             .map((meal) => (
               <Box key={meal.docID}>
@@ -90,13 +114,12 @@ function AddMealDialog({ onClose, isOpen, sectionID, allMeals }) {
                 />
               </Box>
             ))}
-        </Stack>
-      </DialogContent>
-    </Dialog>
+      </Stack>
+    </Drawer>
   );
 }
 
-export default AddMealDialog;
+export default AddMealDrawer;
 
 // ----------------------------------------------------------------------------
 
@@ -114,13 +137,13 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      queryClient.invalidateQueries([`sections-${menuInfo.docID}`]);
-      queryClient.invalidateQueries([`menu-${menuInfo.docID}`]);
+      queryClient.invalidateQueries(['sections', menuInfo.docID]);
+      queryClient.invalidateQueries(['menu', menuInfo.docID]);
     },
   });
 
   const handleAddMealToSection = (meal) => {
-    const menuMeals = menuInfo?.meals || [];
+    const menuMeals = menuInfo?.meals;
 
     if (currentSectionMeals.map((sectionMeal) => sectionMeal.docID).includes(meal.docID)) {
       // remove meal from section
@@ -130,31 +153,26 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
       const updatedMeals = currentSectionMeals.filter(
         (currentSectionMeal, index) => currentSectionMeal.docID !== filteredMeals.docID
       );
-      mutate(() =>
-        fsUpdateSection(menuInfo.docID, sectionID, {
-          meals: updatedMeals,
-        })
-      );
 
-      // remove meal from menu's meals array
-      mutate(() => {
+      mutate(async () => {
         const updateMeals = menuMeals.filter((menuMeal) => menuMeal !== meal.docID);
-        fsUpdateMenu({ ...menuInfo, meals: updateMeals });
+        await fsUpdateSection(menuInfo.docID, sectionID, {
+          meals: updatedMeals,
+        });
+        await fsUpdateMenu({ ...menuInfo, meals: updateMeals });
+        await delay(100);
       });
     }
 
     if (!currentSectionMeals.map((sectionMeal) => sectionMeal.docID).includes(meal.docID)) {
       // add meal to section
-      mutate(() =>
-        fsUpdateSection(menuInfo.docID, sectionID, {
-          meals: [...currentSectionMeals, meal],
-        })
-      );
-
-      // add meal to menu's meals array
-      mutate(() => {
+      mutate(async () => {
         const updateMeals = [...menuMeals, meal.docID];
-        fsUpdateMenu({ ...menuInfo, meals: updateMeals });
+        await fsUpdateSection(menuInfo.docID, sectionID, {
+          meals: [...currentSectionMeals, meal],
+        });
+        await fsUpdateMenu({ ...menuInfo, meals: updateMeals });
+        await delay(100);
       });
     }
   };
@@ -166,7 +184,7 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
         {mealInfo.title}
       </Typography>
 
-      {isPending && <CircularProgress size={24} />}
+      {isPending && <CircularProgress size={21} sx={{ mx: 1 }} />}
       {!isPending && (
         <IconButton
           onClick={() =>

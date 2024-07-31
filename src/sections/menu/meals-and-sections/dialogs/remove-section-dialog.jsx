@@ -16,6 +16,7 @@ import {
 
 import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
+import { delay } from 'src/utils/promise-delay';
 
 // ----------------------------------------------------------------------
 
@@ -37,9 +38,17 @@ function RemoveSectionDialog({ isOpen, onClose, sectionInfo }) {
   const queryClient = useQueryClient();
 
   const { isPending, mutate, error } = useMutation({
-    mutationFn: () => fsDeleteSection(menuID, sectionInfo.docID, sectionInfo.order),
+    mutationFn: async () => {
+      await delay(1000);
+      await fsDeleteSection(
+        menuID,
+        sectionInfo.docID,
+        sectionInfo.order,
+        sectionInfo.meals.map((meal) => meal.docID)
+      );
+    },
     onSuccess: () => {
-      const queryKeys = [`sections-${menuID}`];
+      const queryKeys = ['sections', menuID];
       queryClient.invalidateQueries(queryKeys);
       onClose();
     },
