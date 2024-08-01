@@ -1,12 +1,15 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
+import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
 import { useMemo, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import { Box, Stack, Drawer, Typography } from '@mui/material';
 
+import { useAuthContext } from 'src/auth/hooks';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
@@ -19,46 +22,33 @@ EditPricesDrawer.propTypes = {
 };
 
 function EditPricesDrawer({ onClose, isOpen, mealInfo, sectionInfo }) {
+  const { fsUpdateSection } = useAuthContext();
+  const { enqueueSnackbar } = useSnackbar();
+  const queryClient = useQueryClient();
+
   const menuVersionMealPortions = useMemo(
     () => sectionInfo?.meals.find((meal) => meal?.docID === mealInfo?.docID)?.portions || [],
     [sectionInfo, mealInfo]
   );
 
-  const portionsObjectYup = useMemo(() => {
-    const menuVersionMealPortionsObject = menuVersionMealPortions.map((portion) => ({
-      [portion.portionSize]: portion.price,
-    }));
+  const portionsObject = useMemo(
+    () =>
+      menuVersionMealPortions.reduce((acc, portion) => {
+        acc[portion.portionSize] = portion.price;
+        return acc;
+      }, {}),
+    [menuVersionMealPortions]
+  );
 
-    const portionsObjectValue = menuVersionMealPortionsObject.reduce((acc, portion) => {
-      const [key, _] = Object.entries(portion)[0];
-      acc[key] = Yup.number().typeError('Price must be a number').required('Price cannot be empty');
-
-      console.log(acc);
+  // Define the schema using Yup
+  const schema = Yup.object().shape(
+    Object.keys(portionsObject).reduce((acc, key) => {
+      acc[key] = Yup.number().required(`${key} is required`).min(1, `${key} must be at least 1`);
       return acc;
-    }, []);
+    }, {})
+  );
 
-    return portionsObjectValue;
-  }, [menuVersionMealPortions]);
-
-  console.log(portionsObjectYup);
-
-  const portionsObject = useMemo(() => {
-    const menuVersionMealPortionsObject = menuVersionMealPortions.map((portion) => ({
-      [portion.portionSize]: portion.price,
-    }));
-
-    const portionsObjectValue = menuVersionMealPortionsObject.reduce((acc, portion) => {
-      const [key, value] = Object.entries(portion)[0];
-      acc[key] = value;
-      return acc;
-    }, []);
-
-    return portionsObjectValue;
-  }, [menuVersionMealPortions]);
-
-  const schema = Yup.object().shape(portionsObjectYup);
-
-  const defaultValues = (() => {}, []);
+  const defaultValues = useMemo(() => ({ ...portionsObject }), [portionsObject]);
 
   const methods = useForm({
     resolver: yupResolver(schema),
@@ -68,19 +58,39 @@ function EditPricesDrawer({ onClose, isOpen, mealInfo, sectionInfo }) {
   const {
     handleSubmit,
     reset,
-
     formState: { isDirty, errors },
   } = methods;
-
-  console.log(errors);
 
   useEffect(() => {
     if (portionsObject) reset(portionsObject);
   }, [portionsObject, reset]);
 
+  const { isPending, error, mutate } = useMutation({
+    mutationFn: (mutateFn) => mutateFn(),
+    onSuccess: () => {
+      enqueueSnackbar('Prices updated successfully', { variant: 'success' });
+      queryClient.invalidateQueries(['section', sectionInfo.docID, sectionInfo.menuID]);
+      onClose();
+    },
+  });
+
   const onSubmit = async (formData) => {
-    console.log(formData);
-    // mutate(formData);
+    const newPortionsArray = Object.entries(formData).map(([portionSize, price]) => ({
+      portionSize,
+      price,
+    }));
+
+    const updatedMeals = sectionInfo.meals.map((meal) => {
+      if (meal.docID === mealInfo.docID) return { ...meal, portions: newPortionsArray };
+      return meal;
+    });
+
+    mutate(() =>
+      fsUpdateSection(sectionInfo.menuID, sectionInfo.docID, {
+        ...sectionInfo,
+        meals: updatedMeals,
+      })
+    );
   };
 
   if (!mealInfo) return null;
@@ -115,7 +125,7 @@ function EditPricesDrawer({ onClose, isOpen, mealInfo, sectionInfo }) {
             fullWidth
             size="large"
             variant="contained"
-            loading={false}
+            loading={isPending}
             disabled={!isDirty}
           >
             Update Prices

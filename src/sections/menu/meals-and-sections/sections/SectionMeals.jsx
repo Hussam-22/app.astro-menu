@@ -25,6 +25,7 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { titleCase } from 'src/utils/change-case';
 import AddMealDrawer from 'src/sections/menu/meals-and-sections/drawers/add-meal-drawer';
+import RemoveMealDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-meal-dialog';
 import EditPricesDrawer from 'src/sections/menu/meals-and-sections/drawers/edit-prices-drawer';
 import RemoveSectionDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-section-dialog';
 import EditSectionTitleDrawer from 'src/sections/menu/meals-and-sections/drawers/edit-section-title-drawer';
@@ -50,6 +51,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
     removeSection: false,
     editSectionTitle: false,
     prices: false,
+    removeMeal: false,
   });
   const [selectedMealInfo, setSelectedMealInfo] = useState(null);
 
@@ -67,6 +69,11 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
   const openEditPricesDrawer = (meal) => {
     setSelectedMealInfo(meal);
     handleDialogIsOpenState('prices', true);
+  };
+
+  const openDeleteMealDialog = (meal) => {
+    setSelectedMealInfo(meal);
+    handleDialogIsOpenState('removeMeal', true);
   };
 
   const handleStatusChange = () =>
@@ -222,11 +229,13 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                 <Stack direction="column" spacing={0.25} sx={{ px: 1, flexGrow: 1 }}>
                   <Typography variant="subtitle2">{meal.title}</Typography>
                   <Stack direction="row" spacing={2}>
-                    {meal.portions.map((portion, i) => (
-                      <Label variant="soft" color="warning" key={`${portion.portionSize}-${i}`}>
-                        {portion.portionSize} - {portion.gram}g - ${portion.price}
-                      </Label>
-                    ))}
+                    {sectionInfo.meals
+                      .find((sectionMeal) => sectionMeal.docID === meal.docID)
+                      .portions.map((portion, i) => (
+                        <Label variant="soft" color="warning" key={`${portion.portionSize}-${i}`}>
+                          {portion.portionSize} - {portion.price}
+                        </Label>
+                      ))}
                   </Stack>
                 </Stack>
                 <Stack
@@ -235,13 +244,21 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                   sx={{ flexShrink: 1, justifyContent: 'flex-end' }}
                 >
                   <Button
-                    variant="contained"
+                    variant="soft"
+                    color="warning"
                     size="small"
                     onClick={() => openEditPricesDrawer(meal)}
+                    startIcon={<Iconify icon="ic:outline-attach-money" />}
                   >
                     Edit Prices
                   </Button>
-                  <Button variant="contained" size="small">
+                  <Button
+                    variant="soft"
+                    color="error"
+                    size="small"
+                    onClick={() => openDeleteMealDialog(meal)}
+                    startIcon={<Iconify icon="f7:trash" />}
+                  >
                     Remove Meal
                   </Button>
                 </Stack>
@@ -269,6 +286,13 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
       <EditPricesDrawer
         isOpen={dialogsState.prices}
         onClose={() => handleDialogIsOpenState('prices', false)}
+        sectionInfo={sectionInfo}
+        mealInfo={selectedMealInfo}
+      />
+
+      <RemoveMealDialog
+        isOpen={dialogsState.removeMeal}
+        onClose={() => handleDialogIsOpenState('removeMeal', false)}
         sectionInfo={sectionInfo}
         mealInfo={selectedMealInfo}
       />

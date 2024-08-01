@@ -124,7 +124,7 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
       </Box>
 
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Card sx={{ p: 2 }}>
+        <Card sx={{ p: 2, mx: 2 }}>
           <RHFTextField
             name="title"
             label="Section Title"
@@ -153,7 +153,7 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
       {isFetching && skeletonLanguageCards}
 
       {!isFetching && (
-        <Stack direction="column" spacing={1} sx={{ mt: 1 }}>
+        <Stack direction="column" spacing={1} sx={{ mt: 1, mx: 2 }}>
           {languageKeys
             .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
             .map((key) => (

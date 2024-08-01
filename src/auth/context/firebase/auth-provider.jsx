@@ -1131,18 +1131,21 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetAllMenus = useCallback(async () => {
-    const docRef = query(
-      collectionGroup(DB, 'menus'),
-      where('businessProfileID', '==', state.user.businessProfileID),
-      where('isDeleted', '==', false)
-    );
+  const fsGetAllMenus = useCallback(
+    async (businessProfileID = state.user.businessProfileID) => {
+      const docRef = query(
+        collectionGroup(DB, 'menus'),
+        where('businessProfileID', '==', businessProfileID),
+        where('isDeleted', '==', false)
+      );
 
-    const dataArr = [];
-    const querySnapshot = await getDocs(docRef);
-    querySnapshot.forEach((doc) => dataArr.push(doc.data()));
-    return dataArr;
-  }, [state]);
+      const dataArr = [];
+      const querySnapshot = await getDocs(docRef);
+      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+      return dataArr;
+    },
+    [state]
+  );
   const fsAddNewMenu = useCallback(
     async (data, businessProfileID = state.user.businessProfileID) => {
       const newDocRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/menus/`));
