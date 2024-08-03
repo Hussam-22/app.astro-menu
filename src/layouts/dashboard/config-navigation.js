@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { paths } from 'src/routes/paths';
 import { useLocales } from 'src/locales';
 import SvgColor from 'src/components/svg-color';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 
 // ----------------------------------------------------------------------
 
@@ -29,6 +30,7 @@ const ICONS = {
 
 export function useNavData() {
   const { t } = useLocales();
+  const { isMenuOnly } = useGetProductInfo();
 
   const data = useMemo(
     () => [
@@ -80,10 +82,10 @@ export function useNavData() {
             icon: ICONS.subscription,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
-        ],
+        ].filter((item) => (isMenuOnly ? item.title !== 'staffs' : true)),
       },
     ],
-    [t]
+    [isMenuOnly, t]
   );
 
   return data;
