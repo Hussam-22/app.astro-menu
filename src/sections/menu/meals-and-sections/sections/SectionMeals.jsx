@@ -242,6 +242,14 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                         </Label>
                       ))}
                   </Stack>
+                  {!meal.isActive && (
+                    <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 1 }}>
+                      <Iconify icon="ep:warning-filled" sx={{ color: 'error.main' }} />
+                      <Typography variant="caption" color="error">
+                        Meal is disabled in all menus
+                      </Typography>
+                    </Stack>
+                  )}
                 </Stack>
                 <Stack
                   direction="row"

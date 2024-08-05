@@ -311,11 +311,15 @@ function MealNewEditForm({ mealInfo }) {
                     justifyContent="space-between"
                     alignItems="center"
                     sx={{ px: 1 }}
+                    spacing={3}
                   >
                     <Stack direction="column">
                       <Typography sx={{ fontWeight: 500 }}>Meal Status</Typography>
                       <Typography variant="caption">
-                        Disabling the meal will hide it from all menus (Customers View)
+                        Disabling a meal will remove it from all menus where it appears, providing a
+                        quick and efficient way to hide the meal across all menus without the need
+                        to manually remove it from each one. You can easily re-enable the meal at
+                        any time to make it visible again.
                       </Typography>
                     </Stack>
                     <RHFSwitch
