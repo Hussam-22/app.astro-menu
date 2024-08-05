@@ -36,8 +36,10 @@ const availableYears = [...Array(yearsSince2023 + 1)].map((value, index) => 2023
 
 const TABLE_HEAD = [
   { id: 'id', label: 'Order #', align: 'left', width: '22%' },
-  { id: 'totalBill', label: 'Amount', align: 'left', width: '22%' },
-  { id: 'staff', label: 'Waiter/ess', align: 'left' },
+  { id: 'closingTime', label: 'Closed At', align: 'left', width: '22%' },
+  { id: 'duration', label: 'Duration', align: 'left', width: '10%' },
+  { id: 'totalBill', label: 'Amount', align: 'left', width: '15%' },
+  { id: 'staff', label: 'Waiter/ess', align: 'left', width: '20%' },
   { id: 'statusName', label: 'Status', align: 'left' },
 ];
 // ----------------------------------------------------------------------
@@ -65,7 +67,7 @@ export default function OrdersListCard({ tableInfo }) {
     onSort,
     onChangePage,
     onChangeRowsPerPage,
-  } = useTable({ defaultOrderBy: 'LastUpdate', defaultOrder: 'desc', defaultRowsPerPage: 50 });
+  } = useTable({ defaultOrderBy: 'id', defaultOrder: 'desc', defaultRowsPerPage: 50 });
 
   const [month, setMonth] = useState(THIS_MONTH);
   const [year, setYear] = useState(THIS_YEAR);
@@ -167,7 +169,8 @@ export default function OrdersListCard({ tableInfo }) {
                 dataFiltered
                   .sort(
                     (a, b) =>
-                      new Date(b.lastUpdate.seconds * 1000) - new Date(a.lastUpdate.seconds * 1000)
+                      new Date(b.initiationTime.seconds * 1000) -
+                      new Date(a.initiationTime.seconds * 1000)
                   )
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (

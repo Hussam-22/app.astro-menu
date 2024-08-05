@@ -15,11 +15,8 @@ import NavItem from './nav-item';
 
 export default function NavList({ data, depth, hasChild, config }) {
   const pathname = usePathname();
-
   const active = useActiveLink(data.path, hasChild);
-
   const externalLink = data.path.includes('http');
-
   const [open, setOpen] = useState(active);
 
   useEffect(() => {

@@ -5,6 +5,7 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { Box, Card, Stack, Button, Avatar, useTheme } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import DownloadAllQRs from 'src/sections/branches/components/DownloadAllQRs';
 
 import ChangeDefaultMenu from './dialogs/ChangeDefaultMenu';
@@ -18,6 +19,7 @@ TablesCard.propTypes = {
 function TablesCard({ tables, onTableClick, selectedTableID }) {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const { isMenuOnly, maxTables } = useGetProductInfo();
 
   const onClose = () => setIsOpen(false);
 
@@ -38,22 +40,24 @@ function TablesCard({ tables, onTableClick, selectedTableID }) {
   return (
     <Grid xs={12}>
       <Stack direction="column" spacing={1}>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, flexWrap: 'wrap' }}>
-          <Button
-            variant="text"
-            startIcon={<Iconify icon="mdi:file-replace-outline" />}
-            onClick={() => setIsOpen(true)}
-          >
-            Change Menu for All QRs
-          </Button>
-          <Button
-            variant="text"
-            startIcon={<Iconify icon="uil:image-download" />}
-            onClick={downloadAllTableQRImages}
-          >
-            Download All QR Images
-          </Button>
-        </Box>
+        {!isMenuOnly && (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, flexWrap: 'wrap' }}>
+            <Button
+              variant="text"
+              startIcon={<Iconify icon="mdi:file-replace-outline" />}
+              onClick={() => setIsOpen(true)}
+            >
+              Change Menu for All QRs
+            </Button>
+            <Button
+              variant="text"
+              startIcon={<Iconify icon="uil:image-download" />}
+              onClick={downloadAllTableQRImages}
+            >
+              Download All QR Images
+            </Button>
+          </Box>
+        )}
         <Card sx={{ p: 2 }}>
           <Box
             sx={{

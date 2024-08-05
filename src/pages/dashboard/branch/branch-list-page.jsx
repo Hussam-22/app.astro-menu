@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import BranchesListView from 'src/sections/branches/view/branches-list-view';
+import BranchListView from 'src/sections/branches/view/branch-list-view';
 
 function BranchListPage() {
   return (
@@ -8,7 +8,7 @@ function BranchListPage() {
       <Helmet>
         <title> User: Profile | Minimal UI</title>
       </Helmet>
-      <BranchesListView />
+      <BranchListView />
     </>
   );
 }

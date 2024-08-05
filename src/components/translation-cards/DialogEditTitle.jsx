@@ -27,7 +27,7 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
   const theme = useTheme();
   const queryClient = useQueryClient();
   const { pathname } = useLocation();
-  const { fsUpdateMeal, fsUpdateBusinessProfile, businessProfile } = useAuthContext();
+  const { fsUpdateMeal, fsUpdateBusinessProfileTranslation } = useAuthContext();
 
   const tableToUpdate = pathname.includes('meal') ? 'meals' : 'businessProfile';
 
@@ -54,16 +54,11 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
     formState: { isDirty },
   } = methods;
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       if (tableToUpdate === 'meals') {
         const queryKeys = data?.docID ? ['meals', `meal-${data.docID}`] : ['meals'];
-        queryClient.invalidateQueries(queryKeys);
-      }
-
-      if (tableToUpdate === 'businessProfile') {
-        const queryKeys = ['businessProfile', businessProfile.docID];
         queryClient.invalidateQueries(queryKeys);
       }
     },
@@ -80,17 +75,9 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
           translation: '',
         });
 
-      if (tableToUpdate === 'businessProfile')
-        await fsUpdateBusinessProfile(
-          {
-            businessName: businessProfile.businessName,
-            description: formData.description,
-            translationEdited: '',
-            translation: '',
-          },
-          true,
-          businessProfile.docID
-        );
+      if (tableToUpdate === 'businessProfile') {
+        await fsUpdateBusinessProfileTranslation(formData.description);
+      }
       await delay(5000);
       onClose();
     });

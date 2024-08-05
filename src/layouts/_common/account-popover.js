@@ -1,25 +1,16 @@
-import { m } from 'framer-motion';
-
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
-// @mui
 import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-// routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-// auth
 import { useAuthContext } from 'src/auth/hooks';
-// components
-import { varHover } from 'src/components/animate';
 import { useSnackbar } from 'src/components/snackbar';
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
@@ -31,11 +22,11 @@ const OPTIONS = [
   },
   {
     label: 'Profile',
-    linkTo: paths.dashboard.user.profile,
+    linkTo: paths.dashboard.root,
   },
   {
     label: 'Settings',
-    linkTo: paths.dashboard.user.account,
+    linkTo: paths.dashboard.root,
   },
 ];
 
@@ -43,13 +34,8 @@ const OPTIONS = [
 
 export default function AccountPopover() {
   const router = useRouter();
-
-  const { user } = useMockedUser();
-
   const { logout } = useAuthContext();
-
   const { enqueueSnackbar } = useSnackbar();
-
   const popover = usePopover();
 
   const handleLogout = async () => {
@@ -71,10 +57,6 @@ export default function AccountPopover() {
   return (
     <>
       <IconButton
-        component={m.button}
-        whileTap="tap"
-        whileHover="hover"
-        variants={varHover(1.05)}
         onClick={popover.onOpen}
         sx={{
           width: 40,
@@ -87,8 +69,8 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={user?.photoURL}
-          alt={user?.displayName}
+          src=""
+          alt="photoURL"
           sx={{
             width: 36,
             height: 36,
@@ -100,11 +82,11 @@ export default function AccountPopover() {
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user?.displayName}
+            Change Name here
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user?.email}
+            Change Email Here
           </Typography>
         </Box>
 

@@ -34,11 +34,10 @@ import {
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Menu Name', align: 'left', width: '40%' },
+  { id: 'mostOrderedMeals', label: 'Most Ordered Meals', align: 'center', width: '15%' },
   { id: 'lastUpdate', label: 'Last Update', align: 'center', width: '30%' },
-  { id: 'status', label: 'Status', align: 'center', width: '15%' },
+  // { id: 'status', label: 'Status', align: 'center', width: '15%' },
 ];
-
-console.log('//TODO: Remove Total Meals from the list table');
 
 // ----------------------------------------------------------------------
 

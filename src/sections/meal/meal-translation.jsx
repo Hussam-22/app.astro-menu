@@ -5,8 +5,8 @@ import { Box, Card, Grid, Stack, Tooltip, CardHeader, IconButton, Typography } f
 
 import Iconify from 'src/components/iconify';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import LanguageCard from 'src/components/translation-cards/LanguageCard';
 import DialogEditTitle from 'src/components/translation-cards/DialogEditTitle';
+import TranslationCard from 'src/components/translation-cards/translation-card';
 import TranslationCardSkeleton from 'src/components/translation-cards/translation-skeleton';
 
 MealTranslation.propTypes = { mealInfo: PropTypes.object, isFetching: PropTypes.bool };
@@ -44,7 +44,7 @@ export default function MealTranslation({ mealInfo, isFetching }) {
           {languageKeys
             .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
             .map((key) => (
-              <LanguageCard languageKey={key} key={key} data={mealInfo} />
+              <TranslationCard languageKey={key} key={key} data={mealInfo} />
             ))}
         </Stack>
       </Grid>

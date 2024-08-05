@@ -1,6 +1,6 @@
 import { useFieldArray, useFormContext } from 'react-hook-form';
 
-import { Box, Card, Stack, Button, IconButton, Typography, InputAdornment } from '@mui/material';
+import { Box, Card, Stack, Button, IconButton, Typography } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { RHFTextField } from 'src/components/hook-form';
@@ -33,7 +33,13 @@ export default function MealPortionAdd() {
   return (
     <Card sx={{ p: 3 }}>
       <Stack direction="row" alignItems="center" justifyContent="space-between">
-        <Typography variant="h4">Portions</Typography>
+        <Stack direction="column" sx={{ maxWidth: '70%' }}>
+          <Typography variant="h4">Portions</Typography>
+          <Typography variant="caption" color="primary">
+            Set base prices for the meal, then flexibly adjust those prices for each menu, allowing
+            the same meal to have different costs across different menus.
+          </Typography>
+        </Stack>
         <Button
           variant="contained"
           color="inherit"
@@ -63,9 +69,6 @@ export default function MealPortionAdd() {
                   onChange={(event) =>
                     setValue(`portions[${index}].price`, Number(event.target.value))
                   }
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                  }}
                   sx={{ maxWidth: { md: 125 } }}
                 />
 

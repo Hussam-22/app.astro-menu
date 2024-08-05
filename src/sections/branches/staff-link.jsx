@@ -29,7 +29,7 @@ function StaffLink() {
 
   const copUrlHandler = (staffID) => {
     navigator.clipboard.writeText(
-      `${window.location.protocol}//${window.location.host}/staff/${user.businessProfileID}/${staffID}`
+      `https://menu-astro-menu.vercel.app/staff/${user.businessProfileID}/${staffID}`
     );
   };
 
@@ -96,7 +96,7 @@ function StaffLink() {
               <Stack direction="row" spacing={1} alignItems="center">
                 <Image
                   src={`/assets/icons/staff/${staff.type}-icon.svg`}
-                  sx={{ width: 24, height: 24 }}
+                  sx={{ width: 32, height: 32 }}
                 />
                 <Typography variant="h4">{staff.fullname}</Typography>
               </Stack>

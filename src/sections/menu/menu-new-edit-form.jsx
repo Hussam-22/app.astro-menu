@@ -4,25 +4,26 @@ import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
-import { Stack, Typography } from '@mui/material';
+import { Card, Stack, Divider, MenuItem, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
+import Label from 'src/components/label';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 MenuNewEditForm.propTypes = {
-  menuData: PropTypes.object,
+  menuInfo: PropTypes.object,
   onClose: PropTypes.func,
 };
 
-export default function MenuNewEditForm({ menuData, onClose }) {
+export default function MenuNewEditForm({ menuInfo, onClose }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const { fsUpdateMenu, fsAddNewMenu, fsDeleteMenu } = useAuthContext();
+  const { fsUpdateMenu, fsDeleteMenu, fsGetAllMenus } = useAuthContext();
   const queryClient = useQueryClient();
 
   const NewUserSchema = Yup.object().shape({
@@ -33,14 +34,24 @@ export default function MenuNewEditForm({ menuData, onClose }) {
     ),
   });
 
+  const {
+    data: menusList = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['menus'],
+    queryFn: fsGetAllMenus,
+  });
+
   const defaultValues = useMemo(
     () => ({
-      docID: menuData?.docID || '',
-      title: menuData?.title || '',
-      description: menuData?.description || '',
-      mostOrderedMeals: menuData?.mostOrderedMeals || 0,
+      docID: menuInfo?.docID || '',
+      title: menuInfo?.title || '',
+      description: menuInfo?.description || '',
+      mostOrderedMeals: menuInfo?.mostOrderedMeals || 0,
+      newMenuID: '',
     }),
-    [menuData]
+    [menuInfo]
   );
 
   const methods = useForm({
@@ -48,75 +59,142 @@ export default function MenuNewEditForm({ menuData, onClose }) {
     defaultValues,
   });
 
-  const { handleSubmit } = methods;
+  const {
+    handleSubmit,
+    formState: { dirtyFields },
+    watch,
+  } = methods;
 
-  const { isPending, mutate } = useMutation({
+  const values = watch();
+
+  const {
+    isPending,
+    mutate,
+    error: mutationError,
+  } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      const queryKeys = menuData?.docID ? ['menus', `menu-${menuData.docID}`] : ['menus'];
-      queryClient.invalidateQueries(queryKeys);
+      queryClient.invalidateQueries(['menus', `menu-${menuInfo.docID}`]);
     },
   });
 
   const deleteMenu = () => {
-    mutate(() => fsDeleteMenu(menuData.docID));
+    mutate(() => fsDeleteMenu(menuInfo.docID, values.newMenuID));
     router.push(paths.dashboard.menu.list);
   };
 
   const onSubmit = async (data) => {
-    if (menuData?.docID) {
-      mutate(() => fsUpdateMenu(data));
-    }
-    if (!menuData?.docID) {
-      mutate(() => fsAddNewMenu(data));
-    }
-
+    mutate(() => fsUpdateMenu(data));
     enqueueSnackbar('Update success!');
-    if (!menuData?.docID) onClose();
   };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack direction="column" spacing={2}>
-        <RHFTextField name="title" label="Menu Title" />
-        <RHFTextField name="description" label="Menu Description" multiline rows={3} />
-        <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
-          <Stack direction="column" sx={{ width: 1 }}>
-            <Typography variant="" color="text.secondary">
-              Number of Most Ordered Meals to Show
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'info.main' }}>
-              Set to 0 (Zero) to hide the most ordered meals section, max is 10
-            </Typography>
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          color="success"
+          loading={isPending}
+          sx={{ alignSelf: 'flex-end' }}
+          disabled={!dirtyFields.title && !dirtyFields.description && !dirtyFields.mostOrderedMeals}
+        >
+          Update Menu
+        </LoadingButton>
+
+        <Card sx={{ p: 3 }}>
+          <Stack direction="column" spacing={2}>
+            <RHFTextField name="title" label="Menu Title" />
+            <RHFTextField name="description" label="Menu Description" multiline rows={3} />
           </Stack>
-          <RHFTextField
-            name="mostOrderedMeals"
-            label="Number of Most Ordered Meals to Show"
-            type="number"
-          />
-        </Stack>
-        <Stack direction="row" spacing={2} alignItems="center" justifyContent="flex-end">
-          {menuData?.docID && (
-            <LoadingButton
-              color="error"
-              variant="contained"
-              loading={isPending}
-              sx={{ alignSelf: 'flex-end' }}
-              onClick={deleteMenu}
-            >
-              Delete
-            </LoadingButton>
-          )}
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            color="success"
-            loading={isPending}
-            sx={{ alignSelf: 'flex-end' }}
+        </Card>
+
+        <Card sx={{ p: 3 }}>
+          <Typography variant="h4" sx={{ mb: 1 }}>
+            Menu Settings
+          </Typography>
+          <Stack
+            direction="column"
+            spacing={1}
+            divider={<Divider sx={{ borderStyle: 'dashed' }} />}
           >
-            Save
-          </LoadingButton>
-        </Stack>
+            <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+              <Stack direction="column" sx={{ flexGrow: 1 }}>
+                <Typography sx={{ fontWeight: 500 }}>Most Ordered Meals</Typography>
+                <Typography variant="caption">
+                  {` - Show the number of "most ordered meals" in the menu, max is 10`}
+                </Typography>
+                <Typography variant="caption">
+                  - Set to 0 (Zero) to hide the most ordered meals section
+                </Typography>
+              </Stack>
+              <RHFTextField
+                name="mostOrderedMeals"
+                label="# of Meals"
+                type="number"
+                sx={{ flexShrink: 1, width: '10%' }}
+              />
+            </Stack>
+
+            <Stack direction="row" spacing={3}>
+              <Stack direction="column">
+                <Typography color="error" sx={{ fontWeight: 700 }}>
+                  Delete Menu
+                </Typography>
+                {menusList.length === 1 && (
+                  <Typography variant="caption">
+                    The system must have at least 1 menu, &nbsp;
+                    <Label variant="soft" color="primary">
+                      {menuInfo.title}
+                    </Label>
+                    &nbsp;is your only menu, you must create a new menu before deleting it.
+                  </Typography>
+                )}
+                {menusList.length !== 1 && (
+                  <Typography variant="caption">
+                    {`You need to specify the 'Revert to Menu' to delete this menu, QRs across all
+                  branches using `}
+                    <Label variant="soft" color="primary">
+                      {menuInfo.title}
+                    </Label>
+                    &nbsp;menu will revert to the selected menu
+                  </Typography>
+                )}
+              </Stack>
+              <Stack direction="column" spacing={2} alignSelf="flex-end" sx={{ flexGrow: 1 }}>
+                {menusList.length !== 0 && menusList.length > 1 && (
+                  <RHFSelect
+                    name="newMenuID"
+                    label="Revert to Menu"
+                    sx={{ bgcolor: 'common.white', borderRadius: 1 }}
+                    size="small"
+                  >
+                    <MenuItem value="" />
+                    {menusList
+                      .filter((menu) => menu.docID !== menuInfo.docID)
+                      .map((menu) => (
+                        <MenuItem key={menu.docID} value={menu.docID}>
+                          {menu.title}
+                        </MenuItem>
+                      ))}
+                  </RHFSelect>
+                )}
+
+                <LoadingButton
+                  loading={isPending}
+                  variant="contained"
+                  onClick={deleteMenu}
+                  color="error"
+                  sx={{ whiteSpace: 'nowrap' }}
+                  disabled={isLoading || menusList.length <= 1 || values.newMenuID === ''}
+                  fullWidth
+                >
+                  Delete Menu
+                </LoadingButton>
+              </Stack>
+            </Stack>
+          </Stack>
+        </Card>
       </Stack>
     </FormProvider>
   );

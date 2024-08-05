@@ -5,8 +5,8 @@ import { Box, Card, Stack, Tooltip, CardHeader, IconButton, Typography } from '@
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import LanguageCard from 'src/components/translation-cards/LanguageCard';
 import DialogEditTitle from 'src/components/translation-cards/DialogEditTitle';
+import TranslationCard from 'src/components/translation-cards/translation-card';
 
 // BusinessProfileTranslation.propTypes = {
 //   businessProfile: PropTypes.object,
@@ -17,6 +17,8 @@ function BusinessProfileTranslation() {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { businessProfile } = useAuthContext();
   const languageKeys = Object.keys(businessProfile?.translationEdited || {});
+
+  console.log(businessProfile);
 
   const closeModal = () => {
     setIsOpenModal(false);
@@ -43,7 +45,7 @@ function BusinessProfileTranslation() {
       {languageKeys
         .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
         .map((key) => (
-          <LanguageCard
+          <TranslationCard
             languageKey={key}
             key={key}
             showTitleField

@@ -24,6 +24,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Grilled Chicken Breast',
     businessProfileID,
     section: 'Chicken Meals',
+    isDemo: true,
   },
   {
     description: 'Authentic beef tacos with spicy seasoning, served with salsa and sour cream.',
@@ -40,6 +41,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Beef Tacos',
     businessProfileID,
     section: 'Beef Meals',
+    isDemo: true,
   },
   {
     description:
@@ -57,6 +59,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Vegetable Stir Fry',
     businessProfileID,
     section: 'Vegetarian',
+    isDemo: true,
   },
   {
     description: 'Delicious gluten-free pasta served with rich marinara sauce and fresh basil.',
@@ -73,6 +76,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Gluten-Free Pasta with Marinara Sauce',
     businessProfileID,
     section: 'Pastas',
+    isDemo: true,
   },
   {
     description:
@@ -90,6 +94,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Spicy Black Bean Burger',
     businessProfileID,
     section: 'Vegetarian',
+    isDemo: true,
   },
   {
     description:
@@ -107,6 +112,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Grilled Salmon with Quinoa Salad',
     businessProfileID,
     section: 'Seafood Meals',
+    isDemo: true,
   },
   {
     description:
@@ -124,6 +130,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Classic Caesar Salad with Grilled Chicken',
     businessProfileID,
     section: 'Salads',
+    isDemo: true,
   },
   {
     description: 'Savory beef curry cooked with aromatic spices, served with fluffy basmati rice.',
@@ -140,6 +147,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Spicy Beef Curry with Basmati Rice',
     businessProfileID,
     section: 'Beef Meals',
+    isDemo: true,
   },
   {
     description: 'Creamy mushroom risotto made with Arborio rice, mushrooms, and parmesan cheese.',
@@ -156,6 +164,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Mushroom Risotto',
     businessProfileID,
     section: 'Pastas',
+    isDemo: true,
   },
   {
     description:
@@ -173,6 +182,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Grilled Steak',
     businessProfileID,
     section: 'Beef Meals',
+    isDemo: true,
   },
   {
     description: 'Crispy fried chicken served with mashed potatoes, gravy, and coleslaw.',
@@ -189,6 +199,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Fried Chicken Platter',
     businessProfileID,
     section: 'Chicken Meals',
+    isDemo: true,
   },
   {
     description: 'Spicy shrimp stir-fry with bell peppers, onions, and a tangy soy sauce.',
@@ -205,6 +216,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Spicy Shrimp Stir-Fry',
     businessProfileID,
     section: 'Seafood Meals',
+    isDemo: true,
   },
   {
     description:
@@ -222,6 +234,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Quinoa Salad',
     businessProfileID,
     section: 'Salads',
+    isDemo: true,
   },
   {
     description:
@@ -239,6 +252,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Classic Cheeseburger',
     businessProfileID,
     section: 'Beef Meals',
+    isDemo: true,
   },
   {
     description:
@@ -257,6 +271,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     businessProfileID,
     section: 'Salads',
     menu: 'Gourmet',
+    isDemo: true,
   },
   {
     description:
@@ -275,6 +290,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     businessProfileID,
     section: 'Chicken Meals',
     menu: 'Gourmet',
+    isDemo: true,
   },
   {
     description:
@@ -293,6 +309,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     businessProfileID,
     section: 'Beef Meals',
     menu: 'Gourmet',
+    isDemo: true,
   },
   {
     description:
@@ -310,6 +327,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     title: 'Chicken Shawarma',
     businessProfileID,
     section: 'Chicken Meals',
+    isDemo: true,
   },
   {
     description:
@@ -328,6 +346,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     businessProfileID,
     section: 'Beef Meals',
     menu: 'Gourmet',
+    isDemo: true,
   },
   {
     description: `Bavette Steak & Sherry Shallot Sauce with Crème Fraîche Mashed Potatoes & Roasted Green Beans`,
@@ -345,6 +364,7 @@ export const DEFAULT_MEALS = (businessProfileID) => [
     businessProfileID,
     section: 'Beef Meals',
     menu: 'Gourmet',
+    isDemo: true,
   },
 ];
 export const DEFAULT_MENUS = (businessProfileID) => [
@@ -366,62 +386,25 @@ export const DEFAULT_MENU_SECTIONS = [
   'Salads',
   'Vegetarian ',
 ];
-export const DEFAULT_BRANCHES = (businessProfileID) => [
-  {
-    allowSelfOrder: true,
-    currency: 'د.إ',
-    defaultLanguage: 'en',
-    description: 'Main Branch - Dubai',
-    email: 'hello@cool-restaurant.com',
-    imgUrl:
-      'https://firebasestorage.googleapis.com/v0/b/menu-app-b268b/o/_mock%2Fbranches%2Fbranch-1_800x800.webp?alt=media&token=fb35cd0a-8c90-4500-b9de-9862b3dfc3f8',
-    isActive: true,
-    isDeleted: false,
-    lastUpdatedAt: new Date(),
-    lastUpdatedBy: '',
-    number: '97141234567',
-    taxValue: 5,
-    title: 'Main Branch',
-    wifiPassword: 'Connect@2024',
-    businessProfileID,
-  },
-  {
-    allowSelfOrder: true,
-    currency: 'د.إ',
-    defaultLanguage: 'en',
-    description: 'Abu Dhabi Branch - Cornish St.',
-    email: 'hello@cool-restaurant.com',
-    imgUrl:
-      'https://firebasestorage.googleapis.com/v0/b/menu-app-b268b/o/_mock%2Fbranches%2Fbranch-3_800x800.webp?alt=media&token=4a90180c-280c-4c52-94ee-3aba5ee2ac50',
-    isActive: true,
-    isDeleted: false,
-    lastUpdatedAt: new Date(),
-    lastUpdatedBy: '',
-    number: '97121234567',
-    taxValue: 5,
-    title: 'Abu Dhabi Branch',
-    wifiPassword: 'HelloWifi_01234',
-    businessProfileID,
-  },
-  {
-    allowSelfOrder: true,
-    currency: 'د.إ',
-    defaultLanguage: 'en',
-    description: 'Sharjah Branch - University Street',
-    email: 'hello@cool-restaurant.com',
-    imgUrl:
-      'https://firebasestorage.googleapis.com/v0/b/menu-app-b268b/o/_mock%2Fbranches%2Fbranch-4_800x800.webp?alt=media&token=97f82a0c-78e5-439f-bd3a-d19c8595b459',
-    isActive: true,
-    isDeleted: false,
-    lastUpdatedAt: new Date(),
-    lastUpdatedBy: '',
-    number: '97161234567',
-    taxValue: 5,
-    title: 'Sharjah Branch',
-    wifiPassword: 'BranchPass^701',
-    businessProfileID,
-  },
-];
+export const DEFAULT_BRANCH = {
+  allowSelfOrder: true,
+  currency: 'د.إ',
+  defaultLanguage: 'en',
+  description: 'Main Branch - Dubai',
+  email: 'hello@astro-menu.com',
+  imgUrl:
+    'https://firebasestorage.googleapis.com/v0/b/menu-app-b268b/o/_mock%2Fbranches%2Fbranch-1_800x800.webp?alt=media&token=fb35cd0a-8c90-4500-b9de-9862b3dfc3f8',
+  isActive: true,
+  isDeleted: false,
+  lastUpdatedAt: new Date(),
+  lastUpdatedBy: 'system',
+  number: '97141234567',
+  taxValue: 5,
+  title: 'Dubai Branch',
+  wifiPassword: 'Connect@2024',
+  skipKitchen: false,
+};
+
 export const DEFAULT_STAFF = (businessProfileID) => [
   {
     fullname: 'Emma Johnson',

@@ -24,9 +24,10 @@ import {
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
+import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import MealPortionAdd from 'src/sections/meal/meal-portion-add';
-import MealLabelNewEditForm from 'src/sections/meal/meal-label-new-edit-form';
+import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
 import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components/hook-form';
 
 MealNewEditForm.propTypes = { mealInfo: PropTypes.object };
@@ -65,7 +66,7 @@ function MealNewEditForm({ mealInfo }) {
       isNew: mealInfo?.isNew || false,
       mealLabels: mealInfo?.mealLabels || [],
       portions: mealInfo?.portions || [],
-      isActive: !!mealInfo?.isActive,
+      isActive: mealInfo?.isActive !== false,
       imageFile: mealInfo?.cover || null,
       cover: mealInfo?.cover,
     }),
@@ -136,41 +137,58 @@ function MealNewEditForm({ mealInfo }) {
 
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
-    onSuccess: () => {
+    onSuccess: (mutationReturnValue) => {
+      queryClient.invalidateQueries(['sections']);
+      queryClient.invalidateQueries(['section']);
       queryClient.invalidateQueries(['meals']);
-      queryClient.invalidateQueries(['meal', mealInfo.docID]);
+
       if (values.isActive === false) queryClient.invalidateQueries(['menu']);
+
+      if (!mealInfo?.docID) {
+        enqueueSnackbar('Meal Saved successfully!');
+      } else {
+        if (mutationReturnValue === 'DELETE') enqueueSnackbar('Meal Deleted successfully!');
+        if (mutationReturnValue !== 'DELETE') {
+          queryClient.invalidateQueries(['meal', mealInfo.docID]);
+          enqueueSnackbar('Meal Updated successfully!');
+        }
+      }
     },
   });
 
   const onSubmit = async (data) => {
     if (mealInfo?.docID) {
-      mutate(() =>
+      mutate(async () => {
+        await delay(1000);
         fsUpdateMeal(
           {
             ...data,
             translation: dirtyFields.title || dirtyFields.description ? '' : mealInfo.translation,
             translationEdited:
               dirtyFields.title || dirtyFields.description ? '' : mealInfo.translationEdited,
+            lastUpdatedAt: new Date(),
           },
           dirtyFields.imageFile
-        )
-      );
+        );
+      });
       reset(data);
       // remove meal from all menus when disabled
       if (data.isActive === false) mutate(() => fsRemoveMealFromAllSections(mealInfo.docID));
     }
 
-    if (!mealInfo?.docID) {
-      mutate(() => fsAddNewMeal(data));
-      router.push(paths.dashboard.meal.list);
-    }
-    reset(data);
-    enqueueSnackbar('Meal Saved successfully!');
+    if (!mealInfo?.docID)
+      mutate(async () => {
+        await delay(100);
+        await fsAddNewMeal(data);
+        router.push(paths.dashboard.meal.list);
+      });
   };
 
   const handleDeleteMeal = () => {
-    mutate(() => fsDeleteMeal(mealInfo.docID));
+    mutate(() => {
+      fsDeleteMeal(mealInfo.docID);
+      return 'DELETE';
+    });
     setTimeout(() => {
       router.push(paths.dashboard.meal.list);
     }, 1000);
@@ -180,16 +198,42 @@ function MealNewEditForm({ mealInfo }) {
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
+          <Grid xs={12}>
+            <Stack>
+              <LoadingButton
+                type="submit"
+                color="success"
+                variant="contained"
+                loading={isPending}
+                disabled={!isDirty}
+                sx={{ alignSelf: 'self-end' }}
+              >
+                {mealInfo?.docID ? 'Update Meal' : 'Add Meal'}
+              </LoadingButton>
+            </Stack>
+          </Grid>
           <Grid xs={12} sm={7}>
-            <Stack spacing={3}>
-              <Card sx={{ p: 3 }}>
-                <Stack direction="column" spacing={3}>
-                  <Typography variant="h4">Meal Labels</Typography>
-                  <RHFTextField name="title" label="Meal Title" />
-                  <RHFTextField name="description" label="Description" multiline rows={5} />
-                </Stack>
-              </Card>
+            <Card sx={{ p: 3, height: 1 }}>
+              <Stack direction="column" spacing={3}>
+                <Typography variant="h4">Meal Labels</Typography>
+                <RHFTextField name="title" label="Meal Title" />
+                <RHFTextField name="description" label="Description" multiline rows={5} />
+              </Stack>
+            </Card>
+          </Grid>
 
+          <Grid xs={12} sm={5}>
+            <RHFUpload
+              name="imageFile"
+              maxSize={3145728}
+              onDrop={handleDrop}
+              onDelete={handleRemoveFile}
+              paddingValue="40% 0"
+            />
+          </Grid>
+
+          <Grid xs={12}>
+            <Stack spacing={3}>
               <Card sx={{ p: 3 }}>
                 <Stack
                   direction="row"
@@ -207,37 +251,48 @@ function MealNewEditForm({ mealInfo }) {
                     Add New Meal Label
                   </Button>
                 </Stack>
-                <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-                  {` empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
-                </Typography>
-                <Divider sx={{ mt: 1, border: `dashed 1px ${theme.palette.divider}` }} />
+
                 <Box
                   sx={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(5,1fr)',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
                     gap: 1,
                     mt: 3,
                     mb: 1.5,
                   }}
                 >
-                  {mealLabelsList
-                    .filter((label) => label.isActive)
-                    .map((label) => (
+                  {mealLabelsList.map((label) => (
+                    <Box sx={{ position: 'relative', width: 1 }} key={label.docID}>
+                      {!label.isActive && (
+                        <Iconify
+                          icon="fe:disabled"
+                          sx={{
+                            position: 'absolute',
+                            color: 'error.main',
+                          }}
+                        />
+                      )}
                       <Button
-                        key={label.docID}
-                        variant={selectedMealLabels.includes(label.docID) ? 'contained' : 'soft'}
+                        variant={selectedMealLabels.includes(label.docID) ? 'soft' : 'soft'}
                         color={selectedMealLabels.includes(label.docID) ? 'primary' : 'inherit'}
                         onClick={() => handleAddTag(label)}
+                        disabled={!label.isActive}
+                        fullWidth
                       >
                         {label.title.toLowerCase()}
                       </Button>
-                    ))}
+                    </Box>
+                  ))}
                 </Box>
                 {errors.mealLabels !== '' && (
                   <Typography variant="caption" color="error">
                     {errors?.mealLabels?.message}
                   </Typography>
                 )}
+                <Divider sx={{ mb: 1, border: `dashed 1px ${theme.palette.divider}` }} />
+                <Typography variant="body2">
+                  {`Empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
+                </Typography>
               </Card>
 
               <MealPortionAdd />
@@ -257,9 +312,7 @@ function MealNewEditForm({ mealInfo }) {
                     alignItems="center"
                     sx={{ px: 1 }}
                   >
-                    <Typography
-                      sx={{ fontWeight: theme.typography.fontWeightBold }}
-                    >{`Show "New" Label on Meal`}</Typography>
+                    <Typography sx={{ fontWeight: 500 }}>{`Show "New" Label on Meal`}</Typography>
                     <RHFSwitch name="isNew" label="New" labelPlacement="start" />
                   </Stack>
 
@@ -268,13 +321,15 @@ function MealNewEditForm({ mealInfo }) {
                     justifyContent="space-between"
                     alignItems="center"
                     sx={{ px: 1 }}
+                    spacing={3}
                   >
                     <Stack direction="column">
-                      <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                        Whats the Meal Status?
-                      </Typography>
+                      <Typography sx={{ fontWeight: 500 }}>Meal Status</Typography>
                       <Typography variant="caption">
-                        Disabling the meal will remove it from all menus
+                        Disabling a meal will remove it from all menus where it appears, providing a
+                        quick and efficient way to hide the meal across all menus without the need
+                        to manually remove it from each one. You can easily re-enable the meal at
+                        any time to make it visible again.
                       </Typography>
                     </Stack>
                     <RHFSwitch
@@ -284,61 +339,39 @@ function MealNewEditForm({ mealInfo }) {
                     />
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    sx={{
-                      bgcolor: 'error.main',
-                      borderRadius: 1,
-                      p: 1,
-                      color: 'common.white',
-                    }}
-                  >
-                    <Stack direction="column">
-                      <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                        Delete Meal
-                      </Typography>
-                      <Typography variant="caption">
-                        Deleting the meal will completely remove it from the system and all menus
-                      </Typography>
-                    </Stack>
-                    {mealInfo?.docID && (
+                  {mealInfo?.docID && (
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      sx={{
+                        px: 1,
+                      }}
+                    >
+                      <Stack direction="column">
+                        <Typography
+                          color="error"
+                          sx={{ fontWeight: theme.typography.fontWeightBold }}
+                        >
+                          Delete Meal
+                        </Typography>
+                        <Typography variant="caption">
+                          Deleting the meal will completely remove it from the system and all menus
+                        </Typography>
+                      </Stack>
                       <LoadingButton
                         loading={isPending}
                         variant="contained"
                         onClick={handleDeleteMeal}
-                        sx={{ bgcolor: 'common.white', color: 'error.main', whiteSpace: 'nowrap' }}
+                        color="error"
+                        sx={{ whiteSpace: 'nowrap' }}
                       >
                         Delete Meal
                       </LoadingButton>
-                    )}
-                  </Stack>
+                    </Stack>
+                  )}
                 </Stack>
               </Card>
-            </Stack>
-          </Grid>
-
-          <Grid xs={12} sm={5}>
-            <Stack spacing={2}>
-              <RHFUpload
-                name="imageFile"
-                maxSize={3145728}
-                onDrop={handleDrop}
-                onDelete={handleRemoveFile}
-                paddingValue="50% 0"
-              />
-
-              <LoadingButton
-                type="submit"
-                color="success"
-                variant="contained"
-                loading={isPending}
-                disabled={!isDirty}
-                sx={{ alignSelf: 'center' }}
-              >
-                {mealInfo?.docID ? 'Update Meal' : 'Add Meal'}
-              </LoadingButton>
             </Stack>
           </Grid>
         </Grid>

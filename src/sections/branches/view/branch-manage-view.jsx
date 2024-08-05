@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { m } from 'framer-motion';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
@@ -10,11 +9,11 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import StaffLink from 'src/sections/branches/staff-link';
 import { useSettingsContext } from 'src/components/settings';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import QRManagement from 'src/sections/branches/QR-Management';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import BranchStatistics from 'src/sections/branches/BranchStatistics';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
-import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 
 function BranchManageView() {
   const { id: branchID } = useParams();
@@ -22,6 +21,7 @@ function BranchManageView() {
   const { themeStretch } = useSettingsContext();
   const { fsGetBranch, businessProfile } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
+  const { allowAnalytics, allowPoS } = useGetProductInfo();
 
   const {
     data: branchInfo = {},
@@ -43,7 +43,12 @@ function BranchManageView() {
       icon: <Iconify icon="clarity:qr-code-line" width={20} height={20} />,
       component: <QRManagement branchInfo={branchInfo} />,
     },
-    {
+    allowAnalytics && {
+      value: 'Statistics',
+      icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
+      component: <BranchStatistics />,
+    },
+    allowPoS && {
       value: 'Staffs Dashboard Link',
       icon: (
         <Iconify
@@ -54,12 +59,9 @@ function BranchManageView() {
       ),
       component: <StaffLink />,
     },
-    {
-      value: 'Statistics',
-      icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
-      component: <BranchStatistics />,
-    },
-  ].splice(0, businessProfile?.planInfo?.at(-1)?.isMenuOnly ? 2 : 4);
+  ]
+    .filter((tab) => tab)
+    .splice(0, businessProfile?.planInfo?.at(-1)?.isMenuOnly ? 2 : 4);
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -105,7 +107,8 @@ function BranchManageView() {
               const isMatched = tab.value === currentTab;
               return (
                 isMatched && (
-                  <Box component={m.div} {...getVariant('fadeInUp')} key={tab.value} id={tab.value}>
+                  // <Box component={m.div} {...getVariant('fadeInUp')} key={tab.value} id={tab.value}>
+                  <Box key={tab.value} id={tab.value}>
                     {tab.component}
                   </Box>
                 )

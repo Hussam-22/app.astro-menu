@@ -5,8 +5,8 @@ import { Link, TableRow, TableCell, ListItemText } from '@mui/material';
 
 import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
-import { fDateTime } from 'src/utils/format-time';
 import getCartTotal from 'src/utils/getCartTotal';
+import { fDateTime, fDistance } from 'src/utils/format-time';
 // ----------------------------------------------------------------------
 
 TableOrdersTableRow.propTypes = {
@@ -21,13 +21,14 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
     docID,
     menuID,
     cart,
-    lastUpdate,
+    closingTime,
     isPaid,
     isCanceled,
     isInKitchen,
     isReadyToServe,
     staffID,
     totalBill,
+    initiationTime,
   } = row;
 
   const { data: menuInfo } = useQuery({
@@ -67,12 +68,17 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
           sx={{ color: 'text.disabled', cursor: 'pointer' }}
         >
           <ListItemText
-            primary={fDateTime(new Date(lastUpdate.seconds * 1000))}
-            secondary={docID}
+            primary={docID}
+            secondary={fDateTime(new Date(initiationTime.seconds * 1000))}
             primaryTypographyProps={{ typography: 'body2', color: 'text.primary' }}
             secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
           />
         </Link>
+      </TableCell>
+      <TableCell>{closingTime !== '' && fDateTime(new Date(closingTime.seconds * 1000))}</TableCell>
+      <TableCell>
+        {closingTime !== '' &&
+          fDistance(new Date(initiationTime.seconds * 1000), new Date(closingTime.seconds * 1000))}
       </TableCell>
       <TableCell>
         <Link
@@ -85,7 +91,10 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
             primary={`${calculatedTotalBill || 0} 
             ${branchInfo.currency}`}
             secondary={menuInfo?.title}
-            primaryTypographyProps={{ typography: 'body2', color: 'text.primary' }}
+            primaryTypographyProps={{
+              typography: 'body2',
+              color: orderStatus()[0] === 'Paid' ? 'success.main' : 'text.disabled',
+            }}
             secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
           />
         </Link>

@@ -62,11 +62,12 @@ export const StyledItem = styled(ListItemButton, {
 
 // ----------------------------------------------------------------------
 
-export const StyledIcon = styled(ListItemIcon)(({ size }) => ({
+export const StyledIcon = styled(ListItemIcon)(({ size, theme }) => ({
   width: size,
   height: size,
   alignItems: 'center',
   justifyContent: 'center',
+  color: theme.palette.common.black,
 }));
 
 export const StyledDotIcon = styled('span')(({ active, theme }) => ({

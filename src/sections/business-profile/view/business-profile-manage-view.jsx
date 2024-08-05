@@ -1,17 +1,15 @@
 import { useState } from 'react';
-import { m } from 'framer-motion';
+// import { m } from 'framer-motion';
 
-import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
+import { Box, Tab, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 import BusinessProfileEditForm from 'src/sections/business-profile/business-profile-edit-form';
 import BusinessProfileTranslation from 'src/sections/business-profile/business-profile-translation';
-import BusinessProfilePlanPaymentInfo from 'src/sections/business-profile/business-profile-plan-payment-info';
 
 function BusinessProfileManageView() {
   const theme = useTheme();
@@ -29,11 +27,6 @@ function BusinessProfileManageView() {
       value: 'Translation',
       icon: <Iconify icon="ph:globe-light" width={20} height={20} />,
       component: businessProfile?.docID && <BusinessProfileTranslation />,
-    },
-    {
-      value: 'Subscription info',
-      icon: <Iconify icon="solar:box-line-duotone" width={20} height={20} />,
-      component: businessProfile?.docID && <BusinessProfilePlanPaymentInfo />,
     },
   ];
 
@@ -81,7 +74,8 @@ function BusinessProfileManageView() {
               const isMatched = tab.value === currentTab;
               return (
                 isMatched && (
-                  <Box component={m.div} {...getVariant('fadeInUp')} key={tab.value} id={tab.value}>
+                  // <Box component={m.div} {...getVariant('fadeInUp')} key={tab.value} id={tab.value}>
+                  <Box key={tab.value} id={tab.value}>
                     {tab.component}
                   </Box>
                 )

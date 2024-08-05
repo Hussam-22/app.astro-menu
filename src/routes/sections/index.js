@@ -1,16 +1,14 @@
+import { lazy } from 'react';
 import { Navigate, useRoutes } from 'react-router-dom';
 
-import MainLayout from 'src/layouts/main';
-import { staffRoutes } from 'src/routes/sections/staff';
-import { qrMenuRoutes } from 'src/routes/sections/qr-menu';
+import AuthModernLayout from 'src/layouts/auth/modern';
 
 import { authRoutes } from './auth';
-import { authDemoRoutes } from './auth-demo';
-import { HomePage, mainRoutes } from './main';
 import { dashboardRoutes } from './dashboard';
-import { componentsRoutes } from './components';
 
 // ----------------------------------------------------------------------
+
+const FirebaseLoginPage = lazy(() => import('src/pages/auth/firebase/login'));
 
 export default function Router() {
   return useRoutes([
@@ -26,30 +24,17 @@ export default function Router() {
     {
       path: '/',
       element: (
-        <MainLayout>
-          <HomePage />
-        </MainLayout>
+        <AuthModernLayout>
+          <FirebaseLoginPage />
+        </AuthModernLayout>
       ),
     },
 
     // Auth routes
     ...authRoutes,
-    ...authDemoRoutes,
 
     // Dashboard routes
     ...dashboardRoutes,
-
-    // Main routes
-    ...mainRoutes,
-
-    // Components routes
-    ...componentsRoutes,
-
-    // Qr Menu
-    ...qrMenuRoutes,
-
-    // Staff
-    ...staffRoutes,
 
     // No match 404
     { path: '*', element: <Navigate to="/404" replace /> },

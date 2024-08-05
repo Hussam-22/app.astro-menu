@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 
 import { Box, TableRow, TableCell, ListItemText } from '@mui/material';
 
-import Label from 'src/components/label';
-
 // ----------------------------------------------------------------------
 
 MenusTableRow.propTypes = {
@@ -12,7 +10,9 @@ MenusTableRow.propTypes = {
 };
 
 export default function MenusTableRow({ row, onEditRow }) {
-  const { title, isActive, lastUpdatedAt, docID } = row;
+  const { title, isActive, lastUpdatedAt, docID, mostOrderedMeals = 0 } = row;
+
+  const lastUpdate = new Date(lastUpdatedAt.seconds * 1000).toLocaleString();
 
   return (
     <TableRow hover>
@@ -28,19 +28,14 @@ export default function MenusTableRow({ row, onEditRow }) {
         >
           <ListItemText
             primary={title}
-            secondary={docID}
             primaryTypographyProps={{ typography: 'body1', fontWeight: 'bold' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-              typography: 'body2',
-            }}
           />
         </Box>
       </TableCell>
 
-      <TableCell align="center">{lastUpdatedAt}</TableCell>
-      <TableCell align="center">
+      <TableCell align="center">{mostOrderedMeals}</TableCell>
+      <TableCell align="center">{lastUpdate}</TableCell>
+      {/* <TableCell align="center">
         <Label
           variant="filled"
           color={(!isActive && 'error') || (isActive && 'success')}
@@ -48,7 +43,7 @@ export default function MenusTableRow({ row, onEditRow }) {
         >
           {isActive ? 'Active' : 'Disabled'}
         </Label>
-      </TableCell>
+      </TableCell> */}
     </TableRow>
   );
 }

@@ -77,7 +77,6 @@ export default function FirebaseLoginView() {
       console.error(error);
     }
   };
-
   const handleGithubLogin = async () => {
     try {
       await loginWithGithub?.();
@@ -85,7 +84,6 @@ export default function FirebaseLoginView() {
       console.error(error);
     }
   };
-
   const handleTwitterLogin = async () => {
     try {
       await loginWithTwitter?.();
@@ -96,7 +94,7 @@ export default function FirebaseLoginView() {
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Sign in to Mage Menu</Typography>
+      <Typography variant="h4">Sign in to Astro-Menu</Typography>
 
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2">New user?</Typography>

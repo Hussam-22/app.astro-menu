@@ -1,17 +1,17 @@
 import { Container } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
-import { useAuthContext } from 'src/auth/hooks';
 import { RoleBasedGuard } from 'src/auth/guard';
 import { useSettingsContext } from 'src/components/settings';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import StaffsNewEditForm from 'src/sections/staffs/staffs-new-edit-form';
 
 function StaffsNewView() {
+  const { isMenuOnly } = useGetProductInfo();
   const { themeStretch } = useSettingsContext();
-  const {
-    businessProfile: { role },
-  } = useAuthContext();
+
+  const role = isMenuOnly ? 'basic' : 'full';
 
   return (
     <RoleBasedGuard hasContent roles={[role]} sx={{ py: 10 }}>

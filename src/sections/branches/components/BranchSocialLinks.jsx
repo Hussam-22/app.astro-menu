@@ -1,7 +1,6 @@
 import { memo } from 'react';
 
-import { Box } from '@mui/system';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { RHFTextField } from 'src/components/hook-form';
 

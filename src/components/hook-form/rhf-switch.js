@@ -8,7 +8,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 // ----------------------------------------------------------------------
 
-export default function RHFSwitch({ name, helperText, ...other }) {
+export default function RHFSwitch({ name, helperText, color = 'primary', ...other }) {
   const { control } = useFormContext();
 
   return (
@@ -17,7 +17,10 @@ export default function RHFSwitch({ name, helperText, ...other }) {
       control={control}
       render={({ field, fieldState: { error } }) => (
         <div>
-          <FormControlLabel control={<Switch {...field} checked={field.value} />} {...other} />
+          <FormControlLabel
+            control={<Switch {...field} checked={field.value} color={color} />}
+            {...other}
+          />
 
           {(!!error || helperText) && (
             <FormHelperText error={!!error}>{error ? error?.message : helperText}</FormHelperText>
@@ -31,4 +34,5 @@ export default function RHFSwitch({ name, helperText, ...other }) {
 RHFSwitch.propTypes = {
   helperText: PropTypes.string,
   name: PropTypes.string,
+  color: PropTypes.string,
 };

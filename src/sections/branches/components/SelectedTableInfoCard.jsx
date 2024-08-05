@@ -13,19 +13,21 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import {
   Box,
   Card,
-  Alert,
   Stack,
+  Alert,
   Button,
-  useTheme,
+  Divider,
   MenuItem,
+  useTheme,
   TextField,
-  Typography,
-  IconButton,
   AlertTitle,
+  IconButton,
+  Typography,
 } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 
 SelectedTableInfoCard.propTypes = {
@@ -35,10 +37,11 @@ SelectedTableInfoCard.propTypes = {
 function SelectedTableInfoCard({ tableInfo }) {
   const theme = useTheme();
   const { id: branchID } = useParams();
+  const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
   const { fsUpdateBranchTable, user, fsGetAllMenus } = useAuthContext();
-  const queryClient = useQueryClient();
   const [isVisible, setIsVisible] = useState(true);
+  const { isMenuOnly } = useGetProductInfo();
 
   const isQrMenuOnly = tableInfo?.index === 0;
 
@@ -66,6 +69,7 @@ function SelectedTableInfoCard({ tableInfo }) {
       isActive: tableInfo?.isActive,
       note: tableInfo?.note,
       title: tableInfo?.title,
+      mealAlwaysAvailable: !!tableInfo?.mealAlwaysAvailable,
     }),
     [tableInfo]
   );
@@ -97,7 +101,7 @@ function SelectedTableInfoCard({ tableInfo }) {
     reset(formData);
   };
 
-  const qrURL = `${window.location.protocol}//${window.location.host}/qr-menu/${user.businessProfileID}/${tableInfo?.branchID}/${tableInfo?.docID}`;
+  const qrURL = `https://menu-astro-menu.vercel.app/${user.businessProfileID}/${tableInfo?.branchID}/${tableInfo?.docID}/home`;
 
   const copUrlHandler = () => {
     navigator.clipboard.writeText(qrURL);
@@ -117,7 +121,7 @@ function SelectedTableInfoCard({ tableInfo }) {
   if (isQrMenuOnly)
     return (
       <Grid container spacing={2}>
-        {isVisible && (
+        {!isMenuOnly && isVisible && (
           <Grid xs={12}>
             <Alert
               severity="warning"
@@ -126,9 +130,9 @@ function SelectedTableInfoCard({ tableInfo }) {
               sx={{ width: 1 }}
             >
               <AlertTitle>Menu View Only</AlertTitle>
-              This table is set to show the menu only, use it on your social media or place it on
-              your front door, dont place it on customers tables unless you are intending to let
-              them view the menu and take orders manually.
+              This QR is intended to show the menu only and cart will be hidden, use it on your
+              social media or place it on your front door, dont place it on customers tables unless
+              you are intending to let them view the menu only and take orders manually.
             </Alert>
           </Grid>
         )}
@@ -136,19 +140,19 @@ function SelectedTableInfoCard({ tableInfo }) {
           <Card sx={{ p: 3, height: 1 }}>
             <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
               <Stack direction="column" spacing={2}>
-                <Stack direction="row" alignItems="self-end" justifyContent="space-between">
-                  <Stack direction="column">
-                    <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-                      {tableInfo?.docID}
-                    </Typography>
-                    <Typography variant="h4">Menu Only</Typography>
-                  </Stack>
-                  <RHFSwitch
-                    name="isActive"
-                    label={`QR is ${values.isActive ? 'Active' : 'Disabled'}`}
-                    labelPlacement="end"
-                    sx={{ m: 0 }}
-                  />
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography variant="h4">Menu View Only</Typography>
+                  <LoadingButton
+                    loading={isPending}
+                    type="submit"
+                    variant="contained"
+                    color="success"
+                    startIcon={<Iconify icon="ion:save-sharp" />}
+                    disabled={!isDirty}
+                    sx={{ alignSelf: 'flex-end' }}
+                  >
+                    Save
+                  </LoadingButton>
                 </Stack>
                 <Stack direction="column" spacing={2}>
                   {menusList?.length !== 0 && menusList !== undefined && (
@@ -166,17 +170,55 @@ function SelectedTableInfoCard({ tableInfo }) {
                     </RHFSelect>
                   )}
                   <TextField value="This table is to show your menu only" disabled />
-                  <LoadingButton
-                    loading={isPending}
-                    type="submit"
-                    variant="contained"
-                    color="success"
-                    startIcon={<Iconify icon="ion:save-sharp" />}
-                    disabled={!isDirty}
-                    sx={{ alignSelf: 'flex-end' }}
+
+                  <Stack
+                    direction="column"
+                    spacing={2}
+                    divider={<Divider sx={{ borderStyle: 'dashed' }} />}
                   >
-                    Save
-                  </LoadingButton>
+                    <Stack direction="column">
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
+                        <Typography sx={{ fontWeight: 500 }}>Meals Visibility</Typography>
+                        <RHFSwitch
+                          name="mealAlwaysAvailable"
+                          label={`${values.mealAlwaysAvailable ? 'Always Available' : 'Depended'}`}
+                          labelPlacement="start"
+                          sx={{ m: 0 }}
+                        />
+                      </Stack>
+                      <Typography variant="caption">
+                        Decide the behavior of the meals visibility if they should be always visible
+                        regardless of their status (In case they are out of stock)
+                      </Typography>
+                    </Stack>
+
+                    <Stack direction="column">
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
+                        <Typography sx={{ fontWeight: 500 }}>QR Status</Typography>
+                        <RHFSwitch
+                          name="isActive"
+                          label={`QR is ${values.isActive ? 'Active' : 'Disabled'}`}
+                          labelPlacement="start"
+                          sx={{ m: 0 }}
+                        />
+                      </Stack>
+
+                      <Typography variant="caption">
+                        Active or Not Active (Disabled), if disabled the QR will not be accessible
+                        by customers
+                      </Typography>
+                    </Stack>
+                  </Stack>
                 </Stack>
               </Stack>
             </FormProvider>
@@ -237,12 +279,7 @@ function SelectedTableInfoCard({ tableInfo }) {
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack direction="column" spacing={2}>
               <Stack direction="row" alignItems="self-end" justifyContent="space-between">
-                <Stack direction="column">
-                  <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-                    {tableInfo?.docID}
-                  </Typography>
-                  <Typography variant="h4">QR# {tableInfo?.index}</Typography>
-                </Stack>
+                <Typography variant="h4">QR# {tableInfo?.index}</Typography>
                 <RHFSwitch
                   name="isActive"
                   label={`QR is ${values.isActive ? 'Active' : 'Disabled'}`}
@@ -252,20 +289,6 @@ function SelectedTableInfoCard({ tableInfo }) {
               </Stack>
               <Stack direction="column" spacing={2}>
                 <RHFTextField name="title" label="QR Nickname (Shows on Customers Menu)" />
-                {/* {menusList?.length !== 0 && menusList !== undefined && (
-                  <RHFSelect
-                    name="menuID"
-                    label="Default Menu"
-                    placeholder="Default Menu"
-                    defaultValue={tableInfo?.menuID}
-                  >
-                    {menusList.map((menu) => (
-                      <MenuItem key={menu.docID} value={menu.docID}>
-                        {menu.title}
-                      </MenuItem>
-                    ))}
-                  </RHFSelect>
-                )} */}
               </Stack>
               <RHFTextField
                 name="note"
@@ -273,6 +296,7 @@ function SelectedTableInfoCard({ tableInfo }) {
                 multiline
                 rows={3}
               />
+
               <Stack spacing={2} direction="row" justifyContent="flex-end" alignItems="center">
                 <LoadingButton
                   loading={isPending}

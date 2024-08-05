@@ -4,18 +4,18 @@ import { useParams } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
-  Box,
   Card,
   Stack,
-  Switch,
+  Button,
   Avatar,
-  Tooltip,
+  Switch,
   Divider,
+  Tooltip,
   useTheme,
   FormGroup,
-  Typography,
-  CardHeader,
   IconButton,
+  CardHeader,
+  Typography,
   FormControlLabel,
 } from '@mui/material';
 
@@ -23,10 +23,11 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { titleCase } from 'src/utils/change-case';
-import TextMaxLine from 'src/components/text-max-line';
-import AddMealDialog from 'src/sections/menu/meals-and-sections/dialogs/add-meal-dialog';
+import AddMealDrawer from 'src/sections/menu/meals-and-sections/drawers/add-meal-drawer';
+import RemoveMealDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-meal-dialog';
+import EditPricesDrawer from 'src/sections/menu/meals-and-sections/drawers/edit-prices-drawer';
 import RemoveSectionDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-section-dialog';
-import EditSectionTitleDialog from 'src/sections/menu/meals-and-sections/dialogs/edit-section-title-dialog';
+import EditSectionTitleDrawer from 'src/sections/menu/meals-and-sections/drawers/edit-section-title-drawer';
 
 // ----------------------------------------------------------------------
 
@@ -40,27 +41,39 @@ SectionMeals.propTypes = {
 };
 
 export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeals, allSections }) {
-  const theme = useTheme();
   const { id: menuID } = useParams();
-  const { fsUpdateSection, fsUpdateSectionsOrder } = useAuthContext();
+  const theme = useTheme();
   const queryClient = useQueryClient();
+  const { fsUpdateSection, fsUpdateSectionsOrder } = useAuthContext();
   const [dialogsState, setDialogsState] = useState({
     addMeal: false,
     removeSection: false,
     editSectionTitle: false,
-    visibility: false,
+    prices: false,
+    removeMeal: false,
   });
+  const [selectedMealInfo, setSelectedMealInfo] = useState(null);
 
   const sectionMeals = allMeals.filter((meal) =>
-    sectionInfo.meals.some((sectionMeal) => sectionMeal === meal.docID)
+    sectionInfo.meals.some((sectionMeal) => sectionMeal.docID === meal.docID)
   );
 
   const { mutate, isPending, isError } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      queryClient.invalidateQueries([`sections-${menuID}`]);
+      queryClient.invalidateQueries(['sections', menuID]);
     },
   });
+
+  const openEditPricesDrawer = (meal) => {
+    setSelectedMealInfo(meal);
+    handleDialogIsOpenState('prices', true);
+  };
+
+  const openDeleteMealDialog = (meal) => {
+    setSelectedMealInfo(meal);
+    handleDialogIsOpenState('removeMeal', true);
+  };
 
   const handleStatusChange = () =>
     mutate(() => fsUpdateSection(menuID, sectionInfo.docID, { isActive: !sectionInfo.isActive }));
@@ -102,7 +115,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
       >
         <CardHeader
           title={titleCase(sectionInfo.title)}
-          sx={{ backgroundColor: 'background.neutral', pb: 2 }}
+          sx={{ backgroundColor: 'background.neutral', py: 1, px: 2 }}
           action={
             <FormGroup row>
               <FormControlLabel
@@ -114,7 +127,13 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                     </Label>
                   )
                 }
-                control={<Switch onChange={handleStatusChange} checked={sectionInfo?.isActive} />}
+                control={
+                  <Switch
+                    onChange={handleStatusChange}
+                    checked={sectionInfo?.isActive}
+                    color="success"
+                  />
+                }
               />
               <Tooltip title="delete section">
                 <IconButton
@@ -122,7 +141,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                   size="small"
                   onClick={() => handleDialogIsOpenState('removeSection', true)}
                 >
-                  <Iconify icon="ci:trash-empty" width={22} height={22} />
+                  <Iconify icon="f7:trash" width={22} height={22} />
                 </IconButton>
               </Tooltip>
 
@@ -175,98 +194,121 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
           }
         />
 
-        <Stack spacing={1} sx={{ p: 2 }}>
+        <Stack spacing={1} sx={{ p: 2 }} divider={<Divider sx={{ borderStyle: 'dashed' }} />}>
           {sectionMeals.length === 0 && (
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              Please add meals from the top right corner action button
-              <Iconify icon="mdi:hamburger-plus" width={22} height={22} sx={{ ml: 1 }} />
-            </Box>
+            <Stack direction="row" alignItems="center" justifyContent="center">
+              <Typography>Add meals to section</Typography>
+              <IconButton
+                sx={{ color: 'common.alternative' }}
+                size="small"
+                onClick={() => handleDialogIsOpenState('addMeal', true)}
+              >
+                <Iconify icon="mdi:hamburger-plus" width={22} height={22} />
+              </IconButton>
+            </Stack>
           )}
 
           {sectionMeals
             .sort((a, b) => a.title.localeCompare(b.title))
             .map((meal, index) => (
-              <React.Fragment key={meal.docID}>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
-                  divider={
-                    <Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />
-                  }
-                >
-                  <Stack direction="column" spacing={1} sx={{ maxWidth: '10%' }}>
-                    <Box sx={{ position: 'relative', mr: 1 }}>
-                      <Avatar
-                        src={meal.cover}
-                        alt={meal.title}
-                        sx={{
-                          width: 72,
-                          height: 72,
-                          borderRadius: 1,
-
-                          filter: `grayscale(${meal.isActive ? 0 : '100'})`,
-                        }}
-                        variant="square"
-                      />
-                    </Box>
-                  </Stack>
-                  <Stack
-                    direction="column"
-                    sx={{ px: 2, maxWidth: '75%' }}
-                    spacing={1}
-                    flexGrow={1}
-                  >
-                    <Box>
-                      {/* <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                        {meal.docID}
-                      </Typography> */}
-                      <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
-                        {meal.title}
-                      </Typography>
-                      <TextMaxLine line={1} variant="body2">
-                        {meal.description}
-                      </TextMaxLine>
-                    </Box>
-                    <Stack direction="row" spacing={2}>
-                      {meal.portions.map((portion, i) => (
+              <Stack
+                key={meal.docID}
+                direction="row"
+                alignItems="center"
+                sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
+                divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
+                spacing={1}
+              >
+                <Avatar
+                  src={meal.cover}
+                  alt={meal.title}
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 0.5,
+                    mr: 1,
+                    filter: `grayscale(${meal.isActive ? 0 : '100'})`,
+                  }}
+                  variant="square"
+                />
+                <Stack direction="column" spacing={0.25} sx={{ px: 1, flexGrow: 1 }}>
+                  <Typography variant="subtitle2">{meal.title}</Typography>
+                  <Stack direction="row" spacing={2}>
+                    {sectionInfo.meals
+                      .find((sectionMeal) => sectionMeal.docID === meal.docID)
+                      .portions.map((portion, i) => (
                         <Label variant="soft" color="warning" key={`${portion.portionSize}-${i}`}>
-                          {portion.portionSize} - {portion.gram}g - ${portion.price}
+                          {portion.portionSize} - {portion.price}
                         </Label>
                       ))}
-                    </Stack>
                   </Stack>
+                  {!meal.isActive && (
+                    <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 1 }}>
+                      <Iconify icon="ep:warning-filled" sx={{ color: 'error.main' }} />
+                      <Typography variant="caption" color="error">
+                        Meal is disabled in all menus
+                      </Typography>
+                    </Stack>
+                  )}
                 </Stack>
-                {sectionMeals.length > 1 && index + 1 !== sectionMeals.length && (
-                  <Divider sx={{ borderStyle: 'dashed' }} />
-                )}
-              </React.Fragment>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{ flexShrink: 1, justifyContent: 'flex-end' }}
+                >
+                  <Button
+                    variant="soft"
+                    color="warning"
+                    size="small"
+                    onClick={() => openEditPricesDrawer(meal)}
+                    startIcon={<Iconify icon="ic:outline-attach-money" />}
+                  >
+                    Edit Prices
+                  </Button>
+                  <Button
+                    variant="soft"
+                    color="error"
+                    size="small"
+                    onClick={() => openDeleteMealDialog(meal)}
+                    startIcon={<Iconify icon="f7:trash" />}
+                  >
+                    Remove Meal
+                  </Button>
+                </Stack>
+              </Stack>
             ))}
         </Stack>
       </Card>
 
-      {dialogsState.addMeal && (
-        <AddMealDialog
-          isOpen={dialogsState.addMeal}
-          onClose={() => handleDialogIsOpenState('addMeal', false)}
-          sectionID={id}
-          allMeals={allMeals}
-        />
-      )}
-      {dialogsState.removeSection && (
-        <RemoveSectionDialog
-          isOpen={dialogsState.removeSection}
-          onClose={() => handleDialogIsOpenState('removeSection', false)}
-          sectionInfo={sectionInfo}
-        />
-      )}
-      {dialogsState.editSectionTitle && (
-        <EditSectionTitleDialog
-          isOpen={dialogsState.editSectionTitle}
-          onClose={() => handleDialogIsOpenState('editSectionTitle', false)}
-          sectionID={sectionInfo.docID}
-        />
-      )}
+      <AddMealDrawer
+        isOpen={dialogsState.addMeal}
+        onClose={() => handleDialogIsOpenState('addMeal', false)}
+        sectionID={id}
+        allMeals={allMeals}
+      />
+      <RemoveSectionDialog
+        isOpen={dialogsState.removeSection}
+        onClose={() => handleDialogIsOpenState('removeSection', false)}
+        sectionInfo={sectionInfo}
+      />
+      <EditSectionTitleDrawer
+        isOpen={dialogsState.editSectionTitle}
+        onClose={() => handleDialogIsOpenState('editSectionTitle', false)}
+        sectionID={sectionInfo.docID}
+      />
+      <EditPricesDrawer
+        isOpen={dialogsState.prices}
+        onClose={() => handleDialogIsOpenState('prices', false)}
+        sectionInfo={sectionInfo}
+        mealInfo={selectedMealInfo}
+      />
+
+      <RemoveMealDialog
+        isOpen={dialogsState.removeMeal}
+        onClose={() => handleDialogIsOpenState('removeMeal', false)}
+        sectionInfo={sectionInfo}
+        mealInfo={selectedMealInfo}
+      />
     </>
   );
 }

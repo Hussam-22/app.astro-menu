@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { m } from 'framer-motion';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
@@ -11,7 +10,6 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useSettingsContext } from 'src/components/settings';
 import MealTranslation from 'src/sections/meal/meal-translation';
 import MealNewEditForm from 'src/sections/meal/meal-new-edit-form';
-import getVariant from 'src/sections/_examples/extra/animate-view/get-variant';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 
 function MealManageView() {
@@ -29,6 +27,8 @@ function MealManageView() {
     queryKey: [`meal-${mealID}`],
     queryFn: () => fsGetMeal(mealID),
   });
+
+  console.log('CHECK DELETE');
 
   const TABS = [
     {
@@ -87,8 +87,8 @@ function MealManageView() {
               return (
                 isMatched && (
                   <Box
-                    component={m.div}
-                    {...getVariant('fadeInRight')}
+                    // component={m.div}
+                    // {...getVariant('fadeInRight')}
                     key={tab.value}
                     id={tab.value}
                   >
