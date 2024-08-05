@@ -409,7 +409,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   const fsUpdateBusinessProfile = useCallback(
     async (
       payload,
@@ -586,7 +585,7 @@ export function AuthProvider({ children }) {
 
     // return translations;
   }, []);
-  const createDefaults = useCallback(async (businessProfileID, defaultLanguage) => {
+  const createDefaults = useCallback(async (businessProfileID) => {
     // create defaults for new users, default plan = 'Trial'
 
     // 1- ADD MEAL LABELS
@@ -630,7 +629,12 @@ export function AuthProvider({ children }) {
       DEFAULT_MENU_SECTIONS.map(async (section, order) => {
         const sectionMeals = meals
           .filter((item) => item.meal.section === section)
-          .map((meal) => meal.id);
+          .map((meal) => ({
+            docID: meal.docID,
+            isActive: true,
+            portions: meal.portions,
+            isNew: meal.isNew,
+          }));
 
         menus.map(async (menu) =>
           fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
@@ -1133,6 +1137,7 @@ export function AuthProvider({ children }) {
   );
   const fsGetAllMenus = useCallback(
     async (businessProfileID = state.user.businessProfileID) => {
+      console.log(businessProfileID);
       const docRef = query(
         collectionGroup(DB, 'menus'),
         where('businessProfileID', '==', businessProfileID),
@@ -1141,6 +1146,9 @@ export function AuthProvider({ children }) {
 
       const dataArr = [];
       const querySnapshot = await getDocs(docRef);
+
+      console.log(querySnapshot);
+
       querySnapshot.forEach((doc) => dataArr.push(doc.data()));
       return dataArr;
     },

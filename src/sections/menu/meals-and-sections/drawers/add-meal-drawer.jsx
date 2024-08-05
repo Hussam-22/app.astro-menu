@@ -142,9 +142,9 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
     },
   });
 
-  const handleAddMealToSection = (meal) => {
-    const menuMeals = menuInfo?.meals;
+  console.log(error);
 
+  const handleAddMealToSection = (meal) => {
     if (currentSectionMeals.map((sectionMeal) => sectionMeal.docID).includes(meal.docID)) {
       // remove meal from section
       const filteredMeals = currentSectionMeals.find(
@@ -155,11 +155,9 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
       );
 
       mutate(async () => {
-        const updateMeals = menuMeals.filter((menuMeal) => menuMeal !== meal.docID);
         await fsUpdateSection(menuInfo.docID, sectionID, {
           meals: updatedMeals,
         });
-        await fsUpdateMenu({ ...menuInfo, meals: updateMeals });
         await delay(100);
       });
     }
@@ -167,11 +165,9 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
     if (!currentSectionMeals.map((sectionMeal) => sectionMeal.docID).includes(meal.docID)) {
       // add meal to section
       mutate(async () => {
-        const updateMeals = [...menuMeals, meal.docID];
         await fsUpdateSection(menuInfo.docID, sectionID, {
           meals: [...currentSectionMeals, meal],
         });
-        await fsUpdateMenu({ ...menuInfo, meals: updateMeals });
         await delay(100);
       });
     }
