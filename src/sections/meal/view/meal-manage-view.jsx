@@ -28,6 +28,8 @@ function MealManageView() {
     queryFn: () => fsGetMeal(mealID),
   });
 
+  console.log('CHECK DELETE');
+
   const TABS = [
     {
       value: 'Menu Info',

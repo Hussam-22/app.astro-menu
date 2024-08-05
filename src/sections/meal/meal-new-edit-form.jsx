@@ -24,6 +24,7 @@ import {
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
+import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import MealPortionAdd from 'src/sections/meal/meal-portion-add';
 import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
@@ -65,7 +66,7 @@ function MealNewEditForm({ mealInfo }) {
       isNew: mealInfo?.isNew || false,
       mealLabels: mealInfo?.mealLabels || [],
       portions: mealInfo?.portions || [],
-      isActive: !!mealInfo?.isActive,
+      isActive: mealInfo?.isActive !== false,
       imageFile: mealInfo?.cover || null,
       cover: mealInfo?.cover,
     }),
@@ -136,16 +137,29 @@ function MealNewEditForm({ mealInfo }) {
 
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
-    onSuccess: () => {
+    onSuccess: (mutationReturnValue) => {
+      queryClient.invalidateQueries(['sections']);
+      queryClient.invalidateQueries(['section']);
       queryClient.invalidateQueries(['meals']);
-      queryClient.invalidateQueries(['meal', mealInfo.docID]);
+
       if (values.isActive === false) queryClient.invalidateQueries(['menu']);
+
+      if (!mealInfo?.docID) {
+        enqueueSnackbar('Meal Saved successfully!');
+      } else {
+        if (mutationReturnValue === 'DELETE') enqueueSnackbar('Meal Deleted successfully!');
+        if (mutationReturnValue !== 'DELETE') {
+          queryClient.invalidateQueries(['meal', mealInfo.docID]);
+          enqueueSnackbar('Meal Updated successfully!');
+        }
+      }
     },
   });
 
   const onSubmit = async (data) => {
     if (mealInfo?.docID) {
-      mutate(() =>
+      mutate(async () => {
+        await delay(1000);
         fsUpdateMeal(
           {
             ...data,
@@ -155,23 +169,26 @@ function MealNewEditForm({ mealInfo }) {
             lastUpdatedAt: new Date(),
           },
           dirtyFields.imageFile
-        )
-      );
+        );
+      });
       reset(data);
       // remove meal from all menus when disabled
       if (data.isActive === false) mutate(() => fsRemoveMealFromAllSections(mealInfo.docID));
     }
 
-    if (!mealInfo?.docID) {
-      mutate(() => fsAddNewMeal(data));
-      router.push(paths.dashboard.meal.list);
-    }
-    reset(data);
-    enqueueSnackbar('Meal Saved successfully!');
+    if (!mealInfo?.docID)
+      mutate(async () => {
+        await delay(100);
+        await fsAddNewMeal(data);
+        router.push(paths.dashboard.meal.list);
+      });
   };
 
   const handleDeleteMeal = () => {
-    mutate(() => fsDeleteMeal(mealInfo.docID));
+    mutate(() => {
+      fsDeleteMeal(mealInfo.docID);
+      return 'DELETE';
+    });
     setTimeout(() => {
       router.push(paths.dashboard.meal.list);
     }, 1000);
@@ -234,10 +251,7 @@ function MealNewEditForm({ mealInfo }) {
                     Add New Meal Label
                   </Button>
                 </Stack>
-                <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-                  {`Empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
-                </Typography>
-                <Divider sx={{ mt: 1, border: `dashed 1px ${theme.palette.divider}` }} />
+
                 <Box
                   sx={{
                     display: 'grid',
@@ -265,6 +279,10 @@ function MealNewEditForm({ mealInfo }) {
                     {errors?.mealLabels?.message}
                   </Typography>
                 )}
+                <Divider sx={{ mb: 1, border: `dashed 1px ${theme.palette.divider}` }} />
+                <Typography variant="body2">
+                  {`Empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
+                </Typography>
               </Card>
 
               <MealPortionAdd />
@@ -295,9 +313,9 @@ function MealNewEditForm({ mealInfo }) {
                     sx={{ px: 1 }}
                   >
                     <Stack direction="column">
-                      <Typography sx={{ fontWeight: 500 }}>Whats the Meal Status?</Typography>
+                      <Typography sx={{ fontWeight: 500 }}>Meal Status</Typography>
                       <Typography variant="caption">
-                        Disabling the meal will remove it from all menus
+                        Disabling the meal will hide it from all menus (Customers View)
                       </Typography>
                     </Stack>
                     <RHFSwitch
@@ -307,29 +325,26 @@ function MealNewEditForm({ mealInfo }) {
                     />
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    sx={{
-                      bgcolor: 'secondary.main',
-                      borderRadius: 0.5,
-                      py: 1,
-                      px: 2,
-                    }}
-                  >
-                    <Stack direction="column">
-                      <Typography
-                        color="error"
-                        sx={{ fontWeight: theme.typography.fontWeightBold }}
-                      >
-                        Delete Meal
-                      </Typography>
-                      <Typography variant="caption" color="white">
-                        Deleting the meal will completely remove it from the system and all menus
-                      </Typography>
-                    </Stack>
-                    {mealInfo?.docID && (
+                  {mealInfo?.docID && (
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      sx={{
+                        px: 1,
+                      }}
+                    >
+                      <Stack direction="column">
+                        <Typography
+                          color="error"
+                          sx={{ fontWeight: theme.typography.fontWeightBold }}
+                        >
+                          Delete Meal
+                        </Typography>
+                        <Typography variant="caption">
+                          Deleting the meal will completely remove it from the system and all menus
+                        </Typography>
+                      </Stack>
                       <LoadingButton
                         loading={isPending}
                         variant="contained"
@@ -339,8 +354,8 @@ function MealNewEditForm({ mealInfo }) {
                       >
                         Delete Meal
                       </LoadingButton>
-                    )}
-                  </Stack>
+                    </Stack>
+                  )}
                 </Stack>
               </Card>
             </Stack>

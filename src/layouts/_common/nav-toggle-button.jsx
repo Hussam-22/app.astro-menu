@@ -5,7 +5,6 @@ import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 
 // theme
-import { bgBlur } from 'src/theme/css';
 // components
 import Iconify from 'src/components/iconify';
 // hooks
@@ -36,15 +35,14 @@ export default function NavToggleButton({ sx, ...other }) {
       }
       sx={{
         p: 0.5,
-        top: 32,
+        top: '50%',
+        transform: 'translateY(-50%)',
         position: 'fixed',
         left: NAV.W_VERTICAL - 12,
         zIndex: theme.zIndex.appBar + 1,
         border: `dashed 1px ${theme.palette.divider}`,
-        ...bgBlur({ opacity: 0.48, color: theme.palette.primary.main }),
-        '&:hover': {
-          bgcolor: 'primary.main',
-        },
+        bgcolor: 'secondary.main',
+        ':hover': { bgcolor: 'secondary.main' },
         ...sx,
       }}
       {...other}

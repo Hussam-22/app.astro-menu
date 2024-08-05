@@ -50,8 +50,13 @@ export default function NavMini() {
     >
       <NavToggleButton
         sx={{
-          top: 22,
+          p: 0.5,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          position: 'fixed',
           left: NAV.W_MINI - 12,
+          bgcolor: 'secondary.main',
+          ':hover': { bgcolor: 'secondary.main' },
         }}
       />
 

@@ -1137,7 +1137,6 @@ export function AuthProvider({ children }) {
   );
   const fsGetAllMenus = useCallback(
     async (businessProfileID = state.user.businessProfileID) => {
-      console.log(businessProfileID);
       const docRef = query(
         collectionGroup(DB, 'menus'),
         where('businessProfileID', '==', businessProfileID),
@@ -1146,8 +1145,6 @@ export function AuthProvider({ children }) {
 
       const dataArr = [];
       const querySnapshot = await getDocs(docRef);
-
-      console.log(querySnapshot);
 
       querySnapshot.forEach((doc) => dataArr.push(doc.data()));
       return dataArr;
@@ -1434,19 +1431,13 @@ export function AuthProvider({ children }) {
   // ------------------------- Meals --------------------------------
   const fsAddNewMeal = useCallback(
     async (mealInfo, businessProfileID = state.user.businessProfileID) => {
-      const date = new Date();
-      const dateTime = date.toDateString();
-
       const newDocRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/meals/`));
-
       const { imageFile, ...mealData } = mealInfo;
-
-      console.log({ imageFile, ...mealData });
 
       await setDoc(newDocRef, {
         ...mealData,
         docID: newDocRef.id,
-        lastUpdatedAt: dateTime,
+        lastUpdatedAt: new Date(),
         businessProfileID,
         isDeleted: false,
       });
@@ -1457,6 +1448,7 @@ export function AuthProvider({ children }) {
         businessProfileID,
       });
 
+      console.log(imageFile);
       if (imageFile) {
         const storageRef = ref(
           STORAGE,
@@ -1488,7 +1480,7 @@ export function AuthProvider({ children }) {
         );
 
         const updateMealData = imageFile && imageIsDirty ? { ...mealData, cover: '' } : mealData;
-        await updateDoc(docRef, updateMealData);
+        await updateDoc(docRef, { ...updateMealData, lastUpdatedAt: new Date() });
 
         if (imageFile && imageIsDirty) {
           const storageRef = ref(
@@ -1540,8 +1532,8 @@ export function AuthProvider({ children }) {
       querySnapshot.forEach((element) => {
         const asyncOperation = async () => {
           try {
-            if (element.data().cover) dataArr.push(element.data());
-            if (!element.data().cover) {
+            if (element.data().cover.startsWith('http')) dataArr.push(element.data());
+            if (!element.data().cover.startsWith('http')) {
               const bucket = `${businessProfileID}/meals/${element.data().docID}`;
               const cover = await fsGetImgDownloadUrl(
                 bucket,
@@ -1572,7 +1564,7 @@ export function AuthProvider({ children }) {
         if (docSnap.data()?.translation === '' || docSnap?.data()?.translation === undefined)
           throw new Error('NO Translation Found!!');
 
-        if (!docSnap.data().cover) {
+        if (!docSnap.data().cover.startsWith('http')) {
           const bucketPath = `${businessProfileID}/meals/${mealID}`;
           const imgUrl = await fsGetImgDownloadUrl(bucketPath, `${mealID}_${size}.webp`);
           return {
@@ -1594,6 +1586,31 @@ export function AuthProvider({ children }) {
       try {
         const docRef = doc(DB, `/businessProfiles/${state.user.businessProfileID}/meals/`, mealID);
         await deleteDoc(docRef);
+
+        // the mealsQueryArray is used to query for documents in firestore more efficiently as it is an array of mealIDs and firestore cant query for array of objects
+        const docsRef = query(
+          collectionGroup(DB, 'sections'),
+          where('businessProfileID', '==', state.user.businessProfileID),
+          where('mealsQueryArray', 'array-contains', mealID)
+        );
+        const querySnapshot = await getDocs(docsRef);
+        const asyncOperations = [];
+
+        querySnapshot.forEach((element) => {
+          const asyncOperation = async () => {
+            const { meals, mealsQueryArray } = element.data();
+            const updatedMealsQueryArray = mealsQueryArray.filter((meal) => meal !== mealID);
+            const updatedMeals = meals.filter((meal) => meal.docID !== mealID);
+
+            await updateDoc(element.ref, {
+              meals: [...updatedMeals],
+              mealsQueryArray: [...updatedMealsQueryArray],
+            });
+          };
+          asyncOperations.push(asyncOperation());
+        });
+
+        await Promise.allSettled(asyncOperations);
 
         const bucketPath = `${BUCKET}/${state.user.businessProfileID}/meals/${mealID}/`;
         await fsDeleteImage(bucketPath, `${mealID}_200x200.webp`);

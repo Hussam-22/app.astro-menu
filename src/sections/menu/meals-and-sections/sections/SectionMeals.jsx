@@ -4,7 +4,6 @@ import { useParams } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
-  Box,
   Card,
   Stack,
   Button,
@@ -197,10 +196,16 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
 
         <Stack spacing={1} sx={{ p: 2 }} divider={<Divider sx={{ borderStyle: 'dashed' }} />}>
           {sectionMeals.length === 0 && (
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              Please add meals from the top right corner action button
-              <Iconify icon="mdi:hamburger-plus" width={22} height={22} sx={{ ml: 1 }} />
-            </Box>
+            <Stack direction="row" alignItems="center" justifyContent="center">
+              <Typography>Add meals to section</Typography>
+              <IconButton
+                sx={{ color: 'common.alternative' }}
+                size="small"
+                onClick={() => handleDialogIsOpenState('addMeal', true)}
+              >
+                <Iconify icon="mdi:hamburger-plus" width={22} height={22} />
+              </IconButton>
+            </Stack>
           )}
 
           {sectionMeals

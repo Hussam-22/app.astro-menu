@@ -72,9 +72,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
       >
         <Logo />
         <Stack direction="column">
-          <Typography color="primary" sx={{ fontWeight: '700', lineHeight: 1 }}>
-            Astro-Menu
-          </Typography>
+          <Typography sx={{ fontWeight: '700', lineHeight: 1 }}>Astro-Menu</Typography>
           <Typography variant="caption" color="text.secondary">
             Admin Dashboard
           </Typography>

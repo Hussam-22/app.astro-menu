@@ -181,6 +181,7 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
       mutate(async () => {
         await fsUpdateSection(menuInfo.docID, sectionID, {
           meals: updatedMeals,
+          mealsQueryArray: updatedMeals.map((mealItem) => mealItem.docID),
         });
         await delay(100);
       });
@@ -191,6 +192,7 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
       mutate(async () => {
         await fsUpdateSection(menuInfo.docID, sectionID, {
           meals: [...currentSectionMeals, meal],
+          mealsQueryArray: [...currentSectionMeals.map((mealItem) => mealItem.docID), meal.docID],
         });
         await delay(100);
       });

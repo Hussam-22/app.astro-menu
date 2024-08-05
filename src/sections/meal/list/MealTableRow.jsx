@@ -3,8 +3,8 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { Stack, TableRow, TableCell, Typography, CircularProgress } from '@mui/material';
 
-import Image from 'src/components/image';
 import Label from 'src/components/label';
+import Image from 'src/components/image';
 
 MealTableRow.propTypes = {
   row: PropTypes.object,
