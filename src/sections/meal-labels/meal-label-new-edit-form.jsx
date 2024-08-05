@@ -30,7 +30,18 @@ export default function MealLabelNewEditForm({ onClose, mealID }) {
   const NewMealSchema = Yup.object().shape({
     title: Yup.string()
       .required('Title is required')
-      .notOneOf([...mealLabelsList.map((label) => label.title.toLowerCase())]),
+      .notOneOf(
+        mealLabelsList.map((label) => label.title),
+        'Label already exists'
+      )
+      .test('unique-title', 'Label already exists', (value) => {
+        const existingTitles = mealLabelsList.map((label) => label.title.toLowerCase());
+        return !existingTitles.includes(value.toLowerCase());
+      }),
+    // .test('unique-title', 'Label already exists', function (value) {
+    //   const existingLabels = mealLabelsList.map((label) => label.title.toLowerCase());
+    //   return !existingLabels.includes(value.toLowerCase());
+    // }),
   });
 
   const defaultValues = {
