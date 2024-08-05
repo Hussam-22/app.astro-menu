@@ -261,18 +261,28 @@ function MealNewEditForm({ mealInfo }) {
                     mb: 1.5,
                   }}
                 >
-                  {mealLabelsList
-                    .filter((label) => label.isActive)
-                    .map((label) => (
+                  {mealLabelsList.map((label) => (
+                    <Box sx={{ position: 'relative', width: 1 }} key={label.docID}>
+                      {!label.isActive && (
+                        <Iconify
+                          icon="fe:disabled"
+                          sx={{
+                            position: 'absolute',
+                            color: 'error.main',
+                          }}
+                        />
+                      )}
                       <Button
-                        key={label.docID}
                         variant={selectedMealLabels.includes(label.docID) ? 'soft' : 'soft'}
                         color={selectedMealLabels.includes(label.docID) ? 'primary' : 'inherit'}
                         onClick={() => handleAddTag(label)}
+                        disabled={!label.isActive}
+                        fullWidth
                       >
                         {label.title.toLowerCase()}
                       </Button>
-                    ))}
+                    </Box>
+                  ))}
                 </Box>
                 {errors.mealLabels !== '' && (
                   <Typography variant="caption" color="error">

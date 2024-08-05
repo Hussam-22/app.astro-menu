@@ -1691,7 +1691,7 @@ export function AuthProvider({ children }) {
         );
         await updateDoc(docRef, payload);
 
-        return updatedAffectedMeals(payload.docID);
+        // return updatedAffectedMeals(payload.docID);
       } catch (error) {
         throw error;
       }

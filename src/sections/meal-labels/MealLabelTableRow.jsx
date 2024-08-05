@@ -5,11 +5,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Stack,
   Switch,
+  Tooltip,
   Divider,
   TableRow,
   TableCell,
-  Typography,
   IconButton,
+  Typography,
   CircularProgress,
 } from '@mui/material';
 
@@ -30,9 +31,12 @@ export default function MealLabelTableRow({ row }) {
   const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: (mealIDs) => {
-      const affectedMealsIDs = mealIDs.map((mealID) => `meal-${mealID}`);
-      const queryKeys = ['meal-labels', 'meals', ...affectedMealsIDs];
-      queryClient.invalidateQueries(queryKeys);
+      // const affectedMealsIDs = mealIDs.map((mealID) => `meal-${mealID}`);
+      // const queryKeys = ['meal-labels', 'meals', ...affectedMealsIDs];
+      // queryClient.invalidateQueries(queryKeys);
+      queryClient.invalidateQueries(['meal-labels']);
+      queryClient.invalidateQueries(['meals']);
+      queryClient.invalidateQueries(['meal']);
       enqueueSnackbar('Label Updated Successfully!');
     },
   });
@@ -84,7 +88,9 @@ export default function MealLabelTableRow({ row }) {
           {isPending ? (
             <CircularProgress size={20} />
           ) : (
-            <Switch checked={row.isActive} aria-label="Status" onClick={onStatusChangeHandler} />
+            <Tooltip title="disabling the label will remove it from all meals, this is helpful if you want to temporary stop using this meal label and hide it from customers">
+              <Switch checked={row.isActive} aria-label="Status" onClick={onStatusChangeHandler} />
+            </Tooltip>
           )}
 
           <IconButton onClick={onDeleteLabelHandler}>
