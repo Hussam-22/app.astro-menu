@@ -1,23 +1,26 @@
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
+import { useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   Box,
   Stack,
-  Drawer,
   Avatar,
+  Drawer,
   Divider,
   Skeleton,
-  Typography,
+  TextField,
   IconButton,
+  Typography,
   CircularProgress,
 } from '@mui/material';
 
+import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
+import { delay } from 'src/utils/promise-delay';
 // _mock
 import { useAuthContext } from 'src/auth/hooks';
-import { delay } from 'src/utils/promise-delay';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +35,7 @@ function AddMealDrawer({ onClose, isOpen, sectionID, allMeals }) {
   const { id: menuID } = useParams();
   const { menuSections, fsGetMenu } = useAuthContext();
   const queryClient = useQueryClient();
+  const [searchKeyword, setSearchKeyword] = useState('');
 
   const { data: menuInfo = {} } = useQuery({
     queryKey: ['menu', menuID],
@@ -56,26 +60,48 @@ function AddMealDrawer({ onClose, isOpen, sectionID, allMeals }) {
         .includes(meal.docID) && meal.isActive
   );
 
+  const filteredMeals = useMemo(
+    () =>
+      sectionAvailableMeals.filter((meal) =>
+        meal.title.toLowerCase().includes(searchKeyword.toLowerCase())
+      ),
+    [searchKeyword, sectionAvailableMeals]
+  );
+
   return (
     <Drawer
       anchor="right"
       open={isOpen}
-      onClose={() => onClose()}
+      onClose={() => {
+        setSearchKeyword('');
+        onClose();
+      }}
       PaperProps={{
         sx: { borderRadius: '25px 0 0 25px', width: '25%' },
       }}
     >
       <Box sx={{ bgcolor: 'secondary.main', p: 2 }}>
+        <Typography variant="caption" color="white">
+          Add Meals to Section
+        </Typography>
         <Typography variant="h6" color="primary">
           {currentSectionInfo?.title}
         </Typography>
       </Box>
 
-      {sectionAvailableMeals.length === 0 && (
-        <Typography variant="body1">
-          All Meals are selected by other sections
-          <Iconify icon="ic:twotone-error" width={22} height={22} sx={{ ml: 1 }} />
-        </Typography>
+      <TextField
+        label="Search Meals"
+        sx={{ mx: 2, mt: 2 }}
+        onChange={(e) => setSearchKeyword(e.target.value)}
+      />
+
+      {filteredMeals.length === 0 && (
+        <Stack spacing={2} alignItems="center" justifyContent="center" sx={{ p: 2 }}>
+          <Image src="/assets/illustrations/dashboard/cutlery-fork.svg" width={140} />
+          <Typography variant="overline" sx={{ textAlign: 'center' }}>
+            All Meals are selected by other sections or your search returned nothing
+          </Typography>
+        </Stack>
       )}
       <Stack
         direction="column"
@@ -86,7 +112,7 @@ function AddMealDrawer({ onClose, isOpen, sectionID, allMeals }) {
         }
       >
         {queryClient.isMutating(['sections', menuInfo.docID]) !== 0 &&
-          [...Array(sectionAvailableMeals.length)].map((_, index) => (
+          [...Array(filteredMeals.length)].map((_, index) => (
             <Stack
               direction="row"
               key={index}
@@ -102,7 +128,7 @@ function AddMealDrawer({ onClose, isOpen, sectionID, allMeals }) {
             </Stack>
           ))}
         {queryClient.isMutating(['sections', menuInfo.docID]) === 0 &&
-          sectionAvailableMeals
+          filteredMeals
             .sort((a, b) => a.title.localeCompare(b.title))
             .map((meal) => (
               <Box key={meal.docID}>
@@ -141,8 +167,6 @@ function MealRow({ mealInfo, currentSectionMeals, menuInfo, sectionID }) {
       queryClient.invalidateQueries(['menu', menuInfo.docID]);
     },
   });
-
-  console.log(error);
 
   const handleAddMealToSection = (meal) => {
     if (currentSectionMeals.map((sectionMeal) => sectionMeal.docID).includes(meal.docID)) {

@@ -152,7 +152,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
                 )}
                 {menusList.length !== 1 && (
                   <Typography variant="caption">
-                    {`You must specify the 'Revert to Menu' to delete this menu, QRs across all
+                    {`You need to specify the 'Revert to Menu' to delete this menu, QRs across all
                   branches using `}
                     <Label variant="soft" color="primary">
                       {menuInfo.title}
