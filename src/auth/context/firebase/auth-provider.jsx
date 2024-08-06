@@ -1728,32 +1728,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
-<<<<<<< HEAD
-=======
-        console.log('test vercel');
-
-        const docRef = query(
-          collectionGroup(DB, 'meals'),
-          where('businessProfileID', '==', businessProfileID),
-          where('docID', 'in', menuMeals),
-          where('isDeleted', '==', false),
-          where('isActive', '==', true),
-          where('orderCount', '>', 0),
-          orderBy('orderCount', 'desc'),
-          limit(limitCount)
-        );
-        const querySnapshot = await getDocs(docRef);
-
-        return querySnapshot.docs.map((doc) => doc.data().docID);
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
-    },
-    [state]
-  );
->>>>>>> 91c0a8c8339d48ab725c9c4c8a68923dbc0243fb
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsInitiateNewOrder = useCallback(async (payload) => {
     const { tableID, menuID, staffID, businessProfileID, branchID, initiatedBy } = payload;
