@@ -148,11 +148,11 @@ exports.fbTranslateKeyword = functions.https.onCall(async () => {
   const keywords = [
     'most ordered meals',
     'new',
-    'out of stock',
+    'unavailable',
     'add',
     'add meal',
     'close',
-    'bill',
+    'view order',
     'menu',
     'home',
     'reset',
