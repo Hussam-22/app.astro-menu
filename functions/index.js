@@ -168,6 +168,7 @@ exports.fbTranslateKeyword = functions.https.onCall(async () => {
     'provided by',
     'table',
     'filter',
+    'your table will be attended shortly',
   ];
 
   // const tasks = keywords.map(async (keyword) => ({
