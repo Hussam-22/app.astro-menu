@@ -224,6 +224,12 @@ export function AuthProvider({ children }) {
   const fbTranslateMeal = httpsCallable(FUNCTIONS, 'fbTranslateMeal');
   const fbTranslateBranchDesc = httpsCallable(FUNCTIONS, 'fbTranslateBranchDesc');
   const fbTranslateMealLabelTitle = httpsCallable(FUNCTIONS, 'fbTranslateMealLabelTitle');
+  const fbTranslateKeyword = httpsCallable(FUNCTIONS, 'fbTranslateKeyword');
+
+  // useEffect(() => {
+  //   (async () => fbTranslateKeyword(KEYWORDS))();
+  // }, []);
+
   // ------------------------ Image Handling ----------------------
   const fsGetImgDownloadUrl = useCallback(async (bucketPath, imgID) => {
     // eslint-disable-next-line no-useless-catch

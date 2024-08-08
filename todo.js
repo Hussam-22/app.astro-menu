@@ -54,7 +54,8 @@
 ? Meals
 /- Translate Meal Portions (Not feasible as it will require a lot of work)
 /- Remove "gram"
-- Think about meal price and how will affecting branches from different countries
+/- Think about meal price and how will affecting branches from different countries (Each menu now can have different pricing sets for the same meal)
+- Make "Description" optional field and check translation
 
 ? Business Profile
 - Add sub users
