@@ -1086,6 +1086,26 @@ export function AuthProvider({ children }) {
 
       await updateDoc(docRef, updateMealData);
 
+      if (!documentData.showCallWaiterBtn) {
+        // mute all orders in branch
+        const batch = writeBatch(DB);
+        const orderRef = query(
+          collectionGroup(DB, 'orders'),
+          where('businessProfileID', '==', businessProfileID),
+          where('branchID', '==', branchData.docID),
+          where('isPaid', '==', false),
+          where('isCanceled', '==', false),
+          where('callWaiter', '==', true)
+        );
+        const ordersSnapshot = await getDocs(orderRef);
+        ordersSnapshot.forEach((order) => {
+          const orderRef = order.ref;
+          batch.update(orderRef, { callWaiter: false });
+        });
+
+        batch.commit();
+      }
+
       if (shouldUpdateCover) {
         const storageRef = ref(
           STORAGE,

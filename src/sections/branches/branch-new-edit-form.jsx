@@ -20,13 +20,9 @@ import { fData } from 'src/utils/format-number';
 import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
+import SettingSwitch from 'src/components/settings-components/setting-switch';
 import BranchSocialLinks from 'src/sections/branches/components/BranchSocialLinks';
-import FormProvider, {
-  RHFSelect,
-  RHFSwitch,
-  RHFUpload,
-  RHFTextField,
-} from 'src/components/hook-form';
+import FormProvider, { RHFSelect, RHFUpload, RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 BranchNewEditForm.propTypes = {
@@ -100,6 +96,7 @@ export default function BranchNewEditForm({ branchInfo }) {
       email: branchInfo.email || '',
       number: branchInfo.number || '',
       skipKitchen: !!branchInfo?.skipKitchen,
+      showCallWaiterBtn: !!branchInfo?.showCallWaiterBtn,
 
       socialLinks: {
         facebook: branchInfo?.socialLinks?.facebook || '',
@@ -259,64 +256,38 @@ export default function BranchNewEditForm({ branchInfo }) {
                     <Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />
                   }
                 >
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
-                      <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                        Skip Kitchen
-                      </Typography>
-                      <Typography variant="caption">
-                        {`Activate "Skip Kitchen" when you want your waiter/ess to be in control of the order process. without waiting for the kitchen to confirm when the order is ready.`}
-                      </Typography>
-                    </Stack>
-                    <RHFSwitch
-                      name="skipKitchen"
-                      labelPlacement="start"
-                      label={values.skipKitchen ? `Skip` : `Don't Skip`}
-                      sx={{ alignItems: 'center' }}
-                      color="secondary"
-                    />
-                  </Stack>
+                  <SettingSwitch
+                    title="Skip Kitchen"
+                    description={`Activate "Skip Kitchen" when you want your waiter/ess to be in control of the order process. without waiting for the kitchen to confirm when the order is ready.`}
+                    label={values.skipKitchen ? `Skip` : `Don't Skip`}
+                    name="skipKitchen"
+                    isDanger={false}
+                  />
 
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
-                      <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                        Self-Order
-                      </Typography>
-                      <Typography variant="caption">
-                        Disable self-order to prevent customers from ordering directly from the
-                        menu, customers can still view the cart when the waiter adds items from
-                        their dashboard
-                      </Typography>
-                    </Stack>
-                    <RHFSwitch
-                      name="allowSelfOrder"
-                      labelPlacement="start"
-                      label={values.allowSelfOrder ? `Enabled` : `Disabled`}
-                      sx={{ alignItems: 'center' }}
-                      color="secondary"
-                    />
-                  </Stack>
+                  <SettingSwitch
+                    title="Self-Order"
+                    description="Allow customers to order directly"
+                    label={values.allowSelfOrder ? 'Active' : 'Disabled'}
+                    name="allowSelfOrder"
+                    isDanger={false}
+                  />
 
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
-                      <Typography
-                        color="error"
-                        sx={{ fontWeight: theme.typography.fontWeightBold }}
-                      >
-                        Branch Status
-                      </Typography>
-                      <Typography variant="caption">
-                        When branch is inactive, customers cant view menu and waiters cant take
-                        orders
-                      </Typography>
-                    </Stack>
-                    <RHFSwitch
-                      name="isActive"
-                      labelPlacement="start"
-                      label={values.isActive ? `Active` : `Disabled`}
-                      color="success"
-                    />
-                  </Stack>
+                  <SettingSwitch
+                    title="Show Call Waiter Button"
+                    description="Show Call Waiter Button on the QR Menu"
+                    label={values.showCallWaiterBtn ? 'Show' : 'Hide'}
+                    name="showCallWaiterBtn"
+                    isDanger={false}
+                  />
+
+                  <SettingSwitch
+                    title="Branch Status"
+                    description="When branch is inactive, customers cant view menu and waiters cant take
+                        orders"
+                    label={values.isActive ? `Active` : `Disabled`}
+                    name="isActive"
+                    isDanger
+                  />
                 </Stack>
               </Card>
             )}
@@ -326,3 +297,5 @@ export default function BranchNewEditForm({ branchInfo }) {
     </FormProvider>
   );
 }
+
+// ----------------------------------------------------------------------------
