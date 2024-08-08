@@ -54,14 +54,6 @@ import {
 
 import { AuthContext } from './auth-context';
 
-// ----------------------------------------------------------------------
-
-// NOTE:
-// We only build demo at basic level.
-// Customer will need to do some extra handling yourself if you want to extend the logic and other features...
-
-// ----------------------------------------------------------------------
-
 const THIS_MONTH = new Date().getMonth();
 const THIS_YEAR = new Date().getFullYear();
 
