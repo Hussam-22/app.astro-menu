@@ -4,6 +4,7 @@ export const KEYWORDS = [
   'unavailable',
   'add',
   'add meal',
+  'show meal',
   'close',
   'view order',
   'menu',

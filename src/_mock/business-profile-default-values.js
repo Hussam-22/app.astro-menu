@@ -403,6 +403,7 @@ export const DEFAULT_BRANCH = {
   title: 'Dubai Branch',
   wifiPassword: 'Connect@2024',
   skipKitchen: false,
+  showCallWaiterBtn: true,
 };
 
 export const DEFAULT_STAFF = (businessProfileID) => [
