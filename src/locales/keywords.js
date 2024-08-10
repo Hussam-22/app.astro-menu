@@ -27,4 +27,6 @@ export const KEYWORDS = [
   'call waiter',
   'ready to order',
   'ready to pay',
+  'preparing food',
+  'ready to serve',
 ];
