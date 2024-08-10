@@ -54,14 +54,6 @@ import {
 
 import { AuthContext } from './auth-context';
 
-// ----------------------------------------------------------------------
-
-// NOTE:
-// We only build demo at basic level.
-// Customer will need to do some extra handling yourself if you want to extend the logic and other features...
-
-// ----------------------------------------------------------------------
-
 const THIS_MONTH = new Date().getMonth();
 const THIS_YEAR = new Date().getFullYear();
 
@@ -224,6 +216,12 @@ export function AuthProvider({ children }) {
   const fbTranslateMeal = httpsCallable(FUNCTIONS, 'fbTranslateMeal');
   const fbTranslateBranchDesc = httpsCallable(FUNCTIONS, 'fbTranslateBranchDesc');
   const fbTranslateMealLabelTitle = httpsCallable(FUNCTIONS, 'fbTranslateMealLabelTitle');
+  const fbTranslateKeyword = httpsCallable(FUNCTIONS, 'fbTranslateKeyword');
+
+  // useEffect(() => {
+  //   (async () => fbTranslateKeyword(KEYWORDS))();
+  // }, []);
+
   // ------------------------ Image Handling ----------------------
   const fsGetImgDownloadUrl = useCallback(async (bucketPath, imgID) => {
     // eslint-disable-next-line no-useless-catch
@@ -1079,6 +1077,26 @@ export function AuthProvider({ children }) {
           : { ...branchData, lastUpdatedBy: businessProfileID, lastUpdatedAt: new Date() };
 
       await updateDoc(docRef, updateMealData);
+
+      if (!documentData.showCallWaiterBtn) {
+        // mute all orders in branch
+        const batch = writeBatch(DB);
+        const orderRef = query(
+          collectionGroup(DB, 'orders'),
+          where('businessProfileID', '==', businessProfileID),
+          where('branchID', '==', branchData.docID),
+          where('isPaid', '==', false),
+          where('isCanceled', '==', false),
+          where('callWaiter', '==', true)
+        );
+        const ordersSnapshot = await getDocs(orderRef);
+        ordersSnapshot.forEach((order) => {
+          const orderRef = order.ref;
+          batch.update(orderRef, { callWaiter: false });
+        });
+
+        batch.commit();
+      }
 
       if (shouldUpdateCover) {
         const storageRef = ref(
