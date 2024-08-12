@@ -56,7 +56,7 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
 
   const formattedTotalOrdersThisMonth = Number.isNaN(totalOrdersThisMonth)
     ? 0
-    : totalOrdersThisMonth;
+    : totalOrdersThisMonth.toFixed(2);
 
   const totalOrdersCountThisMonth = orders?.filter((order) => order.isPaid)?.length || 0;
   const totalScans = tableData?.statisticsSummary?.scans?.[year]?.[month] || 0;
@@ -65,8 +65,6 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
     () => menusList.find((menu) => menu.docID === tableInfo.menuID),
     [menusList, tableInfo.menuID]
   );
-
-  console.log(totalOrdersThisMonth);
 
   return (
     <Card sx={{ py: 1 }}>

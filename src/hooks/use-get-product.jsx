@@ -16,15 +16,6 @@ export function useGetProductInfo() {
   const { version } = metadata;
 
   const statusName = () => {
-    // Active: "active"
-    // Past Due: "past_due"
-    // Unpaid: "unpaid"
-    // Canceled: "canceled"
-    // Incomplete: "incomplete"
-    // Incomplete Expired: "incomplete_expired"
-    // Trialing: "trialing"
-    // Paused: "paused"
-
     if (status === 'active') {
       return 'Active';
     }

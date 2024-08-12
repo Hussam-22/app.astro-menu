@@ -29,4 +29,5 @@ export const KEYWORDS = [
   'ready to pay',
   'preparing food',
   'ready to serve',
+  'table is not accepting orders',
 ];

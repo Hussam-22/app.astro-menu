@@ -109,6 +109,7 @@ export default function BranchNewEditForm({ branchInfo }) {
         website: branchInfo?.socialLinks?.website || '',
         googleReview: branchInfo?.socialLinks?.googleReview || '',
         locationMap: branchInfo?.socialLinks?.locationMap || '',
+        other: branchInfo?.socialLinks?.other || '',
       },
     }),
     [branchInfo]

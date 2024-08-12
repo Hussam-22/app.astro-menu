@@ -22,7 +22,7 @@ export function responsiveFontSizes({ sm, md, lg }) {
   };
 }
 
-const primaryFont = 'Inter, sans-serif'; // Google Font
+const primaryFont = 'Public Sans, Vazirmatn, sans-serif'; // Google Font
 // const secondaryFont = 'CircularStd, sans-serif'; // Local Font
 
 // ----------------------------------------------------------------------

@@ -50,6 +50,7 @@
 - when switching plan to coffee cup, hide extra tables and disable them
 - when switching plan to coffee cup, remove extra languages
 - fix table order details, and use minutes instead of days for duration
+- Branch Statistics tab, calculate start period to start on the business profile subscription date start instead of 2023 for all
 
 ? Meals
 /- Translate Meal Portions (Not feasible as it will require a lot of work)

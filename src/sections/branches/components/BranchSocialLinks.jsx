@@ -21,7 +21,13 @@ function BranchSocialLinks() {
         }}
       >
         {SOCIAL_ICONS.map((item) => (
-          <SocialLinkItem key={item.value} name={item.value} label={item.name} icon={item.icon} />
+          <SocialLinkItem
+            key={item.value}
+            name={`socialLinks.${item.value}`}
+            label={item.name}
+            icon={item.icon}
+            helperText={item?.helperText}
+          />
         ))}
       </Box>
     </Box>
@@ -35,13 +41,22 @@ SocialLinkItem.propTypes = {
   name: PropTypes.string,
   label: PropTypes.string,
   icon: PropTypes.string,
+  helperText: PropTypes.string,
 };
 
-function SocialLinkItem({ name, label, icon }) {
+function SocialLinkItem({ name, label, icon, helperText }) {
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      <Iconify icon={icon} />
-      <RHFTextField name={name} label={label} />
+      <Iconify icon={icon} sx={{ width: 32, height: 32, borderRadius: 1 }} />
+
+      <Stack direction="column" flexGrow={1}>
+        <RHFTextField name={name} label={label} />
+        {helperText && (
+          <Typography variant="caption" color="secondary.main">
+            *{helperText}
+          </Typography>
+        )}
+      </Stack>
     </Stack>
   );
 }

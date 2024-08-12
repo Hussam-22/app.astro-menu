@@ -1,4 +1,10 @@
-import { format, getTime, formatDistanceToNow, formatDistanceStrict } from 'date-fns';
+import {
+  format,
+  getTime,
+  formatDistance,
+  formatDistanceToNow,
+  formatDistanceStrict,
+} from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -27,7 +33,10 @@ export function fToNow(date) {
 }
 
 export function fDistance(date1, date2) {
-  return date1 && date2 ? formatDistanceStrict(date2, date1, { unit: 'day' }) : '';
+  return date1 && date2 ? formatDistance(date2, date1, { unit: 'minute' }) : '';
+}
+export function fDistanceStrict(date1, date2) {
+  return date1 && date2 ? formatDistanceStrict(date2, date1, { unit: 'minute' }) : '';
 }
 
 export function calculateDistanceInNumbers(date1, date2) {

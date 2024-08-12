@@ -48,12 +48,6 @@ export const SOCIAL_ICONS = [
     color: '#000000',
   },
   {
-    value: 'googleReview',
-    name: 'Google Review',
-    icon: 'devicon:google',
-    color: '#000000',
-  },
-  {
     value: 'locationMap',
     name: 'Location Map',
     icon: 'logos:google-maps',
@@ -64,5 +58,12 @@ export const SOCIAL_ICONS = [
     name: 'Other',
     icon: 'ph:link-bold',
     color: '#000000',
+  },
+  {
+    value: 'googleReview',
+    name: 'Google Review',
+    icon: 'devicon:google',
+    color: '#000000',
+    helperText: 'Adding the Link will show Google Review button in menu "view order" drawer',
   },
 ];
