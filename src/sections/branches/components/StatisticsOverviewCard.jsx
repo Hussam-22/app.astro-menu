@@ -41,15 +41,22 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
     queryFn: () => fsGetAllMenus(),
   });
 
-  const totalOrdersThisMonth =
-    orders
-      ?.filter(
-        (order) =>
-          order.isPaid &&
-          new Date(order.initiationTime.seconds * 1000).getMonth() === month &&
-          new Date(order.initiationTime.seconds * 1000).getFullYear() === year
-      )
-      .reduce((accumulator, currentOrder) => accumulator + currentOrder.totalBill, 0) || 0;
+  const totalOrdersThisMonth = useMemo(
+    () =>
+      orders
+        ?.filter(
+          (order) =>
+            order?.isPaid &&
+            new Date(order.initiationTime.seconds * 1000).getMonth() === month &&
+            new Date(order.initiationTime.seconds * 1000).getFullYear() === year
+        )
+        .reduce((accumulator, currentOrder) => accumulator + +currentOrder.totalBill, 0) || 0,
+    [month, orders, year]
+  );
+
+  const formattedTotalOrdersThisMonth = Number.isNaN(totalOrdersThisMonth)
+    ? 0
+    : totalOrdersThisMonth;
 
   const totalOrdersCountThisMonth = orders?.filter((order) => order.isPaid)?.length || 0;
   const totalScans = tableData?.statisticsSummary?.scans?.[year]?.[month] || 0;
@@ -58,6 +65,8 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
     () => menusList.find((menu) => menu.docID === tableInfo.menuID),
     [menusList, tableInfo.menuID]
   );
+
+  console.log(totalOrdersThisMonth);
 
   return (
     <Card sx={{ py: 1 }}>
@@ -82,7 +91,7 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
         {tableData?.index !== 0 && (
           <OverviewCard
             title="Total Income"
-            subtitle={+totalOrdersThisMonth.toFixed(2)}
+            subtitle={formattedTotalOrdersThisMonth}
             icon="solar:money-bag-line-duotone"
           />
         )}

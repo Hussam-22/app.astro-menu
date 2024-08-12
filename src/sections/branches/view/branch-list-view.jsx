@@ -23,15 +23,14 @@ import {
   useTable,
   emptyRows,
   TableNoData,
-  TableSkeleton,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
 } from 'src/components/table';
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Menu Name', align: 'left', width: '40%' },
-  { id: 'lastUpdate', label: 'Last Update', align: 'center', width: '30%' },
+  { id: 'title', label: 'Menu Name', align: 'left', width: '35%' },
+  { id: 'lastUpdate', label: 'Last Update', align: 'center', width: '20%' },
   { id: 'selfOrder', label: 'Self-Order', align: 'center', width: '15%' },
   { id: 'skipKitchen', label: 'Skip Kitchen', align: 'center', width: '15%' },
   { id: 'status', label: 'Status', align: 'center', width: '15%' },
@@ -121,19 +120,16 @@ function BranchListView() {
               />
 
               <TableBody>
-                {(isLoading ? [...Array(rowsPerPage)] : dataFiltered)
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) =>
-                    row ? (
+                {!isLoading &&
+                  dataFiltered
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row) => (
                       <BranchTableRow
-                        key={row.docID}
+                        key={row?.docID}
                         row={row}
-                        onEditRow={() => handleEditRow(row.docID)}
+                        onEditRow={() => handleEditRow(row?.docID)}
                       />
-                    ) : (
-                      !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
-                    )
-                  )}
+                    ))}
 
                 <TableEmptyRows
                   height={60}

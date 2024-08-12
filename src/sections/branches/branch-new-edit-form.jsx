@@ -107,7 +107,8 @@ export default function BranchNewEditForm({ branchInfo }) {
         tiktok: branchInfo?.socialLinks?.tiktok || '',
         linkedin: branchInfo?.socialLinks?.linkedin || '',
         website: branchInfo?.socialLinks?.website || '',
-        // useMasterLinks: branchInfo?.socialLinks?.useMasterLinks || false,
+        googleReview: branchInfo?.socialLinks?.googleReview || '',
+        locationMap: branchInfo?.socialLinks?.locationMap || '',
       },
     }),
     [branchInfo]
