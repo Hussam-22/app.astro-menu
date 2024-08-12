@@ -17,9 +17,9 @@ export const StyledItem = styled(ListItemButton, {
     root: {
       color:
         theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.primary.light,
-      backgroundColor: alpha(theme.palette.primary.main, 0.08),
+      backgroundColor: alpha(theme.palette.primary.main, 0.16),
       '&:hover': {
-        backgroundColor: alpha(theme.palette.primary.main, 0.16),
+        backgroundColor: alpha(theme.palette.primary.main, 0.32),
       },
     },
     sub: {
