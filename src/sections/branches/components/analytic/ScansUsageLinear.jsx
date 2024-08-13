@@ -1,33 +1,32 @@
 import PropTypes from 'prop-types';
+import { useParams } from 'react-router';
 import ReactApexChart from 'react-apexcharts';
 
 import { Box, Chip, Card, Stack, useTheme, Typography, CardHeader } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { useChart } from 'src/components/chart';
+import { useGetBranchInfo } from 'src/hooks/use-get-branch-info';
 
 // ----------------------------------------------------------------------
 
 ScansUsageLinear.propTypes = {
-  branch: PropTypes.object,
-  userData: PropTypes.object,
   month: PropTypes.number,
   year: PropTypes.number,
 };
 
-export default function ScansUsageLinear({ userData, branch, month, year }) {
+export default function ScansUsageLinear({ month, year }) {
   const theme = useTheme();
+  const { id: branchID } = useParams();
   const monthLong = new Date(`${month + 1}/01/${year}`).toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric',
   });
-
-  const scanData = userData?.statisticsSummary?.branches[branch.docID]?.scans || {};
-  const totalScans =
-    userData?.statisticsSummary?.branches[branch.docID]?.scans?.[year]?.[month] || 0;
-  const totalOrders =
-    userData?.statisticsSummary?.branches[branch.docID]?.orders?.[year]?.[month] || 0;
-  const avg = (+totalScans / +totalOrders).toFixed(2) || 0;
+  const { totalScans, totalOrders, avgScanPerOrder, scanData } = useGetBranchInfo(
+    branchID,
+    year,
+    month
+  );
 
   if (totalScans === 0)
     return (
@@ -60,7 +59,7 @@ export default function ScansUsageLinear({ userData, branch, month, year }) {
         <Stack direction="row" spacing={1} sx={{ color: theme.palette.grey[500] }}>
           <Typography variant="caption">from {totalOrders} Orders</Typography>
           <Typography variant="caption">|</Typography>
-          <Typography variant="caption">Avg {avg} scan per Orders</Typography>
+          <Typography variant="caption">Avg {avgScanPerOrder} scan per Orders</Typography>
         </Stack>
 
         {Object.keys(scanData).length !== 0 && (

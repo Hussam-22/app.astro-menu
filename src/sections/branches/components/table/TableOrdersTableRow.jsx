@@ -69,9 +69,7 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
         >
           <ListItemText
             primary={docID}
-            secondary={fDateTime(new Date(initiationTime.seconds * 1000))}
             primaryTypographyProps={{ typography: 'body2', color: 'text.primary' }}
-            secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
           />
         </Link>
       </TableCell>
@@ -81,28 +79,20 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
           fDistance(new Date(initiationTime.seconds * 1000), new Date(closingTime.seconds * 1000))}
       </TableCell>
       <TableCell>
-        <Link
-          noWrap
-          variant="caption"
-          onClick={onOrderClick}
-          sx={{ color: 'text.disabled', cursor: 'pointer' }}
-        >
-          <ListItemText
-            primary={`${calculatedTotalBill || 0} 
+        <ListItemText
+          primary={`${calculatedTotalBill || 0} 
             ${branchInfo.currency}`}
-            secondary={menuInfo?.title}
-            primaryTypographyProps={{
-              typography: 'body2',
-              color: orderStatus()[0] === 'Paid' ? 'success.main' : 'text.disabled',
-            }}
-            secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
-          />
-        </Link>
+          secondary={menuInfo?.title}
+          primaryTypographyProps={{
+            typography: 'body2',
+            color: orderStatus()[0] === 'Paid' ? 'success.main' : 'text.disabled',
+          }}
+          secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
+        />
       </TableCell>
 
       <TableCell align="left">{staffInfo?.fullname || 'Self Order'} </TableCell>
       <TableCell align="left">
-        {' '}
         <Label variant="soft" color={orderStatus()[1]} sx={{ textTransform: 'capitalize' }}>
           {orderStatus()[0]}
         </Label>

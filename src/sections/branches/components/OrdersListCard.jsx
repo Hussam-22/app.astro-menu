@@ -35,9 +35,9 @@ const yearsSince2023 = new Date().getFullYear() - 2023;
 const availableYears = [...Array(yearsSince2023 + 1)].map((value, index) => 2023 + index);
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'Order #', align: 'left', width: '22%' },
-  { id: 'closingTime', label: 'Closed At', align: 'left', width: '22%' },
-  { id: 'duration', label: 'Duration', align: 'left', width: '10%' },
+  { id: 'id', label: 'Order #', align: 'left', width: '15%' },
+  { id: 'closingTime', label: 'Closed At', align: 'left', width: '20%' },
+  { id: 'duration', label: 'Duration', align: 'left', width: '15%' },
   { id: 'totalBill', label: 'Amount', align: 'left', width: '15%' },
   { id: 'staff', label: 'Waiter/ess', align: 'left', width: '20%' },
   { id: 'statusName', label: 'Status', align: 'left' },

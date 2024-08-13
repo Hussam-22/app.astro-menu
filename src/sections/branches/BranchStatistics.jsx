@@ -1,43 +1,37 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useQuery } from '@tanstack/react-query';
 
 import { Card, Grid, Stack, Typography } from '@mui/material';
 
 import { useParams } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
+import { useGetBranchInfo } from 'src/hooks/use-get-branch-info';
 import MonthYearPicker from 'src/sections/branches/components/MonthYearPicker';
-import IncomeStatistics from 'src/sections/branches/components/analytic/IncomeStatistics';
 import ScansUsageLinear from 'src/sections/branches/components/analytic/ScansUsageLinear';
-import MostOrderedMeals from 'src/sections/branches/components/analytic/MostOrderedMeals';
-import TablesOccupation from 'src/sections/branches/components/analytic/TablesOccupation';
 
 const yearsSince2023 = new Date().getFullYear() - 2023;
 const availableYears = [...Array(yearsSince2023 + 1)].map((value, index) => 2023 + index);
 
 function BranchStatistics() {
   const { id: branchID } = useParams();
-  const { fsGetBranch, businessProfile } = useAuthContext();
+  const { businessProfile } = useAuthContext();
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
+  const {
+    totalOrders,
+    totalTurnover,
+    totalTurnoverStr,
+    averageTurnover,
+    averageTurnoverStr,
+    totalScans,
+    totalIncome,
+    avgIncomePerOrder,
+    currency,
+    docID,
+  } = useGetBranchInfo(branchID, year, month);
 
   const changeMonthHandler = (value) => setMonth(+value);
   const changeYearHandler = (value) => setYear(+value);
-
-  const { data: branchInfo = {} } = useQuery({
-    queryKey: ['branch', branchID],
-    queryFn: () => fsGetBranch(branchID),
-  });
-
-  const totalOrders =
-    businessProfile.statisticsSummary.branches[branchID]?.orders[year][month] || 0;
-  const totalTurnover =
-    businessProfile.statisticsSummary.branches[branchID]?.turnover[year][month] || 0;
-  const averageTurnover = totalTurnover / totalOrders || 0;
-  const totalScans = businessProfile.statisticsSummary.branches[branchID]?.scans[year][month] || 0;
-  const totalIncome =
-    businessProfile.statisticsSummary.branches[branchID]?.income[year][month] || 0;
-  const avgIncomePerOrder = totalIncome / totalOrders || 0;
 
   return (
     <Grid container spacing={3}>
@@ -60,53 +54,31 @@ function BranchStatistics() {
         </Stack>
       </Grid>
       <SingleStatisticCard title="Total Orders" value={totalOrders} unit="Orders" />
-      <SingleStatisticCard
-        title="Tables Turnover"
-        value={totalTurnover.toFixed(2)}
-        unit="Minuets"
-      />
-      <SingleStatisticCard
-        title="Avg Table Turnover"
-        value={averageTurnover.toFixed(2)}
-        unit="Minuets"
-      />
+      <SingleStatisticCard title="Tables Turnover" value={totalTurnoverStr} unit="Minuets" />
+      <SingleStatisticCard title="Avg Table Turnover" value={averageTurnoverStr} unit="Minuets" />
 
-      <SingleStatisticCard
-        title="Total Income"
-        value={totalIncome.toFixed(2)}
-        unit={branchInfo.currency}
-      />
+      <SingleStatisticCard title="Total Income" value={totalIncome.toFixed(2)} unit={currency} />
       <SingleStatisticCard
         title="Avg Income per Order"
         value={avgIncomePerOrder.toFixed(2)}
-        unit={branchInfo.currency}
+        unit={currency}
       />
       <SingleStatisticCard title="Total Scans" value={totalScans} unit="scans" />
 
       <Grid item xs={12} md={6}>
-        <ScansUsageLinear
-          userData={businessProfile}
-          branch={branchInfo}
-          month={month}
-          year={year}
-        />
+        <ScansUsageLinear month={month} year={year} />
       </Grid>
-      <Grid item xs={12} md={6}>
+      {/* <Grid item xs={12} md={6}>
         <IncomeStatistics
           userData={businessProfile}
-          branchID={branchInfo.docID}
+          branchID={docID}
           month={month}
           year={year}
-          currency={branchInfo.currency}
+          currency={currency}
         />
       </Grid>
       <Grid item sm={12}>
-        <MostOrderedMeals
-          userData={businessProfile}
-          branch={branchInfo}
-          month={month}
-          year={year}
-        />
+        <MostOrderedMeals branch={branchInfo} month={month} year={year} />
       </Grid>
       <Grid item sm={12}>
         <TablesOccupation
@@ -115,7 +87,7 @@ function BranchStatistics() {
           month={month}
           year={year}
         />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }
