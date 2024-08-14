@@ -1,25 +1,27 @@
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
-import { Chip, Card, Stack, useTheme, Typography, CircularProgress } from '@mui/material';
+import { Chip, Card, Stack, CircularProgress } from '@mui/material';
 
-import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { useGetBranchInfo } from 'src/hooks/use-get-branch-info';
 import AnalyticsConversionRates from 'src/sections/overview/analytics/analytics-conversion-rates';
+import NoStatisticsAvailable from 'src/sections/branches/components/analytic/no-statistics-available';
 // import { AnalyticsConversionRates } from 'src/sections/@dashboard/general/analytics';
 
 // ----------------------------------------------------------------------
 
 MostOrderedMeals.propTypes = {
-  branch: PropTypes.object,
-  userData: PropTypes.object,
+  branchID: PropTypes.string,
   month: PropTypes.number,
   year: PropTypes.number,
 };
 
-export default function MostOrderedMeals({ userData, branch, month, year }) {
-  const theme = useTheme();
+export default function MostOrderedMeals({ branchID, month, year }) {
   const { fsGetAllMeals } = useAuthContext();
+  const { mealsStats } = useGetBranchInfo(branchID, year, month);
+
+  console.log(mealsStats);
 
   const monthLong = new Date(`${month + 1}/01/${year}`).toLocaleDateString('en-US', {
     month: 'long',
@@ -31,15 +33,14 @@ export default function MostOrderedMeals({ userData, branch, month, year }) {
     queryFn: () => fsGetAllMeals(),
   });
 
-  const mealsStats =
-    userData?.statisticsSummary?.branches[branch.docID]?.meals?.[year]?.[month] || {};
+  const filteredMeals = allMeals.filter((meal) => Object.keys(mealsStats).includes(meal.docID));
 
   const mealsUsage =
     !isLoading &&
-    Object.entries(mealsStats)
-      .map((item) => ({
-        label: allMeals.find((meal) => meal.docID === item[0]).title,
-        value: item[1],
+    filteredMeals
+      .map((meal) => ({
+        label: meal.title,
+        value: mealsStats[meal.docID] || 0,
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 10);
@@ -58,20 +59,7 @@ export default function MostOrderedMeals({ userData, branch, month, year }) {
       </Card>
     );
 
-  if (mealsUsage.length === 0)
-    return (
-      <Card sx={{ p: 3 }}>
-        <Stack alignItems="center" justifyContent="center" direction="row" spacing={1}>
-          <Iconify
-            icon="ph:warning-circle-light"
-            sx={{ width: 28, height: 28, color: theme.palette.text.disabled }}
-          />
-          <Typography variant="h4" sx={{ color: theme.palette.text.disabled }}>
-            No Statistics Available
-          </Typography>
-        </Stack>
-      </Card>
-    );
+  if (mealsUsage.length === 0) return <NoStatisticsAvailable />;
 
   return (
     !isLoading &&

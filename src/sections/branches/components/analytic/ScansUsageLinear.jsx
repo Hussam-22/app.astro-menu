@@ -4,9 +4,9 @@ import ReactApexChart from 'react-apexcharts';
 
 import { Box, Chip, Card, Stack, useTheme, Typography, CardHeader } from '@mui/material';
 
-import Iconify from 'src/components/iconify';
 import { useChart } from 'src/components/chart';
 import { useGetBranchInfo } from 'src/hooks/use-get-branch-info';
+import NoStatisticsAvailable from 'src/sections/branches/components/analytic/no-statistics-available';
 
 // ----------------------------------------------------------------------
 
@@ -28,26 +28,7 @@ export default function ScansUsageLinear({ month, year }) {
     month
   );
 
-  if (totalScans === 0)
-    return (
-      <Card sx={{ p: 3, height: 1 }}>
-        <Stack
-          alignItems="center"
-          justifyContent="center"
-          direction="row"
-          spacing={1}
-          sx={{ my: 'auto', height: 1 }}
-        >
-          <Iconify
-            icon="ph:warning-circle-light"
-            sx={{ width: 28, height: 28, color: theme.palette.text.disabled }}
-          />
-          <Typography variant="h4" sx={{ color: theme.palette.text.disabled }}>
-            No Statistics Available
-          </Typography>
-        </Stack>
-      </Card>
-    );
+  if (totalScans === 0) return <NoStatisticsAvailable />;
 
   return (
     <Card>

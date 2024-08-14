@@ -19,11 +19,15 @@ export function useGetBranchInfo(branchID, year, month) {
   const totalScans = businessProfile.statisticsSummary.branches[branchID]?.scans[year][month] || 0;
   const avgScanPerOrder = (totalScans / totalOrders).toFixed(0) || 0;
   const totalIncome =
-    businessProfile.statisticsSummary.branches[branchID]?.income[year][month] || 0;
+    businessProfile?.statisticsSummary.branches[branchID]?.income[year][month] || 0;
+  const allIncome = businessProfile.statisticsSummary.branches[branchID]?.income || {};
   const avgIncomePerOrder = totalIncome / totalOrders || 0;
 
+  const mealsStats =
+    businessProfile?.statisticsSummary?.branches[branchID]?.meals?.[year]?.[month] || {};
+
   const convertMinToHours = (minutes) => {
-    if (minutes < 60) return `${minutes} min`;
+    if (minutes < 60) return `${minutes.toFixed(0)} min`;
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours}h ${mins.toFixed(0)}min`;
@@ -39,7 +43,10 @@ export function useGetBranchInfo(branchID, year, month) {
     totalScans,
     avgScanPerOrder,
     totalIncome,
-    avgIncomePerOrder,
+    allIncome,
+    avgIncomePerOrder: +avgIncomePerOrder.toFixed(2),
     currency: branchInfo.currency,
+    branchInfo,
+    mealsStats,
   };
 }

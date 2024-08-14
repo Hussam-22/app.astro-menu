@@ -8,6 +8,9 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetBranchInfo } from 'src/hooks/use-get-branch-info';
 import MonthYearPicker from 'src/sections/branches/components/MonthYearPicker';
 import ScansUsageLinear from 'src/sections/branches/components/analytic/ScansUsageLinear';
+import IncomeStatistics from 'src/sections/branches/components/analytic/IncomeStatistics';
+import MostOrderedMeals from 'src/sections/branches/components/analytic/MostOrderedMeals';
+import TablesOccupation from 'src/sections/branches/components/analytic/TablesOccupation';
 
 const yearsSince2023 = new Date().getFullYear() - 2023;
 const availableYears = [...Array(yearsSince2023 + 1)].map((value, index) => 2023 + index);
@@ -54,9 +57,8 @@ function BranchStatistics() {
         </Stack>
       </Grid>
       <SingleStatisticCard title="Total Orders" value={totalOrders} unit="Orders" />
-      <SingleStatisticCard title="Tables Turnover" value={totalTurnoverStr} unit="Minuets" />
-      <SingleStatisticCard title="Avg Table Turnover" value={averageTurnoverStr} unit="Minuets" />
-
+      <SingleStatisticCard title="Tables Turnover" value={totalTurnoverStr} />
+      <SingleStatisticCard title="Avg Table Turnover" value={averageTurnoverStr} />
       <SingleStatisticCard title="Total Income" value={totalIncome.toFixed(2)} unit={currency} />
       <SingleStatisticCard
         title="Avg Income per Order"
@@ -68,26 +70,15 @@ function BranchStatistics() {
       <Grid item xs={12} md={6}>
         <ScansUsageLinear month={month} year={year} />
       </Grid>
-      {/* <Grid item xs={12} md={6}>
-        <IncomeStatistics
-          userData={businessProfile}
-          branchID={docID}
-          month={month}
-          year={year}
-          currency={currency}
-        />
+      <Grid item xs={12} md={6}>
+        <IncomeStatistics branchID={branchID} month={month} year={year} />
       </Grid>
       <Grid item sm={12}>
-        <MostOrderedMeals branch={branchInfo} month={month} year={year} />
+        <MostOrderedMeals branchID={branchID} month={month} year={year} />
       </Grid>
       <Grid item sm={12}>
-        <TablesOccupation
-          userData={businessProfile}
-          branch={branchInfo}
-          month={month}
-          year={year}
-        />
-      </Grid> */}
+        <TablesOccupation branchID={branchID} month={month} year={year} />
+      </Grid>
     </Grid>
   );
 }
