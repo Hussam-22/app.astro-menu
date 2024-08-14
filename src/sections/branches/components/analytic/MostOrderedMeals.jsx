@@ -21,8 +21,6 @@ export default function MostOrderedMeals({ branchID, month, year }) {
   const { fsGetAllMeals } = useAuthContext();
   const { mealsStats } = useGetBranchInfo(branchID, year, month);
 
-  console.log(mealsStats);
-
   const monthLong = new Date(`${month + 1}/01/${year}`).toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric',

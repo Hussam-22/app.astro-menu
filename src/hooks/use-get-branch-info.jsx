@@ -42,7 +42,7 @@ export function useGetBranchInfo(branchID, year, month) {
     averageTurnoverStr: convertMinToHours(averageTurnover),
     totalScans,
     avgScanPerOrder,
-    totalIncome,
+    totalIncome: +totalIncome.toFixed(2),
     allIncome,
     avgIncomePerOrder: +avgIncomePerOrder.toFixed(2),
     currency: branchInfo.currency,

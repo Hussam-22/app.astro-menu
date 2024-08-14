@@ -29,11 +29,14 @@ import {
 } from 'src/components/table';
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Menu Name', align: 'left', width: '35%' },
-  { id: 'lastUpdate', label: 'Last Update', align: 'center', width: '20%' },
-  { id: 'selfOrder', label: 'Self-Order', align: 'center', width: '15%' },
-  { id: 'skipKitchen', label: 'Skip Kitchen', align: 'center', width: '15%' },
-  { id: 'status', label: 'Status', align: 'center', width: '15%' },
+  { id: 'title', label: 'Menu Name', align: 'left', width: '25%' },
+  { id: 'totalOrders', label: 'Total Orders', align: 'center', width: '10%' },
+  { id: 'totalScans', label: 'Total Scans', align: 'center', width: '10%' },
+  { id: 'totalTurnover', label: 'Total Turnover', align: 'center', width: '15%' },
+  { id: 'avgTurnover', label: 'Avg Turnover', align: 'center', width: '10%' },
+  { id: 'totalIncome', label: 'Total Income', align: 'center', width: '10%' },
+  { id: 'avg', label: 'Avg Income', align: 'center', width: '10%' },
+  { id: 'status', label: 'Status', align: 'center', width: '10%' },
 ];
 
 // ----------------------------------------------------------------------

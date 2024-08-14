@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { Card, Grid, Stack, Typography } from '@mui/material';
 
 import { useParams } from 'src/routes/hook';
-import { useAuthContext } from 'src/auth/hooks';
 import { useGetBranchInfo } from 'src/hooks/use-get-branch-info';
 import MonthYearPicker from 'src/sections/branches/components/MonthYearPicker';
 import ScansUsageLinear from 'src/sections/branches/components/analytic/ScansUsageLinear';
@@ -17,20 +16,16 @@ const availableYears = [...Array(yearsSince2023 + 1)].map((value, index) => 2023
 
 function BranchStatistics() {
   const { id: branchID } = useParams();
-  const { businessProfile } = useAuthContext();
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
   const {
     totalOrders,
-    totalTurnover,
     totalTurnoverStr,
-    averageTurnover,
     averageTurnoverStr,
     totalScans,
     totalIncome,
     avgIncomePerOrder,
     currency,
-    docID,
   } = useGetBranchInfo(branchID, year, month);
 
   const changeMonthHandler = (value) => setMonth(+value);
@@ -44,7 +39,7 @@ function BranchStatistics() {
           spacing={2}
           sx={{ pl: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
         >
-          <Typography variant="h6" color="primary">
+          <Typography variant="h6" color="secondary">
             Change Period
           </Typography>
           <MonthYearPicker
@@ -100,7 +95,7 @@ function SingleStatisticCard({ title, value, unit, note }) {
       <Card sx={{ p: 2 }}>
         <Typography variant="caption">{title}</Typography>
         <Stack direction="row" spacing={1} alignItems="center">
-          <Typography variant="h5" color="primary">
+          <Typography variant="h5" color="secondary">
             {value}
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.disabled' }}>

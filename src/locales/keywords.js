@@ -31,5 +31,5 @@ export const KEYWORDS = [
   'ready to serve',
   'table is not accepting orders',
   'review us on google',
-  'special requests is disabled when adding multiple items',
+  'special request is disabled when adding multiple items',
 ];

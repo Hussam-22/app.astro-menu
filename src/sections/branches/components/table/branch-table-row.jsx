@@ -4,6 +4,7 @@ import { Stack, TableRow, TableCell, Typography, CircularProgress } from '@mui/m
 
 import Label from 'src/components/label';
 import Image from 'src/components/image';
+import { useGetBranchInfo } from 'src/hooks/use-get-branch-info';
 
 // ----------------------------------------------------------------------
 
@@ -12,10 +13,23 @@ BranchTableRow.propTypes = {
   onEditRow: PropTypes.func,
 };
 
+const year = new Date().getFullYear();
+const month = new Date().getMonth();
+
 export default function BranchTableRow({ row, onEditRow }) {
   const { title, cover, docID, isActive, allowSelfOrder, skipKitchen, lastUpdatedAt } = row;
 
   const lastUpdate = new Date(lastUpdatedAt.seconds * 1000).toLocaleString();
+
+  const {
+    totalOrders,
+    totalTurnoverStr,
+    averageTurnoverStr,
+    totalScans,
+    totalIncome,
+    avgIncomePerOrder,
+    currency,
+  } = useGetBranchInfo(docID, year, month);
 
   return (
     <TableRow hover>
@@ -45,25 +59,12 @@ export default function BranchTableRow({ row, onEditRow }) {
         </Stack>
       </TableCell>
 
-      <TableCell align="center">{lastUpdate}</TableCell>
-      <TableCell align="center">
-        <Label
-          variant="soft"
-          color={(!allowSelfOrder && 'error') || (allowSelfOrder && 'success')}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {allowSelfOrder ? 'Allow' : 'Disabled'}
-        </Label>
-      </TableCell>
-      <TableCell align="center">
-        <Label
-          variant="soft"
-          color={(skipKitchen && 'error') || (!skipKitchen && 'success')}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {skipKitchen ? 'Skip' : 'Dont Skip'}
-        </Label>
-      </TableCell>
+      <TableCell align="center">{totalOrders}</TableCell>
+      <TableCell align="center">{totalScans}</TableCell>
+      <TableCell align="center">{totalTurnoverStr}</TableCell>
+      <TableCell align="center">{averageTurnoverStr}</TableCell>
+      <TableCell align="center">{totalIncome}</TableCell>
+      <TableCell align="center">{avgIncomePerOrder}</TableCell>
       <TableCell align="center">
         <Label
           variant="soft"
