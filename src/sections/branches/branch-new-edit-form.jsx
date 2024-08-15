@@ -260,7 +260,7 @@ export default function BranchNewEditForm({ branchInfo }) {
                 >
                   <SettingSwitch
                     title="Skip Kitchen"
-                    description={`Activate "Skip Kitchen" when you want your waiter/ess to be in control of the order process. without waiting for the kitchen to confirm when the order is ready.`}
+                    description="Skip Kitchen when you want your waiter-staff to be in control of the order process. without waiting for the kitchen to confirm when the order is ready."
                     label={values.skipKitchen ? `Skip` : `Don't Skip`}
                     name="skipKitchen"
                     isDanger={false}
@@ -268,7 +268,7 @@ export default function BranchNewEditForm({ branchInfo }) {
 
                   <SettingSwitch
                     title="Self-Order"
-                    description="Allow customers to order directly"
+                    description="Allow customers to add meals to order without the help of a waiter, waiter will only be needed to confirm the order and collect payment"
                     label={values.allowSelfOrder ? 'Active' : 'Disabled'}
                     name="allowSelfOrder"
                     isDanger={false}

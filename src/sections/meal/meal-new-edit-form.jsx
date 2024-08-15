@@ -21,11 +21,13 @@ import {
   DialogContent,
 } from '@mui/material';
 
+import Label from 'src/components/label';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
-import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
+import { delay } from 'src/utils/promise-delay';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import MealPortionAdd from 'src/sections/meal/meal-portion-add';
 import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
 import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components/hook-form';
@@ -36,6 +38,7 @@ function MealNewEditForm({ mealInfo }) {
   const theme = useTheme();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { fsAddNewMeal, fsDeleteMeal, fsGetMealLabels, fsUpdateMeal, fsRemoveMealFromAllSections } =
     useAuthContext();
@@ -185,13 +188,14 @@ function MealNewEditForm({ mealInfo }) {
   };
 
   const handleDeleteMeal = () => {
-    mutate(() => {
+    mutate(async () => {
+      await delay(1000);
       fsDeleteMeal(mealInfo.docID);
       return 'DELETE';
     });
     setTimeout(() => {
       router.push(paths.dashboard.meal.list);
-    }, 1000);
+    }, 500);
   };
 
   return (
@@ -356,18 +360,18 @@ function MealNewEditForm({ mealInfo }) {
                           Delete Meal
                         </Typography>
                         <Typography variant="caption">
-                          Deleting the meal will completely remove it from the system and all menus
+                          Deleting the meal will completely remove it from the system, all menus and
+                          all its statistics will be gone. This action cannot be undone.
                         </Typography>
                       </Stack>
-                      <LoadingButton
-                        loading={isPending}
+                      <Button
                         variant="contained"
-                        onClick={handleDeleteMeal}
+                        onClick={() => setIsDeleteDialogOpen(true)}
                         color="error"
                         sx={{ whiteSpace: 'nowrap' }}
                       >
                         Delete Meal
-                      </LoadingButton>
+                      </Button>
                     </Stack>
                   )}
                 </Stack>
@@ -376,15 +380,40 @@ function MealNewEditForm({ mealInfo }) {
           </Grid>
         </Grid>
       </FormProvider>
-      {isOpen && (
-        <Dialog fullWidth maxWidth="md" open={isOpen} onClose={onClose}>
-          <DialogTitle sx={{ pb: 2 }}>Add New Meal Label</DialogTitle>
 
-          <DialogContent>
-            <MealLabelNewEditForm onClose={onClose} mealID={mealInfo?.docID} />
-          </DialogContent>
-        </Dialog>
-      )}
+      <Dialog fullWidth maxWidth="md" open={isOpen} onClose={onClose}>
+        <DialogTitle sx={{ pb: 2 }}>Add New Meal Label</DialogTitle>
+        <DialogContent>
+          <MealLabelNewEditForm onClose={onClose} mealID={mealInfo?.docID} />
+        </DialogContent>
+      </Dialog>
+
+      <ConfirmDialog
+        title="Delete Meal"
+        content={
+          <Typography sx={{ display: 'inline-block' }}>
+            Are you sure you want to delete{' '}
+            <Label variant="soft" color="error">
+              {mealInfo?.title}
+            </Label>{' '}
+            meal ?
+          </Typography>
+        }
+        action={
+          <LoadingButton
+            variant="contained"
+            onClick={handleDeleteMeal}
+            loading={isPending}
+            color="error"
+          >
+            Delete
+          </LoadingButton>
+        }
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        maxWidth="sm"
+        closeText="Close"
+      />
     </>
   );
 }

@@ -1224,6 +1224,7 @@ export function AuthProvider({ children }) {
         meals,
         order,
         isActive: true,
+        mealsQueryArray: meals.map((meal) => meal.docID),
       });
 
       fbTranslate({
@@ -1614,6 +1615,7 @@ export function AuthProvider({ children }) {
         const querySnapshot = await getDocs(docsRef);
         const asyncOperations = [];
 
+        // delete meal from section
         querySnapshot.forEach((element) => {
           const asyncOperation = async () => {
             const { meals, mealsQueryArray } = element.data();

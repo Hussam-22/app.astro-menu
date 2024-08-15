@@ -22,16 +22,17 @@
 /- Add Search meal by name field (Think about it) -- Not feasible
 - check what happens if a meal gets deleted while its in cart
 /- changing meal status causing the qr-menu to reset back to default language
-- Add scroll to "add meal" drawer when the meal is too long to fit the screen, caused by long description or too many portions
+/- Add scroll to "add meal" drawer when the meal is too long to fit the screen, caused by long description or too many portions
 - QR #0 - the QR Menu Only, should not have active listener to menu changes (this to reduce number of  firestore reads)
 - QR Menu only should show everything in the menu, no "Out of Stock" or "Not Available" meals should be shown, meal is either enabled or disabled
-!- fix menu-sections drawer gets duplicated when disabling section from "Menu > Meals and Sections" in the dashboard
+/- fix menu-sections drawer gets duplicated when disabling section from "Menu > Meals and Sections" in the dashboard
 
 ? Staff Dashboard
 /- either add "search bar" or "filter meals" drawer, or both
 /- auto login for staff
 /- "quick add" portion directly from meal card
 - show a dialog when changing meal status, stating that changing the meal to "unable to serve" will remove it from all carts immediately
+- search menu meals
 
 ? Menu
 - Fix Section Title Edit

@@ -95,7 +95,7 @@ function SingleStatisticCard({ title, value, unit, note }) {
       <Card sx={{ p: 2 }}>
         <Typography variant="caption">{title}</Typography>
         <Stack direction="row" spacing={1} alignItems="center">
-          <Typography variant="h5" color="secondary">
+          <Typography variant="h6" color="secondary">
             {value}
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.disabled' }}>
