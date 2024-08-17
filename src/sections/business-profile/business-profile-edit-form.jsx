@@ -187,7 +187,12 @@ function BusinessProfileEditForm() {
               <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
                 <RHFTextField name="businessName" label="Business Name" disabled />
                 <RHFTextField name="description" label="Description" rows={5} multiline />
-                <RHFTextField type="email" name="email" label="Business Email" disabled />
+                <RHFTextField
+                  type="email"
+                  name="email"
+                  label="Business Email (Does not show to the world)"
+                  disabled
+                />
               </Stack>
             </Stack>
           </Card>

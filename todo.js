@@ -65,6 +65,7 @@
 - add password reset link
 - add "Close account" button
 !- Fix Default Language incase the user has default language other than English
+- make sure only available languages are shown in the dropdown for the translation
 /- Adding new logo issue when navigating to another tab then coming back
 /- Upgrade/Downgrade Plan --> available in stripe
 /- Payment info --> available in stripe

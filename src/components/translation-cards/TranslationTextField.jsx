@@ -33,12 +33,13 @@ export default function TranslationTextField({
   const { fsUpdateTable, businessProfile } = useAuthContext();
   const queryClient = useQueryClient();
 
-  console.log(data);
-
-  const translationData = {
-    translated: data?.translation[languageKey]?.[field] || '',
-    editedTranslation: data?.translationEdited[languageKey]?.[field] || '',
-  };
+  const translationData = useMemo(
+    () => ({
+      translated: data?.translation[languageKey]?.[field] || '',
+      editedTranslation: data?.translationEdited[languageKey]?.[field] || '',
+    }),
+    [data, field, languageKey]
+  );
 
   const tableToUpdate = () => {
     if (location.pathname.includes('meal'))
@@ -67,12 +68,12 @@ export default function TranslationTextField({
     () => ({ [field]: translationData.editedTranslation || translationData.translated }),
     [field, translationData.editedTranslation, translationData.translated]
   );
+
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
   const {
-    setValue,
     reset,
     handleSubmit,
     formState: { isDirty },
@@ -85,40 +86,42 @@ export default function TranslationTextField({
 
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
-    onSuccess: () => {
+    onSuccess: (formData) => {
       if (tableToUpdate().table === 'meals') {
         // const queryKeys = ['meals', `meal-${id}`];
         queryClient.invalidateQueries({ queryKey: [`meal-${id}`] });
       }
 
       if (tableToUpdate().table === 'businessProfiles') {
-        queryClient.invalidateQueries({ queryKey: ['businessProfiles'] });
+        queryClient.invalidateQueries({ queryKey: ['businessProfile', data.docID] });
       }
 
       if (tableToUpdate().table === 'menu-sections') {
         queryClient.invalidateQueries({
-          queryKey: ['section', id, businessProfile.docID],
+          queryKey: ['section', data.docID, data.menuID],
         });
       }
+      reset(formData);
     },
   });
 
   const resetTranslation = () => {
-    mutate(() =>
+    mutate(async () => {
       fsUpdateTable(tableToUpdate().docRef, {
         [`translationEdited.${languageKey}.${field}`]: translationData.translated,
-      })
-    );
+      });
+    });
     reset({ [field]: translationData.translated });
     setIsRestTranslationDirty(true);
   };
 
   const onSubmit = async (formData) => {
-    mutate(async () =>
+    mutate(async () => {
       fsUpdateTable(tableToUpdate().docRef, {
         [`translationEdited.${languageKey}.${field}`]: formData[field],
-      })
-    );
+      });
+      return formData;
+    });
     reset({ [field]: translationData.translated });
   };
 

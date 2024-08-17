@@ -1,5 +1,5 @@
 import { useState } from 'react';
-// import { m } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 
 import { Box, Tab, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
@@ -14,8 +14,13 @@ import BusinessProfileTranslation from 'src/sections/business-profile/business-p
 function BusinessProfileManageView() {
   const theme = useTheme();
   const { themeStretch } = useSettingsContext();
-  const { businessProfile } = useAuthContext();
+  const { businessProfile, fsGetBusinessProfile } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Business Info');
+
+  const { data, error, isFetching, status } = useQuery({
+    queryKey: ['businessProfile', businessProfile.docID],
+    queryFn: async () => fsGetBusinessProfile(businessProfile.docID),
+  });
 
   const TABS = [
     {
@@ -26,7 +31,9 @@ function BusinessProfileManageView() {
     {
       value: 'Translation',
       icon: <Iconify icon="ph:globe-light" width={20} height={20} />,
-      component: businessProfile?.docID && <BusinessProfileTranslation />,
+      component: businessProfile?.docID && (
+        <BusinessProfileTranslation businessProfileInfo={data} />
+      ),
     },
   ];
 

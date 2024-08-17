@@ -145,7 +145,7 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
             }}
           />
           <Typography variant="caption">
-            Editing section title will overwrite current translations to match the new updated title
+            Editing section title will overwrite all translations to match the new section title
           </Typography>
         </Card>
       </FormProvider>
@@ -155,7 +155,7 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
       {!isFetching && (
         <Stack direction="column" spacing={1} sx={{ mt: 1, mx: 2 }}>
           {languageKeys
-            .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
+            .sort((a, b) => LANGUAGE_CODES[a]?.name.localeCompare(LANGUAGE_CODES[b]?.name))
             .map((key) => (
               <TranslationCard
                 languageKey={key}
