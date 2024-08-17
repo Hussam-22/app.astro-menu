@@ -21,7 +21,9 @@ export default function UploadAvatar({ error, file, disabled, helperText, sx, ..
     multiple: false,
     disabled,
     accept: {
-      'image/*': [],
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/webp': ['.webp'],
     },
     ...other,
   });

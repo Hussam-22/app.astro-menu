@@ -232,10 +232,10 @@ export default function BranchNewEditForm({ branchInfo }) {
         <Grid xs={12} md={5}>
           <RHFUpload
             name="cover"
-            maxSize={3145728}
+            maxSize={3000000}
             onDrop={handleDrop}
             onRemove={handelRemove}
-            helperText={`Allowed *.jpeg, *.jpg, *.png, *.webp | max size of ${fData(3145728)}`}
+            helperText={`Allowed *.jpeg, *.jpg, *.png, *.webp | max size of ${fData(3000000)}`}
             paddingValue="40% 0"
           />
         </Grid>

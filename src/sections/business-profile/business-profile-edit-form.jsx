@@ -161,7 +161,7 @@ function BusinessProfileEditForm() {
                 <Typography variant="overline">Business Logo</Typography>
                 <RHFUploadAvatar
                   name="logo"
-                  maxSize={3145728}
+                  maxSize={3000000}
                   onDrop={handleDrop}
                   onRemove={handelRemove}
                   helperText={
@@ -175,8 +175,8 @@ function BusinessProfileEditForm() {
                         color: 'text.disabled',
                       }}
                     >
-                      Allowed *.jpeg, *.jpg, *.png, *.gif
-                      <br /> max size of {fData(3145728)}
+                      Allowed *.jpeg, *.jpg, *.png, *.webp
+                      <br /> max size of {fData(3000000)}
                     </Typography>
                   }
                 />

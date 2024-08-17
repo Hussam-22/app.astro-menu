@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useParams, useLocation } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -30,8 +30,10 @@ export default function TranslationTextField({
 }) {
   const { id } = useParams();
   const location = useLocation();
-  const { user, fsUpdateTable, businessProfile } = useAuthContext();
+  const { fsUpdateTable, businessProfile } = useAuthContext();
   const queryClient = useQueryClient();
+
+  console.log(data);
 
   const translationData = {
     translated: data?.translation[languageKey]?.[field] || '',
@@ -40,14 +42,17 @@ export default function TranslationTextField({
 
   const tableToUpdate = () => {
     if (location.pathname.includes('meal'))
-      return { table: 'meals', docRef: `users/${user.id}/meals/${id}` };
+      return { table: 'meals', docRef: `businessProfiles/${businessProfile.docID}/meals/${id}` };
+
     if (location.pathname.includes('menu'))
       return {
         table: 'menu-sections',
-        docRef: `users/${user.id}/menus/${id}/sections/${data.docID}`,
+        docRef: `businessProfiles/${businessProfile.docID}/menus/${id}/sections/${data.docID}`,
       };
+
     if (location.pathname.includes('business-profile'))
       return { table: 'businessProfiles', docRef: `businessProfiles/${businessProfile.docID}/` };
+
     return undefined;
   };
 
@@ -73,27 +78,27 @@ export default function TranslationTextField({
     formState: { isDirty },
   } = methods;
 
-  useEffect(() => {
-    setValue(field, translationData.editedTranslation || translationData.translated);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [translationData]);
+  // useEffect(() => {
+  //   setValue(field, translationData.editedTranslation || translationData.translated);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [translationData]);
 
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       if (tableToUpdate().table === 'meals') {
-        const queryKeys = ['meals', `meal-${id}`];
-        queryClient.invalidateQueries(queryKeys);
+        // const queryKeys = ['meals', `meal-${id}`];
+        queryClient.invalidateQueries({ queryKey: [`meal-${id}`] });
       }
 
       if (tableToUpdate().table === 'businessProfiles') {
-        const queryKeys = ['businessProfiles', businessProfile.docID];
-        queryClient.invalidateQueries(queryKeys);
+        queryClient.invalidateQueries({ queryKey: ['businessProfiles'] });
       }
 
       if (tableToUpdate().table === 'menu-sections') {
-        const queryKeys = [`sections-${id}`, `menu/${id}/section/${data.docID}`];
-        queryClient.invalidateQueries(queryKeys);
+        queryClient.invalidateQueries({
+          queryKey: ['section', id, businessProfile.docID],
+        });
       }
     },
   });
@@ -109,7 +114,7 @@ export default function TranslationTextField({
   };
 
   const onSubmit = async (formData) => {
-    mutate(() =>
+    mutate(async () =>
       fsUpdateTable(tableToUpdate().docRef, {
         [`translationEdited.${languageKey}.${field}`]: formData[field],
       })

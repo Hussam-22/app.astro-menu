@@ -25,6 +25,7 @@ import Label from 'src/components/label';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
+import { fData } from 'src/utils/format-number';
 import { useAuthContext } from 'src/auth/hooks';
 import { delay } from 'src/utils/promise-delay';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -136,6 +137,7 @@ function MealNewEditForm({ mealInfo }) {
 
   const handleRemoveFile = useCallback(() => {
     setValue('imageFile', null, { isTouched: true, isFocused: true, shouldDirty: true });
+    setValue('cover', null, { isTouched: true, isFocused: true, shouldDirty: true });
   }, [setValue]);
 
   const { isPending, mutate, error } = useMutation({
@@ -228,10 +230,11 @@ function MealNewEditForm({ mealInfo }) {
 
           <Grid xs={12} sm={5}>
             <RHFUpload
-              name="imageFile"
-              maxSize={3145728}
+              name="cover"
+              maxSize={3000000}
               onDrop={handleDrop}
-              onDelete={handleRemoveFile}
+              onRemove={handleRemoveFile}
+              helperText={`Allowed *.jpeg, *.jpg, *.png, *.webp | max size of ${fData(3000000)}`}
               paddingValue="40% 0"
             />
           </Grid>

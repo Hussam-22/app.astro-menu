@@ -42,6 +42,11 @@ export default function Upload({
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     multiple,
     disabled,
+    accept: {
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/webp': ['.webp'],
+    },
     ...other,
   });
 
@@ -68,7 +73,7 @@ export default function Upload({
           >
             browse
           </Box>
-          thorough your machine
+          through your machine
         </Typography>
       </Stack>
     </Stack>

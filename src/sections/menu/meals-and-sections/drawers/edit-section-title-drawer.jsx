@@ -94,10 +94,10 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
   };
 
   const skeletonLanguageCards = (
-    <Grid container spacing={5}>
+    <Grid container spacing={1} sx={{ mt: 2 }}>
       {[...Array(languageKeys.length + 1)].map((_, index) => (
-        <Grid item xs={12} md={12} key={index}>
-          <Card sx={{ p: 3 }}>
+        <Grid item xs={12} key={index}>
+          <Card sx={{ p: 2, mx: 2 }}>
             <Stack direction="column" spacing={3}>
               <Skeleton variant="rounded" />
               <Skeleton variant="rounded" />
