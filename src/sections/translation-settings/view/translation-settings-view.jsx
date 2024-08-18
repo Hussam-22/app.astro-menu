@@ -10,8 +10,6 @@ function TranslationSettingsView() {
     queryFn: () => fsGetBusinessProfile(businessProfile.docID),
   });
 
-  console.log(translationSettingsInfo);
-
   return <TranslationSettingsEditForm translationSettingsInfo={translationSettingsInfo} />;
 }
 export default TranslationSettingsView;

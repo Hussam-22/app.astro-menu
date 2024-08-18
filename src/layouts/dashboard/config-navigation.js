@@ -24,6 +24,7 @@ const ICONS = {
   businessProfile: icon('ic_businessProfile'),
   label: icon('ic_label'),
   subscription: icon('ic_subscription'),
+  translation: icon('ic_translation'),
 };
 
 // ----------------------------------------------------------------------
@@ -85,7 +86,7 @@ export function useNavData() {
           {
             title: t('Translation Settings'),
             path: paths.dashboard.translationSettings.manage,
-            icon: ICONS.subscription,
+            icon: ICONS.translation,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
         ].filter((item) => (isMenuOnly ? item.title !== 'staffs' : true)),

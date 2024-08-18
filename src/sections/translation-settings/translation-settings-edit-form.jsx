@@ -1,15 +1,17 @@
 import * as Yup from 'yup';
+import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 // form
 import { useForm } from 'react-hook-form';
+import { useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, MenuItem, Typography } from '@mui/material';
+import { Card, Stack, Divider, MenuItem, Typography } from '@mui/material';
 
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { delay } from 'src/utils/promise-delay';
@@ -25,11 +27,16 @@ const OPTIONS = LANGUAGES.map((language) => ({
   label: language.languageName,
 })).sort((a, b) => a.label.localeCompare(b.label));
 
-function TranslationSettingsEditForm() {
+TranslationSettingsEditForm.propTypes = {
+  translationSettingsInfo: PropTypes.object,
+};
+
+function TranslationSettingsEditForm({ translationSettingsInfo }) {
   const { businessProfile, fsUpdateBusinessProfile } = useAuthContext();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
   const [isOpen, setIsOpen] = useState(false);
+
   // const maxLanguages = businessProfile.planInfo.at(-1).limits.languages;
   const maxLanguages = 3;
 
@@ -41,7 +48,6 @@ function TranslationSettingsEditForm() {
     [];
 
   const NewUserSchema = Yup.object().shape({
-    // imgUrl: Yup.mixed().required('Cover Image is required'),
     languages: Yup.array()
       .min(1, 'Choose at least one option')
       .max(maxLanguages, `max ${maxLanguages} translation languages allowed in your plan`),
@@ -49,13 +55,8 @@ function TranslationSettingsEditForm() {
 
   const defaultValues = useMemo(
     () => ({
-      businessName: businessProfile?.businessName || '',
-      description: businessProfile?.description || '',
-      email: businessProfile.ownerInfo.email || '',
       languages: businessProfile?.languages || [],
       defaultLanguage: businessProfile?.defaultLanguage || '',
-      logo: businessProfile?.logo || '',
-      isActive: !!businessProfile?.isActive,
     }),
     [businessProfile]
   );
@@ -66,41 +67,12 @@ function TranslationSettingsEditForm() {
   });
 
   const {
-    watch,
-    setValue,
     handleSubmit,
-    reset: resetForm,
+    reset,
     formState: { isDirty, dirtyFields },
   } = methods;
 
-  const values = watch();
-
-  const handleDrop = useCallback(
-    (acceptedFiles) => {
-      const file = acceptedFiles[0];
-
-      setValue('logo', file.name, { isTouched: true, isFocused: true, shouldDirty: true });
-
-      const newFile = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      });
-
-      if (file) {
-        setValue('logo', newFile, { shouldValidate: true });
-      }
-    },
-    [setValue]
-  );
-
-  const handleRemoveFile = useCallback(() => {
-    setValue('logo', null, { isTouched: true, isFocused: true, shouldDirty: true });
-  }, [setValue]);
-
-  const handelRemove = () => {
-    setValue('cover', '');
-  };
-
-  const { isPending, mutate, error, reset } = useMutation({
+  const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       queryClient.invalidateQueries(['businessProfile', businessProfile?.docID]);
@@ -120,11 +92,11 @@ function TranslationSettingsEditForm() {
   const onSubmit = async (formData) => {
     mutate(async () => {
       await delay(1000);
-      await fsUpdateBusinessProfile(formData, dirtyFields.description, dirtyFields.logo);
+      await fsUpdateBusinessProfile(formData);
     });
   };
 
-  const translationEditUsageLimit = businessProfile?.translationEditUsage?.THIS_MONTH || 0;
+  const translationEditUsageLimit = businessProfile?.translationEditUsage?.count || 0;
   const availableLimit = 3 - translationEditUsageLimit;
 
   return (
@@ -143,39 +115,46 @@ function TranslationSettingsEditForm() {
           </LoadingButton>
           <Card sx={{ p: 3 }}>
             <Stack spacing={2}>
-              <Typography variant="h6">Languages</Typography>
-              <Typography variant="caption" sx={{}}>
-                Default Language is your main language for the menu and business description, if you
-                are from France for example and you are tending to write your menu in French, then
-                French should be your default language, and you can add other languages for
-                translation, meaning the other languages will use French as a base for translation,
-                keep in mind the Admin dashboard will always be in English ( we are working on
-                adding more languages in the future)
-              </Typography>
+              <Typography variant="h6">Menu Language</Typography>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Typography variant="body2" sx={{}}>
+                  Default Language is your main language for the menu and business description, if
+                  you are from France for example and you are tending to write your menu in French,
+                  then French should be your default language, and you can add other languages for
+                  translation, meaning the other languages will use French as a base for
+                  translation, keep in mind the Admin dashboard will always be in English ( we are
+                  working on adding more languages in the future)
+                </Typography>
 
-              <RHFSelect name="defaultLanguage" label="Default Menu Language">
-                {availableLanguages.map((code) => (
-                  <MenuItem key={code[1].name} value={code[0]}>
-                    {code[1].value}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
+                <RHFSelect name="defaultLanguage" label="Default Menu Language">
+                  {availableLanguages.map((code) => (
+                    <MenuItem key={code[1].name} value={code[0]}>
+                      {code[1].value}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
+              </Stack>
+              <Divider sx={{ borderStyle: 'dashed' }} />
               <Stack direction="column" spacing={1} alignItems="flex-start">
+                <Typography variant="h6">Translation Languages</Typography>
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ pl: 0.5 }}>
                   <Iconify icon="dashicons:warning" sx={{ color: 'error.main' }} />
-                  <Typography variant="caption" sx={{ color: 'error.main' }}>
+                  <Typography variant="caption">
                     Making any changes to the languages will delete existing translations and reset
-                    all custom translations edits for all 1- meals, 2- sections, 3- business
-                    description and title
+                    all custom translations edits for all
                   </Typography>
+                  <Stack direction="row" spacing={1}>
+                    <Label color="warning">Meals</Label>
+                    <Label color="warning">Meal Labels</Label>
+                    <Label color="warning">Menu Sections Title</Label>
+                    <Label color="warning">Business Name and Description</Label>
+                  </Stack>
                 </Stack>
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ pl: 0.5 }}>
                   <Iconify icon="dashicons:warning" sx={{ color: 'error.main' }} />
-                  <Typography variant="caption" sx={{ color: 'error.main' }}>
-                    You can only change the languages list 3 times a month to avoid excessive usage{' '}
-                    <Box component="span" sx={{ color: 'common.black' }}>
-                      | Available limit: {availableLimit}
-                    </Box>
+                  <Typography variant="caption">
+                    You can only change the languages list 2 times a month to avoid excessive usage{' '}
+                    <Label color="error">Available limit: {availableLimit}</Label>
                   </Typography>
                 </Stack>
               </Stack>
@@ -209,4 +188,3 @@ function TranslationSettingsEditForm() {
   );
 }
 export default TranslationSettingsEditForm;
-// TranslationSettingsEditForm.propTypes = { tables: PropTypes.array };
