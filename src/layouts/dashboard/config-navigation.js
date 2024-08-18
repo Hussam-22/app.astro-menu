@@ -82,6 +82,12 @@ export function useNavData() {
             icon: ICONS.subscription,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
+          {
+            title: t('Translation Settings'),
+            path: paths.dashboard.translationSettings.manage,
+            icon: ICONS.subscription,
+            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
+          },
         ].filter((item) => (isMenuOnly ? item.title !== 'staffs' : true)),
       },
     ],

@@ -540,13 +540,41 @@ export function AuthProvider({ children }) {
           syncOperation();
         });
 
+        // 5- Translate Labels
+        const labelsRef = query(
+          collectionGroup(DB, 'meal-labels'),
+          where('businessProfileID', '==', businessProfileID)
+        );
+
+        const labelsSnapshot = await getDocs(labelsRef);
+        labelsSnapshot.forEach((label) => {
+          const syncOperation = async () => {
+            const { docID, title, businessProfileID } = label.data();
+            promisesArray.push(
+              await fbTranslateMealLabelTitle({
+                labelTitle: title,
+                businessProfileID,
+                labelDocID: docID,
+              })
+            );
+          };
+          syncOperation();
+        });
+
         await Promise.allSettled(promisesArray);
 
-        // 5- Increase translation usage limit for this month
+        // 6- Increase translation usage limit for this month
+        const CURRENT_YEAR_MONTH = `${THIS_YEAR}-${THIS_MONTH}`;
+        const maxCount = state.businessProfile?.translationEditUsage?.maxCount ?? 3; // Default to 3 if not set
+
         await updateDoc(businessProfileRef, {
           translationEditUsage: {
-            ...(state.businessProfile?.translationEditUsage || {}),
-            [THIS_MONTH]: (state.businessProfile?.translationEditUsage?.THIS_MONTH ?? 0) + 1,
+            yearMonth: CURRENT_YEAR_MONTH, // Store the current year and month
+            maxCount, // Store the maxCount from the state
+            count:
+              state.businessProfile?.translationEditUsage?.yearMonth === CURRENT_YEAR_MONTH
+                ? Math.min((state.businessProfile?.translationEditUsage?.count ?? 0) + 1, maxCount)
+                : 1, // Reset to 1 if it's a new month, otherwise increment up to maxCount
           },
         });
       } catch (error) {
