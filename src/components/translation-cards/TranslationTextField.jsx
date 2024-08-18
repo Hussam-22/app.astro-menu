@@ -10,6 +10,7 @@ import { LoadingButton } from '@mui/lab';
 import { Stack, Divider, Tooltip, InputAdornment } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
+import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
@@ -64,25 +65,21 @@ export default function TranslationTextField({
   const NewUserSchema = Yup.object().shape({
     [field]: Yup.string().required(`${label} cant be empty`),
   });
-  const defaultValues = useMemo(
-    () => ({ [field]: translationData.editedTranslation || translationData.translated }),
-    [field, translationData.editedTranslation, translationData.translated]
-  );
+
+  const defaultValues = {
+    [field]: translationData.editedTranslation || translationData.translated,
+  };
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
+
   const {
     reset,
     handleSubmit,
-    formState: { isDirty },
+    formState: { isDirty, isSubmitting },
   } = methods;
-
-  // useEffect(() => {
-  //   setValue(field, translationData.editedTranslation || translationData.translated);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [translationData]);
 
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -117,12 +114,12 @@ export default function TranslationTextField({
 
   const onSubmit = async (formData) => {
     mutate(async () => {
-      fsUpdateTable(tableToUpdate().docRef, {
+      await fsUpdateTable(tableToUpdate().docRef, {
         [`translationEdited.${languageKey}.${field}`]: formData[field],
       });
       return formData;
     });
-    reset({ [field]: translationData.translated });
+    await delay(1000);
   };
 
   return (
@@ -145,7 +142,7 @@ export default function TranslationTextField({
                     <LoadingButton
                       type="reset"
                       variant="text"
-                      loading={isPending}
+                      loading={isSubmitting}
                       onClick={() => reset()}
                       color="warning"
                       disabled={!isDirty}
@@ -160,7 +157,7 @@ export default function TranslationTextField({
                     <LoadingButton
                       type="button"
                       variant="text"
-                      loading={isPending}
+                      loading={isSubmitting}
                       color="info"
                       onClick={handleSubmit(resetTranslation)}
                       disabled={isRestTranslationDirty}
@@ -173,7 +170,7 @@ export default function TranslationTextField({
                 <LoadingButton
                   type="submit"
                   variant="text"
-                  loading={isPending}
+                  loading={isSubmitting}
                   disabled={!isDirty}
                   color="success"
                 >

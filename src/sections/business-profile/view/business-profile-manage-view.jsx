@@ -22,6 +22,8 @@ function BusinessProfileManageView() {
     queryFn: async () => fsGetBusinessProfile(businessProfile.docID),
   });
 
+  console.log(data?.translationEdited?.ar);
+
   const TABS = [
     {
       value: 'Business Info',

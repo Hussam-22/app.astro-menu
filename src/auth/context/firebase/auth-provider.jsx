@@ -288,8 +288,6 @@ export function AuthProvider({ children }) {
       try {
         // await fbTranslateKeywords();
 
-        console.log('BUSINESS PROFILE ID:', businessProfileID);
-
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
         const docSnapshot = await getDoc(docRef);
 

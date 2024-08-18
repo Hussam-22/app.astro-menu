@@ -17,8 +17,6 @@ function BusinessProfileTranslation({ businessProfileInfo, isFetching = false })
   const [isOpenModal, setIsOpenModal] = useState(false);
   const languageKeys = Object.keys(businessProfileInfo?.translationEdited || {});
 
-  console.log(businessProfileInfo);
-
   const closeModal = () => {
     setIsOpenModal(false);
   };
