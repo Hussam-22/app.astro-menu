@@ -32,12 +32,11 @@ TranslationSettingsEditForm.propTypes = {
 };
 
 function TranslationSettingsEditForm({ translationSettingsInfo }) {
-  const { businessProfile, fsUpdateBusinessProfile } = useAuthContext();
+  const { businessProfile, fsBatchUpdateBusinessProfileLanguages } = useAuthContext();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
   const [isOpen, setIsOpen] = useState(false);
 
-  // const maxLanguages = businessProfile.planInfo.at(-1).limits.languages;
   const maxLanguages = 3;
 
   const availableLanguages =
@@ -67,6 +66,7 @@ function TranslationSettingsEditForm({ translationSettingsInfo }) {
   });
 
   const {
+    watch,
     handleSubmit,
     reset,
     formState: { isDirty, dirtyFields },
@@ -74,11 +74,14 @@ function TranslationSettingsEditForm({ translationSettingsInfo }) {
 
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries(['businessProfile', businessProfile?.docID]);
-      enqueueSnackbar('Update success!');
+      enqueueSnackbar(response.data.message);
+      console.log(response);
     },
   });
+
+  console.log(error);
 
   const onClose = () => {
     reset();
@@ -92,7 +95,9 @@ function TranslationSettingsEditForm({ translationSettingsInfo }) {
   const onSubmit = async (formData) => {
     mutate(async () => {
       await delay(1000);
-      await fsUpdateBusinessProfile(formData);
+
+      const response = await fsBatchUpdateBusinessProfileLanguages(formData.languages);
+      return response;
     });
   };
 
@@ -117,7 +122,7 @@ function TranslationSettingsEditForm({ translationSettingsInfo }) {
             <Stack spacing={2}>
               <Typography variant="h6">Menu Language</Typography>
               <Stack direction="row" spacing={2} alignItems="center">
-                <Typography variant="body2" sx={{}}>
+                <Typography>
                   Default Language is your main language for the menu and business description, if
                   you are from France for example and you are tending to write your menu in French,
                   then French should be your default language, and you can add other languages for
@@ -134,31 +139,31 @@ function TranslationSettingsEditForm({ translationSettingsInfo }) {
                   ))}
                 </RHFSelect>
               </Stack>
+
               <Divider sx={{ borderStyle: 'dashed' }} />
+
               <Stack direction="column" spacing={1} alignItems="flex-start">
                 <Typography variant="h6">Translation Languages</Typography>
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ pl: 0.5 }}>
-                  <Iconify icon="dashicons:warning" sx={{ color: 'error.main' }} />
-                  <Typography variant="caption">
-                    Making any changes to the languages will delete existing translations and reset
-                    all custom translations edits for all
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>
+                    You can only change the translations list 2 times a month to avoid excessive
+                    usage <Label color="error">Available limit: {availableLimit}</Label>
                   </Typography>
-                  <Stack direction="row" spacing={1}>
-                    <Label color="warning">Meals</Label>
-                    <Label color="warning">Meal Labels</Label>
-                    <Label color="warning">Menu Sections Title</Label>
-                    <Label color="warning">Business Name and Description</Label>
-                  </Stack>
                 </Stack>
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ pl: 0.5 }}>
-                  <Iconify icon="dashicons:warning" sx={{ color: 'error.main' }} />
-                  <Typography variant="caption">
-                    You can only change the languages list 2 times a month to avoid excessive usage{' '}
-                    <Label color="error">Available limit: {availableLimit}</Label>
-                  </Typography>
+                <Typography>
+                  Making any changes to the translations list will delete existing translations and
+                  reset all custom translations
+                </Typography>
+                <Typography sx={{ fontWeight: 600 }}>Affected Items:</Typography>
+                <Stack direction="row" spacing={1}>
+                  <Label color="warning">Meals</Label>
+                  <Label color="warning">Meal Labels</Label>
+                  <Label color="warning">Menu Sections Title</Label>
+                  <Label color="warning">Business Name and Description</Label>
                 </Stack>
               </Stack>
               <RHFMultiSelect
+                // disabled={availableLimit === 0}
                 chip
                 checkbox
                 name="languages"

@@ -415,18 +415,10 @@ export function AuthProvider({ children }) {
       businessProfileID = state?.businessProfile.docID
     ) => {
       try {
-        const { languages, logo, ...data } = payload;
+        const { logo, ...data } = payload;
 
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
         await updateDoc(docRef, { ...data, logo: isLogoDirty ? '' : logo });
-
-        const isLanguagesEqual =
-          JSON.stringify(payload.languages.sort()) ===
-          JSON.stringify(state?.businessProfile.languages.sort());
-
-        if (!isLanguagesEqual) {
-          await fsBatchUpdateBusinessProfileLanguages(languages);
-        }
 
         if (isLogoDirty) {
           const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
@@ -455,11 +447,12 @@ export function AuthProvider({ children }) {
           );
         }
 
-        if (shouldUpdateTranslation && isLanguagesEqual)
+        if (shouldUpdateTranslation)
           await fbTranslateBranchDesc({
             title: payload.businessName,
             desc: payload.description,
             businessProfileID,
+            languages: state.businessProfile.languages,
           });
 
         dispatch({
@@ -482,9 +475,23 @@ export function AuthProvider({ children }) {
   const fsBatchUpdateBusinessProfileLanguages = useCallback(
     async (languages, businessProfileID = state.businessProfile.docID) => {
       try {
+        const { count, maxCount } = state.businessProfile.translationEditUsage;
+
         // If limit is exceeded throw an error
-        if (state?.businessProfile?.translationEditUsage?.THIS_MONTH >= 3)
-          throw new Error('Monthly Translation Limit Exceeded !!');
+        if (count >= maxCount) throw new Error('Monthly Translation Limit Exceeded !!');
+
+        const isLanguagesEqual =
+          JSON.stringify(languages.sort()) ===
+          JSON.stringify(state?.businessProfile.languages.sort());
+
+        if (isLanguagesEqual) {
+          throw new Error('Nothing to Update !!');
+        }
+
+        const newLanguages = languages.filter(
+          (lang) => !state.businessProfile.languages.includes(lang)
+        );
+
         const promisesArray = [];
         const businessProfileRef = doc(DB, `/businessProfiles/${businessProfileID}`);
 
@@ -493,79 +500,83 @@ export function AuthProvider({ children }) {
 
         // 2- Translate Business Profile
         const businessProfileSnap = await getDoc(businessProfileRef);
-        await fbTranslateBranchDesc({
+        const response = await fbTranslateBranchDesc({
           title: businessProfileSnap.data().businessName,
           desc: businessProfileSnap.data().description,
           businessProfileID,
+          languages: newLanguages,
         });
 
         // 3- Translate Sections
-        const sectionsRef = query(
-          collectionGroup(DB, 'sections'),
-          where('businessProfileID', '==', businessProfileID)
-        );
+        // const sectionsRef = query(
+        //   collectionGroup(DB, 'sections'),
+        //   where('businessProfileID', '==', businessProfileID)
+        // );
 
-        const sectionsSnapshot = await getDocs(sectionsRef);
-        sectionsSnapshot.forEach((section) => {
-          const syncOperation = async () => {
-            const { docID, title, businessProfileID, menuID } = section.data();
-            promisesArray.push(
-              await fbTranslate({
-                sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${docID}`,
-                text: title,
-              })
-            );
-          };
-          syncOperation();
-        });
+        // const sectionsSnapshot = await getDocs(sectionsRef);
+        // sectionsSnapshot.forEach((section) => {
+        //   const syncOperation = async () => {
+        //     const { docID, title, businessProfileID, menuID } = section.data();
+        //     promisesArray.push(
+        //       await fbTranslate({
+        //         sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${docID}`,
+        //         text: title,
+        //         languages: newLanguages,
+        //       })
+        //     );
+        //   };
+        //   syncOperation();
+        // });
 
         // 4- Translate Meals
-        const mealsRef = query(
-          collectionGroup(DB, 'meals'),
-          where('businessProfileID', '==', businessProfileID)
-        );
+        // const mealsRef = query(
+        //   collectionGroup(DB, 'meals'),
+        //   where('businessProfileID', '==', businessProfileID)
+        // );
 
-        const mealsSnapshot = await getDocs(mealsRef);
-        mealsSnapshot.forEach((meal) => {
-          const syncOperation = async () => {
-            const { docID, title, description, businessProfileID } = meal.data();
-            promisesArray.push(
-              await fbTranslateMeal({
-                mealRef: `/businessProfiles/${businessProfileID}/meals/${docID}`,
-                text: { title, desc: description },
-                businessProfileID,
-              })
-            );
-          };
-          syncOperation();
-        });
+        // const mealsSnapshot = await getDocs(mealsRef);
+        // mealsSnapshot.forEach((meal) => {
+        //   const syncOperation = async () => {
+        //     const { docID, title, description, businessProfileID } = meal.data();
+        //     promisesArray.push(
+        //       await fbTranslateMeal({
+        //         mealRef: `/businessProfiles/${businessProfileID}/meals/${docID}`,
+        //         text: { title, desc: description },
+        //         businessProfileID,
+        //         languages: newLanguages,
+        //       })
+        //     );
+        //   };
+        //   syncOperation();
+        // });
 
-        // 5- Translate Labels
-        const labelsRef = query(
-          collectionGroup(DB, 'meal-labels'),
-          where('businessProfileID', '==', businessProfileID)
-        );
+        // // 5- Translate Labels
+        // const labelsRef = query(
+        //   collectionGroup(DB, 'meal-labels'),
+        //   where('businessProfileID', '==', businessProfileID)
+        // );
 
-        const labelsSnapshot = await getDocs(labelsRef);
-        labelsSnapshot.forEach((label) => {
-          const syncOperation = async () => {
-            const { docID, title, businessProfileID } = label.data();
-            promisesArray.push(
-              await fbTranslateMealLabelTitle({
-                labelTitle: title,
-                businessProfileID,
-                labelDocID: docID,
-              })
-            );
-          };
-          syncOperation();
-        });
+        // const labelsSnapshot = await getDocs(labelsRef);
+        // labelsSnapshot.forEach((label) => {
+        //   const syncOperation = async () => {
+        //     const { docID, title, businessProfileID } = label.data();
+        //     promisesArray.push(
+        //       await fbTranslateMealLabelTitle({
+        //         labelTitle: title,
+        //         businessProfileID,
+        //         labelDocID: docID,
+        //         languages: newLanguages,
+        //       })
+        //     );
+        //   };
+        //   syncOperation();
+        // });
 
         await Promise.allSettled(promisesArray);
 
         // 6- Increase translation usage limit for this month
         const CURRENT_YEAR_MONTH = `${THIS_YEAR}-${THIS_MONTH}`;
-        const maxCount = state.businessProfile?.translationEditUsage?.maxCount ?? 3; // Default to 3 if not set
+        // const maxCount = state.businessProfile?.translationEditUsage?.maxCount ?? 3; // Default to 3 if not set
 
         await updateDoc(businessProfileRef, {
           translationEditUsage: {
@@ -577,6 +588,8 @@ export function AuthProvider({ children }) {
                 : 1, // Reset to 1 if it's a new month, otherwise increment up to maxCount
           },
         });
+
+        return response;
       } catch (error) {
         throw error;
       }
@@ -2082,6 +2095,7 @@ export function AuthProvider({ children }) {
       fsUpdateBusinessProfileTranslation,
       createDefaults,
       fsGetSystemTranslations,
+      fsBatchUpdateBusinessProfileLanguages,
       // --- STRIPE ----
       fsGetStripeSubscription,
       fsGetProduct,
@@ -2178,6 +2192,7 @@ export function AuthProvider({ children }) {
       fsUpdateBusinessProfileTranslation,
       createDefaults,
       fsGetSystemTranslations,
+      fsBatchUpdateBusinessProfileLanguages,
       // --- STRIPE ----
       fsGetStripeSubscription,
       fsGetProduct,

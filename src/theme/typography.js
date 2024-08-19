@@ -1,5 +1,3 @@
-// ----------------------------------------------------------------------
-
 export function remToPx(value) {
   return Math.round(parseFloat(value) * 16);
 }
@@ -83,17 +81,17 @@ export const typography = {
   body1: {
     fontWeight: 300,
     lineHeight: 1.5,
-    fontSize: pxToRem(18),
+    fontSize: pxToRem(14),
   },
   body2: {
     fontWeight: 300,
     lineHeight: 22 / 14,
-    fontSize: pxToRem(14),
+    fontSize: pxToRem(12),
   },
   caption: {
-    fontWeight: 300,
     lineHeight: 1.5,
     fontSize: pxToRem(12),
+    fontWeight: 600,
   },
   overline: {
     fontWeight: 500,

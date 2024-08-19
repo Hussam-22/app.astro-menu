@@ -10,19 +10,15 @@ admin.initializeApp(functions.config().firebase);
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 const translate = new Translate({ projectId: process.env.PROJECT_ID });
 
-exports.fbTranslateSectionTitle = functions.https.onCall(async (data, context) => {
+exports.fbTranslateSectionTitle = functions.https.onCall(async (data) => {
   // get to-translate string & target translation languages array
-  const { text, sectionRef } = data;
+  const { text, sectionRef, languages } = data;
 
   // get section data
   const sectionDoc = (await admin.firestore().doc(sectionRef).get()).data();
 
-  // get available languages from user profile
-  const userDocRef = `/businessProfiles/${sectionDoc.businessProfileID}`;
-  const userDoc = (await admin.firestore().doc(userDocRef).get()).data();
-
   // translate string to target languages
-  const tasks = userDoc.languages.map(async (lang) => ({
+  const tasks = languages.map(async (lang) => ({
     [lang]: {
       title: await (await translate.translate(text, lang)).slice(0, 1).toString(),
     },
@@ -42,20 +38,15 @@ exports.fbTranslateSectionTitle = functions.https.onCall(async (data, context) =
 
   return null;
 });
-
-exports.fbTranslateMeal = functions.https.onCall(async (data, context) => {
+exports.fbTranslateMeal = functions.https.onCall(async (data) => {
   // get to-translate string & target translation languages array
-  const { text, mealRef, businessProfileID } = data;
+  const { text, mealRef, languages } = data;
 
   // get section data
   const mealDoc = (await admin.firestore().doc(mealRef).get()).data();
 
-  // get available languages from user profile
-  const userDocRef = `/businessProfiles/${businessProfileID}`;
-  const businessProfileDoc = (await admin.firestore().doc(userDocRef).get()).data();
-
   // translate string to target languages
-  const tasks = businessProfileDoc.languages.map(async (lang) => ({
+  const tasks = languages.map(async (lang) => ({
     [lang]: {
       title: await (await translate.translate(text.title, lang)).slice(0, 1).toString(),
       desc: await (await translate.translate(text.desc, lang)).slice(0, 1).toString(),
@@ -76,21 +67,30 @@ exports.fbTranslateMeal = functions.https.onCall(async (data, context) => {
 
   return null;
 });
-
-exports.fbTranslateBranchDesc = functions.https.onCall(async (data, context) => {
+exports.fbTranslateBranchDesc = functions.https.onCall(async (data) => {
   // get to-translate string & target translation languages array
-  const { title, desc, businessProfileID } = data;
+  const { title, desc, businessProfileID, languages } = data;
 
   const businessProfileRef = `/businessProfiles/${businessProfileID}`;
   const businessProfileDoc = (await admin.firestore().doc(businessProfileRef).get()).data();
 
+  // get languages to add and remove
+  const newLang = languages.filter((lang) => !businessProfileDoc.languages.includes(lang));
+  const toRemoveLang = businessProfileDoc.languages.filter((lang) => !languages.includes(lang));
+
   // translate string to target languages
-  const tasks = businessProfileDoc.languages.map(async (lang) => ({
+  const tasks = newLang.map(async (lang) => ({
     [lang]: {
-      title: await (await translate.translate(title, lang)).slice(0, 1).toString(),
-      desc: await (await translate.translate(desc, lang)).slice(0, 1).toString(),
+      title: (await translate.translate(title, lang))[0].toString(),
+      desc: (await translate.translate(desc, lang))[0].toString(),
     },
   }));
+
+  // remove languages from translationEdited
+  toRemoveLang.forEach((lang) => {
+    delete businessProfileDoc.translation[lang];
+    delete businessProfileDoc.translationEdited[lang];
+  });
 
   // resolve translation Promise
   const translations = await Promise.all(tasks);
@@ -103,27 +103,28 @@ exports.fbTranslateBranchDesc = functions.https.onCall(async (data, context) => 
     .firestore()
     .doc(businessProfileRef)
     .update({
-      ...businessProfileDoc,
-      translation: translationObj,
-      translationEdited: translationObj,
+      translation: { ...businessProfileDoc.translation, ...translationObj },
+      translationEdited: { ...businessProfileDoc.translationEdited, ...translationObj },
     });
 
-  return null;
+  return {
+    status: 'success',
+    message: 'Translations updated successfully',
+    payload: {
+      newLang,
+      toRemoveLang,
+    },
+  };
 });
-
-exports.fbTranslateMealLabelTitle = functions.https.onCall(async (data, context) => {
-  const { labelTitle, businessProfileID, labelDocID } = data;
+exports.fbTranslateMealLabelTitle = functions.https.onCall(async (data) => {
+  const { labelTitle, businessProfileID, labelDocID, languages } = data;
 
   // get label data
   const mealLabelRef = `/businessProfiles/${businessProfileID}/meal-labels/${labelDocID}`;
   const labelDoc = (await admin.firestore().doc(mealLabelRef).get()).data();
 
-  // get available languages from business profile
-  const businessProfileRef = `/businessProfiles/${businessProfileID}`;
-  const businessProfileDoc = (await admin.firestore().doc(businessProfileRef).get()).data();
-
   // translate string to target languages
-  const tasks = businessProfileDoc.languages.map(async (lang) => ({
+  const tasks = languages.map(async (lang) => ({
     [lang]: {
       title: await (await translate.translate(labelTitle, lang)).slice(0, 1).toString(),
     },
@@ -143,7 +144,6 @@ exports.fbTranslateMealLabelTitle = functions.https.onCall(async (data, context)
 
   return null;
 });
-
 exports.fbTranslateKeyword = functions.https.onCall(async (keywordsArray) => {
   const translationTasks = Object.keys(LANGUAGE_CODES).map(async (langKey) => {
     const keywordObject = {
