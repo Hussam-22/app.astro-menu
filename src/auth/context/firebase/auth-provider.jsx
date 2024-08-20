@@ -118,7 +118,7 @@ export function AuthProvider({ children }) {
             await updateDoc(userProfile, { lastLogin: new Date() });
 
             queryClient.fetchQuery({
-              queryKey: ['businessProfile'],
+              queryKey: ['businessProfile', profile.businessProfileID],
               queryFn: async () => fsGetBusinessProfile(profile.businessProfileID, user, profile),
             });
           } else {
@@ -417,8 +417,14 @@ export function AuthProvider({ children }) {
       try {
         const { logo, ...data } = payload;
 
+        console.log({ logo, ...data });
+
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
-        await updateDoc(docRef, { ...data, logo: isLogoDirty ? '' : logo });
+
+        if (logo) await updateDoc(docRef, { ...payload });
+        if (!logo) await updateDoc(docRef, { ...data });
+
+        // await updateDoc(docRef, { ...data, logo: isLogoDirty ? '' : logo });
 
         if (isLogoDirty) {
           const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
@@ -452,7 +458,8 @@ export function AuthProvider({ children }) {
             title: payload.businessName,
             desc: payload.description,
             businessProfileID,
-            languages: state.businessProfile.languages,
+            newLang: state.businessProfile.languages,
+            toRemoveLang: [],
           });
 
         dispatch({
@@ -472,7 +479,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsBatchUpdateBusinessProfileLanguages = useCallback(
+  const fsUpdateTranslationSettings = useCallback(
     async (newLang, toRemoveLang, languages, businessProfileID = state.businessProfile.docID) => {
       try {
         const { count, maxCount } = state.businessProfile.translationEditUsage;
@@ -2087,7 +2094,7 @@ export function AuthProvider({ children }) {
       fsUpdateBusinessProfileTranslation,
       createDefaults,
       fsGetSystemTranslations,
-      fsBatchUpdateBusinessProfileLanguages,
+      fsUpdateTranslationSettings,
       // --- STRIPE ----
       fsGetStripeSubscription,
       fsGetProduct,
@@ -2184,7 +2191,7 @@ export function AuthProvider({ children }) {
       fsUpdateBusinessProfileTranslation,
       createDefaults,
       fsGetSystemTranslations,
-      fsBatchUpdateBusinessProfileLanguages,
+      fsUpdateTranslationSettings,
       // --- STRIPE ----
       fsGetStripeSubscription,
       fsGetProduct,

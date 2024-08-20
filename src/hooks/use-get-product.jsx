@@ -14,6 +14,7 @@ export function useGetProductInfo() {
   const languages = +metadata.languages;
   const maxTables = +metadata.tables;
   const { version } = metadata;
+  const maxTranslationsLanguages = +metadata.languages;
 
   const statusName = () => {
     if (status === 'active') {
@@ -60,5 +61,6 @@ export function useGetProductInfo() {
     version,
     status: statusName(),
     role: status === 'active' || status === 'trialing' ? 'full' : 'deny',
+    maxTranslationsLanguages,
   };
 }

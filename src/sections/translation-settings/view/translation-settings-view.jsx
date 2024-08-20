@@ -11,7 +11,7 @@ import TranslationSettingsEditForm from 'src/sections/translation-settings/trans
 function TranslationSettingsView() {
   const { themeStretch } = useSettingsContext();
   const { businessProfile, fsGetBusinessProfile } = useAuthContext();
-  const { data: translationSettingsInfo = {} } = useQuery({
+  const { data: businessProfileInfo = {} } = useQuery({
     queryKey: ['businessProfile', businessProfile.docID],
     queryFn: () => fsGetBusinessProfile(businessProfile.docID),
   });
@@ -25,7 +25,7 @@ function TranslationSettingsView() {
           { name: 'Translation Settings' },
         ]}
       />
-      <TranslationSettingsEditForm translationSettingsInfo={translationSettingsInfo} />
+      <TranslationSettingsEditForm businessProfileInfo={businessProfileInfo} />
     </Container>
   );
 }
