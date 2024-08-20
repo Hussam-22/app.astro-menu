@@ -40,7 +40,7 @@ function BusinessProfileTranslation({ businessProfileInfo, isFetching = false })
         </Box>
       </Card>
       {languageKeys
-        .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
+        .sort((a, b) => LANGUAGE_CODES[a]?.name.localeCompare(LANGUAGE_CODES[b]?.name))
         .map((key) => (
           <TranslationCard
             languageKey={key}

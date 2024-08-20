@@ -16,16 +16,17 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { delay } from 'src/utils/promise-delay';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import { LANGUAGES } from 'src/_mock/translation-languages';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import FormProvider, { RHFSelect, RHFMultiSelect } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------------
 
-const OPTIONS = LANGUAGES.map((language) => ({
-  value: language.code,
-  label: language.languageName,
-})).sort((a, b) => a.label.localeCompare(b.label));
+const TRANSLATION_LANGUAGES = Object.entries(LANGUAGE_CODES)
+  .map(([key, value]) => ({
+    value: key,
+    label: `${value.name} - ${value.value}`,
+  }))
+  .sort((a, b) => a.label.localeCompare(b.label));
 
 TranslationSettingsEditForm.propTypes = {
   translationSettingsInfo: PropTypes.object,
@@ -66,7 +67,6 @@ function TranslationSettingsEditForm({ translationSettingsInfo }) {
   });
 
   const {
-    watch,
     handleSubmit,
     reset,
     formState: { isDirty, dirtyFields },
@@ -93,16 +93,35 @@ function TranslationSettingsEditForm({ translationSettingsInfo }) {
   }, [error?.message]);
 
   const onSubmit = async (formData) => {
+    const isLanguagesEqual =
+      JSON.stringify(formData.languages.sort()) ===
+      JSON.stringify(businessProfile.languages.sort());
+
+    if (isLanguagesEqual) {
+      enqueueSnackbar('No changes detected', { variant: 'warning' });
+      return;
+    }
+
     mutate(async () => {
       await delay(1000);
+      const newLang = formData.languages.filter(
+        (lang) => !businessProfile.languages.includes(lang)
+      );
+      const toRemoveLang = businessProfile.languages.filter(
+        (lang) => !formData.languages.includes(lang)
+      );
 
-      const response = await fsBatchUpdateBusinessProfileLanguages(formData.languages);
+      const response = await fsBatchUpdateBusinessProfileLanguages(
+        newLang,
+        toRemoveLang,
+        formData.languages
+      );
       return response;
     });
   };
-
-  const translationEditUsageLimit = businessProfile?.translationEditUsage?.count || 0;
-  const availableLimit = 3 - translationEditUsageLimit;
+  const { count, maxCount } = businessProfile.translationEditUsage;
+  const translationEditUsageLimit = count || 0;
+  const availableLimit = maxCount - translationEditUsageLimit;
 
   return (
     <>
@@ -151,8 +170,7 @@ function TranslationSettingsEditForm({ translationSettingsInfo }) {
                   </Typography>
                 </Stack>
                 <Typography>
-                  Making any changes to the translations list will delete existing translations and
-                  reset all custom translations
+                  Removing a Translation language will remove all the translations for that language
                 </Typography>
                 <Typography sx={{ fontWeight: 600 }}>Affected Items:</Typography>
                 <Stack direction="row" spacing={1}>
@@ -168,7 +186,7 @@ function TranslationSettingsEditForm({ translationSettingsInfo }) {
                 checkbox
                 name="languages"
                 label="Translation Languages"
-                options={OPTIONS.filter(
+                options={TRANSLATION_LANGUAGES.filter(
                   (option) => option.value !== businessProfile.defaultLanguage
                 )}
               />

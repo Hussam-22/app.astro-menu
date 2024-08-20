@@ -473,24 +473,12 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsBatchUpdateBusinessProfileLanguages = useCallback(
-    async (languages, businessProfileID = state.businessProfile.docID) => {
+    async (newLang, toRemoveLang, languages, businessProfileID = state.businessProfile.docID) => {
       try {
         const { count, maxCount } = state.businessProfile.translationEditUsage;
 
         // If limit is exceeded throw an error
         if (count >= maxCount) throw new Error('Monthly Translation Limit Exceeded !!');
-
-        const isLanguagesEqual =
-          JSON.stringify(languages.sort()) ===
-          JSON.stringify(state?.businessProfile.languages.sort());
-
-        if (isLanguagesEqual) {
-          throw new Error('Nothing to Update !!');
-        }
-
-        const newLanguages = languages.filter(
-          (lang) => !state.businessProfile.languages.includes(lang)
-        );
 
         const promisesArray = [];
         const businessProfileRef = doc(DB, `/businessProfiles/${businessProfileID}`);
@@ -504,73 +492,77 @@ export function AuthProvider({ children }) {
           title: businessProfileSnap.data().businessName,
           desc: businessProfileSnap.data().description,
           businessProfileID,
-          languages: newLanguages,
+          newLang,
+          toRemoveLang,
         });
 
         // 3- Translate Sections
-        // const sectionsRef = query(
-        //   collectionGroup(DB, 'sections'),
-        //   where('businessProfileID', '==', businessProfileID)
-        // );
+        const sectionsRef = query(
+          collectionGroup(DB, 'sections'),
+          where('businessProfileID', '==', businessProfileID)
+        );
 
-        // const sectionsSnapshot = await getDocs(sectionsRef);
-        // sectionsSnapshot.forEach((section) => {
-        //   const syncOperation = async () => {
-        //     const { docID, title, businessProfileID, menuID } = section.data();
-        //     promisesArray.push(
-        //       await fbTranslate({
-        //         sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${docID}`,
-        //         text: title,
-        //         languages: newLanguages,
-        //       })
-        //     );
-        //   };
-        //   syncOperation();
-        // });
+        const sectionsSnapshot = await getDocs(sectionsRef);
+        sectionsSnapshot.forEach((section) => {
+          const syncOperation = async () => {
+            const { docID, title, businessProfileID, menuID } = section.data();
+            promisesArray.push(
+              await fbTranslate({
+                sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${docID}`,
+                text: title,
+                newLang,
+                toRemoveLang,
+              })
+            );
+          };
+          syncOperation();
+        });
 
         // 4- Translate Meals
-        // const mealsRef = query(
-        //   collectionGroup(DB, 'meals'),
-        //   where('businessProfileID', '==', businessProfileID)
-        // );
+        const mealsRef = query(
+          collectionGroup(DB, 'meals'),
+          where('businessProfileID', '==', businessProfileID)
+        );
 
-        // const mealsSnapshot = await getDocs(mealsRef);
-        // mealsSnapshot.forEach((meal) => {
-        //   const syncOperation = async () => {
-        //     const { docID, title, description, businessProfileID } = meal.data();
-        //     promisesArray.push(
-        //       await fbTranslateMeal({
-        //         mealRef: `/businessProfiles/${businessProfileID}/meals/${docID}`,
-        //         text: { title, desc: description },
-        //         businessProfileID,
-        //         languages: newLanguages,
-        //       })
-        //     );
-        //   };
-        //   syncOperation();
-        // });
+        const mealsSnapshot = await getDocs(mealsRef);
+        mealsSnapshot.forEach((meal) => {
+          const syncOperation = async () => {
+            const { docID, title, description, businessProfileID } = meal.data();
+            promisesArray.push(
+              await fbTranslateMeal({
+                mealRef: `/businessProfiles/${businessProfileID}/meals/${docID}`,
+                text: { title, desc: description },
+                businessProfileID,
+                newLang,
+                toRemoveLang,
+              })
+            );
+          };
+          syncOperation();
+        });
 
-        // // 5- Translate Labels
-        // const labelsRef = query(
-        //   collectionGroup(DB, 'meal-labels'),
-        //   where('businessProfileID', '==', businessProfileID)
-        // );
+        // 5- Translate Labels
+        const labelsRef = query(
+          collectionGroup(DB, 'meal-labels'),
+          where('businessProfileID', '==', businessProfileID)
+        );
 
-        // const labelsSnapshot = await getDocs(labelsRef);
-        // labelsSnapshot.forEach((label) => {
-        //   const syncOperation = async () => {
-        //     const { docID, title, businessProfileID } = label.data();
-        //     promisesArray.push(
-        //       await fbTranslateMealLabelTitle({
-        //         labelTitle: title,
-        //         businessProfileID,
-        //         labelDocID: docID,
-        //         languages: newLanguages,
-        //       })
-        //     );
-        //   };
-        //   syncOperation();
-        // });
+        const labelsSnapshot = await getDocs(labelsRef);
+        labelsSnapshot.forEach((label) => {
+          const syncOperation = async () => {
+            const { docID, title, businessProfileID } = label.data();
+            promisesArray.push(
+              await fbTranslateMealLabelTitle({
+                labelTitle: title,
+                businessProfileID,
+                labelDocID: docID,
+                newLang,
+                toRemoveLang,
+              })
+            );
+          };
+          syncOperation();
+        });
 
         await Promise.allSettled(promisesArray);
 

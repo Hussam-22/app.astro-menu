@@ -70,6 +70,12 @@ export function useNavData() {
             path: paths.dashboard.staffs.root,
             icon: ICONS.staffs,
           },
+          {
+            title: t('Translation Settings'),
+            path: paths.dashboard.translationSettings.manage,
+            icon: ICONS.translation,
+            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
+          },
           // Business Profile
           {
             title: t('Business Profile'),
@@ -81,12 +87,6 @@ export function useNavData() {
             title: t('Subscription & Payments'),
             path: paths.dashboard.subscription.root,
             icon: ICONS.subscription,
-            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
-          },
-          {
-            title: t('Translation Settings'),
-            path: paths.dashboard.translationSettings.manage,
-            icon: ICONS.translation,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
         ].filter((item) => (isMenuOnly ? item.title !== 'staffs' : true)),
