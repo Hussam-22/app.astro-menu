@@ -62,7 +62,7 @@ function BranchListView() {
 
   const router = useRouter();
   const { themeStretch } = useSettingsContext();
-  const { fsGetAllBranches, fbTranslateKeyword } = useAuthContext();
+  const { fsGetAllBranches } = useAuthContext();
   const [tableData, setTableData] = useState([]);
   const [filterName, setFilterName] = useState('');
 

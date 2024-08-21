@@ -284,7 +284,7 @@ export function AuthProvider({ children }) {
   }, []);
   // ----------------------- Business Profile -------------------
   const fsGetBusinessProfile = useCallback(
-    async (businessProfileID, user = {}, profile = {}) => {
+    async (businessProfileID, user = state.user, profile = state.profile) => {
       try {
         // await fbTranslateKeywords();
 

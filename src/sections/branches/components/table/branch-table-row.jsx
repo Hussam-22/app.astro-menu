@@ -17,9 +17,7 @@ const year = new Date().getFullYear();
 const month = new Date().getMonth();
 
 export default function BranchTableRow({ row, onEditRow }) {
-  const { title, cover, docID, isActive, allowSelfOrder, skipKitchen, lastUpdatedAt } = row;
-
-  const lastUpdate = new Date(lastUpdatedAt.seconds * 1000).toLocaleString();
+  const { title, cover, docID, isActive } = row;
 
   const {
     totalOrders,
@@ -28,8 +26,9 @@ export default function BranchTableRow({ row, onEditRow }) {
     totalScans,
     totalIncome,
     avgIncomePerOrder,
-    currency,
   } = useGetBranchInfo(docID, year, month);
+
+  console.log(totalTurnoverStr);
 
   return (
     <TableRow hover>

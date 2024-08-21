@@ -1,16 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { Container } from '@mui/material';
+import { Stack, Container } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
-import TranslationSettingsEditForm from 'src/sections/translation-settings/translation-settings-edit-form';
+import DefaultLanguageEditForm from 'src/sections/translation-settings/default-language-edit-form';
+import TranslationsListEditForm from 'src/sections/translation-settings/translations-list-edit-form';
 
 function TranslationSettingsView() {
   const { themeStretch } = useSettingsContext();
   const { businessProfile, fsGetBusinessProfile } = useAuthContext();
+
   const { data: businessProfileInfo = {} } = useQuery({
     queryKey: ['businessProfile', businessProfile.docID],
     queryFn: () => fsGetBusinessProfile(businessProfile.docID),
@@ -25,7 +27,10 @@ function TranslationSettingsView() {
           { name: 'Translation Settings' },
         ]}
       />
-      <TranslationSettingsEditForm businessProfileInfo={businessProfileInfo} />
+      <Stack direction="column" spacing={2}>
+        <DefaultLanguageEditForm businessProfileInfo={businessProfileInfo} />
+        <TranslationsListEditForm businessProfileInfo={businessProfileInfo} />
+      </Stack>
     </Container>
   );
 }

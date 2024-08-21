@@ -2,7 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useAuthContext } from 'src/auth/hooks';
 
-export function useGetBranchInfo(branchID, year, month) {
+// ----------------------------------------------------------------------------
+const THIS_MONTH = new Date().getMonth();
+const THIS_YEAR = new Date().getFullYear();
+
+export function useGetBranchInfo(branchID, year = THIS_YEAR, month = THIS_MONTH) {
   const { businessProfile, fsGetBranch } = useAuthContext();
 
   const { data: branchInfo = {} } = useQuery({
@@ -32,6 +36,8 @@ export function useGetBranchInfo(branchID, year, month) {
     const mins = minutes % 60;
     return `${hours}h ${mins.toFixed(0)}min`;
   };
+
+  console.log(totalTurnover);
 
   return {
     scanData,

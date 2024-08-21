@@ -40,7 +40,10 @@ exports.fbTranslateSectionTitle = functions.https.onCall(async (data) => {
     await admin
       .firestore()
       .doc(sectionRef)
-      .update({ ...sectionDoc, translation: translationObj, translationEdited: translationObj });
+      .update({
+        translation: { ...sectionDoc.translation, ...translationObj },
+        translationEdited: { ...sectionDoc.translationEdited, ...translationObj },
+      });
 
     return {
       status: 'success',
@@ -86,7 +89,10 @@ exports.fbTranslateMeal = functions.https.onCall(async (data) => {
     await admin
       .firestore()
       .doc(mealRef)
-      .update({ ...mealDoc, translation: translationObj, translationEdited: translationObj });
+      .update({
+        translation: { ...mealDoc.translation, ...translationObj },
+        translationEdited: { ...mealDoc.translationEdited, ...translationObj },
+      });
 
     return {
       status: 'success',
@@ -179,7 +185,10 @@ exports.fbTranslateMealLabelTitle = functions.https.onCall(async (data) => {
     await admin
       .firestore()
       .doc(mealLabelRef)
-      .update({ ...labelDoc, translation: translationObj, translationEdited: translationObj });
+      .update({
+        translation: { ...labelDoc.translation, ...translationObj },
+        translationEdited: { ...labelDoc.translationEdited, ...translationObj },
+      });
 
     return {
       status: 'success',
