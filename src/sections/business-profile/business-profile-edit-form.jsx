@@ -6,12 +6,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 // @mui
-import { Card, Stack, Button, Divider, Typography } from '@mui/material';
+import { Card, Stack, Divider, Typography } from '@mui/material';
 
 import { fData } from 'src/utils/format-number';
 import { useAuthContext } from 'src/auth/hooks';
 import { delay } from 'src/utils/promise-delay';
-import FormProvider, { RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
+import FormProvider, { RHFUpload, RHFTextField } from 'src/components/hook-form';
 
 function BusinessProfileEditForm() {
   const { businessProfile, fsUpdateBusinessProfile } = useAuthContext();
@@ -63,7 +63,7 @@ function BusinessProfileEditForm() {
   }, [setValue]);
 
   const handelRemove = () => {
-    setValue('cover', '');
+    setValue('logo', '');
   };
 
   const { isPending, mutate, error } = useMutation({
@@ -74,12 +74,15 @@ function BusinessProfileEditForm() {
     },
   });
 
-  console.log(error);
-
   const onSubmit = async (formData) => {
     mutate(async () => {
+      const response = await fsUpdateBusinessProfile(
+        formData,
+        dirtyFields.description,
+        dirtyFields.logo
+      );
       await delay(1000);
-      await fsUpdateBusinessProfile(formData, dirtyFields.description, dirtyFields.logo);
+      console.log(response);
     });
   };
 
@@ -95,7 +98,15 @@ function BusinessProfileEditForm() {
         >
           <Stack direction="column" spacing={2} alignItems="center">
             <Typography variant="overline">Business Logo</Typography>
-            <RHFUploadAvatar
+            <RHFUpload
+              name="logo"
+              maxSize={3000000}
+              onDrop={handleDrop}
+              onRemove={handelRemove}
+              helperText={`Allowed *.jpeg, *.jpg, *.png, *.webp | max size of ${fData(3000000)}`}
+              paddingValue="40% 0"
+            />
+            {/* <RHFUpload
               name="logo"
               maxSize={3000000}
               onDrop={handleDrop}
@@ -115,10 +126,7 @@ function BusinessProfileEditForm() {
                   <br /> max size of {fData(3000000)}
                 </Typography>
               }
-            />
-            <Button variant="contained" onClick={handleRemoveFile} disabled={!values.logo}>
-              Remove Logo
-            </Button>
+            /> */}
           </Stack>
           <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
             <LoadingButton

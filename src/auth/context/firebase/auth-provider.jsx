@@ -420,15 +420,7 @@ export function AuthProvider({ children }) {
     ) => {
       try {
         const { logo, ...data } = payload;
-
-        console.log({ logo, ...data });
-
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
-
-        if (logo) await updateDoc(docRef, { ...payload });
-        if (!logo) await updateDoc(docRef, { ...data });
-
-        // await updateDoc(docRef, { ...data, logo: isLogoDirty ? '' : logo });
 
         if (isLogoDirty) {
           const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
@@ -453,6 +445,7 @@ export function AuthProvider({ children }) {
             },
             () => {
               console.log('UPLOADED');
+              // queryClient.invalidateQueries(['businessProfile', businessProfileID]);
             }
           );
         }
@@ -466,17 +459,19 @@ export function AuthProvider({ children }) {
             toRemoveLang: [],
           });
 
-        dispatch({
-          type: 'INITIAL',
-          payload: {
-            ...state,
-            businessProfile: {
-              ...state.businessProfile,
-              ...payload,
-              ownerInfo: state.businessProfile.ownerInfo,
-            },
-          },
-        });
+        await updateDoc(docRef, { ...data, logo: isLogoDirty ? '' : logo });
+
+        // dispatch({
+        //   type: 'INITIAL',
+        //   payload: {
+        //     ...state,
+        //     businessProfile: {
+        //       ...state.businessProfile,
+        //       ...payload,
+        //       ownerInfo: state.businessProfile.ownerInfo,
+        //     },
+        //   },
+        // });
       } catch (error) {
         throw error;
       }

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { Skeleton } from '@mui/lab';
 import { Stack, Container } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -18,6 +19,8 @@ function TranslationSettingsView() {
     queryFn: () => fsGetBusinessProfile(businessProfile.docID),
   });
 
+  console.log(businessProfileInfo?.docID);
+
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -27,9 +30,16 @@ function TranslationSettingsView() {
           { name: 'Translation Settings' },
         ]}
       />
+      {!businessProfileInfo?.docID && (
+        <Skeleton animation="pulse" variant="rounded" width="100%" height={200} />
+      )}
       <Stack direction="column" spacing={2}>
-        <DefaultLanguageEditForm businessProfileInfo={businessProfileInfo} />
-        <TranslationsListEditForm businessProfileInfo={businessProfileInfo} />
+        {businessProfileInfo?.docID && (
+          <DefaultLanguageEditForm businessProfileInfo={businessProfileInfo} />
+        )}
+        {businessProfileInfo?.docID && (
+          <TranslationsListEditForm businessProfileInfo={businessProfileInfo} />
+        )}
       </Stack>
     </Container>
   );
