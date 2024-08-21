@@ -30,7 +30,8 @@ DefaultLanguageEditForm.propTypes = {
 };
 
 function DefaultLanguageEditForm({ businessProfileInfo }) {
-  const { fsUpdateTranslationSettings, fsUpdateBusinessProfile } = useAuthContext();
+  const { fsUpdateTranslationSettings, fsUpdateBusinessProfile, fsUpdateBranchesDefaultLanguage } =
+    useAuthContext();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
   const [isOpen, setIsOpen] = useState(false);
@@ -59,6 +60,8 @@ function DefaultLanguageEditForm({ businessProfileInfo }) {
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       queryClient.invalidateQueries(['businessProfile', businessProfileInfo?.docID]);
+      queryClient.invalidateQueries(['branches']);
+      queryClient.invalidateQueries(['branch']);
     },
   });
 
@@ -86,15 +89,16 @@ function DefaultLanguageEditForm({ businessProfileInfo }) {
           updatedLanguages
         );
         await delay(1000);
-        reset();
+        reset(formData);
         enqueueSnackbar(response.data.message);
       } else {
         await fsUpdateBusinessProfile({
           defaultLanguage: formData.defaultLanguage,
         });
+        await fsUpdateBranchesDefaultLanguage(formData.defaultLanguage);
         await delay(1000);
         enqueueSnackbar('Default language updated successfully');
-        reset();
+        reset(formData);
       }
     });
   };
@@ -140,7 +144,7 @@ function DefaultLanguageEditForm({ businessProfileInfo }) {
                       </MenuItem>
                     ))}
                   </RHFSelect>
-                  {businessProfileInfo.languages.includes(values.defaultLanguage) && (
+                  {businessProfileInfo?.languages?.includes(values.defaultLanguage) && (
                     <Typography variant="caption" color="error">
                       Selecting{' '}
                       <Label color="info" sx={{ mx: 0.5 }}>{`${
@@ -150,6 +154,17 @@ function DefaultLanguageEditForm({ businessProfileInfo }) {
                       will be your base language
                     </Typography>
                   )}
+
+                  <Stack direction="column" spacing={0.5}>
+                    <Typography variant="body2">
+                      This will change the default language for all branches
+                    </Typography>
+                    <Typography sx={{ fontWeight: 600 }}>Affected Items:</Typography>
+
+                    <Label color="warning" sx={{ alignSelf: 'flex-start' }}>
+                      Branches
+                    </Label>
+                  </Stack>
                 </Stack>
               </Stack>
             </Stack>
@@ -164,8 +179,8 @@ function DefaultLanguageEditForm({ businessProfileInfo }) {
             <Typography>
               You cannot remove{' '}
               <Label color="warning">
-                {`${LANGUAGE_CODES[values.defaultLanguage].name} -
-            ${LANGUAGE_CODES[values.defaultLanguage].value}`}
+                {`${LANGUAGE_CODES[values.defaultLanguage]?.name} -
+            ${LANGUAGE_CODES[values.defaultLanguage]?.value}`}
               </Label>{' '}
               as it is the only language left for translation, please add another language to{' '}
               <Box component="span" sx={{ fontWeight: 600, display: 'inline-block' }}>

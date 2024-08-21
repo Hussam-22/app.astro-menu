@@ -372,6 +372,8 @@ export function AuthProvider({ children }) {
           title: businessProfileInfo.businessName,
           desc: 'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.',
           businessProfileID,
+          newLang: state.businessProfile.languages,
+          toRemoveLang: [],
         });
 
         // 3- Update Assign Business-Profile to User
@@ -398,6 +400,8 @@ export function AuthProvider({ children }) {
           title: state.businessProfile.businessName,
           desc: description,
           businessProfileID,
+          newLang: state.businessProfile.languages,
+          toRemoveLang: [],
         });
 
         await fsGetBusinessProfile(businessProfileID);
@@ -1184,6 +1188,24 @@ export function AuthProvider({ children }) {
     },
     []
   );
+  const fsUpdateBranchesDefaultLanguage = useCallback(
+    async (lang) => {
+      const batch = writeBatch(DB);
+      const branchesRef = query(
+        collectionGroup(DB, 'branches'),
+        where('businessProfileID', '==', state.user.businessProfileID),
+        where('isDeleted', '==', false)
+      );
+
+      const branchesSnapshot = await getDocs(branchesRef);
+      branchesSnapshot.forEach((branch) => {
+        const branchRef = branch.ref;
+        batch.update(branchRef, { defaultLanguage: lang });
+      });
+      await batch.commit();
+    },
+    [state]
+  );
   // ------------------------- Menu --------------------------------
   const fsGetMenu = useCallback(
     async (menuID, businessProfileID = state.user.businessProfileID) => {
@@ -1270,6 +1292,8 @@ export function AuthProvider({ children }) {
       fbTranslate({
         text: title,
         sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${newDocRef.id}`,
+        newLang: state.businessProfile.languages,
+        toRemoveLang: [],
       });
 
       return newDocRef.id;
@@ -1373,7 +1397,6 @@ export function AuthProvider({ children }) {
   );
   const fsUpdateSectionTitle = useCallback(
     async (menuID, sectionID, payload) => {
-      console.log({ menuID, sectionID, payload });
       const docRef = doc(
         DB,
         `/businessProfiles/${state.user.businessProfileID}/menus/${menuID}/sections/${sectionID}/`
@@ -1383,6 +1406,8 @@ export function AuthProvider({ children }) {
       fbTranslate({
         sectionRef: `/businessProfiles/${state.user.businessProfileID}/menus/${menuID}/sections/${docRef.id}`,
         text: payload.title,
+        newLang: state.businessProfile.languages,
+        toRemoveLang: [],
       });
     },
     [state]
@@ -1504,7 +1529,8 @@ export function AuthProvider({ children }) {
       await fbTranslateMeal({
         mealRef: `/businessProfiles/${businessProfileID}/meals/${newDocRef.id}`,
         text: { title: mealInfo.title, desc: mealInfo.description },
-        businessProfileID,
+        newLang: state.businessProfile.languages,
+        toRemoveLang: [],
       });
 
       console.log(imageFile);
@@ -1568,7 +1594,8 @@ export function AuthProvider({ children }) {
           fbTranslateMeal({
             mealRef: `/businessProfiles/${state.user.businessProfileID}/meals/${payload.docID}`,
             text: { title: payload.title, desc: payload.description },
-            businessProfileID: state.user.businessProfileID,
+            newLang: state.businessProfile.languages,
+            toRemoveLang: [],
           });
       } catch (error) {
         console.log(error);
@@ -1710,6 +1737,8 @@ export function AuthProvider({ children }) {
         labelTitle: title,
         businessProfileID,
         labelDocID: docRef.id,
+        newLang: state.businessProfile.languages,
+        toRemoveLang: [],
       });
 
       return docRef.id;
@@ -2113,6 +2142,7 @@ export function AuthProvider({ children }) {
       fsAddNewBranch,
       fsUpdateBranch,
       fsUpdateDisabledMealsInBranch,
+      fsUpdateBranchesDefaultLanguage,
       // ---- TABLES ----
       fsGetBranchTablesCount,
       fsGetBranchTables,
@@ -2208,6 +2238,7 @@ export function AuthProvider({ children }) {
       fsAddNewBranch,
       fsUpdateBranch,
       fsUpdateDisabledMealsInBranch,
+      fsUpdateBranchesDefaultLanguage,
       // ---- TABLES ----
       fsGetBranchTablesCount,
       fsGetBranchTables,

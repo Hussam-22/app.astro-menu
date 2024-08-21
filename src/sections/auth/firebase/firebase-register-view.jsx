@@ -17,7 +17,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Logo from 'src/components/logo';
 // routes
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hook';
 // components
 import Iconify from 'src/components/iconify';
 // auth
@@ -36,9 +35,8 @@ const OPTIONS = LANGUAGES.map((language) => ({
 // ----------------------------------------------------------------------
 
 export default function FirebaseRegisterView() {
-  const { register, loginWithGoogle, fsCreateBusinessProfile, createDefaults } = useAuthContext();
+  const { fsCreateBusinessProfile } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState('');
-  const router = useRouter();
   const password = useBoolean();
 
   const RegisterSchema = Yup.object().shape({
@@ -71,7 +69,7 @@ export default function FirebaseRegisterView() {
     watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting, isDirty, errors },
+    formState: { isDirty },
   } = methods;
 
   const {

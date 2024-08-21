@@ -21,6 +21,8 @@ function BusinessProfileTranslation({ businessProfileInfo, isFetching = false })
     setIsOpenModal(false);
   };
 
+  console.log(businessProfileInfo.translationEdited.en.desc);
+
   return (
     <Stack spacing={3}>
       <Card>

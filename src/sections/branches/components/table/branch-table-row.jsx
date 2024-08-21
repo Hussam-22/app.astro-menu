@@ -28,8 +28,6 @@ export default function BranchTableRow({ row, onEditRow }) {
     avgIncomePerOrder,
   } = useGetBranchInfo(docID, year, month);
 
-  console.log(totalTurnoverStr);
-
   return (
     <TableRow hover>
       <TableCell
@@ -54,7 +52,7 @@ export default function BranchTableRow({ row, onEditRow }) {
           ) : (
             <CircularProgress sx={{ borderRadius: 1.5, width: 48, height: 48 }} />
           )}
-          <Typography variant="h6">{title}</Typography>
+          <Typography sx={{ fontWeight: 600 }}>{title}</Typography>
         </Stack>
       </TableCell>
 

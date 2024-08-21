@@ -1,9 +1,9 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import { useMemo, useState } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { useMemo, useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
@@ -80,6 +80,10 @@ export default function TranslationTextField({
     handleSubmit,
     formState: { isDirty, isSubmitting },
   } = methods;
+
+  useEffect(() => {
+    reset({ [field]: translationData.editedTranslation || translationData.translated });
+  }, [field, reset, translationData.editedTranslation, translationData.translated]);
 
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),

@@ -57,10 +57,12 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
   const { mutate, isPending, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
-      if (tableToUpdate === 'meals') {
-        const queryKeys = data?.docID ? ['meals', `meal-${data.docID}`] : ['meals'];
-        queryClient.invalidateQueries(queryKeys);
+      if (pathname.includes('meal')) {
+        queryClient.invalidateQueries({ queryKey: [`meal-${data.docID}`] });
+        queryClient.invalidateQueries({ queryKey: ['meals'] });
       }
+      if (!pathname.includes('meal'))
+        queryClient.invalidateQueries({ queryKey: ['businessProfile'] });
     },
   });
 
@@ -82,6 +84,7 @@ export default function DialogEditTitle({ isOpen, onClose, data, showTitle = tru
       onClose();
     });
   };
+
   return (
     <Dialog
       fullWidth

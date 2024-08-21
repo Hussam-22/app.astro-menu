@@ -37,8 +37,6 @@ export function useGetBranchInfo(branchID, year = THIS_YEAR, month = THIS_MONTH)
     return `${hours}h ${mins.toFixed(0)}min`;
   };
 
-  console.log(totalTurnover);
-
   return {
     scanData,
     totalOrders,

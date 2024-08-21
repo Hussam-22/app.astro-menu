@@ -42,7 +42,7 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
 
   const languageKeys = Object.keys(sectionInfo?.translationEdited || {});
 
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutate, error } = useMutation({
     mutationFn: (payload) =>
       fsUpdateSectionTitle(menuID, sectionInfo.docID, {
         title: payload.title,

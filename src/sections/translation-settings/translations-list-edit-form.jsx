@@ -32,7 +32,7 @@ TranslationsListEditForm.propTypes = {
 };
 
 function TranslationsListEditForm({ businessProfileInfo }) {
-  const { fsUpdateTranslationSettings, fsUpdateBusinessProfile } = useAuthContext();
+  const { fsUpdateTranslationSettings } = useAuthContext();
   const { maxTranslationsLanguages } = useGetProductInfo();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
@@ -126,17 +126,6 @@ function TranslationsListEditForm({ businessProfileInfo }) {
                 </Label>
               </Typography>
             </Stack>
-            <Typography>
-              Removing a Translation language will remove all the translations for that language
-            </Typography>
-            <Typography sx={{ fontWeight: 600 }}>Affected Items:</Typography>
-
-            <Stack direction="row" spacing={1}>
-              <Label color="warning">Meals</Label>
-              <Label color="warning">Meal Labels</Label>
-              <Label color="warning">Menu Sections Title</Label>
-              <Label color="warning">Business Name and Description</Label>
-            </Stack>
 
             <RHFMultiSelect
               sx={{ mt: 2 }}
@@ -149,6 +138,18 @@ function TranslationsListEditForm({ businessProfileInfo }) {
                 (option) => option.value !== businessProfileInfo.defaultLanguage
               )}
             />
+
+            <Typography variant="body2" color="error">
+              Removing a Translation language will remove all the translations for that language
+            </Typography>
+            <Typography sx={{ fontWeight: 600 }}>Affected Items:</Typography>
+
+            <Stack direction="row" spacing={1}>
+              <Label color="warning">Meals</Label>
+              <Label color="warning">Meal Labels</Label>
+              <Label color="warning">Menu Sections Title</Label>
+              <Label color="warning">Business Name and Description</Label>
+            </Stack>
           </Stack>
         </Card>
       </Stack>
