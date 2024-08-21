@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
 // @mui
-import { Link, TableRow, TableCell, Typography, ListItemText } from '@mui/material';
+import { Link, TableRow, TableCell, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
@@ -27,35 +27,20 @@ export default function TableDataRows({ row, onEditRow }) {
   });
 
   const statusLabel = isActive ? (
-    <Label color="success">
-      <Typography variant="caption">Active</Typography>
-    </Label>
+    <Label color="success">Active</Label>
   ) : (
-    <Label color="error">
-      <Typography variant="caption">Disabled</Typography>
-    </Label>
+    <Label color="error">Disabled</Label>
   );
 
   return (
     <TableRow hover>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <ListItemText
-          primary={
-            <Link onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-              {fullname}
-            </Link>
-          }
-          secondary={
-            <Link
-              noWrap
-              variant="caption"
-              onClick={onEditRow}
-              sx={{ color: 'text.disabled', cursor: 'pointer' }}
-            >
-              {docID}
-            </Link>
-          }
-        />
+        <Link
+          onClick={onEditRow}
+          sx={{ cursor: 'pointer', typography: 'body1', color: 'secondary.main', fontWeight: 600 }}
+        >
+          {fullname}
+        </Link>
       </TableCell>
 
       <TableCell align="center">{branchInfo.title}</TableCell>

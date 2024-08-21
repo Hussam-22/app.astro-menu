@@ -1,75 +1,34 @@
-import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 // form
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-// @mui
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Button, Divider, MenuItem, Typography } from '@mui/material';
+// @mui
+import { Card, Stack, Button, Divider, Typography } from '@mui/material';
 
-import Iconify from 'src/components/iconify';
+import { fData } from 'src/utils/format-number';
 import { useAuthContext } from 'src/auth/hooks';
 import { delay } from 'src/utils/promise-delay';
-import { fData } from 'src/utils/format-number';
-import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import { LANGUAGES } from 'src/_mock/translation-languages';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import FormProvider, {
-  RHFSelect,
-  RHFTextField,
-  RHFMultiSelect,
-  RHFUploadAvatar,
-} from 'src/components/hook-form';
-
-// ----------------------------------------------------------------------------
-
-const OPTIONS = LANGUAGES.map((language) => ({
-  value: language.code,
-  label: language.languageName,
-})).sort((a, b) => a.label.localeCompare(b.label));
-
-const THIS_MONTH = new Date().getMonth();
+import FormProvider, { RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 
 function BusinessProfileEditForm() {
   const { businessProfile, fsUpdateBusinessProfile } = useAuthContext();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
-  const [isOpen, setIsOpen] = useState(false);
-  // const maxLanguages = businessProfile.planInfo.at(-1).limits.languages;
-  const maxLanguages = 3;
-
-  const availableLanguages =
-    (businessProfile?.languages &&
-      Object.entries(LANGUAGE_CODES).filter((code) =>
-        [...businessProfile.languages, businessProfile.defaultLanguage].includes(code[0])
-      )) ||
-    [];
-
-  const NewUserSchema = Yup.object().shape({
-    // imgUrl: Yup.mixed().required('Cover Image is required'),
-    languages: Yup.array()
-      .min(1, 'Choose at least one option')
-      .max(maxLanguages, `max ${maxLanguages} translation languages allowed in your plan`),
-  });
 
   const defaultValues = useMemo(
     () => ({
       businessName: businessProfile?.businessName || '',
       description: businessProfile?.description || '',
       email: businessProfile.ownerInfo.email || '',
-      languages: businessProfile?.languages || [],
-      defaultLanguage: businessProfile?.defaultLanguage || '',
       logo: businessProfile?.logo || '',
-      isActive: !!businessProfile?.isActive,
     }),
     [businessProfile]
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
 
@@ -77,7 +36,6 @@ function BusinessProfileEditForm() {
     watch,
     setValue,
     handleSubmit,
-    reset: resetForm,
     formState: { isDirty, dirtyFields },
   } = methods;
 
@@ -108,7 +66,7 @@ function BusinessProfileEditForm() {
     setValue('cover', '');
   };
 
-  const { isPending, mutate, error, reset } = useMutation({
+  const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       queryClient.invalidateQueries(['businessProfile', businessProfile?.docID]);
@@ -116,14 +74,7 @@ function BusinessProfileEditForm() {
     },
   });
 
-  const onClose = () => {
-    reset();
-    setIsOpen(false);
-  };
-
-  useEffect(() => {
-    if (error?.message) setIsOpen(true);
-  }, [error?.message]);
+  console.log(error);
 
   const onSubmit = async (formData) => {
     mutate(async () => {
@@ -132,135 +83,66 @@ function BusinessProfileEditForm() {
     });
   };
 
-  const translationEditUsageLimit = businessProfile?.translationEditUsage?.THIS_MONTH || 0;
-  const availableLimit = 3 - translationEditUsageLimit;
-
   return (
-    <>
-      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Stack direction="column" spacing={2}>
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            color="success"
-            loading={isPending}
-            disabled={!isDirty}
-            sx={{ alignSelf: 'flex-end' }}
-          >
-            Save
-          </LoadingButton>
-          <Card sx={{ p: 3 }}>
-            <Stack
-              spacing={3}
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              divider={<Divider flexItem orientation="vertical" />}
-            >
-              <Stack direction="column" spacing={2} alignItems="center">
-                <Typography variant="overline">Business Logo</Typography>
-                <RHFUploadAvatar
-                  name="logo"
-                  maxSize={3000000}
-                  onDrop={handleDrop}
-                  onRemove={handelRemove}
-                  helperText={
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        mt: 3,
-                        mx: 'auto',
-                        display: 'block',
-                        textAlign: 'center',
-                        color: 'text.disabled',
-                      }}
-                    >
-                      Allowed *.jpeg, *.jpg, *.png, *.webp
-                      <br /> max size of {fData(3000000)}
-                    </Typography>
-                  }
-                />
-                <Button variant="contained" onClick={handleRemoveFile} disabled={!values.logo}>
-                  Remove Logo
-                </Button>
-              </Stack>
-              <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
-                <RHFTextField name="businessName" label="Business Name" disabled />
-                <RHFTextField name="description" label="Description" rows={5} multiline />
-                <RHFTextField
-                  type="email"
-                  name="email"
-                  label="Business Email (Does not show to the world)"
-                  disabled
-                />
-              </Stack>
-            </Stack>
-          </Card>
-          <Card sx={{ p: 3 }}>
-            <Stack spacing={2}>
-              <Typography variant="h6">Languages</Typography>
-              <Typography variant="caption" sx={{}}>
-                Default Language is your main language for the menu and business description, if you
-                are from France for example and you are tending to write your menu in French, then
-                French should be your default language, and you can add other languages for
-                translation, meaning the other languages will use French as a base for translation,
-                keep in mind the Admin dashboard will always be in English ( we are working on
-                adding more languages in the future)
-              </Typography>
-
-              <RHFSelect name="defaultLanguage" label="Default Menu Language">
-                {availableLanguages.map((code) => (
-                  <MenuItem key={code[1].name} value={code[0]}>
-                    {code[1].value}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-              <Stack direction="column" spacing={1} alignItems="flex-start">
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ pl: 0.5 }}>
-                  <Iconify icon="dashicons:warning" sx={{ color: 'error.main' }} />
-                  <Typography variant="caption" sx={{ color: 'error.main' }}>
-                    Making any changes to the languages will delete existing translations and reset
-                    all custom translations edits for all 1- meals, 2- sections, 3- business
-                    description and title
-                  </Typography>
-                </Stack>
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ pl: 0.5 }}>
-                  <Iconify icon="dashicons:warning" sx={{ color: 'error.main' }} />
-                  <Typography variant="caption" sx={{ color: 'error.main' }}>
-                    You can only change the languages list 3 times a month to avoid excessive usage{' '}
-                    <Box component="span" sx={{ color: 'common.black' }}>
-                      | Available limit: {availableLimit}
-                    </Box>
-                  </Typography>
-                </Stack>
-              </Stack>
-              <RHFMultiSelect
-                chip
-                checkbox
-                name="languages"
-                label="Translation Languages"
-                options={OPTIONS.filter(
-                  (option) => option.value !== businessProfile.defaultLanguage
-                )}
-              />
-            </Stack>
-          </Card>
-        </Stack>
-      </FormProvider>
-      <ConfirmDialog
-        open={isOpen}
-        onClose={onClose}
-        content={
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+      <Card sx={{ p: 3 }}>
+        <Stack
+          spacing={3}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          divider={<Divider flexItem orientation="vertical" />}
+        >
           <Stack direction="column" spacing={2} alignItems="center">
-            <Iconify
-              icon="fluent:error-circle-24-regular"
-              sx={{ width: 48, height: 48, color: 'error.main' }}
+            <Typography variant="overline">Business Logo</Typography>
+            <RHFUploadAvatar
+              name="logo"
+              maxSize={3000000}
+              onDrop={handleDrop}
+              onRemove={handelRemove}
+              helperText={
+                <Typography
+                  variant="caption"
+                  sx={{
+                    mt: 3,
+                    mx: 'auto',
+                    display: 'block',
+                    textAlign: 'center',
+                    color: 'text.disabled',
+                  }}
+                >
+                  Allowed *.jpeg, *.jpg, *.png, *.webp
+                  <br /> max size of {fData(3000000)}
+                </Typography>
+              }
             />
-            <Typography variant="h6">{error?.message}</Typography>
+            <Button variant="contained" onClick={handleRemoveFile} disabled={!values.logo}>
+              Remove Logo
+            </Button>
           </Stack>
-        }
-      />
-    </>
+          <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              color="success"
+              loading={isPending}
+              disabled={!isDirty}
+              sx={{ alignSelf: 'flex-end' }}
+            >
+              Save
+            </LoadingButton>
+            <RHFTextField name="businessName" label="Business Name" disabled />
+            <RHFTextField name="description" label="Description" rows={5} multiline />
+            <RHFTextField
+              type="email"
+              name="email"
+              label="Business Email (Does not show to the world)"
+              disabled
+            />
+          </Stack>
+        </Stack>
+      </Card>
+    </FormProvider>
   );
 }
 export default BusinessProfileEditForm;
