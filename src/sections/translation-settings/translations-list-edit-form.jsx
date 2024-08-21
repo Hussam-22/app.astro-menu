@@ -1,9 +1,9 @@
 import * as Yup from 'yup';
-import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 // form
 import { useForm } from 'react-hook-form';
+import { useMemo, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -12,9 +12,10 @@ import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
-import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
+import { delay } from 'src/utils/promise-delay';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
 import FormProvider, { RHFMultiSelect } from 'src/components/hook-form';
 
@@ -32,10 +33,11 @@ TranslationsListEditForm.propTypes = {
 };
 
 function TranslationsListEditForm({ businessProfileInfo }) {
+  const queryClient = useQueryClient();
   const { fsUpdateTranslationSettings } = useAuthContext();
   const { maxTranslationsLanguages } = useGetProductInfo();
-  const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
+  const [open, setOpen] = useState(false);
 
   const NewUserSchema = Yup.object().shape({
     languages: Yup.array()
@@ -59,10 +61,13 @@ function TranslationsListEditForm({ businessProfileInfo }) {
   });
 
   const {
+    watch,
     handleSubmit,
     reset,
     formState: { isDirty, dirtyFields },
   } = methods;
+
+  const values = watch();
 
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -83,77 +88,126 @@ function TranslationsListEditForm({ businessProfileInfo }) {
       return;
     }
 
+    setOpen(true);
+  };
+
+  const newLang = values?.languages?.filter(
+    (lang) => !businessProfileInfo?.languages?.includes(lang)
+  );
+  const toRemoveLang = businessProfileInfo?.languages?.filter(
+    (lang) => !values?.languages?.includes(lang)
+  );
+
+  const updateLanguagesList = async () => {
     mutate(async () => {
       await delay(1000);
-      const newLang = formData.languages.filter(
-        (lang) => !businessProfileInfo.languages.includes(lang)
-      );
-      const toRemoveLang = businessProfileInfo.languages.filter(
-        (lang) => !formData.languages.includes(lang)
-      );
-
-      const response = await fsUpdateTranslationSettings(newLang, toRemoveLang, formData.languages);
+      const response = await fsUpdateTranslationSettings(newLang, toRemoveLang, values.languages);
       enqueueSnackbar(response.data.message);
-      return formData;
+      setOpen(false);
+      return values;
     });
   };
+
   const { count, maxCount } = businessProfileInfo.translationEditUsage;
   const translationEditUsageLimit = count || 0;
   const availableLimit = maxCount - translationEditUsageLimit;
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack direction="column" spacing={2}>
-        <Card sx={{ p: 3 }}>
+    <>
+      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+        <Stack direction="column" spacing={2}>
+          <Card sx={{ p: 3 }}>
+            <Stack direction="column" spacing={1}>
+              <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Typography variant="h6">Translation Languages</Typography>
+                <LoadingButton
+                  type="submit"
+                  variant="contained"
+                  color="success"
+                  loading={isPending}
+                  disabled={!isDirty}
+                >
+                  Save
+                </LoadingButton>
+              </Stack>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography>
+                  You can only change the translations list few times a month to avoid excessive
+                  usage{' '}
+                  <Label color={availableLimit === 0 ? 'error' : 'info'}>
+                    Available Changes: {availableLimit}
+                  </Label>
+                </Typography>
+              </Stack>
+
+              <RHFMultiSelect
+                sx={{ mt: 2 }}
+                disabled={availableLimit <= 0}
+                chip
+                checkbox
+                name="languages"
+                label="Translation Languages"
+                options={TRANSLATION_LANGUAGES.filter(
+                  (option) => option.value !== businessProfileInfo.defaultLanguage
+                )}
+              />
+            </Stack>
+          </Card>
+        </Stack>
+      </FormProvider>
+
+      <ConfirmDialog
+        maxWidth="md"
+        open={open}
+        onClose={() => setOpen(false)}
+        closeText="No, Cancel"
+        action={
+          <LoadingButton
+            variant="contained"
+            color="secondary"
+            loading={isPending}
+            onClick={updateLanguagesList}
+          >
+            Yes, Update
+          </LoadingButton>
+        }
+        title="Update Languages List"
+        content={
           <Stack direction="column" spacing={1}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between">
-              <Typography variant="h6">Translation Languages</Typography>
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                color="success"
-                loading={isPending}
-                disabled={!isDirty}
-              >
-                Save
-              </LoadingButton>
-            </Stack>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Typography>
-                You can only change the translations list few times a month to avoid excessive usage{' '}
-                <Label color={availableLimit === 0 ? 'error' : 'info'}>
-                  Available Changes: {availableLimit}
-                </Label>
+            {toRemoveLang.length !== 0 && (
+              <Stack direction="column" spacing={1}>
+                <Typography variant="caption" color="error">
+                  Removing a Translation language will remove all the translations for that language
+                </Typography>
+
+                <Typography sx={{ fontWeight: 600 }}>
+                  Languages to Remove :{' '}
+                  {toRemoveLang.map((lang) => (
+                    <Label
+                      key={lang}
+                      color="error"
+                      sx={{ mx: 0.25 }}
+                    >{`${LANGUAGE_CODES[lang].name} - ${LANGUAGE_CODES[lang].value}`}</Label>
+                  ))}
+                </Typography>
+              </Stack>
+            )}
+            {newLang.length !== 0 && (
+              <Typography sx={{ fontWeight: 600 }}>
+                New Languages to add :{' '}
+                {newLang.map((lang) => (
+                  <Label
+                    key={lang}
+                    color="success"
+                    sx={{ mx: 0.25 }}
+                  >{`${LANGUAGE_CODES[lang].name} - ${LANGUAGE_CODES[lang].value}`}</Label>
+                ))}
               </Typography>
-            </Stack>
-
-            <RHFMultiSelect
-              sx={{ mt: 2 }}
-              disabled={availableLimit <= 0}
-              chip
-              checkbox
-              name="languages"
-              label="Translation Languages"
-              options={TRANSLATION_LANGUAGES.filter(
-                (option) => option.value !== businessProfileInfo.defaultLanguage
-              )}
-            />
-
-            <Typography variant="body2" color="error">
-              Removing a Translation language will remove all the translations for that language
-            </Typography>
-            <Typography sx={{ fontWeight: 600 }}>Affected Items:</Typography>
-
-            <Stack direction="row" spacing={1}>
-              <Label color="warning">Meals</Label>
-              <Label color="warning">Meal Labels</Label>
-              <Label color="warning">Menu Sections Title</Label>
-              <Label color="warning">Business Name and Description</Label>
-            </Stack>
+            )}
           </Stack>
-        </Card>
-      </Stack>
-    </FormProvider>
+        }
+      />
+    </>
   );
 }
 export default TranslationsListEditForm;

@@ -154,17 +154,6 @@ function DefaultLanguageEditForm({ businessProfileInfo }) {
                       will be your base language
                     </Typography>
                   )}
-
-                  <Stack direction="column" spacing={0.5}>
-                    <Typography variant="body2">
-                      This will change the default language for all branches
-                    </Typography>
-                    <Typography sx={{ fontWeight: 600 }}>Affected Items:</Typography>
-
-                    <Label color="warning" sx={{ alignSelf: 'flex-start' }}>
-                      Branches
-                    </Label>
-                  </Stack>
                 </Stack>
               </Stack>
             </Stack>
