@@ -8,8 +8,8 @@ import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import { Box, Card } from '@mui/material';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -24,13 +24,17 @@ import { useAuthContext } from 'src/auth/hooks';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { RouterLink } from 'src/routes/components';
-import { LANGUAGES } from 'src/_mock/translation-languages';
+import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import FormProvider, { RHFTextField, RHFMultiSelect } from 'src/components/hook-form';
 
-const OPTIONS = LANGUAGES.map((language) => ({
-  value: language.code,
-  label: language.languageName,
-})).sort((a, b) => a.label.localeCompare(b.label));
+const DESCRIPTION = `'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.'`;
+
+const TRANSLATION_LANGUAGES = Object.entries(LANGUAGE_CODES)
+  .map(([key, value]) => ({
+    value: key,
+    label: `${value.name} - ${value.value}`,
+  }))
+  .sort((a, b) => a.label.localeCompare(b.label));
 
 // ----------------------------------------------------------------------
 
@@ -56,7 +60,6 @@ export default function FirebaseRegisterView() {
     email: '',
     password: '',
     businessName: '',
-    address: '',
     languages: [],
   };
 
@@ -81,13 +84,14 @@ export default function FirebaseRegisterView() {
   });
   const values = watch();
 
+  console.log(mutationError);
+
   const onSubmit = handleSubmit(async (formData) => {
     try {
-      // const selectedPlan = PLANS_INFO.find((plan) => plan.name === data.plan);
-
       mutate(() =>
         fsCreateBusinessProfile({
           ...formData,
+          description: DESCRIPTION,
         })
       );
     } catch (error) {
@@ -136,17 +140,17 @@ export default function FirebaseRegisterView() {
         checkbox
         name="languages"
         label="Menu Target Languages"
-        options={OPTIONS.filter((option) => option.value !== values.defaultLanguage)}
+        options={TRANSLATION_LANGUAGES.filter((option) => option.value !== values.defaultLanguage)}
       />
 
       <LoadingButton
-        fullWidth
         color="primary"
         size="large"
         type="submit"
         variant="contained"
         loading={isPending}
         disabled={!isDirty}
+        sx={{ alignSelf: 'flex-end' }}
       >
         Create account
       </LoadingButton>
@@ -156,7 +160,7 @@ export default function FirebaseRegisterView() {
   // const createDefaults = async () => await createDefaults()
 
   return (
-    <Card sx={{ pt: 2 }}>
+    <Card sx={{ pt: 2, width: { xs: 'auto', sm: '40dvw' } }}>
       <Logo sx={{ mx: 4 }} />
       <Typography variant="h6" color="secondary" sx={{ textAlign: 'left', px: 3 }}>
         Create your{' '}
@@ -174,18 +178,18 @@ export default function FirebaseRegisterView() {
         sx={{ p: 2, bgcolor: 'grey.100', mt: 1 }}
       >
         <Stack direction="row" spacing={0.5} alignItems="center">
-          <Typography variant="caption"> Already have an account? </Typography>
+          <Typography variant="body2"> Already have an account? </Typography>
           <Link href={paths.auth.firebase.login} component={RouterLink} variant="caption">
             Sign in
           </Link>
         </Stack>
 
         <Stack direction="row" spacing={1} alignItems="center">
-          <Link underline="always" color="text.primary" variant="caption">
+          <Link underline="always" color="text.primary" variant="body2">
             Terms of Service
           </Link>
 
-          <Link underline="always" color="text.primary" variant="caption">
+          <Link underline="always" color="text.primary" variant="body2">
             Privacy Policy
           </Link>
         </Stack>

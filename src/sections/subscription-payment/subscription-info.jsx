@@ -21,7 +21,9 @@ function SubscriptionInfo() {
   const {
     businessProfile: { subscriptionInfo, ownerInfo },
   } = useAuthContext();
-  const { status, active } = useGetProductInfo();
+  const { status, isActive } = useGetProductInfo();
+
+  console.log({ subscriptionInfo, ownerInfo, status, isActive });
 
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
@@ -139,7 +141,7 @@ function SubscriptionInfo() {
                 title="Subscription Period"
                 titleColor="primary.main"
                 content={`${startDate} to ${endDate}`}
-                subContent={active ? `${remainingDays} remaining` : 'Expired'}
+                subContent={isActive ? `${remainingDays} remaining` : 'Expired'}
                 subContentColor="grey.600"
               />
             )}

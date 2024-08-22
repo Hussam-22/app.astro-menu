@@ -42,7 +42,6 @@ import {
 } from 'firebase/firestore';
 
 import { FIREBASE_API } from 'src/config-global';
-import { stripeCreateCustomer } from 'src/stripe/functions';
 import {
   DEFAULT_MEALS,
   DEFAULT_MENUS,
@@ -341,13 +340,16 @@ export function AuthProvider({ children }) {
         // 1- REGISTER OWNER
         const { email, password, firstName, lastName, ...businessProfileInfo } = data;
 
+        const ownerID = '1Q3Jhyob04g89HbcVuEh74KimqI2';
+        const subscriptionId = 'sub_1PqW8mRoHLqbtaTlWuG6ZYKt';
+        const stripeCustomerID = 'cus_Qhw0ULgSHkCKqX';
         // create a stripe customer and add a trial subscription 'Menu Master'
         // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
-        const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`);
-        console.log(stripeData);
-        const { customerId: stripeCustomerID, subscriptionId } = stripeData;
 
-        const ownerID = await register?.(email, password, firstName, lastName);
+        // const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`);
+        // const { customerId: stripeCustomerID, subscriptionId } = stripeData;
+
+        // const ownerID = await register?.(email, password, firstName, lastName);
 
         // 2- CREATE BUSINESS PROFILE
         const newDocRef = doc(collection(DB, `businessProfiles`));
@@ -355,30 +357,39 @@ export function AuthProvider({ children }) {
           ...businessProfileInfo,
           stripeCustomerID,
           subscriptionId,
-          defaultLanguage: businessProfileInfo?.defaultLanguage || 'en',
+          defaultLanguage: 'en',
           docID: newDocRef.id,
           ownerID,
           users: [],
           isActive: true,
           createdOn: new Date(),
           logo: await fsGetImgDownloadUrl('_mock', `business_logo_800x800.webp`),
-          description:
-            'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.',
         });
 
         const businessProfileID = newDocRef.id;
 
         await fbTranslateBranchDesc({
           title: businessProfileInfo.businessName,
-          desc: 'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.',
+          desc: businessProfileInfo.description,
           businessProfileID,
-          newLang: state.businessProfile.languages,
+          newLang: businessProfileInfo.languages,
           toRemoveLang: [],
         });
 
         // 3- Update Assign Business-Profile to User
         const userProfile = doc(collection(DB, 'users'), ownerID);
         await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
+
+        dispatch({
+          type: 'INITIAL',
+          payload: {
+            businessProfile: {
+              ...businessProfileInfo,
+            },
+          },
+        });
+
+        console.log(businessProfileInfo, state);
 
         // 4- Create Default Data
         await createDefaults(businessProfileID);
@@ -981,7 +992,7 @@ export function AuthProvider({ children }) {
           if (element.data().cover) dataArr.push(element.data());
           if (!element.data().cover) {
             const bucketPath = `${state.user.businessProfileID}/branches/${element.data().docID}`;
-            const cover = await fsGetImgDownloadUrl(bucketPath, `cover_800x800.webp`);
+            const cover = await fsGetImgDownloadUrl(bucketPath, `cover_200x200.webp`);
             dataArr.push({ ...element.data(), cover });
           }
         } catch (error) {
@@ -1270,6 +1281,8 @@ export function AuthProvider({ children }) {
   // --------------------- Menu Sections --------------------------
   const fsAddSection = useCallback(
     async (menuID, title, order, businessProfileID = state.user.businessProfileID, meals = []) => {
+      console.log(menuID, title, order, meals, businessProfileID);
+
       const newDocRef = doc(
         collection(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}/sections`)
       );
@@ -1278,10 +1291,9 @@ export function AuthProvider({ children }) {
         menuID,
         businessProfileID,
         title,
-        meals,
         order,
         isActive: true,
-        mealsQueryArray: meals.map((meal) => meal.docID),
+        mealsQueryArray: meals.length === 0 ? [] : meals.map((meal) => meal.docID),
       });
 
       fbTranslate({
@@ -1528,7 +1540,6 @@ export function AuthProvider({ children }) {
         toRemoveLang: [],
       });
 
-      console.log(imageFile);
       if (imageFile) {
         const storageRef = ref(
           STORAGE,

@@ -9,7 +9,6 @@ import Drawer from '@mui/material/Drawer';
 import { Button, Divider, Typography } from '@mui/material';
 
 // components
-import Logo from 'src/components/logo';
 import SvgColor from 'src/components/svg-color';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
@@ -32,7 +31,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
   const router = useRouter();
   const lgUp = useResponsive('up', 'lg');
   const { enqueueSnackbar } = useSnackbar();
-  const { logout } = useAuthContext();
+  const { logout, businessProfile } = useAuthContext();
   const navData = useNavData();
 
   const handleLogout = async () => {
@@ -68,18 +67,22 @@ export default function NavVertical({ openNav, onCloseNav }) {
         spacing={1}
         alignItems="center"
         justifyContent="flex-start"
-        sx={{ mt: 2, ml: 4.25 }}
+        sx={{ mt: 2, ml: 3 }}
       >
-        <Logo />
         <Stack direction="column">
-          <Typography sx={{ fontWeight: '700', lineHeight: 1 }}>Astro-Menu</Typography>
-          <Typography variant="caption" color="text.secondary">
-            Admin Dashboard
+          <Typography sx={{ fontWeight: 600 }}>
+            Welcome back, {businessProfile.ownerInfo.displayName}
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.disabled' }}>
+            {businessProfile.email}
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.disabled' }}>
+            {businessProfile.businessName}
           </Typography>
         </Stack>
       </Stack>
 
-      <Divider sx={{ borderStyle: 'dashed', my: 2 }} />
+      <Divider sx={{ borderStyle: 'dashed', my: 1 }} />
 
       <NavSectionVertical data={navData} />
 

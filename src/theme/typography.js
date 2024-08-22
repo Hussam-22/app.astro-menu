@@ -70,7 +70,7 @@ export const typography = {
   },
   subtitle1: {
     fontWeight: 400,
-    lineHeight: 1.5,
+    lineHeight: 1,
     fontSize: pxToRem(20),
   },
   subtitle2: {
@@ -95,8 +95,8 @@ export const typography = {
   },
   overline: {
     fontWeight: 500,
-    lineHeight: 1.5,
-    fontSize: pxToRem(12),
+    lineHeight: 1,
+    fontSize: pxToRem(10),
     textTransform: 'uppercase',
   },
   button: {

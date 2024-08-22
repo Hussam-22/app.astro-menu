@@ -59,7 +59,8 @@ export function useGetProductInfo() {
     languages,
     maxTables,
     version,
-    status: statusName(),
+    status,
+    statusName: statusName(),
     role: status === 'active' || status === 'trialing' ? 'full' : 'deny',
     maxTranslationsLanguages,
   };

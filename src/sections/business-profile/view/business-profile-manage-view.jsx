@@ -61,7 +61,13 @@ function BusinessProfileManageView() {
             scrollButtons="auto"
             value={currentTab}
             onChange={(event, newValue) => setCurrentTab(newValue)}
-            sx={{ bgcolor: theme.palette.background.paper, mt: 2, px: 2, pb: 1, borderRadius: 1 }}
+            sx={{
+              bgcolor: theme.palette.background.paper,
+              mt: 2,
+              px: 2,
+              pb: 1,
+              borderRadius: 1,
+            }}
           >
             {TABS.map((tab) => (
               <Tab
