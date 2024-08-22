@@ -48,7 +48,6 @@ import {
   DEFAULT_STAFF,
   DEFAULT_BRANCH,
   DEFAULT_LABELS,
-  DEFAULT_MENU_SECTIONS,
 } from 'src/_mock/business-profile-default-values';
 
 import { AuthContext } from './auth-context';
@@ -380,19 +379,8 @@ export function AuthProvider({ children }) {
         const userProfile = doc(collection(DB, 'users'), ownerID);
         await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
 
-        dispatch({
-          type: 'INITIAL',
-          payload: {
-            businessProfile: {
-              ...businessProfileInfo,
-            },
-          },
-        });
-
-        console.log(businessProfileInfo, state);
-
         // 4- Create Default Data
-        await createDefaults(businessProfileID);
+        await createDefaults({ ...businessProfileInfo, businessProfileID });
       } catch (error) {
         console.log(error);
       }
@@ -633,13 +621,15 @@ export function AuthProvider({ children }) {
 
     // return translations;
   }, []);
-  const createDefaults = useCallback(async (businessProfileID) => {
+  const createDefaults = useCallback(async (businessProfileInfo) => {
     // create defaults for new users, default plan = 'Trial'
+
+    const { businessProfileID, languages } = businessProfileInfo;
 
     // 1- ADD MEAL LABELS
     const mealLabels = await Promise.all(
       DEFAULT_LABELS.map(async (label) => ({
-        id: await fsAddNewMealLabel(label, businessProfileID),
+        id: await fsAddNewMealLabel(label, businessProfileID, languages),
         label,
       }))
     );
@@ -656,7 +646,7 @@ export function AuthProvider({ children }) {
               (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
             ),
           };
-          const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
+          const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID, languages);
           return {
             id: mealID,
             meal,
@@ -673,23 +663,24 @@ export function AuthProvider({ children }) {
     );
 
     // 3- ADD MENU SECTIONS
-    await Promise.all(
-      DEFAULT_MENU_SECTIONS.map(async (section, order) => {
-        const sectionMeals = meals
-          .filter((item) => item.meal.section === section)
-          .map((meal) => ({
-            docID: meal.docID,
-            isActive: true,
-            portions: meal.portions,
-            isNew: meal.isNew,
-          }));
+    // await Promise.all(
+    //   DEFAULT_MENU_SECTIONS.map(async (section, order) => {
+    //     const sectionMeals = meals
+    //       .filter((item) => item.meal.section === section)
+    //       .map((meal) => ({
+    //         docID: meal.docID,
+    //         isActive: true,
+    //         portions: meal.portions,
+    //         isNew: meal.isNew,
+    //       }));
 
-        menus.map(async (menu) =>
-          fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
-        );
-      })
-    );
+    //     menus.map(async (menu) =>
+    //       fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals, languages)
+    //     );
+    //   })
+    // );
 
+    // 4- ADD BRANCH
     const branchID = await fsAddNewBranch(
       {
         ...DEFAULT_BRANCH,
@@ -1066,6 +1057,9 @@ export function AuthProvider({ children }) {
     async (branchData, businessProfileID = state.user.businessProfileID) => {
       const newDocRef = doc(collection(DB, `businessProfiles/${businessProfileID}/branches/`));
       const { imageFile, ...documentData } = branchData;
+
+      const CURRENT_YEAR_MONTH = `${THIS_YEAR}-${THIS_MONTH}`;
+
       await setDoc(newDocRef, {
         ...documentData,
         docID: newDocRef.id,
@@ -1073,7 +1067,7 @@ export function AuthProvider({ children }) {
         isDeleted: false,
         lastUpdatedBy: '',
         lastUpdatedAt: new Date(),
-        translationEditUsage: { [THIS_MONTH]: 0 },
+        translationEditUsage: { count: 0, maxCount: 3, yearMonth: CURRENT_YEAR_MONTH },
       });
 
       await fsAddBatchTablesToBranch(newDocRef.id, businessProfileID);
@@ -1280,7 +1274,14 @@ export function AuthProvider({ children }) {
   );
   // --------------------- Menu Sections --------------------------
   const fsAddSection = useCallback(
-    async (menuID, title, order, businessProfileID = state.user.businessProfileID, meals = []) => {
+    async (
+      menuID,
+      title,
+      order,
+      businessProfileID = state.user.businessProfileID,
+      meals = [],
+      languages = []
+    ) => {
       console.log(menuID, title, order, meals, businessProfileID);
 
       const newDocRef = doc(
@@ -1299,7 +1300,7 @@ export function AuthProvider({ children }) {
       fbTranslate({
         text: title,
         sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${newDocRef.id}`,
-        newLang: state.businessProfile.languages,
+        newLang: languages.length !== 0 ? languages : state.businessProfile.languages,
         toRemoveLang: [],
       });
 
@@ -1521,7 +1522,7 @@ export function AuthProvider({ children }) {
   );
   // ------------------------- Meals --------------------------------
   const fsAddNewMeal = useCallback(
-    async (mealInfo, businessProfileID = state.user.businessProfileID) => {
+    async (mealInfo, businessProfileID = state.user.businessProfileID, languages = []) => {
       const newDocRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/meals/`));
       const { imageFile, ...mealData } = mealInfo;
 
@@ -1536,7 +1537,7 @@ export function AuthProvider({ children }) {
       await fbTranslateMeal({
         mealRef: `/businessProfiles/${businessProfileID}/meals/${newDocRef.id}`,
         text: { title: mealInfo.title, desc: mealInfo.description },
-        newLang: state.businessProfile.languages,
+        newLang: languages.length !== 0 ? languages : state.businessProfile.languages,
         toRemoveLang: [],
       });
 
@@ -1735,7 +1736,7 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsAddNewMealLabel = useCallback(
-    async (title, businessProfileID = state.user.businessProfileID) => {
+    async (title, businessProfileID = state.user.businessProfileID, languages = []) => {
       const docRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/meal-labels/`));
       await setDoc(docRef, { title, isActive: true, businessProfileID, docID: docRef.id });
 
@@ -1743,7 +1744,7 @@ export function AuthProvider({ children }) {
         labelTitle: title,
         businessProfileID,
         labelDocID: docRef.id,
-        newLang: state.businessProfile.languages,
+        newLang: languages.length !== 0 ? languages : state.businessProfile.languages,
         toRemoveLang: [],
       });
 

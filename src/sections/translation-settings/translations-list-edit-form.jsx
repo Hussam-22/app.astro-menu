@@ -108,7 +108,8 @@ function TranslationsListEditForm({ businessProfileInfo }) {
     });
   };
 
-  const { count, maxCount } = businessProfileInfo.translationEditUsage;
+  const count = businessProfileInfo?.translationEditUsage?.count || 0;
+  const maxCount = businessProfileInfo?.translationEditUsage?.maxCount || 0;
   const translationEditUsageLimit = count || 0;
   const availableLimit = maxCount - translationEditUsageLimit;
 

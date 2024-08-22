@@ -9,22 +9,23 @@ const THIS_YEAR = new Date().getFullYear();
 export function useGetBranchInfo(branchID, year = THIS_YEAR, month = THIS_MONTH) {
   const { businessProfile, fsGetBranch } = useAuthContext();
 
-  const { data: branchInfo = {} } = useQuery({
+  const { data: branchInfo = {}, isPending } = useQuery({
     queryKey: ['branch', branchID],
     queryFn: () => fsGetBranch(branchID),
   });
 
   const scanData = businessProfile?.statisticsSummary?.branches[branchID]?.scans || {};
   const totalOrders =
-    businessProfile.statisticsSummary.branches[branchID]?.orders[year][month] || 0;
+    businessProfile?.statisticsSummary?.branches[branchID]?.orders[year][month] || 0;
   const totalTurnover =
-    businessProfile.statisticsSummary.branches[branchID]?.turnover[year][month] || 0;
+    businessProfile?.statisticsSummary?.branches[branchID]?.turnover[year][month] || 0;
   const averageTurnover = totalTurnover / totalOrders || 0;
-  const totalScans = businessProfile.statisticsSummary.branches[branchID]?.scans[year][month] || 0;
+  const totalScans =
+    businessProfile?.statisticsSummary?.branches[branchID]?.scans[year][month] || 0;
   const avgScanPerOrder = (totalScans / totalOrders).toFixed(0) || 0;
   const totalIncome =
-    businessProfile?.statisticsSummary.branches[branchID]?.income[year][month] || 0;
-  const allIncome = businessProfile.statisticsSummary.branches[branchID]?.income || {};
+    businessProfile?.statisticsSummary?.branches[branchID]?.income[year][month] || 0;
+  const allIncome = businessProfile?.statisticsSummary?.branches[branchID]?.income || {};
   const avgIncomePerOrder = totalIncome / totalOrders || 0;
 
   const mealsStats =
