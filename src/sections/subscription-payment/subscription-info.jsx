@@ -27,8 +27,6 @@ function SubscriptionInfo() {
 
   // console.log({ subscriptionInfo, ownerInfo, status, isActive });
 
-  console.log(productInfo);
-
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: (data) => console.log(data),
