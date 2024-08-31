@@ -15,7 +15,7 @@ function SettingSwitch({ title, description, label, name, isDanger }) {
         >
           {title}
         </Typography>
-        <Typography variant="caption">{description}</Typography>
+        <Typography variant="body2">{description}</Typography>
       </Stack>
       <RHFSwitch name={name} labelPlacement="start" label={label} color="success" />
     </Stack>

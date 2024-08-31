@@ -148,14 +148,11 @@ function SubscriptionInfo() {
               spacing={0.5}
               divider={<Divider orientation="horizontal" sx={{ borderStyle: 'dashed' }} />}
             >
-              <FeatureItem
-                value="Unlimited* (Unlimited scans are subject to fair use policy)"
-                title="Total Scans"
-              />
               <FeatureItem value={`${metadata?.branches}`} title="Branches" />
               <FeatureItem value={`${metadata?.tables} / per branch`} title="QR Codes" />
               <FeatureItem value={`${metadata?.meals}`} title="Meals" />
               <FeatureItem value={`${metadata?.menus}`} title="Menus" />
+              <FeatureItem value="Unlimited* (subject to fair use policy)" title="Total Scans" />
               <FeatureItem value={`${metadata?.languages}`} title="Translation Languages" />
               <FeatureItem
                 value={metadata?.pos === 'true' ? 'Included' : 'Not Included'}
@@ -173,6 +170,11 @@ function SubscriptionInfo() {
                 value={metadata?.isMenuOnly === 'false' ? 'Included' : 'Not Included'}
                 title="Self Order"
               />
+              <FeatureItem
+                value={metadata?.socialLinks === 'true' ? 'Included' : 'Not Included'}
+                title="Social Links"
+              />
+              <FeatureItem value={`${metadata?.otherLinks}`} title="Other Links" />
             </Stack>
 
             <Link
@@ -186,6 +188,19 @@ function SubscriptionInfo() {
             </Link>
           </Stack>
         </Stack>
+      </Card>
+
+      <Card sx={{ p: 3, mt: 2 }}>
+        <Typography variant="h5">Business is Thriving ?</Typography>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '3fr 1fr' }}>
+          <Typography>
+            If you want a more tailored plan to fit your business, please contact our team to help
+            you with your requirements.
+          </Typography>
+          <Link href="https://astro-menu.com/contact-us" sx={{ textAlign: 'center' }}>
+            Contact Us
+          </Link>
+        </Box>
       </Card>
     </>
   );

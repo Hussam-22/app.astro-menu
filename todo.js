@@ -33,6 +33,8 @@
 /- "quick add" portion directly from meal card
 - show a dialog when changing meal status, stating that changing the meal to "unable to serve" will remove it from all carts immediately
 - search menu meals
+- in orders history, when the canceled order cart is empty, it will show and error of "one of the meals were deleted", display another message.
+
 
 ? Menu
 - Fix Section Title Edit
@@ -52,6 +54,7 @@
 - when switching plan to coffee cup, remove extra languages
 - fix table order details, and use minutes instead of days for duration
 - Branch Statistics tab, calculate start period to start on the business profile subscription date start instead of 2023 for all
+- Fix QR orders that has no "Initial time" or "End time" in the order details
 
 ? Meals
 /- Translate Meal Portions (Not feasible as it will require a lot of work)

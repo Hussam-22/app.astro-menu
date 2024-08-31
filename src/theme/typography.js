@@ -20,7 +20,7 @@ export function responsiveFontSizes({ sm, md, lg }) {
   };
 }
 
-const primaryFont = '"Space Grotesk", sans-serif'; // Google Font
+const primaryFont = '"Bricolage Grotesque", sans-serif'; // Google Font
 // const secondaryFont = 'CircularStd, sans-serif'; // Local Font
 
 // ----------------------------------------------------------------------
