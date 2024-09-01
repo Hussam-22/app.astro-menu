@@ -45,7 +45,7 @@ function SubscriptionInfo() {
 
   const labelContent = () => {
     if (status === 'active') return { label: 'Active', color: 'success' };
-    return { label: status, color: 'error' };
+    return { label: status, color: 'warning' };
   };
 
   const openPortalSession = async () => stripeCreatePortalSession(ownerInfo.email);
@@ -77,22 +77,6 @@ function SubscriptionInfo() {
 
       <Card sx={{ p: 3, position: 'relative' }}>
         <Stack
-          direction="row"
-          spacing={2}
-          justifyContent="space-between"
-          sx={{ position: 'absolute', top: 25, right: 25 }}
-        >
-          {isTrial && (
-            <Label color={isTrial ? 'warning' : 'primary'} sx={{ fontSize: 16, p: 2 }}>
-              {trialStart && trialEnd ? 'Trial' : 'Subscribed'}
-            </Label>
-          )}
-          <Label color={labelContent().color} sx={{ fontSize: 16, p: 2 }}>
-            {labelContent().label}
-          </Label>
-        </Stack>
-
-        <Stack
           spacing={3}
           direction="row"
           justifyContent="space-between"
@@ -123,24 +107,30 @@ function SubscriptionInfo() {
           </Stack>
 
           <Stack direction="column" spacing={2} flexGrow={1}>
-            {isTrial && (
-              <PlanInfoItem
-                title="Trail Period"
-                titleColor="warning.main"
-                content={`${trialStart} to ${trialEnd}`}
-                subContent={`${trialRemainingDays} remaining`}
-              />
-            )}
+            <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+              {isTrial && (
+                <PlanInfoItem
+                  title="Trail Period"
+                  titleColor="warning.main"
+                  content={`${trialStart} to ${trialEnd}`}
+                  subContent={`${trialRemainingDays} remaining`}
+                />
+              )}
 
-            {!isTrial && (
-              <PlanInfoItem
-                title="Subscription Period"
-                titleColor="primary.main"
-                content={`${startDate} to ${endDate}`}
-                subContent={isActive ? `${remainingDays} remaining` : 'Expired'}
-                subContentColor="grey.600"
-              />
-            )}
+              {!isTrial && (
+                <PlanInfoItem
+                  title="Subscription Period"
+                  titleColor="primary.main"
+                  content={`${startDate} to ${endDate}`}
+                  subContent={isActive ? `${remainingDays} remaining` : 'Expired'}
+                  subContentColor="grey.600"
+                />
+              )}
+
+              <Label color={labelContent().color} sx={{ fontSize: 16, p: 2 }}>
+                {labelContent().label}
+              </Label>
+            </Stack>
 
             <Divider sx={{ borderStyle: 'dashed' }} />
             <Stack

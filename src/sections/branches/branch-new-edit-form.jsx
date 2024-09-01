@@ -208,7 +208,7 @@ export default function BranchNewEditForm({ branchInfo }) {
               {/* <RHFTextField name="description" label="About" multiline rows={3} /> */}
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
                 <RHFTextField name="wifiPassword" label="Wifi Password" />
-                <RHFTextField name="taxValue" label="Tax Value" type="number" />
+                <RHFTextField name="taxValue" label="Tax %" type="number" />
 
                 {!isLoading && (
                   <RHFSelect name="currency" label="Currency">

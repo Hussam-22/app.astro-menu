@@ -97,6 +97,24 @@ export default function NavVertical({ openNav, onCloseNav }) {
       >
         Log Out
       </Button>
+      <Divider sx={{ borderStyle: 'dashed', my: 2 }} />
+
+      <Box
+        sx={{
+          mx: 1,
+          p: 2,
+          bgcolor: 'background.default',
+          borderRadius: 3,
+          border: 'dashed 1px #C1C1C1',
+        }}
+      >
+        <Typography variant="h6">Need Help ?</Typography>
+        <Typography>
+          Feel overwhelmed, need help in setting up your menu, we are here to help you, just send us
+          an email and we will get in touch with you to assist you.
+        </Typography>
+        <Typography>hello@astro-menu.com</Typography>
+      </Box>
 
       <Box sx={{ flexGrow: 1 }} />
     </Scrollbar>

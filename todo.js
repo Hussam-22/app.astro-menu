@@ -38,6 +38,8 @@
 
 ? Menu
 - Fix Section Title Edit
+- when menu has no sections or all sections have no meals, disable menu for customers.
+- Show alert message when menu is in use does not have any sections or meals
 
 
 ? Branch

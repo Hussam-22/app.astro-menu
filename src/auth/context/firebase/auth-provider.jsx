@@ -42,6 +42,7 @@ import {
 } from 'firebase/firestore';
 
 import { FIREBASE_API } from 'src/config-global';
+import { stripeCreateCustomer } from 'src/stripe/functions';
 import {
   DEFAULT_MEALS,
   DEFAULT_MENUS,
@@ -339,16 +340,16 @@ export function AuthProvider({ children }) {
         // 1- REGISTER OWNER
         const { email, password, firstName, lastName, ...businessProfileInfo } = data;
 
-        const ownerID = '1Q3Jhyob04g89HbcVuEh74KimqI2';
-        const subscriptionId = 'sub_1PqW8mRoHLqbtaTlWuG6ZYKt';
-        const stripeCustomerID = 'cus_Qhw0ULgSHkCKqX';
+        // const ownerID = '1Q3Jhyob04g89HbcVuEh74KimqI2';
+        // const subscriptionId = 'sub_1PqW8mRoHLqbtaTlWuG6ZYKt';
+        // const stripeCustomerID = 'cus_Qhw0ULgSHkCKqX';
         // create a stripe customer and add a trial subscription 'Menu Master'
         // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
 
-        // const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`);
-        // const { customerId: stripeCustomerID, subscriptionId } = stripeData;
+        const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`);
+        const { customerId: stripeCustomerID, subscriptionId } = stripeData;
 
-        // const ownerID = await register?.(email, password, firstName, lastName);
+        const ownerID = await register?.(email, password, firstName, lastName);
 
         // 2- CREATE BUSINESS PROFILE
         const newDocRef = doc(collection(DB, `businessProfiles`));

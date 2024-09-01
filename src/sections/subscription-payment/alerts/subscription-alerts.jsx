@@ -47,13 +47,16 @@ export default function SubscriptionsAlert() {
   const trialPlan = (
     <Alert severity="info" variant="outlined">
       <AlertTitle>Enjoying Astro-Menu?</AlertTitle>
-      <Typography>Subscribe to paid plan to continue using the Astro-Menu</Typography>
+      <Typography>
+        Subscribe to paid plan to continue using the Astro-Menu before trial ends, or switch to
+        other plan that fits your business needs.
+      </Typography>
       <LoadingButton
         loading={isLoading}
         variant="contained"
         color="info"
         onClick={openPortalSession}
-        sx={{ fontWeight: 'bold' }}
+        sx={{ fontWeight: 'bold', mt: 0.5 }}
         size="small"
       >
         Open Subscription Portal

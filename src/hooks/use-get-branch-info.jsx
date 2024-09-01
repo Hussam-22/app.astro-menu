@@ -14,22 +14,22 @@ export function useGetBranchInfo(branchID, year = THIS_YEAR, month = THIS_MONTH)
     queryFn: () => fsGetBranch(branchID),
   });
 
-  const scanData = businessProfile?.statisticsSummary?.branches[branchID]?.scans || {};
+  const scanData = businessProfile?.statisticsSummary?.branches?.[branchID]?.scans || {};
   const totalOrders =
-    businessProfile?.statisticsSummary?.branches[branchID]?.orders[year][month] || 0;
+    businessProfile?.statisticsSummary?.branches?.[branchID]?.orders?.[year]?.[month] || 0;
   const totalTurnover =
-    businessProfile?.statisticsSummary?.branches[branchID]?.turnover[year][month] || 0;
+    businessProfile?.statisticsSummary?.branches?.[branchID]?.turnover?.[year]?.[month] || 0;
   const averageTurnover = totalTurnover / totalOrders || 0;
   const totalScans =
-    businessProfile?.statisticsSummary?.branches[branchID]?.scans[year][month] || 0;
+    businessProfile?.statisticsSummary?.branches?.[branchID]?.scans?.[year]?.[month] || 0;
   const avgScanPerOrder = (totalScans / totalOrders).toFixed(0) || 0;
   const totalIncome =
-    businessProfile?.statisticsSummary?.branches[branchID]?.income[year][month] || 0;
-  const allIncome = businessProfile?.statisticsSummary?.branches[branchID]?.income || {};
+    businessProfile?.statisticsSummary?.branches?.[branchID]?.income?.[year]?.[month] || 0;
+  const allIncome = businessProfile?.statisticsSummary?.branches?.[branchID]?.income || {};
   const avgIncomePerOrder = totalIncome / totalOrders || 0;
 
   const mealsStats =
-    businessProfile?.statisticsSummary?.branches[branchID]?.meals?.[year]?.[month] || {};
+    businessProfile?.statisticsSummary?.branches?.[branchID]?.meals?.[year]?.[month] || {};
 
   const convertMinToHours = (minutes) => {
     if (minutes < 60) return `${minutes.toFixed(0)} min`;
