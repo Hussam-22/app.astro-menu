@@ -42,13 +42,13 @@ import {
 } from 'firebase/firestore';
 
 import { FIREBASE_API } from 'src/config-global';
-import { stripeCreateCustomer } from 'src/stripe/functions';
 import {
   DEFAULT_MEALS,
   DEFAULT_MENUS,
   DEFAULT_STAFF,
   DEFAULT_BRANCH,
   DEFAULT_LABELS,
+  DEFAULT_MENU_SECTIONS,
 } from 'src/_mock/business-profile-default-values';
 
 import { AuthContext } from './auth-context';
@@ -340,33 +340,36 @@ export function AuthProvider({ children }) {
         // 1- REGISTER OWNER
         const { email, password, firstName, lastName, ...businessProfileInfo } = data;
 
-        // const ownerID = '1Q3Jhyob04g89HbcVuEh74KimqI2';
-        // const subscriptionId = 'sub_1PqW8mRoHLqbtaTlWuG6ZYKt';
-        // const stripeCustomerID = 'cus_Qhw0ULgSHkCKqX';
-        // create a stripe customer and add a trial subscription 'Menu Master'
-        // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
+        const ownerID = 'U9zbloA4S9XjMmU1HOXv6YKbZLj1';
+        const subscriptionId = 'sub_1PuWRvRoHLqbtaTlyyhXi9bz';
+        const stripeCustomerID = 'cus_Qm4b5iRnPPW9fP';
+        const businessProfileID = 'tkGL7IvNr2bzMatV5JHT';
+        // // create a stripe customer and add a trial subscription 'Menu Master'
+        // // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
 
-        const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`);
-        const { customerId: stripeCustomerID, subscriptionId } = stripeData;
+        // const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`);
+        // const { customerId: stripeCustomerID, subscriptionId } = stripeData;
 
-        const ownerID = await register?.(email, password, firstName, lastName);
+        // const ownerID = await register?.(email, password, firstName, lastName);
 
-        // 2- CREATE BUSINESS PROFILE
-        const newDocRef = doc(collection(DB, `businessProfiles`));
-        await setDoc(newDocRef, {
-          ...businessProfileInfo,
-          stripeCustomerID,
-          subscriptionId,
-          defaultLanguage: 'en',
-          docID: newDocRef.id,
-          ownerID,
-          users: [],
-          isActive: true,
-          createdOn: new Date(),
-          logo: await fsGetImgDownloadUrl('_mock', `business_logo_800x800.webp`),
-        });
+        // // 2- CREATE BUSINESS PROFILE
+        // const newDocRef = doc(collection(DB, `businessProfiles`));
+        // await setDoc(newDocRef, {
+        //   ...businessProfileInfo,
+        //   stripeCustomerID,
+        //   subscriptionId,
+        //   defaultLanguage: 'en',
+        //   docID: newDocRef.id,
+        //   ownerID,
+        //   users: [],
+        //   isActive: true,
+        //   createdOn: new Date(),
+        //   logo: await fsGetImgDownloadUrl('_mock', `business_logo_800x800.webp`),
+        //   // default Languages
+        //   languages: ['ar', 'fr', 'es'],
+        // });
 
-        const businessProfileID = newDocRef.id;
+        // const businessProfileID = newDocRef.id;
 
         await fbTranslateBranchDesc({
           title: businessProfileInfo.businessName,
@@ -376,12 +379,16 @@ export function AuthProvider({ children }) {
           toRemoveLang: [],
         });
 
-        // 3- Update Assign Business-Profile to User
-        const userProfile = doc(collection(DB, 'users'), ownerID);
-        await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
+        // // 3- Update Assign Business-Profile to User
+        // const userProfile = doc(collection(DB, 'users'), ownerID);
+        // await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
 
         // 4- Create Default Data
-        await createDefaults({ ...businessProfileInfo, businessProfileID });
+        await createDefaults({
+          ...businessProfileInfo,
+          businessProfileID,
+          languages: ['ar', 'fr', 'es'],
+        });
       } catch (error) {
         console.log(error);
       }
@@ -664,22 +671,22 @@ export function AuthProvider({ children }) {
     );
 
     // 3- ADD MENU SECTIONS
-    // await Promise.all(
-    //   DEFAULT_MENU_SECTIONS.map(async (section, order) => {
-    //     const sectionMeals = meals
-    //       .filter((item) => item.meal.section === section)
-    //       .map((meal) => ({
-    //         docID: meal.docID,
-    //         isActive: true,
-    //         portions: meal.portions,
-    //         isNew: meal.isNew,
-    //       }));
+    await Promise.all(
+      DEFAULT_MENU_SECTIONS.map(async (section, order) => {
+        const sectionMeals = meals
+          .filter((item) => item.meal.section === section)
+          .map((mealItem) => ({
+            docID: mealItem.id,
+            isActive: true,
+            portions: mealItem.meal.portions,
+            isNew: mealItem.meal.isNew,
+          }));
 
-    //     menus.map(async (menu) =>
-    //       fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals, languages)
-    //     );
-    //   })
-    // );
+        menus.map(async (menu) =>
+          fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals, languages)
+        );
+      })
+    );
 
     // 4- ADD BRANCH
     const branchID = await fsAddNewBranch(
@@ -1283,11 +1290,10 @@ export function AuthProvider({ children }) {
       meals = [],
       languages = []
     ) => {
-      console.log(menuID, title, order, meals, businessProfileID);
-
       const newDocRef = doc(
         collection(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}/sections`)
       );
+
       await setDoc(newDocRef, {
         docID: newDocRef.id,
         menuID,
@@ -1296,6 +1302,7 @@ export function AuthProvider({ children }) {
         order,
         isActive: true,
         mealsQueryArray: meals.length === 0 ? [] : meals.map((meal) => meal.docID),
+        meals,
       });
 
       fbTranslate({

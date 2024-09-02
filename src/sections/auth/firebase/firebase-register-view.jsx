@@ -17,15 +17,17 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Logo from 'src/components/logo';
 // routes
 import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
 // components
 import Iconify from 'src/components/iconify';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
+import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-import { RouterLink } from 'src/routes/components';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import FormProvider, { RHFTextField, RHFMultiSelect } from 'src/components/hook-form';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 const DESCRIPTION = `'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.'`;
 
@@ -41,7 +43,9 @@ const TRANSLATION_LANGUAGES = Object.entries(LANGUAGE_CODES)
 export default function FirebaseRegisterView() {
   const { fsCreateBusinessProfile } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState('');
+  const [open, setOpen] = useState(false);
   const password = useBoolean();
+  const router = useRouter();
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
@@ -49,9 +53,9 @@ export default function FirebaseRegisterView() {
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
     businessName: Yup.string().required('Plan is required'),
-    languages: Yup.array()
-      .min(1, 'Choose at least one option')
-      .max(3, 'max 3 translation languages allowed in the trial plan'),
+    // languages: Yup.array()
+    //   .min(1, 'Choose at least one option')
+    //   .max(3, 'max 3 translation languages allowed in the trial plan'),
   });
 
   const defaultValues = {
@@ -60,7 +64,7 @@ export default function FirebaseRegisterView() {
     email: '',
     password: '',
     businessName: '',
-    languages: [],
+    // languages: [],
   };
 
   const methods = useForm({
@@ -75,16 +79,10 @@ export default function FirebaseRegisterView() {
     formState: { isDirty },
   } = methods;
 
-  const {
-    mutate,
-    isPending,
-    error: mutationError,
-  } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
+    onSuccess: () => setOpen(true),
   });
-  const values = watch();
-
-  console.log(mutationError);
 
   const onSubmit = handleSubmit(async (formData) => {
     try {
@@ -127,37 +125,29 @@ export default function FirebaseRegisterView() {
           ),
         }}
       />
-      {/* <RHFSelect name="defaultLanguage" label="Default Languages">
-        <MenuItem value="">None</MenuItem>
-        {OPTIONS.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </RHFSelect> */}
-      <RHFMultiSelect
+      {/* <RHFMultiSelect
         chip
         checkbox
         name="languages"
         label="Menu Target Languages"
         options={TRANSLATION_LANGUAGES.filter((option) => option.value !== values.defaultLanguage)}
-      />
+      /> */}
 
-      <LoadingButton
-        color="primary"
-        size="large"
-        type="submit"
-        variant="contained"
-        loading={isPending}
-        disabled={!isDirty}
-        sx={{ alignSelf: 'flex-end' }}
-      >
-        Create account
-      </LoadingButton>
+      <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
+        <Typography>No Credit Card Required</Typography>
+        <LoadingButton
+          color="primary"
+          size="large"
+          type="submit"
+          variant="contained"
+          loading={isPending}
+          disabled={!isDirty}
+        >
+          Create account
+        </LoadingButton>
+      </Stack>
     </Stack>
   );
-
-  // const createDefaults = async () => await createDefaults()
 
   return (
     <Card sx={{ pt: 2, width: { xs: 'auto', sm: '40dvw' } }}>
@@ -194,6 +184,16 @@ export default function FirebaseRegisterView() {
           </Link>
         </Stack>
       </Stack>
+
+      <ConfirmDialog
+        open={open}
+        onClose={() => {
+          router.push(paths.auth.firebase.login);
+        }}
+        title="Your account have successfully created"
+        content="Please check your email to verify your account"
+        closeText="Close"
+      />
     </Card>
   );
 }

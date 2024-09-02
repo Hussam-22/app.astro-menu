@@ -25,8 +25,6 @@ function SubscriptionInfo() {
 
   const { metadata } = productInfo;
 
-  // console.log({ subscriptionInfo, ownerInfo, status, isActive });
-
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: (data) => console.log(data),

@@ -5,6 +5,7 @@ import { Box, Alert, Stack, Container, Typography, AlertTitle } from '@mui/mater
 
 import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
+import { fDistance } from 'src/utils/format-time';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
 import { stripeCreatePortalSession } from 'src/stripe/functions';
 
@@ -12,8 +13,12 @@ export default function SubscriptionsAlert() {
   const { status } = useGetProductInfo();
   const [isLoading, setIsLoading] = useState(false);
   const {
-    businessProfile: { ownerInfo },
+    businessProfile: { ownerInfo, subscriptionInfo },
   } = useAuthContext();
+
+  const trialRemainingDays =
+    subscriptionInfo?.status === 'trialing' &&
+    fDistance(new Date(), new Date(subscriptionInfo.trial_end * 1000));
 
   const openPortalSession = async () => {
     setIsLoading(true);
@@ -46,7 +51,7 @@ export default function SubscriptionsAlert() {
 
   const trialPlan = (
     <Alert severity="info" variant="outlined">
-      <AlertTitle>Enjoying Astro-Menu?</AlertTitle>
+      <AlertTitle>{`Enjoying Astro-Menu? ( Trial Ends in ${trialRemainingDays} )`}</AlertTitle>
       <Typography>
         Subscribe to paid plan to continue using the Astro-Menu before trial ends, or switch to
         other plan that fits your business needs.
