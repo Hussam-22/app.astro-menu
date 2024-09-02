@@ -42,6 +42,7 @@ import {
 } from 'firebase/firestore';
 
 import { FIREBASE_API } from 'src/config-global';
+import { stripeCreateCustomer } from 'src/stripe/functions';
 import {
   DEFAULT_MEALS,
   DEFAULT_MENUS,
@@ -340,36 +341,47 @@ export function AuthProvider({ children }) {
         // 1- REGISTER OWNER
         const { email, password, firstName, lastName, ...businessProfileInfo } = data;
 
-        const ownerID = 'U9zbloA4S9XjMmU1HOXv6YKbZLj1';
-        const subscriptionId = 'sub_1PuWRvRoHLqbtaTlyyhXi9bz';
-        const stripeCustomerID = 'cus_Qm4b5iRnPPW9fP';
-        const businessProfileID = 'tkGL7IvNr2bzMatV5JHT';
-        // // create a stripe customer and add a trial subscription 'Menu Master'
-        // // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
+        // const ownerID = 'U9zbloA4S9XjMmU1HOXv6YKbZLj1';
+        // const subscriptionId = 'sub_1PuWRvRoHLqbtaTlyyhXi9bz';
+        // const stripeCustomerID = 'cus_Qm4b5iRnPPW9fP';
+        // const businessProfileID = 'tkGL7IvNr2bzMatV5JHT';
 
-        // const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`);
-        // const { customerId: stripeCustomerID, subscriptionId } = stripeData;
+        // 1- Create a stripe customer and add a trial subscription 'Menu Master'
+        // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
 
-        // const ownerID = await register?.(email, password, firstName, lastName);
+        const ownerID = await register?.(email, password, firstName, lastName);
 
-        // // 2- CREATE BUSINESS PROFILE
-        // const newDocRef = doc(collection(DB, `businessProfiles`));
-        // await setDoc(newDocRef, {
-        //   ...businessProfileInfo,
-        //   stripeCustomerID,
-        //   subscriptionId,
-        //   defaultLanguage: 'en',
-        //   docID: newDocRef.id,
-        //   ownerID,
-        //   users: [],
-        //   isActive: true,
-        //   createdOn: new Date(),
-        //   logo: await fsGetImgDownloadUrl('_mock', `business_logo_800x800.webp`),
-        //   // default Languages
-        //   languages: ['ar', 'fr', 'es'],
-        // });
+        // 2- CREATE BUSINESS PROFILE
+        const newDocRef = doc(collection(DB, `businessProfiles`));
 
-        // const businessProfileID = newDocRef.id;
+        const stripeData = await stripeCreateCustomer(
+          email,
+          `${firstName} ${lastName}`,
+          newDocRef.id,
+          ownerID
+        );
+        const { customerId: stripeCustomerID, subscriptionId } = stripeData;
+
+        await setDoc(newDocRef, {
+          ...businessProfileInfo,
+          // stripeCustomerID,
+          // subscriptionId,
+          defaultLanguage: 'en',
+          docID: newDocRef.id,
+          ownerID,
+          users: [],
+          isActive: true,
+          createdOn: new Date(),
+          logo: await fsGetImgDownloadUrl('_mock', `business_logo_800x800.webp`),
+          // default Languages
+          languages: ['ar', 'fr', 'es'],
+          translationEditUsage: {
+            count: 0,
+            maxCount: 3,
+          },
+        });
+
+        const businessProfileID = newDocRef.id;
 
         await fbTranslateBranchDesc({
           title: businessProfileInfo.businessName,
@@ -379,9 +391,9 @@ export function AuthProvider({ children }) {
           toRemoveLang: [],
         });
 
-        // // 3- Update Assign Business-Profile to User
-        // const userProfile = doc(collection(DB, 'users'), ownerID);
-        // await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
+        // 3- Update Assign Business-Profile to User
+        const userProfile = doc(collection(DB, 'users'), ownerID);
+        await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
 
         // 4- Create Default Data
         await createDefaults({
