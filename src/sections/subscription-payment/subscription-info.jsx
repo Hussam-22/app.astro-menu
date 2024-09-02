@@ -47,9 +47,20 @@ function SubscriptionInfo() {
   };
 
   const openPortalSession = async () => stripeCreatePortalSession(ownerInfo.email);
+  // const createCustomerHandler = async () =>
+  //   stripeCreateCustomer(
+  //     'info@astro-menu.com',
+  //     'Astro-Menu',
+  //     'Kj7HSk3AA58POoLZmjs22',
+  //     '123456789',
+  //     true
+  //   );
 
   return (
     <>
+      {/* <LoadingButton variant="contained" onClick={createCustomerHandler}>
+        Create Customer
+      </LoadingButton> */}
       <Card sx={{ mb: 2 }}>
         <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center" p={3}>
           <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
