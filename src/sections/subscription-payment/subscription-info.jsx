@@ -22,7 +22,6 @@ function SubscriptionInfo() {
     businessProfile: { subscriptionInfo, productInfo, ownerInfo },
   } = useAuthContext();
   const { status, isActive } = useGetProductInfo();
-
   const { metadata } = productInfo;
 
   const { isPending, mutate } = useMutation({
@@ -43,7 +42,8 @@ function SubscriptionInfo() {
 
   const labelContent = () => {
     if (status === 'active') return { label: 'Active', color: 'success' };
-    return { label: status, color: 'warning' };
+    if (status === 'trialing') return { label: 'Trial', color: 'info' };
+    return { label: status, color: 'error' };
   };
 
   const openPortalSession = async () => stripeCreatePortalSession(ownerInfo.email);
