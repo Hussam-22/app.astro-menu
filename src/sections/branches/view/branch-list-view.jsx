@@ -18,9 +18,10 @@ import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { RouterLink } from 'src/routes/components';
 import { useSettingsContext } from 'src/components/settings';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import MenusTableToolbar from 'src/sections/menu/list/menu-table-toolbar';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import BranchTableRow from 'src/sections/branches/components/table/branch-table-row';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import {
   useTable,
   emptyRows,
@@ -67,6 +68,7 @@ function BranchListView() {
   const { fsGetAllBranches } = useAuthContext();
   const [tableData, setTableData] = useState([]);
   const [filterName, setFilterName] = useState('');
+  const { branches } = useGetProductInfo();
 
   const { data, isLoading } = useQuery({
     queryKey: ['branches'],
@@ -110,8 +112,8 @@ function BranchListView() {
           <Button
             component={RouterLink}
             href={paths.dashboard.branches.new}
-            variant="outlined"
-            sx={{}}
+            variant="contained"
+            disabled={branches <= data?.length || isLoading}
           >
             New Branch
           </Button>

@@ -1018,8 +1018,6 @@ export function AuthProvider({ children }) {
     });
     await Promise.allSettled(asyncOperations);
 
-    console.log(dataArr);
-
     return dataArr;
   }, [state]);
   const fsGetBranch = useCallback(
