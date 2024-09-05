@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { Stack, TableRow, TableCell, Typography, CircularProgress } from '@mui/material';
 
@@ -18,6 +20,7 @@ const month = new Date().getMonth();
 
 export default function BranchTableRow({ row, onEditRow }) {
   const { title, cover, docID, isActive } = row;
+  const queryClient = useQueryClient();
 
   const {
     totalOrders,
@@ -27,6 +30,13 @@ export default function BranchTableRow({ row, onEditRow }) {
     totalIncome,
     avgIncomePerOrder,
   } = useGetBranchInfo(docID, year, month);
+
+  useEffect(() => {
+    if (cover === undefined)
+      setTimeout(() => {
+        queryClient.invalidateQueries(['branches']);
+      }, 5000);
+  }, [cover, queryClient]);
 
   return (
     <TableRow hover>
@@ -50,7 +60,7 @@ export default function BranchTableRow({ row, onEditRow }) {
               sx={{ borderRadius: 0.5, width: 52, height: 52 }}
             />
           ) : (
-            <CircularProgress sx={{ borderRadius: 1.5, width: 48, height: 48 }} />
+            <CircularProgress color="secondary" size={32} sx={{ m: 1.25 }} thickness={2} />
           )}
           <Typography sx={{ fontWeight: 600 }}>{title}</Typography>
         </Stack>

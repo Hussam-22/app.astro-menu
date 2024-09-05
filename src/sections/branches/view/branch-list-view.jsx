@@ -5,8 +5,9 @@ import {
   Box,
   Card,
   Table,
-  TableBody,
+  Button,
   Container,
+  TableBody,
   TableContainer,
   TablePagination,
 } from '@mui/material';
@@ -15,10 +16,11 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
+import { RouterLink } from 'src/routes/components';
 import { useSettingsContext } from 'src/components/settings';
 import MenusTableToolbar from 'src/sections/menu/list/menu-table-toolbar';
-import BranchTableRow from 'src/sections/branches/components/table/branch-table-row';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
+import BranchTableRow from 'src/sections/branches/components/table/branch-table-row';
 import {
   useTable,
   emptyRows,
@@ -104,6 +106,16 @@ function BranchListView() {
             name: 'Branches List',
           },
         ]}
+        action={
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.branches.new}
+            variant="outlined"
+            sx={{}}
+          >
+            New Branch
+          </Button>
+        }
       />
 
       <Card>

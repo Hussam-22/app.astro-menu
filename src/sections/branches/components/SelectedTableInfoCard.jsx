@@ -25,6 +25,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { DOMAINS } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
@@ -101,7 +102,7 @@ function SelectedTableInfoCard({ tableInfo }) {
     reset(formData);
   };
 
-  const qrURL = `https://menu-astro-menu.vercel.app/${user.businessProfileID}/${tableInfo?.branchID}/${tableInfo?.docID}/home`;
+  const qrURL = `${DOMAINS.menu}/${user.businessProfileID}/${tableInfo?.branchID}/${tableInfo?.docID}/home`;
 
   const copUrlHandler = () => {
     navigator.clipboard.writeText(qrURL);

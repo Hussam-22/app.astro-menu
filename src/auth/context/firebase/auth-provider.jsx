@@ -1000,21 +1000,25 @@ export function AuthProvider({ children }) {
     querySnapshot.forEach((element) => {
       const asyncOperation = async () => {
         try {
-          if (element.data().cover) dataArr.push(element.data());
-          if (!element.data().cover) {
+          if (element.data().cover.startsWith('http')) dataArr.push(element.data());
+          if (!element.data().cover.startsWith('http')) {
             const bucketPath = `${state.user.businessProfileID}/branches/${element.data().docID}`;
             const cover = await fsGetImgDownloadUrl(bucketPath, `cover_200x200.webp`);
+            if (cover === undefined) {
+              throw new Error(`Cover not available: ${element.data().docID}`);
+            }
             dataArr.push({ ...element.data(), cover });
           }
         } catch (error) {
           // Handle the case where cover is not available
           dataArr.push({ ...element.data(), cover: undefined });
-          throw new Error(`Cover not available for meal with ID: ${element.data().docID}`);
         }
       };
       asyncOperations.push(asyncOperation());
     });
     await Promise.allSettled(asyncOperations);
+
+    console.log(dataArr);
 
     return dataArr;
   }, [state]);
@@ -1024,54 +1028,24 @@ export function AuthProvider({ children }) {
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/`);
         const docSnap = await getDoc(docRef);
 
-        // if (docSnap.data().translation === '') throw new Error('No Translation Found !!');
-
-        if (docSnap.data().cover)
+        if (!docSnap.data().cover.startsWith('http')) {
+          const bucketPath = `${businessProfileID}/branches/${docSnap.data().docID}`;
+          const imgUrl = await fsGetImgDownloadUrl(bucketPath, `cover_800x800.webp`);
           return {
             ...docSnap.data(),
+            cover: `${imgUrl}?${Date.now()}`,
             lastUpdatedAt: new Date(docSnap.data().lastUpdatedAt.seconds * 1000).toDateString(),
           };
-
-        const bucketPath = `${businessProfileID}/branches/${branchID}`;
-        const imgUrl = await fsGetImgDownloadUrl(bucketPath, 'cover_800x800.webp');
-
+        }
         return {
           ...docSnap.data(),
           lastUpdatedAt: new Date(docSnap.data().lastUpdatedAt.seconds * 1000).toDateString(),
-          cover: `${imgUrl}?${Date.now()}`,
         };
       } catch (error) {
         throw error;
       }
     },
     [state]
-  );
-  const fsGetBranchSnapshot = useCallback(
-    async (branchID, businessProfileID = state?.user?.businessProfileID) => {
-      const docRef = query(
-        collectionGroup(DB, 'branches'),
-        where('businessProfileID', '==', businessProfileID),
-        where('docID', '==', branchID)
-      );
-
-      const unsubscribe = onSnapshot(docRef, async (querySnapshot) => {
-        querySnapshot.forEach((element) => {
-          async function processElement() {
-            const bucketPath = `${businessProfileID}/branches/${element.data().docID}`;
-            setBranchSnapshot({
-              ...element.data(),
-              cover:
-                element.data().cover ||
-                (await fsGetImgDownloadUrl(bucketPath, `cover_800x800.webp`)),
-            });
-          }
-          processElement();
-        });
-      });
-
-      return unsubscribe;
-    },
-    []
   );
   const fsAddNewBranch = useCallback(
     async (branchData, businessProfileID = state.user.businessProfileID) => {
@@ -1095,8 +1069,9 @@ export function AuthProvider({ children }) {
       if (imageFile) {
         const storageRef = ref(
           STORAGE,
-          `gs://${state.user.businessProfileID}/branches/${newDocRef.id}/`
+          `gs://${BUCKET}/${state.user.businessProfileID}/branches/${newDocRef.id}/`
         );
+
         const imageRef = ref(storageRef, 'cover.jpg');
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
@@ -1124,23 +1099,11 @@ export function AuthProvider({ children }) {
       businessProfileID = state.user.businessProfileID
     ) => {
       const docRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchData.docID}`);
-      const { cover: imageFile, docID, ...documentData } = branchData;
+      const { imageFile, docID, ...documentData } = branchData;
 
-      await updateDoc(docRef, {
-        ...documentData,
-      });
-
-      const updateMealData =
-        imageFile && shouldUpdateCover
-          ? {
-              ...branchData,
-              cover: '',
-              lastUpdatedBy: businessProfileID,
-              lastUpdatedAt: new Date(),
-            }
-          : { ...branchData, lastUpdatedBy: businessProfileID, lastUpdatedAt: new Date() };
-
-      await updateDoc(docRef, updateMealData);
+      // await updateDoc(docRef, {
+      //   ...documentData,
+      // });
 
       if (!documentData.showCallWaiterBtn) {
         // mute all orders in branch
@@ -1182,6 +1145,17 @@ export function AuthProvider({ children }) {
           () => {}
         );
       }
+
+      const updateMealData =
+        imageFile && shouldUpdateCover
+          ? {
+              ...documentData,
+              cover: '',
+              lastUpdatedAt: new Date(),
+            }
+          : { ...documentData, lastUpdatedAt: new Date() };
+
+      await updateDoc(docRef, updateMealData);
     },
     [state]
   );
@@ -2164,7 +2138,6 @@ export function AuthProvider({ children }) {
       // ---- BRANCHES ----
       branchSnapshot,
       fsGetBranch,
-      fsGetBranchSnapshot,
       fsGetAllBranches,
       fsAddNewBranch,
       fsUpdateBranch,
@@ -2260,7 +2233,6 @@ export function AuthProvider({ children }) {
       fsGetImgDownloadUrl,
       // ---- BRANCHES ----
       fsGetBranch,
-      fsGetBranchSnapshot,
       fsGetAllBranches,
       fsAddNewBranch,
       fsUpdateBranch,
