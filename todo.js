@@ -34,6 +34,7 @@
 - show a dialog when changing meal status, stating that changing the meal to "unable to serve" will remove it from all carts immediately
 - search menu meals
 - in orders history, when the canceled order cart is empty, it will show and error of "one of the meals were deleted", display another message.
+- disable "staff login" page when isMenuOnly === true
 
 
 ? Menu
