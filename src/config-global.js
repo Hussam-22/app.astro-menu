@@ -40,3 +40,9 @@ export const STRIPE = {
   publicKey: import.meta.env.VITE_STRIPE_PUBLIC_KEY,
   secretKey: import.meta.env.VITE_STRIPE_SECRET_KEY,
 };
+
+export const DOMAINS = {
+  site: import.meta.env.VITE_SITE_DOMAIN,
+  app: import.meta.env.VITE_APP_DOMAIN,
+  menu: import.meta.env.VITE_MENU_DOMAIN,
+};

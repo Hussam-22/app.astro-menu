@@ -5,8 +5,9 @@ import {
   Box,
   Card,
   Table,
-  TableBody,
+  Button,
   Container,
+  TableBody,
   TableContainer,
   TablePagination,
 } from '@mui/material';
@@ -15,7 +16,9 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
+import { RouterLink } from 'src/routes/components';
 import { useSettingsContext } from 'src/components/settings';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import MenusTableToolbar from 'src/sections/menu/list/menu-table-toolbar';
 import BranchTableRow from 'src/sections/branches/components/table/branch-table-row';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
@@ -23,18 +26,20 @@ import {
   useTable,
   emptyRows,
   TableNoData,
-  TableSkeleton,
   getComparator,
   TableEmptyRows,
   TableHeadCustom,
 } from 'src/components/table';
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Menu Name', align: 'left', width: '40%' },
-  { id: 'lastUpdate', label: 'Last Update', align: 'center', width: '30%' },
-  { id: 'selfOrder', label: 'Self-Order', align: 'center', width: '15%' },
-  { id: 'skipKitchen', label: 'Skip Kitchen', align: 'center', width: '15%' },
-  { id: 'status', label: 'Status', align: 'center', width: '15%' },
+  { id: 'title', label: 'Menu Name', align: 'left', width: '25%' },
+  { id: 'totalOrders', label: 'Total Orders', align: 'center', width: '10%' },
+  { id: 'totalScans', label: 'Total Scans', align: 'center', width: '10%' },
+  { id: 'totalTurnover', label: 'Total Turnover', align: 'center', width: '15%' },
+  { id: 'avgTurnover', label: 'Avg Turnover', align: 'center', width: '10%' },
+  { id: 'totalIncome', label: 'Total Income', align: 'center', width: '10%' },
+  { id: 'avg', label: 'Avg Income', align: 'center', width: '10%' },
+  { id: 'status', label: 'Status', align: 'center', width: '10%' },
 ];
 
 // ----------------------------------------------------------------------
@@ -60,9 +65,10 @@ function BranchListView() {
 
   const router = useRouter();
   const { themeStretch } = useSettingsContext();
-  const { fsGetAllBranches, fbTranslateKeyword } = useAuthContext();
+  const { fsGetAllBranches } = useAuthContext();
   const [tableData, setTableData] = useState([]);
   const [filterName, setFilterName] = useState('');
+  const { branches } = useGetProductInfo();
 
   const { data, isLoading } = useQuery({
     queryKey: ['branches'],
@@ -102,6 +108,16 @@ function BranchListView() {
             name: 'Branches List',
           },
         ]}
+        action={
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.branches.new}
+            variant="contained"
+            disabled={branches <= data?.length || isLoading}
+          >
+            New Branch
+          </Button>
+        }
       />
 
       <Card>
@@ -121,19 +137,16 @@ function BranchListView() {
               />
 
               <TableBody>
-                {(isLoading ? [...Array(rowsPerPage)] : dataFiltered)
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) =>
-                    row ? (
+                {!isLoading &&
+                  dataFiltered
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row) => (
                       <BranchTableRow
-                        key={row.docID}
+                        key={row?.docID}
                         row={row}
-                        onEditRow={() => handleEditRow(row.docID)}
+                        onEditRow={() => handleEditRow(row?.docID)}
                       />
-                    ) : (
-                      !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
-                    )
-                  )}
+                    ))}
 
                 <TableEmptyRows
                   height={60}

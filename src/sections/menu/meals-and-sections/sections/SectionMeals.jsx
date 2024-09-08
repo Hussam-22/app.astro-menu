@@ -54,6 +54,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
   });
   const [selectedMealInfo, setSelectedMealInfo] = useState(null);
 
+  // TODO: fix this error by using a better way to filter meals
   const sectionMeals = allMeals.filter((meal) =>
     sectionInfo.meals.some((sectionMeal) => sectionMeal.docID === meal.docID)
   );

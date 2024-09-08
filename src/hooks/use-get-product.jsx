@@ -14,17 +14,9 @@ export function useGetProductInfo() {
   const languages = +metadata.languages;
   const maxTables = +metadata.tables;
   const { version } = metadata;
+  const maxTranslationsLanguages = +metadata.languages;
 
   const statusName = () => {
-    // Active: "active"
-    // Past Due: "past_due"
-    // Unpaid: "unpaid"
-    // Canceled: "canceled"
-    // Incomplete: "incomplete"
-    // Incomplete Expired: "incomplete_expired"
-    // Trialing: "trialing"
-    // Paused: "paused"
-
     if (status === 'active') {
       return 'Active';
     }
@@ -67,7 +59,9 @@ export function useGetProductInfo() {
     languages,
     maxTables,
     version,
-    status: statusName(),
+    status,
+    statusName: statusName(),
     role: status === 'active' || status === 'trialing' ? 'full' : 'deny',
+    maxTranslationsLanguages,
   };
 }

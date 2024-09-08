@@ -16,8 +16,9 @@ import { Box, Card, Stack, Divider, MenuItem, useTheme, Typography } from '@mui/
 import { paths } from 'src/routes/paths';
 import { fetcher } from 'src/utils/axios';
 import { useRouter } from 'src/routes/hook';
-import { fData } from 'src/utils/format-number';
+import { delay } from 'src/utils/promise-delay';
 import { useAuthContext } from 'src/auth/hooks';
+import { fData } from 'src/utils/format-number';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
 import SettingSwitch from 'src/components/settings-components/setting-switch';
@@ -76,7 +77,7 @@ export default function BranchNewEditForm({ branchInfo }) {
 
   const NewUserSchema = Yup.object().shape({
     title: Yup.string().required('Menu title is required'),
-    imgUrl: Yup.mixed().required('Cover Image is required'),
+    imageFile: Yup.mixed().required('Cover Image is required'),
     defaultLanguage: Yup.string().required('Menu Default Language is required'),
     currency: Yup.string().required('Menu Default Language is required'),
   });
@@ -89,12 +90,12 @@ export default function BranchNewEditForm({ branchInfo }) {
       isActive: !!branchInfo?.isActive,
       allowSelfOrder: !!branchInfo?.allowSelfOrder,
       cover: branchInfo?.cover || '',
-      imgUrl: branchInfo?.cover || null,
+      imageFile: branchInfo?.cover || null,
       defaultLanguage: branchInfo?.defaultLanguage || 'en',
       currency: branchInfo?.currency || '',
       taxValue: branchInfo?.taxValue || 0,
-      email: branchInfo.email || '',
-      number: branchInfo.number || '',
+      email: branchInfo?.email || '',
+      number: branchInfo?.number || '',
       skipKitchen: !!branchInfo?.skipKitchen,
       showCallWaiterBtn: !!branchInfo?.showCallWaiterBtn,
 
@@ -107,7 +108,9 @@ export default function BranchNewEditForm({ branchInfo }) {
         tiktok: branchInfo?.socialLinks?.tiktok || '',
         linkedin: branchInfo?.socialLinks?.linkedin || '',
         website: branchInfo?.socialLinks?.website || '',
-        // useMasterLinks: branchInfo?.socialLinks?.useMasterLinks || false,
+        googleReview: branchInfo?.socialLinks?.googleReview || '',
+        locationMap: branchInfo?.socialLinks?.locationMap || '',
+        other: branchInfo?.socialLinks?.other || '',
       },
     }),
     [branchInfo]
@@ -133,44 +136,50 @@ export default function BranchNewEditForm({ branchInfo }) {
     (acceptedFiles) => {
       const file = acceptedFiles[0];
 
-      setValue('cover', file.name, { isTouched: true, isFocused: true, shouldDirty: true });
-
       const newFile = Object.assign(file, {
         preview: URL.createObjectURL(file),
       });
 
       if (file) {
-        setValue('imgUrl', URL.createObjectURL(file));
-        setValue('cover', newFile, { shouldValidate: true });
+        setValue('cover', URL.createObjectURL(file));
+        setValue('imageFile', newFile, {
+          shouldValidate: true,
+          isTouched: true,
+          isFocused: true,
+          shouldDirty: true,
+        });
       }
     },
     [setValue]
   );
 
-  const handelRemove = () => {
-    setValue('cover', '');
-  };
+  const handleRemoveFil = useCallback(() => {
+    setValue('imageFile', null, { isTouched: true, isFocused: true, shouldDirty: true });
+    setValue('cover', null, { isTouched: true, isFocused: true, shouldDirty: true });
+  }, [setValue]);
 
   const { isPending, mutate, error } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => {
       queryClient.invalidateQueries(['branches']);
       queryClient.invalidateQueries(['branch', branchInfo?.docID]);
-      enqueueSnackbar('Update success!');
-      if (!branchInfo?.docID) router.push(paths.dashboard.branches.list);
+      enqueueSnackbar(branchInfo?.docID ? 'Update success!' : 'Branch added successfully');
+      if (!branchInfo?.docID) {
+        router.push(paths.dashboard.branches.list);
+      }
     },
   });
 
   const onSubmit = async (formData) => {
-    const shouldUpdateCover = getFieldState('cover').isDirty;
     if (branchInfo?.docID)
-      mutate(() => {
+      mutate(async () => {
+        await delay(1000);
         fsUpdateBranch(
           {
             ...formData,
             docID: branchInfo?.docID,
           },
-          shouldUpdateCover
+          dirtyFields.imageFile
         );
         reset(formData);
       });
@@ -206,7 +215,7 @@ export default function BranchNewEditForm({ branchInfo }) {
               {/* <RHFTextField name="description" label="About" multiline rows={3} /> */}
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
                 <RHFTextField name="wifiPassword" label="Wifi Password" />
-                <RHFTextField name="taxValue" label="Tax Value" type="number" />
+                <RHFTextField name="taxValue" label="Tax %" type="number" />
 
                 {!isLoading && (
                   <RHFSelect name="currency" label="Currency">
@@ -230,69 +239,71 @@ export default function BranchNewEditForm({ branchInfo }) {
         <Grid xs={12} md={5}>
           <RHFUpload
             name="cover"
-            maxSize={3145728}
+            maxSize={3000000}
             onDrop={handleDrop}
-            onRemove={handelRemove}
-            helperText={`Allowed *.jpeg, *.jpg, *.png, *.webp | max size of ${fData(3145728)}`}
+            onRemove={handleRemoveFil}
+            helperText={`Allowed *.jpeg, *.jpg, *.png, *.webp | max size of ${fData(3000000)}`}
             paddingValue="40% 0"
           />
         </Grid>
 
-        <Grid xs={12}>
-          <Stack direction="column" spacing={2}>
-            <Card sx={{ p: 3 }}>
-              <BranchSocialLinks />
-            </Card>
-
-            {allowPoS && (
+        {branchInfo?.docID && (
+          <Grid xs={12}>
+            <Stack direction="column" spacing={2}>
               <Card sx={{ p: 3 }}>
-                <Typography variant="h3" sx={{ mb: 1 }}>
-                  Branch Settings
-                </Typography>
-                <Stack
-                  direction="column"
-                  spacing={1}
-                  divider={
-                    <Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />
-                  }
-                >
-                  <SettingSwitch
-                    title="Skip Kitchen"
-                    description={`Activate "Skip Kitchen" when you want your waiter/ess to be in control of the order process. without waiting for the kitchen to confirm when the order is ready.`}
-                    label={values.skipKitchen ? `Skip` : `Don't Skip`}
-                    name="skipKitchen"
-                    isDanger={false}
-                  />
-
-                  <SettingSwitch
-                    title="Self-Order"
-                    description="Allow customers to order directly"
-                    label={values.allowSelfOrder ? 'Active' : 'Disabled'}
-                    name="allowSelfOrder"
-                    isDanger={false}
-                  />
-
-                  <SettingSwitch
-                    title="Show Call Waiter Button"
-                    description="Show Call Waiter Button on the QR Menu"
-                    label={values.showCallWaiterBtn ? 'Show' : 'Hide'}
-                    name="showCallWaiterBtn"
-                    isDanger={false}
-                  />
-
-                  <SettingSwitch
-                    title="Branch Status"
-                    description="When branch is inactive, customers cant view menu and waiters cant take
-                        orders"
-                    label={values.isActive ? `Active` : `Disabled`}
-                    name="isActive"
-                    isDanger
-                  />
-                </Stack>
+                <BranchSocialLinks />
               </Card>
-            )}
-          </Stack>
-        </Grid>
+
+              {allowPoS && (
+                <Card sx={{ p: 3 }}>
+                  <Typography variant="h3" sx={{ mb: 1 }}>
+                    Branch Settings
+                  </Typography>
+                  <Stack
+                    direction="column"
+                    spacing={1}
+                    divider={
+                      <Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />
+                    }
+                  >
+                    <SettingSwitch
+                      title="Skip Kitchen"
+                      description="Skip Kitchen when you want your waiter-staff to be in control of the order process. without waiting for the kitchen to confirm when the order is ready."
+                      label={values.skipKitchen ? `Skip` : `Don't Skip`}
+                      name="skipKitchen"
+                      isDanger={false}
+                    />
+
+                    <SettingSwitch
+                      title="Self-Order"
+                      description="Allow customers to add meals to order without the help of a waiter, waiter will only be needed to confirm the order and collect payment"
+                      label={values.allowSelfOrder ? 'Active' : 'Disabled'}
+                      name="allowSelfOrder"
+                      isDanger={false}
+                    />
+
+                    <SettingSwitch
+                      title="Show Call Waiter Button"
+                      description="Show Call Waiter Button on the QR Menu"
+                      label={values.showCallWaiterBtn ? 'Show' : 'Hide'}
+                      name="showCallWaiterBtn"
+                      isDanger={false}
+                    />
+
+                    <SettingSwitch
+                      title="Branch Status"
+                      description="When branch is inactive, customers cant view menu and waiters cant take
+                        orders"
+                      label={values.isActive ? `Active` : `Disabled`}
+                      name="isActive"
+                      isDanger
+                    />
+                  </Stack>
+                </Card>
+              )}
+            </Stack>
+          </Grid>
+        )}
       </Grid>
     </FormProvider>
   );

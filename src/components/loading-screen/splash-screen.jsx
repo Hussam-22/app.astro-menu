@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import { Typography, CircularProgress } from '@mui/material';
 
-import Logo from 'src/components/logo';
 import { blinkingElement } from 'src/theme/css';
 
 // ----------------------------------------------------------------------
@@ -29,9 +28,9 @@ export default function SplashScreen({ sx, ...other }) {
       }}
       {...other}
     >
-      <Box style={myStyle}>
+      {/* <Box style={myStyle}>
         <Logo disabledLink sx={{ width: 64, height: 64 }} />
-      </Box>
+      </Box> */}
       <svg width={0} height={0}>
         <defs>
           <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -46,7 +45,7 @@ export default function SplashScreen({ sx, ...other }) {
           animationDuration: '400ms',
         }}
       />
-      <Typography sx={{ ...blinkingElement }}>Loading Menu...</Typography>
+      <Typography sx={{ ...blinkingElement }}>Loading dashboard...</Typography>
 
       <style>
         {`

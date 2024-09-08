@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 
 import Image from 'src/components/image';
+import { DOMAINS } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import generatePassCode from 'src/utils/generate-passcode';
@@ -27,10 +28,11 @@ function StaffLink() {
   const { user, fsGetStaffList } = useAuthContext();
   const [filteredStaffList, setFilteredStaffList] = useState([]);
 
+  const staffUrl = (staffID) =>
+    `${DOMAINS.menu}/staff/${user.businessProfileID}/${staffID}/dashboard`;
+
   const copUrlHandler = (staffID) => {
-    navigator.clipboard.writeText(
-      `https://menu-astro-menu.vercel.app/staff/${user.businessProfileID}/${staffID}`
-    );
+    navigator.clipboard.writeText(staffUrl(staffID));
   };
 
   const onShare = (staffID) => {
@@ -39,7 +41,7 @@ function StaffLink() {
         .share({
           title: 'Staff Portal Access Link',
           text: 'Each staff has his/her own access link',
-          url: `${window.location.protocol}//${window.location.host}/staff/${user.businessProfileID}/${staffID}`,
+          url: staffUrl(staffID),
         })
         .then(() => true)
         .catch((error) => console.error('Error sharing:', error));
@@ -102,7 +104,7 @@ function StaffLink() {
               </Stack>
               <TextField
                 name="URL"
-                value={`${window.location.protocol}//${window.location.host}/staff/${user.businessProfileID}/${staff.docID}`}
+                value={staffUrl(staff.docID)}
                 size="small"
                 fullWidth
                 aria-readonly

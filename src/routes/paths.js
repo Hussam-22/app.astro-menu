@@ -63,6 +63,9 @@ export const paths = {
     businessProfile: {
       manage: `${ROOTS.DASHBOARD}/business-profile/manage`,
     },
+    translationSettings: {
+      manage: `${ROOTS.DASHBOARD}/translation-settings`,
+    },
     subscription: {
       root: `${ROOTS.DASHBOARD}/subscription-info`,
     },

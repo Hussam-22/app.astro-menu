@@ -25,6 +25,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { DOMAINS } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
@@ -101,7 +102,7 @@ function SelectedTableInfoCard({ tableInfo }) {
     reset(formData);
   };
 
-  const qrURL = `https://menu-astro-menu.vercel.app/${user.businessProfileID}/${tableInfo?.branchID}/${tableInfo?.docID}/home`;
+  const qrURL = `${DOMAINS.menu}/${user.businessProfileID}/${tableInfo?.branchID}/${tableInfo?.docID}/home`;
 
   const copUrlHandler = () => {
     navigator.clipboard.writeText(qrURL);
@@ -129,10 +130,8 @@ function SelectedTableInfoCard({ tableInfo }) {
               onClose={() => setIsVisible(false)}
               sx={{ width: 1 }}
             >
-              <AlertTitle>Menu View Only</AlertTitle>
-              This QR is intended to show the menu only and cart will be hidden, use it on your
-              social media or place it on your front door, dont place it on customers tables unless
-              you are intending to let them view the menu only and take orders manually.
+              <AlertTitle>Attention</AlertTitle>
+              {`QR #0 - This QR code is intended to display the menu only, with the Order Summary (Cart) hidden from the customer view. Use it on your social media or at your front entrance to showcase your meals. Avoid placing it on customer tables. If you plan to have waitstaff take orders without allowing customers to order themselves, it’s recommended to disable "Self Order" in the branch settings and use the other QR codes for table management and statistics tracking.`}
             </Alert>
           </Grid>
         )}
@@ -169,33 +168,36 @@ function SelectedTableInfoCard({ tableInfo }) {
                       ))}
                     </RHFSelect>
                   )}
-                  <TextField value="This table is to show your menu only" disabled />
 
                   <Stack
                     direction="column"
-                    spacing={2}
+                    spacing={1}
                     divider={<Divider sx={{ borderStyle: 'dashed' }} />}
                   >
-                    <Stack direction="column">
-                      <Stack
-                        direction="row"
-                        spacing={2}
-                        justifyContent="space-between"
-                        alignItems="center"
-                      >
-                        <Typography sx={{ fontWeight: 500 }}>Meals Visibility</Typography>
-                        <RHFSwitch
-                          name="mealAlwaysAvailable"
-                          label={`${values.mealAlwaysAvailable ? 'Always Available' : 'Depended'}`}
-                          labelPlacement="start"
-                          sx={{ m: 0 }}
-                        />
+                    {!isMenuOnly && (
+                      <Stack direction="column">
+                        <Stack
+                          direction="row"
+                          spacing={2}
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Typography sx={{ fontWeight: 500 }}>Meals Visibility</Typography>
+                          <RHFSwitch
+                            name="mealAlwaysAvailable"
+                            label={`${
+                              values.mealAlwaysAvailable ? 'Always Available' : 'Depended'
+                            }`}
+                            labelPlacement="start"
+                            sx={{ m: 0 }}
+                          />
+                        </Stack>
+                        <Typography variant="caption">
+                          Decide the behavior of the meals visibility if they should be always
+                          visible regardless of their status (In case they are unavailable)
+                        </Typography>
                       </Stack>
-                      <Typography variant="caption">
-                        Decide the behavior of the meals visibility if they should be always visible
-                        regardless of their status (In case they are out of stock)
-                      </Typography>
-                    </Stack>
+                    )}
 
                     <Stack direction="column">
                       <Stack
