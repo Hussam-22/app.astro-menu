@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import {
@@ -8,16 +8,19 @@ import {
   Button,
   Container,
   TableBody,
+  Typography,
   TableContainer,
   TablePagination,
 } from '@mui/material';
 
+import Label from 'src/components/label';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { RouterLink } from 'src/routes/components';
 import { useSettingsContext } from 'src/components/settings';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
 import MenusTableToolbar from 'src/sections/menu/list/menu-table-toolbar';
 import BranchTableRow from 'src/sections/branches/components/table/branch-table-row';
@@ -66,20 +69,16 @@ function BranchListView() {
   const router = useRouter();
   const { themeStretch } = useSettingsContext();
   const { fsGetAllBranches } = useAuthContext();
-  const [tableData, setTableData] = useState([]);
   const [filterName, setFilterName] = useState('');
-  const { branches } = useGetProductInfo();
+  const [isOpen, setIsOpen] = useState(false);
+  const { branches: maxBranchesAllowed } = useGetProductInfo();
 
-  const { data, isLoading } = useQuery({
+  const { data: branchesData, isLoading } = useQuery({
     queryKey: ['branches'],
     queryFn: fsGetAllBranches,
   });
 
-  useEffect(() => {
-    if (data?.length !== 0) {
-      setTableData(data);
-    }
-  }, [data]);
+  console.log(!isLoading && branchesData.map((branch) => branch.isActive));
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
@@ -91,12 +90,20 @@ function BranchListView() {
   };
 
   const dataFiltered = applySortFilter({
-    tableData,
+    tableData: branchesData,
     comparator: getComparator(order, orderBy),
     filterName,
   });
 
   const isNotFound = (!dataFiltered.length && !!filterName) || (!isLoading && !dataFiltered.length);
+
+  const handleAddNewBranch = () => {
+    if (branchesData?.length >= maxBranchesAllowed) {
+      setIsOpen(true);
+    } else {
+      router.push(paths.dashboard.branches.new);
+    }
+  };
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -109,12 +116,7 @@ function BranchListView() {
           },
         ]}
         action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.branches.new}
-            variant="contained"
-            disabled={branches <= data?.length || isLoading}
-          >
+          <Button component={RouterLink} onClick={handleAddNewBranch} variant="contained">
             New Branch
           </Button>
         }
@@ -131,7 +133,7 @@ function BranchListView() {
                 order={order}
                 orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={tableData?.length}
+                rowCount={branchesData?.length}
                 numSelected={selected.length}
                 onSort={onSort}
               />
@@ -150,7 +152,7 @@ function BranchListView() {
 
                 <TableEmptyRows
                   height={60}
-                  emptyRows={emptyRows(page, rowsPerPage, tableData?.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, branchesData?.length)}
                 />
 
                 <TableNoData isNotFound={isNotFound} />
@@ -171,6 +173,25 @@ function BranchListView() {
           />
         </Box>
       </Card>
+
+      <ConfirmDialog
+        maxWidth="md"
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        closeText="Close"
+        title="Max Allowed Branched Reached !"
+        content={
+          <Typography>
+            You have reached your plan max allowed branches of{' '}
+            <Label color="info"> {`${maxBranchesAllowed}`}</Label> , Please contact our sales team
+            on{' '}
+            <Box component="span" sx={{ fontWeight: 600 }}>
+              hello@astro-menu.com{' '}
+            </Box>
+            to include more branches to your plan.
+          </Typography>
+        }
+      />
     </Container>
   );
 }
