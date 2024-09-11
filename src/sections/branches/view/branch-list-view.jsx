@@ -78,8 +78,6 @@ function BranchListView() {
     queryFn: fsGetAllBranches,
   });
 
-  console.log(!isLoading && branchesData.map((branch) => branch.isActive));
-
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
     setPage(0);
