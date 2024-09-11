@@ -19,7 +19,7 @@ export default function useChart(options) {
 
   const LABEL_VALUE = {
     offsetY: 8,
-    color: theme.palette.text.primary,
+    color: theme.palette.text.secondary,
     fontSize: theme.typography.h3.fontSize,
     fontWeight: theme.typography.h3.fontWeight,
     lineHeight: theme.typography.h3.lineHeight,
@@ -28,7 +28,7 @@ export default function useChart(options) {
   const baseOptions = {
     // Colors
     colors: [
-      theme.palette.primary.main,
+      theme.palette.secondary.main,
       theme.palette.warning.main,
       theme.palette.info.main,
       theme.palette.error.main,
@@ -43,7 +43,7 @@ export default function useChart(options) {
     chart: {
       toolbar: { show: false },
       zoom: { enabled: false },
-      // animations: { enabled: false },
+      animations: { enabled: true },
       foreColor: theme.palette.text.disabled,
       fontFamily: theme.typography.fontFamily,
     },
@@ -133,7 +133,7 @@ export default function useChart(options) {
         horizontal: 8,
       },
       labels: {
-        colors: theme.palette.text.primary,
+        colors: theme.palette.text.secondary,
       },
     },
 

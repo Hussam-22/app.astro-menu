@@ -16,14 +16,24 @@ const headers = {
 const isLocal = window.location.hostname === 'localhost';
 const returnUrl = `${isLocal ? CLIENT_LOCAL_URL : CLIENT_LIVE_URL}/dashboard/subscription-info`;
 
-export const stripeCreateCustomer = async (email, name, useLocalUrl = false) => {
+export const stripeCreateCustomer = async (
+  email,
+  name,
+  businessProfileID,
+  ownerID,
+  useLocalUrl = false
+) => {
   const url = `${useLocalUrl ? LOCAL_URL : LIVE_URL}/create-customer`;
   const body = {
     email,
     name,
+    businessProfileID,
+    ownerID,
   };
 
   try {
+    console.log(headers);
+
     const response = await axios.post(url, body, { headers });
     return response.data;
   } catch (error) {
@@ -40,7 +50,6 @@ export const stripeCreateCustomer = async (email, name, useLocalUrl = false) => 
     throw error;
   }
 };
-
 export const stripeCreatePortalSession = async (customerEmail, useLocalUrl = false) => {
   const body = {
     customerEmail,
@@ -66,7 +75,6 @@ export const stripeCreatePortalSession = async (customerEmail, useLocalUrl = fal
     throw error;
   }
 };
-
 export const stripeCreateCheckoutSession = async (items, useLocalUrl = false) => {
   const body = {
     items: [{ id: 'prod_QS9NWYK9Qt7Ecb', quantity: 1 }],

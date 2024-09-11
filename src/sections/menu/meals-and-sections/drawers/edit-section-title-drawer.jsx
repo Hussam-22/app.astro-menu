@@ -42,7 +42,7 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
 
   const languageKeys = Object.keys(sectionInfo?.translationEdited || {});
 
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutate, error } = useMutation({
     mutationFn: (payload) =>
       fsUpdateSectionTitle(menuID, sectionInfo.docID, {
         title: payload.title,
@@ -94,10 +94,10 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
   };
 
   const skeletonLanguageCards = (
-    <Grid container spacing={5}>
+    <Grid container spacing={1} sx={{ mt: 2 }}>
       {[...Array(languageKeys.length + 1)].map((_, index) => (
-        <Grid item xs={12} md={12} key={index}>
-          <Card sx={{ p: 3 }}>
+        <Grid item xs={12} key={index}>
+          <Card sx={{ p: 2, mx: 2 }}>
             <Stack direction="column" spacing={3}>
               <Skeleton variant="rounded" />
               <Skeleton variant="rounded" />
@@ -145,7 +145,7 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
             }}
           />
           <Typography variant="caption">
-            Editing section title will overwrite current translations to match the new updated title
+            Editing section title will overwrite all translations to match the new section title
           </Typography>
         </Card>
       </FormProvider>
@@ -155,7 +155,7 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
       {!isFetching && (
         <Stack direction="column" spacing={1} sx={{ mt: 1, mx: 2 }}>
           {languageKeys
-            .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
+            .sort((a, b) => LANGUAGE_CODES[a]?.name.localeCompare(LANGUAGE_CODES[b]?.name))
             .map((key) => (
               <TranslationCard
                 languageKey={key}

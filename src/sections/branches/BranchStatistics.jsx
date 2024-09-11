@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import PropTypes from 'prop-types';
 
-import { Grid, Stack, Typography } from '@mui/material';
+import { Card, Grid, Stack, Typography } from '@mui/material';
 
 import { useParams } from 'src/routes/hook';
-import { useAuthContext } from 'src/auth/hooks';
+import { useGetBranchInfo } from 'src/hooks/use-get-branch-info';
 import MonthYearPicker from 'src/sections/branches/components/MonthYearPicker';
-import IncomeStatistics from 'src/sections/branches/components/analytic/IncomeStatistics';
 import ScansUsageLinear from 'src/sections/branches/components/analytic/ScansUsageLinear';
+import IncomeStatistics from 'src/sections/branches/components/analytic/IncomeStatistics';
 import MostOrderedMeals from 'src/sections/branches/components/analytic/MostOrderedMeals';
 import TablesOccupation from 'src/sections/branches/components/analytic/TablesOccupation';
 
@@ -16,17 +16,20 @@ const availableYears = [...Array(yearsSince2023 + 1)].map((value, index) => 2023
 
 function BranchStatistics() {
   const { id: branchID } = useParams();
-  const { user, fsGetBranch, businessProfile } = useAuthContext();
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
+  const {
+    totalOrders,
+    totalTurnoverStr,
+    averageTurnoverStr,
+    totalScans,
+    totalIncome,
+    avgIncomePerOrder,
+    currency,
+  } = useGetBranchInfo(branchID, year, month);
 
   const changeMonthHandler = (value) => setMonth(+value);
   const changeYearHandler = (value) => setYear(+value);
-
-  const { data: branchInfo = {} } = useQuery({
-    queryKey: ['branch', branchID],
-    queryFn: () => fsGetBranch(branchID),
-  });
 
   return (
     <Grid container spacing={3}>
@@ -36,7 +39,7 @@ function BranchStatistics() {
           spacing={2}
           sx={{ pl: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
         >
-          <Typography variant="h6" color="primary">
+          <Typography variant="h6" color="secondary">
             Change Period
           </Typography>
           <MonthYearPicker
@@ -48,41 +51,58 @@ function BranchStatistics() {
           />
         </Stack>
       </Grid>
+      <SingleStatisticCard title="Total Orders" value={totalOrders} unit="Orders" />
+      <SingleStatisticCard title="Tables Turnover" value={totalTurnoverStr} />
+      <SingleStatisticCard title="Avg Table Turnover" value={averageTurnoverStr} />
+      <SingleStatisticCard title="Total Income" value={totalIncome.toFixed(2)} unit={currency} />
+      <SingleStatisticCard
+        title="Avg Income per Order"
+        value={avgIncomePerOrder.toFixed(2)}
+        unit={currency}
+      />
+      <SingleStatisticCard title="Total Scans" value={totalScans} unit="scans" />
+
       <Grid item xs={12} md={6}>
-        <ScansUsageLinear
-          userData={businessProfile}
-          branch={branchInfo}
-          month={month}
-          year={year}
-        />
+        <ScansUsageLinear month={month} year={year} />
       </Grid>
       <Grid item xs={12} md={6}>
-        <IncomeStatistics
-          userData={businessProfile}
-          branchID={branchInfo.docID}
-          month={month}
-          year={year}
-          currency={branchInfo.currency}
-        />
+        <IncomeStatistics branchID={branchID} month={month} year={year} />
       </Grid>
       <Grid item sm={12}>
-        <MostOrderedMeals
-          userData={businessProfile}
-          branch={branchInfo}
-          month={month}
-          year={year}
-        />
+        <MostOrderedMeals branchID={branchID} month={month} year={year} />
       </Grid>
       <Grid item sm={12}>
-        <TablesOccupation
-          userData={businessProfile}
-          branch={branchInfo}
-          month={month}
-          year={year}
-        />
+        <TablesOccupation branchID={branchID} month={month} year={year} />
       </Grid>
     </Grid>
   );
 }
 
 export default BranchStatistics;
+
+// ----------------------------------------------------------------------------
+
+SingleStatisticCard.propTypes = {
+  title: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  unit: PropTypes.string,
+  note: PropTypes.string,
+};
+
+function SingleStatisticCard({ title, value, unit, note }) {
+  return (
+    <Grid item xs={12} md={2}>
+      <Card sx={{ p: 2 }}>
+        <Typography variant="caption">{title}</Typography>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="h6" color="secondary">
+            {value}
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+            {unit}
+          </Typography>
+        </Stack>
+      </Card>
+    </Grid>
+  );
+}

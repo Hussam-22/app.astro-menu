@@ -16,18 +16,14 @@ import BranchStatistics from 'src/sections/branches/BranchStatistics';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
 
 function BranchManageView() {
-  const { id: branchID } = useParams();
   const theme = useTheme();
+  const { id: branchID } = useParams();
   const { themeStretch } = useSettingsContext();
   const { fsGetBranch, businessProfile } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
   const { allowAnalytics, allowPoS } = useGetProductInfo();
 
-  const {
-    data: branchInfo = {},
-    isFetching,
-    error,
-  } = useQuery({
+  const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', branchID],
     queryFn: () => fsGetBranch(branchID),
   });
@@ -38,27 +34,29 @@ function BranchManageView() {
       icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
       component: branchInfo?.docID && <BranchNewEditForm branchInfo={branchInfo} />,
     },
-    {
+    branchInfo.isActive && {
       value: 'QR Management',
       icon: <Iconify icon="clarity:qr-code-line" width={20} height={20} />,
       component: <QRManagement branchInfo={branchInfo} />,
     },
-    allowAnalytics && {
-      value: 'Statistics',
-      icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
-      component: <BranchStatistics />,
-    },
-    allowPoS && {
-      value: 'Staffs Dashboard Link',
-      icon: (
-        <Iconify
-          icon="streamline:food-kitchenware-chef-toque-hat-cook-gear-chef-cooking-nutrition-tools-clothes-hat-clothing-food"
-          width={20}
-          height={20}
-        />
-      ),
-      component: <StaffLink />,
-    },
+    allowAnalytics &&
+      branchInfo.isActive && {
+        value: 'Statistics',
+        icon: <Iconify icon="nimbus:stats" width={20} height={20} />,
+        component: <BranchStatistics />,
+      },
+    allowPoS &&
+      branchInfo.isActive && {
+        value: 'Staffs Dashboard Link',
+        icon: (
+          <Iconify
+            icon="streamline:food-kitchenware-chef-toque-hat-cook-gear-chef-cooking-nutrition-tools-clothes-hat-clothing-food"
+            width={20}
+            height={20}
+          />
+        ),
+        component: <StaffLink />,
+      },
   ]
     .filter((tab) => tab)
     .splice(0, businessProfile?.planInfo?.at(-1)?.isMenuOnly ? 2 : 4);

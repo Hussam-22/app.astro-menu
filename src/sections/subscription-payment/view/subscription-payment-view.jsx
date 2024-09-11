@@ -1,6 +1,6 @@
 // import { m } from 'framer-motion';
 
-import { Container } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useAuthContext } from 'src/auth/hooks';
@@ -10,7 +10,9 @@ import SubscriptionInfo from 'src/sections/subscription-payment/subscription-inf
 
 function SubscriptionPaymentView() {
   const { themeStretch } = useSettingsContext();
-  const { businessProfile } = useAuthContext();
+  const {
+    businessProfile: { subscriptionInfo },
+  } = useAuthContext();
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -20,6 +22,7 @@ function SubscriptionPaymentView() {
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Subscription & Payment Info' },
         ]}
+        action={<Typography variant="body2">ID: {subscriptionInfo.id}</Typography>}
       />
       <SubscriptionInfo />
     </Container>

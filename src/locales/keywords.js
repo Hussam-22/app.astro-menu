@@ -29,4 +29,7 @@ export const KEYWORDS = [
   'ready to pay',
   'preparing food',
   'ready to serve',
+  'table is not accepting orders',
+  'review us on google',
+  'special request is disabled when adding multiple items',
 ];

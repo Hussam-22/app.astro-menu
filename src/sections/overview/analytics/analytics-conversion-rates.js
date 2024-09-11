@@ -23,15 +23,13 @@ export default function AnalyticsConversionRates({ title, subheader, chart, acti
       marker: { show: false },
       y: {
         formatter: (value) => fNumber(value),
-        title: {
-          formatter: () => '',
-        },
       },
     },
+    dataLabels: { enabled: true },
     plotOptions: {
       bar: {
         horizontal: true,
-        barHeight: '28%',
+        barHeight: '80%',
         borderRadius: 2,
       },
     },

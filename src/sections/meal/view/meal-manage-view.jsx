@@ -28,20 +28,19 @@ function MealManageView() {
     queryFn: () => fsGetMeal(mealID),
   });
 
-  console.log('CHECK DELETE');
-
   const TABS = [
     {
       value: 'Menu Info',
       icon: <Iconify icon="carbon:ibm-watson-knowledge-catalog" width={20} height={20} />,
       component: <MealNewEditForm mealInfo={mealInfo} />,
     },
-    {
-      value: 'Meal Translation',
-      icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
-      component: <MealTranslation mealInfo={mealInfo} isFetching={isFetching} />,
-    },
-  ];
+    mealInfo?.isActive &&
+      !isFetching && {
+        value: 'Meal Translation',
+        icon: <Iconify icon="mdi:food-fork-drink" width={20} height={20} />,
+        component: <MealTranslation mealInfo={mealInfo} isFetching={isFetching} />,
+      },
+  ].filter(Boolean);
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>

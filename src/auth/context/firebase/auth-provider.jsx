@@ -118,7 +118,7 @@ export function AuthProvider({ children }) {
             await updateDoc(userProfile, { lastLogin: new Date() });
 
             queryClient.fetchQuery({
-              queryKey: ['businessProfile'],
+              queryKey: ['businessProfile', profile.businessProfileID],
               queryFn: async () => fsGetBusinessProfile(profile.businessProfileID, user, profile),
             });
           } else {
@@ -284,7 +284,7 @@ export function AuthProvider({ children }) {
   }, []);
   // ----------------------- Business Profile -------------------
   const fsGetBusinessProfile = useCallback(
-    async (businessProfileID, user = {}, profile = {}) => {
+    async (businessProfileID, user = state.user, profile = state.profile) => {
       try {
         // await fbTranslateKeywords();
 
@@ -341,37 +341,54 @@ export function AuthProvider({ children }) {
         // 1- REGISTER OWNER
         const { email, password, firstName, lastName, ...businessProfileInfo } = data;
 
-        // create a stripe customer and add a trial subscription 'Menu Master'
+        // const ownerID = 'U9zbloA4S9XjMmU1HOXv6YKbZLj1';
+        // const subscriptionId = 'sub_1PuWRvRoHLqbtaTlyyhXi9bz';
+        // const stripeCustomerID = 'cus_Qm4b5iRnPPW9fP';
+        // const businessProfileID = 'tkGL7IvNr2bzMatV5JHT';
+
+        // 1- Create a stripe customer and add a trial subscription 'Menu Master'
         // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
-        const stripeData = await stripeCreateCustomer(email, `${firstName} ${lastName}`);
-        console.log(stripeData);
-        const { customerId: stripeCustomerID, subscriptionId } = stripeData;
 
         const ownerID = await register?.(email, password, firstName, lastName);
 
         // 2- CREATE BUSINESS PROFILE
         const newDocRef = doc(collection(DB, `businessProfiles`));
+
+        const stripeData = await stripeCreateCustomer(
+          email,
+          `${firstName} ${lastName}`,
+          newDocRef.id,
+          ownerID
+        );
+        const { customerId: stripeCustomerID, subscriptionId } = stripeData;
+
         await setDoc(newDocRef, {
           ...businessProfileInfo,
-          stripeCustomerID,
-          subscriptionId,
-          defaultLanguage: businessProfileInfo?.defaultLanguage || 'en',
+          // stripeCustomerID,
+          // subscriptionId,
+          defaultLanguage: 'en',
           docID: newDocRef.id,
           ownerID,
           users: [],
           isActive: true,
           createdOn: new Date(),
           logo: await fsGetImgDownloadUrl('_mock', `business_logo_800x800.webp`),
-          description:
-            'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.',
+          // default Languages
+          languages: ['ar', 'fr', 'es'],
+          translationEditUsage: {
+            count: 0,
+            maxCount: 3,
+          },
         });
 
         const businessProfileID = newDocRef.id;
 
         await fbTranslateBranchDesc({
           title: businessProfileInfo.businessName,
-          desc: 'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.',
+          desc: businessProfileInfo.description,
           businessProfileID,
+          newLang: businessProfileInfo.languages,
+          toRemoveLang: [],
         });
 
         // 3- Update Assign Business-Profile to User
@@ -379,7 +396,11 @@ export function AuthProvider({ children }) {
         await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
 
         // 4- Create Default Data
-        await createDefaults(businessProfileID);
+        await createDefaults({
+          ...businessProfileInfo,
+          businessProfileID,
+          languages: ['ar', 'fr', 'es'],
+        });
       } catch (error) {
         console.log(error);
       }
@@ -398,6 +419,8 @@ export function AuthProvider({ children }) {
           title: state.businessProfile.businessName,
           desc: description,
           businessProfileID,
+          newLang: state.businessProfile.languages,
+          toRemoveLang: [],
         });
 
         await fsGetBusinessProfile(businessProfileID);
@@ -415,18 +438,8 @@ export function AuthProvider({ children }) {
       businessProfileID = state?.businessProfile.docID
     ) => {
       try {
-        const { languages, logo, ...data } = payload;
-
+        const { logo, ...data } = payload;
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}`);
-        await updateDoc(docRef, { ...data, logo: isLogoDirty ? '' : logo });
-
-        const isLanguagesEqual =
-          JSON.stringify(payload.languages.sort()) ===
-          JSON.stringify(state?.businessProfile.languages.sort());
-
-        if (!isLanguagesEqual) {
-          await fsBatchUpdateBusinessProfileLanguages(languages);
-        }
 
         if (isLogoDirty) {
           const storageRef = ref(STORAGE, `gs://${BUCKET}/${businessProfileID}/business-profile/`);
@@ -451,40 +464,47 @@ export function AuthProvider({ children }) {
             },
             () => {
               console.log('UPLOADED');
+              // queryClient.invalidateQueries(['businessProfile', businessProfileID]);
             }
           );
         }
 
-        if (shouldUpdateTranslation && isLanguagesEqual)
+        if (shouldUpdateTranslation)
           await fbTranslateBranchDesc({
             title: payload.businessName,
             desc: payload.description,
             businessProfileID,
+            newLang: state.businessProfile.languages,
+            toRemoveLang: [],
           });
 
-        dispatch({
-          type: 'INITIAL',
-          payload: {
-            ...state,
-            businessProfile: {
-              ...state.businessProfile,
-              ...payload,
-              ownerInfo: state.businessProfile.ownerInfo,
-            },
-          },
-        });
+        await updateDoc(docRef, { ...data, logo: isLogoDirty ? '' : logo });
+
+        // dispatch({
+        //   type: 'INITIAL',
+        //   payload: {
+        //     ...state,
+        //     businessProfile: {
+        //       ...state.businessProfile,
+        //       ...payload,
+        //       ownerInfo: state.businessProfile.ownerInfo,
+        //     },
+        //   },
+        // });
       } catch (error) {
         throw error;
       }
     },
     [state]
   );
-  const fsBatchUpdateBusinessProfileLanguages = useCallback(
-    async (languages, businessProfileID = state.businessProfile.docID) => {
+  const fsUpdateTranslationSettings = useCallback(
+    async (newLang, toRemoveLang, languages, businessProfileID = state.businessProfile.docID) => {
       try {
+        const { count, maxCount } = state.businessProfile.translationEditUsage;
+
         // If limit is exceeded throw an error
-        if (state?.businessProfile?.translationEditUsage?.THIS_MONTH >= 3)
-          throw new Error('Monthly Translation Limit Exceeded !!');
+        if (count >= maxCount) throw new Error('Monthly Translation Limit Exceeded !!');
+
         const promisesArray = [];
         const businessProfileRef = doc(DB, `/businessProfiles/${businessProfileID}`);
 
@@ -493,10 +513,12 @@ export function AuthProvider({ children }) {
 
         // 2- Translate Business Profile
         const businessProfileSnap = await getDoc(businessProfileRef);
-        await fbTranslateBranchDesc({
+        const response = await fbTranslateBranchDesc({
           title: businessProfileSnap.data().businessName,
           desc: businessProfileSnap.data().description,
           businessProfileID,
+          newLang,
+          toRemoveLang,
         });
 
         // 3- Translate Sections
@@ -513,6 +535,8 @@ export function AuthProvider({ children }) {
               await fbTranslate({
                 sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${docID}`,
                 text: title,
+                newLang,
+                toRemoveLang,
               })
             );
           };
@@ -534,6 +558,31 @@ export function AuthProvider({ children }) {
                 mealRef: `/businessProfiles/${businessProfileID}/meals/${docID}`,
                 text: { title, desc: description },
                 businessProfileID,
+                newLang,
+                toRemoveLang,
+              })
+            );
+          };
+          syncOperation();
+        });
+
+        // 5- Translate Labels
+        const labelsRef = query(
+          collectionGroup(DB, 'meal-labels'),
+          where('businessProfileID', '==', businessProfileID)
+        );
+
+        const labelsSnapshot = await getDocs(labelsRef);
+        labelsSnapshot.forEach((label) => {
+          const syncOperation = async () => {
+            const { docID, title, businessProfileID } = label.data();
+            promisesArray.push(
+              await fbTranslateMealLabelTitle({
+                labelTitle: title,
+                businessProfileID,
+                labelDocID: docID,
+                newLang,
+                toRemoveLang,
               })
             );
           };
@@ -542,13 +591,22 @@ export function AuthProvider({ children }) {
 
         await Promise.allSettled(promisesArray);
 
-        // 5- Increase translation usage limit for this month
+        // 6- Increase translation usage limit for this month
+        const CURRENT_YEAR_MONTH = `${THIS_YEAR}-${THIS_MONTH}`;
+        // const maxCount = state.businessProfile?.translationEditUsage?.maxCount ?? 3; // Default to 3 if not set
+
         await updateDoc(businessProfileRef, {
           translationEditUsage: {
-            ...(state.businessProfile?.translationEditUsage || {}),
-            [THIS_MONTH]: (state.businessProfile?.translationEditUsage?.THIS_MONTH ?? 0) + 1,
+            yearMonth: CURRENT_YEAR_MONTH, // Store the current year and month
+            maxCount, // Store the maxCount from the state
+            count:
+              state.businessProfile?.translationEditUsage?.yearMonth === CURRENT_YEAR_MONTH
+                ? Math.min((state.businessProfile?.translationEditUsage?.count ?? 0) + 1, maxCount)
+                : 1, // Reset to 1 if it's a new month, otherwise increment up to maxCount
           },
         });
+
+        return response;
       } catch (error) {
         throw error;
       }
@@ -583,13 +641,15 @@ export function AuthProvider({ children }) {
 
     // return translations;
   }, []);
-  const createDefaults = useCallback(async (businessProfileID) => {
+  const createDefaults = useCallback(async (businessProfileInfo) => {
     // create defaults for new users, default plan = 'Trial'
+
+    const { businessProfileID, languages } = businessProfileInfo;
 
     // 1- ADD MEAL LABELS
     const mealLabels = await Promise.all(
       DEFAULT_LABELS.map(async (label) => ({
-        id: await fsAddNewMealLabel(label, businessProfileID),
+        id: await fsAddNewMealLabel(label, businessProfileID, languages),
         label,
       }))
     );
@@ -606,7 +666,7 @@ export function AuthProvider({ children }) {
               (label) => mealLabels.find((mealLabel) => mealLabel.label === label)?.id || ''
             ),
           };
-          const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID);
+          const mealID = await fsAddNewMeal(modifiedMeal, businessProfileID, languages);
           return {
             id: mealID,
             meal,
@@ -627,19 +687,20 @@ export function AuthProvider({ children }) {
       DEFAULT_MENU_SECTIONS.map(async (section, order) => {
         const sectionMeals = meals
           .filter((item) => item.meal.section === section)
-          .map((meal) => ({
-            docID: meal.docID,
+          .map((mealItem) => ({
+            docID: mealItem.id,
             isActive: true,
-            portions: meal.portions,
-            isNew: meal.isNew,
+            portions: mealItem.meal.portions,
+            isNew: mealItem.meal.isNew,
           }));
 
         menus.map(async (menu) =>
-          fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals)
+          fsAddSection(menu.id, section, order + 1, businessProfileID, sectionMeals, languages)
         );
       })
     );
 
+    // 4- ADD BRANCH
     const branchID = await fsAddNewBranch(
       {
         ...DEFAULT_BRANCH,
@@ -939,16 +1000,18 @@ export function AuthProvider({ children }) {
     querySnapshot.forEach((element) => {
       const asyncOperation = async () => {
         try {
-          if (element.data().cover) dataArr.push(element.data());
-          if (!element.data().cover) {
+          if (element.data().cover.startsWith('http')) dataArr.push(element.data());
+          if (!element.data().cover.startsWith('http')) {
             const bucketPath = `${state.user.businessProfileID}/branches/${element.data().docID}`;
-            const cover = await fsGetImgDownloadUrl(bucketPath, `cover_800x800.webp`);
+            const cover = await fsGetImgDownloadUrl(bucketPath, `cover_200x200.webp`);
+            if (cover === undefined) {
+              throw new Error(`Cover not available: ${element.data().docID}`);
+            }
             dataArr.push({ ...element.data(), cover });
           }
         } catch (error) {
           // Handle the case where cover is not available
           dataArr.push({ ...element.data(), cover: undefined });
-          throw new Error(`Cover not available for meal with ID: ${element.data().docID}`);
         }
       };
       asyncOperations.push(asyncOperation());
@@ -963,21 +1026,18 @@ export function AuthProvider({ children }) {
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/`);
         const docSnap = await getDoc(docRef);
 
-        // if (docSnap.data().translation === '') throw new Error('No Translation Found !!');
-
-        if (docSnap.data().cover)
+        if (!docSnap.data().cover.startsWith('http')) {
+          const bucketPath = `${businessProfileID}/branches/${docSnap.data().docID}`;
+          const imgUrl = await fsGetImgDownloadUrl(bucketPath, `cover_800x800.webp`);
           return {
             ...docSnap.data(),
+            cover: `${imgUrl}?${Date.now()}`,
             lastUpdatedAt: new Date(docSnap.data().lastUpdatedAt.seconds * 1000).toDateString(),
           };
-
-        const bucketPath = `${businessProfileID}/branches/${branchID}`;
-        const imgUrl = await fsGetImgDownloadUrl(bucketPath, 'cover_800x800.webp');
-
+        }
         return {
           ...docSnap.data(),
           lastUpdatedAt: new Date(docSnap.data().lastUpdatedAt.seconds * 1000).toDateString(),
-          cover: `${imgUrl}?${Date.now()}`,
         };
       } catch (error) {
         throw error;
@@ -985,37 +1045,13 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetBranchSnapshot = useCallback(
-    async (branchID, businessProfileID = state?.user?.businessProfileID) => {
-      const docRef = query(
-        collectionGroup(DB, 'branches'),
-        where('businessProfileID', '==', businessProfileID),
-        where('docID', '==', branchID)
-      );
-
-      const unsubscribe = onSnapshot(docRef, async (querySnapshot) => {
-        querySnapshot.forEach((element) => {
-          async function processElement() {
-            const bucketPath = `${businessProfileID}/branches/${element.data().docID}`;
-            setBranchSnapshot({
-              ...element.data(),
-              cover:
-                element.data().cover ||
-                (await fsGetImgDownloadUrl(bucketPath, `cover_800x800.webp`)),
-            });
-          }
-          processElement();
-        });
-      });
-
-      return unsubscribe;
-    },
-    []
-  );
   const fsAddNewBranch = useCallback(
     async (branchData, businessProfileID = state.user.businessProfileID) => {
       const newDocRef = doc(collection(DB, `businessProfiles/${businessProfileID}/branches/`));
       const { imageFile, ...documentData } = branchData;
+
+      const CURRENT_YEAR_MONTH = `${THIS_YEAR}-${THIS_MONTH}`;
+
       await setDoc(newDocRef, {
         ...documentData,
         docID: newDocRef.id,
@@ -1023,7 +1059,7 @@ export function AuthProvider({ children }) {
         isDeleted: false,
         lastUpdatedBy: '',
         lastUpdatedAt: new Date(),
-        translationEditUsage: { [THIS_MONTH]: 0 },
+        translationEditUsage: { count: 0, maxCount: 3, yearMonth: CURRENT_YEAR_MONTH },
       });
 
       await fsAddBatchTablesToBranch(newDocRef.id, businessProfileID);
@@ -1031,8 +1067,9 @@ export function AuthProvider({ children }) {
       if (imageFile) {
         const storageRef = ref(
           STORAGE,
-          `gs://${state.user.businessProfileID}/branches/${newDocRef.id}/`
+          `gs://${BUCKET}/${state.user.businessProfileID}/branches/${newDocRef.id}/`
         );
+
         const imageRef = ref(storageRef, 'cover.jpg');
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
@@ -1060,23 +1097,11 @@ export function AuthProvider({ children }) {
       businessProfileID = state.user.businessProfileID
     ) => {
       const docRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchData.docID}`);
-      const { cover: imageFile, docID, ...documentData } = branchData;
+      const { imageFile, docID, ...documentData } = branchData;
 
-      await updateDoc(docRef, {
-        ...documentData,
-      });
-
-      const updateMealData =
-        imageFile && shouldUpdateCover
-          ? {
-              ...branchData,
-              cover: '',
-              lastUpdatedBy: businessProfileID,
-              lastUpdatedAt: new Date(),
-            }
-          : { ...branchData, lastUpdatedBy: businessProfileID, lastUpdatedAt: new Date() };
-
-      await updateDoc(docRef, updateMealData);
+      // await updateDoc(docRef, {
+      //   ...documentData,
+      // });
 
       if (!documentData.showCallWaiterBtn) {
         // mute all orders in branch
@@ -1118,6 +1143,17 @@ export function AuthProvider({ children }) {
           () => {}
         );
       }
+
+      const updateMealData =
+        imageFile && shouldUpdateCover
+          ? {
+              ...documentData,
+              cover: '',
+              lastUpdatedAt: new Date(),
+            }
+          : { ...documentData, lastUpdatedAt: new Date() };
+
+      await updateDoc(docRef, updateMealData);
     },
     [state]
   );
@@ -1143,6 +1179,24 @@ export function AuthProvider({ children }) {
       await updateDoc(docRef, { disabledMeals });
     },
     []
+  );
+  const fsUpdateBranchesDefaultLanguage = useCallback(
+    async (lang) => {
+      const batch = writeBatch(DB);
+      const branchesRef = query(
+        collectionGroup(DB, 'branches'),
+        where('businessProfileID', '==', state.user.businessProfileID),
+        where('isDeleted', '==', false)
+      );
+
+      const branchesSnapshot = await getDocs(branchesRef);
+      branchesSnapshot.forEach((branch) => {
+        const branchRef = branch.ref;
+        batch.update(branchRef, { defaultLanguage: lang });
+      });
+      await batch.commit();
+    },
+    [state]
   );
   // ------------------------- Menu --------------------------------
   const fsGetMenu = useCallback(
@@ -1212,23 +1266,34 @@ export function AuthProvider({ children }) {
   );
   // --------------------- Menu Sections --------------------------
   const fsAddSection = useCallback(
-    async (menuID, title, order, businessProfileID = state.user.businessProfileID, meals = []) => {
+    async (
+      menuID,
+      title,
+      order,
+      businessProfileID = state.user.businessProfileID,
+      meals = [],
+      languages = []
+    ) => {
       const newDocRef = doc(
         collection(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}/sections`)
       );
+
       await setDoc(newDocRef, {
         docID: newDocRef.id,
         menuID,
         businessProfileID,
         title,
-        meals,
         order,
         isActive: true,
+        mealsQueryArray: meals.length === 0 ? [] : meals.map((meal) => meal.docID),
+        meals,
       });
 
       fbTranslate({
         text: title,
         sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${newDocRef.id}`,
+        newLang: languages.length !== 0 ? languages : state.businessProfile.languages,
+        toRemoveLang: [],
       });
 
       return newDocRef.id;
@@ -1332,7 +1397,6 @@ export function AuthProvider({ children }) {
   );
   const fsUpdateSectionTitle = useCallback(
     async (menuID, sectionID, payload) => {
-      console.log({ menuID, sectionID, payload });
       const docRef = doc(
         DB,
         `/businessProfiles/${state.user.businessProfileID}/menus/${menuID}/sections/${sectionID}/`
@@ -1342,6 +1406,8 @@ export function AuthProvider({ children }) {
       fbTranslate({
         sectionRef: `/businessProfiles/${state.user.businessProfileID}/menus/${menuID}/sections/${docRef.id}`,
         text: payload.title,
+        newLang: state.businessProfile.languages,
+        toRemoveLang: [],
       });
     },
     [state]
@@ -1448,7 +1514,7 @@ export function AuthProvider({ children }) {
   );
   // ------------------------- Meals --------------------------------
   const fsAddNewMeal = useCallback(
-    async (mealInfo, businessProfileID = state.user.businessProfileID) => {
+    async (mealInfo, businessProfileID = state.user.businessProfileID, languages = []) => {
       const newDocRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/meals/`));
       const { imageFile, ...mealData } = mealInfo;
 
@@ -1463,10 +1529,10 @@ export function AuthProvider({ children }) {
       await fbTranslateMeal({
         mealRef: `/businessProfiles/${businessProfileID}/meals/${newDocRef.id}`,
         text: { title: mealInfo.title, desc: mealInfo.description },
-        businessProfileID,
+        newLang: languages.length !== 0 ? languages : state.businessProfile.languages,
+        toRemoveLang: [],
       });
 
-      console.log(imageFile);
       if (imageFile) {
         const storageRef = ref(
           STORAGE,
@@ -1527,7 +1593,8 @@ export function AuthProvider({ children }) {
           fbTranslateMeal({
             mealRef: `/businessProfiles/${state.user.businessProfileID}/meals/${payload.docID}`,
             text: { title: payload.title, desc: payload.description },
-            businessProfileID: state.user.businessProfileID,
+            newLang: state.businessProfile.languages,
+            toRemoveLang: [],
           });
       } catch (error) {
         console.log(error);
@@ -1614,6 +1681,7 @@ export function AuthProvider({ children }) {
         const querySnapshot = await getDocs(docsRef);
         const asyncOperations = [];
 
+        // delete meal from section
         querySnapshot.forEach((element) => {
           const asyncOperation = async () => {
             const { meals, mealsQueryArray } = element.data();
@@ -1660,7 +1728,7 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsAddNewMealLabel = useCallback(
-    async (title, businessProfileID = state.user.businessProfileID) => {
+    async (title, businessProfileID = state.user.businessProfileID, languages = []) => {
       const docRef = doc(collection(DB, `/businessProfiles/${businessProfileID}/meal-labels/`));
       await setDoc(docRef, { title, isActive: true, businessProfileID, docID: docRef.id });
 
@@ -1668,6 +1736,8 @@ export function AuthProvider({ children }) {
         labelTitle: title,
         businessProfileID,
         labelDocID: docRef.id,
+        newLang: languages.length !== 0 ? languages : state.businessProfile.languages,
+        toRemoveLang: [],
       });
 
       return docRef.id;
@@ -2051,6 +2121,7 @@ export function AuthProvider({ children }) {
       fsUpdateBusinessProfileTranslation,
       createDefaults,
       fsGetSystemTranslations,
+      fsUpdateTranslationSettings,
       // --- STRIPE ----
       fsGetStripeSubscription,
       fsGetProduct,
@@ -2064,11 +2135,11 @@ export function AuthProvider({ children }) {
       // ---- BRANCHES ----
       branchSnapshot,
       fsGetBranch,
-      fsGetBranchSnapshot,
       fsGetAllBranches,
       fsAddNewBranch,
       fsUpdateBranch,
       fsUpdateDisabledMealsInBranch,
+      fsUpdateBranchesDefaultLanguage,
       // ---- TABLES ----
       fsGetBranchTablesCount,
       fsGetBranchTables,
@@ -2147,6 +2218,7 @@ export function AuthProvider({ children }) {
       fsUpdateBusinessProfileTranslation,
       createDefaults,
       fsGetSystemTranslations,
+      fsUpdateTranslationSettings,
       // --- STRIPE ----
       fsGetStripeSubscription,
       fsGetProduct,
@@ -2158,11 +2230,11 @@ export function AuthProvider({ children }) {
       fsGetImgDownloadUrl,
       // ---- BRANCHES ----
       fsGetBranch,
-      fsGetBranchSnapshot,
       fsGetAllBranches,
       fsAddNewBranch,
       fsUpdateBranch,
       fsUpdateDisabledMealsInBranch,
+      fsUpdateBranchesDefaultLanguage,
       // ---- TABLES ----
       fsGetBranchTablesCount,
       fsGetBranchTables,

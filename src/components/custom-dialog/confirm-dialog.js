@@ -20,16 +20,15 @@ export default function ConfirmDialog({
 }) {
   return (
     <Dialog fullWidth maxWidth={maxWidth} open={open} onClose={onClose} {...other}>
-      <DialogTitle sx={{ pb: 2 }}>{title}</DialogTitle>
+      <DialogTitle sx={{ pb: 1 }}>{title}</DialogTitle>
 
-      {content && <DialogContent sx={{ typography: 'body2' }}> {content} </DialogContent>}
+      {content && <DialogContent> {content} </DialogContent>}
 
       <DialogActions>
-        {action}
-
-        <Button variant="contained" color="inherit" onClick={onClose}>
+        <Button variant="soft" onClick={onClose}>
           {closeText}
         </Button>
+        {action}
       </DialogActions>
     </Dialog>
   );

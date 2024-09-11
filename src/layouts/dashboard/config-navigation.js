@@ -24,6 +24,7 @@ const ICONS = {
   businessProfile: icon('ic_businessProfile'),
   label: icon('ic_label'),
   subscription: icon('ic_subscription'),
+  translation: icon('ic_translation'),
 };
 
 // ----------------------------------------------------------------------
@@ -68,6 +69,12 @@ export function useNavData() {
             title: t('staffs'),
             path: paths.dashboard.staffs.root,
             icon: ICONS.staffs,
+          },
+          {
+            title: t('Translation Settings'),
+            path: paths.dashboard.translationSettings.manage,
+            icon: ICONS.translation,
+            // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
           // Business Profile
           {

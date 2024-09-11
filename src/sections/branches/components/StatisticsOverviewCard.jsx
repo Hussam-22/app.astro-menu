@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
-import { Card, Stack, Divider, useTheme } from '@mui/material';
+import { Card, Stack, Divider } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { fShortenNumber } from 'src/utils/format-number';
@@ -16,7 +16,6 @@ StatisticsOverviewCard.propTypes = {
 };
 
 function StatisticsOverviewCard({ tableInfo, month, year }) {
-  const theme = useTheme();
   const isMobile = useResponsive('down', 'sm');
   const { fsGetTableOrdersByPeriod, fsGetBranch, fsGetTableInfo, fsGetAllMenus } = useAuthContext();
 
@@ -56,7 +55,7 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
 
   const formattedTotalOrdersThisMonth = Number.isNaN(totalOrdersThisMonth)
     ? 0
-    : totalOrdersThisMonth;
+    : totalOrdersThisMonth.toFixed(2);
 
   const totalOrdersCountThisMonth = orders?.filter((order) => order.isPaid)?.length || 0;
   const totalScans = tableData?.statisticsSummary?.scans?.[year]?.[month] || 0;
@@ -65,8 +64,6 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
     () => menusList.find((menu) => menu.docID === tableInfo.menuID),
     [menusList, tableInfo.menuID]
   );
-
-  console.log(totalOrdersThisMonth);
 
   return (
     <Card sx={{ py: 1 }}>

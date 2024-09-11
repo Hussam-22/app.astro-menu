@@ -36,6 +36,9 @@ const StaffsNewPage = lazy(() => import('src/pages/dashboard/staffs/staffs-new-p
 const BusinessProfileManagePage = lazy(() =>
   import('src/pages/dashboard/business-profile/branch-manage-page')
 );
+const TranslationSettingsPage = lazy(() =>
+  import('src/pages/dashboard/translation-settings/translation-settings-page')
+);
 
 // SUBSCRIPTION INFO
 const SubscriptionInfoPage = lazy(() =>
@@ -100,6 +103,10 @@ export const dashboardRoutes = [
           { path: 'new', element: <StaffsNewPage /> },
           { path: ':id/manage', element: <StaffsManagePage /> },
         ],
+      },
+      {
+        path: 'translation-settings',
+        element: <TranslationSettingsPage />,
       },
       { path: 'business-profile/manage', element: <BusinessProfileManagePage /> },
       { path: 'subscription-info', element: <SubscriptionInfoPage /> },

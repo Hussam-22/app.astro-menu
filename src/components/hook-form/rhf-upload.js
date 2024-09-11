@@ -21,7 +21,12 @@ export function RHFUploadAvatar({ name, ...other }) {
       control={control}
       render={({ field, fieldState: { error } }) => (
         <div>
-          <UploadAvatar error={!!error} file={field.value} {...other} />
+          <UploadAvatar
+            error={!!error}
+            file={field.value}
+            {...other}
+            accept={{ 'image/jpeg': ['.jpg'], 'image/png': ['.png'], 'image/webp': ['.wepb'] }}
+          />
 
           {!!error && (
             <FormHelperText error sx={{ px: 2, textAlign: 'center' }}>
@@ -72,7 +77,7 @@ export function RHFUpload({ name, multiple, helperText, onRemove, paddingValue, 
         multiple ? (
           <Upload
             multiple
-            accept={{ 'image/*': [] }}
+            accept={{ 'image/jpeg': ['.jpg'], 'image/png': ['.png'], 'image/webp': ['.wepb'] }}
             files={field.value}
             error={!!error}
             helperText={
@@ -87,7 +92,11 @@ export function RHFUpload({ name, multiple, helperText, onRemove, paddingValue, 
         ) : (
           <Box sx={{ position: 'relative' }}>
             <Upload
-              accept={{ 'image/*': [] }}
+              accept={{
+                'image/jpeg': ['.jpg', '.jpeg'],
+                'image/png': ['.png'],
+                'image/webp': ['.wepb'],
+              }}
               file={field.value}
               error={!!error}
               helperText={

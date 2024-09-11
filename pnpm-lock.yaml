@@ -53,6 +53,9 @@ importers:
 =======
         specifier: ^2.2.4
         version: 2.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@babel/preset-react':
+        specifier: ^7.24.7
+        version: 7.24.7(@babel/core@7.25.2)
       '@emotion/cache':
         specifier: ^11.13.1
         version: 11.13.1

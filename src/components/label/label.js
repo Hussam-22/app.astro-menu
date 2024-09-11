@@ -28,6 +28,7 @@ const Label = forwardRef(
         sx={{
           ...(startIcon && { pl: 0.75 }),
           ...(endIcon && { pr: 0.75 }),
+          fontWeight: 400,
           ...sx,
         }}
         theme={theme}

@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import SubscriptionPaymentView from 'src/sections/subscription-payment/subscription-payment-view';
+import SubscriptionPaymentView from 'src/sections/subscription-payment/view/subscription-payment-view';
 
 function BusinessProfileManagePage() {
   return (

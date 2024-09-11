@@ -1,24 +1,21 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { Box, Card, Stack, Tooltip, CardHeader, IconButton, Typography } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
-import { useAuthContext } from 'src/auth/hooks';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import DialogEditTitle from 'src/components/translation-cards/DialogEditTitle';
 import TranslationCard from 'src/components/translation-cards/translation-card';
 
-// BusinessProfileTranslation.propTypes = {
-//   businessProfile: PropTypes.object,
-//   isFetching: PropTypes.bool,
-// };
+BusinessProfileTranslation.propTypes = {
+  businessProfileInfo: PropTypes.object,
+  isFetching: PropTypes.bool,
+};
 
-function BusinessProfileTranslation() {
+function BusinessProfileTranslation({ businessProfileInfo, isFetching = false }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const { businessProfile } = useAuthContext();
-  const languageKeys = Object.keys(businessProfile?.translationEdited || {});
-
-  console.log(businessProfile);
+  const languageKeys = Object.keys(businessProfileInfo?.translationEdited || {});
 
   const closeModal = () => {
     setIsOpenModal(false);
@@ -28,7 +25,7 @@ function BusinessProfileTranslation() {
     <Stack spacing={3}>
       <Card>
         <CardHeader
-          title={businessProfile.businessName}
+          title={businessProfileInfo?.businessName}
           action={
             <Tooltip title="Edit">
               <IconButton color="info" size="small" onClick={() => setIsOpenModal(true)}>
@@ -39,18 +36,18 @@ function BusinessProfileTranslation() {
         />
         <Box sx={{ p: 3, pt: 1 }}>
           <Typography variant="h6" />
-          <Typography variant="body2">{businessProfile.description}</Typography>
+          <Typography variant="body2">{businessProfileInfo?.description}</Typography>
         </Box>
       </Card>
       {languageKeys
-        .sort((a, b) => LANGUAGE_CODES[a].name.localeCompare(LANGUAGE_CODES[b].name))
+        .sort((a, b) => LANGUAGE_CODES[a]?.name.localeCompare(LANGUAGE_CODES[b]?.name))
         .map((key) => (
           <TranslationCard
             languageKey={key}
             key={key}
             showTitleField
             reduxSlice="branch"
-            data={businessProfile}
+            data={businessProfileInfo}
           />
         ))}
 
@@ -58,7 +55,7 @@ function BusinessProfileTranslation() {
         <DialogEditTitle
           isOpen={isOpenModal}
           onClose={closeModal}
-          data={businessProfile}
+          data={businessProfileInfo}
           showTitle={false}
         />
       )}

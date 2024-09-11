@@ -12,19 +12,12 @@ export default function Button(theme) {
 
   const rootStyles = (ownerState) => {
     const inheritColor = ownerState.color === 'inherit';
-
     const containedVariant = ownerState.variant === 'contained';
-
     const outlinedVariant = ownerState.variant === 'outlined';
-
     const textVariant = ownerState.variant === 'text';
-
     const softVariant = ownerState.variant === 'soft';
-
     const smallSize = ownerState.size === 'small';
-
     const mediumSize = ownerState.size === 'medium';
-
     const largeSize = ownerState.size === 'large';
 
     const defaultStyle = {
