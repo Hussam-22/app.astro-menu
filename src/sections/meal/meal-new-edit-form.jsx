@@ -70,6 +70,8 @@ function MealNewEditForm({ mealInfo }) {
 
   const activeMealsLength = !isLoading && allMeals?.filter((meal) => meal.isActive)?.length;
 
+  console.log(activeMealsLength >= maxAllowedMeals);
+
   const NewMealSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
     description: Yup.string().required('Description is required'),
@@ -220,23 +222,25 @@ function MealNewEditForm({ mealInfo }) {
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
           <Grid xs={12}>
-            {activeMealsLength >= maxAllowedMeals && !mealInfo?.isActive && (
-              <Alert severity="warning" variant="outlined" sx={{ width: 1 }}>
-                <AlertTitle>Attention</AlertTitle>
-                <Typography>
-                  You have reached your plan max allowed <Label color="success">Active</Label> meals
-                  of <Label color="info"> {`${maxAllowedMeals}`}</Label> , Please contact our sales
-                  team on{' '}
-                  <Box component="span" sx={{ fontWeight: 600 }}>
-                    hello@astro-menu.com{' '}
-                  </Box>
-                  to include more meals to your plan.
-                </Typography>
-                <Typography color="secondary">
-                  If you wish to enable this meal, please disable other meal first.
-                </Typography>
-              </Alert>
-            )}
+            {maxAllowedMeals !== 'unlimited' &&
+              activeMealsLength >= maxAllowedMeals &&
+              !mealInfo?.isActive && (
+                <Alert severity="warning" variant="outlined" sx={{ width: 1 }}>
+                  <AlertTitle>Attention</AlertTitle>
+                  <Typography>
+                    You have reached your plan max allowed <Label color="success">Active</Label>{' '}
+                    meals of <Label color="info"> {`${maxAllowedMeals}`}</Label> , Please contact
+                    our sales team on{' '}
+                    <Box component="span" sx={{ fontWeight: 600 }}>
+                      hello@astro-menu.com{' '}
+                    </Box>
+                    to include more meals to your plan.
+                  </Typography>
+                  <Typography color="secondary">
+                    If you wish to enable this meal, please disable other meal first.
+                  </Typography>
+                </Alert>
+              )}
             <Stack sx={{ mt: 2 }}>
               <LoadingButton
                 type="submit"
