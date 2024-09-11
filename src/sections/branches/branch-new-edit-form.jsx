@@ -8,10 +8,19 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useMemo, useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-// @mui
 import { LoadingButton } from '@mui/lab';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { Box, Card, Stack, Divider, MenuItem, useTheme, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  Stack,
+  Alert,
+  Divider,
+  useTheme,
+  MenuItem,
+  Typography,
+  AlertTitle,
+} from '@mui/material';
 
 import Label from 'src/components/label';
 import { paths } from 'src/routes/paths';
@@ -47,8 +56,6 @@ export default function BranchNewEditForm({ branchInfo }) {
   });
 
   const activeBranchesLength = branchesData?.filter((branch) => branch.isActive)?.length || 0;
-
-  console.log(activeBranchesLength);
 
   const { data, isLoading } = useSWR(`https://restcountries.com/v3.1/all`, fetcher);
 
@@ -214,14 +221,33 @@ export default function BranchNewEditForm({ branchInfo }) {
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
           <Grid xs={12}>
-            <Stack>
+            {activeBranchesLength >= maxAllowedBranches && !branchInfo?.isActive && (
+              <Alert severity="warning" variant="outlined" sx={{ width: 1 }}>
+                <AlertTitle>Attention</AlertTitle>
+                <Typography>
+                  You have reached your plan max allowed <Label color="success">Active</Label>{' '}
+                  branches of <Label color="info"> {`${maxAllowedBranches}`}</Label> , Please
+                  contact our sales team on{' '}
+                  <Box component="span" sx={{ fontWeight: 600 }}>
+                    hello@astro-menu.com{' '}
+                  </Box>
+                  to include more branches to your plan.
+                </Typography>
+                <Typography color="secondary">
+                  If you wish to enable this branch, please disable other branch first.
+                </Typography>
+              </Alert>
+            )}
+            <Stack sx={{ mt: 2 }}>
               <LoadingButton
                 type="submit"
                 variant="contained"
                 color="success"
                 loading={isPending}
-                disabled={!isDirty}
-                sx={{ alignSelf: 'flex-end' }}
+                disabled={
+                  !isDirty || (activeBranchesLength >= maxAllowedBranches && !branchInfo?.isActive)
+                }
+                sx={{ whiteSpace: 'nowrap', alignSelf: 'flex-end' }}
               >
                 {branchInfo?.docID ? 'Update Branch' : 'Add Branch'}
               </LoadingButton>

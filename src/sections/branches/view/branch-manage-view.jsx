@@ -16,18 +16,14 @@ import BranchStatistics from 'src/sections/branches/BranchStatistics';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
 
 function BranchManageView() {
-  const { id: branchID } = useParams();
   const theme = useTheme();
+  const { id: branchID } = useParams();
   const { themeStretch } = useSettingsContext();
   const { fsGetBranch, businessProfile } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
   const { allowAnalytics, allowPoS } = useGetProductInfo();
 
-  const {
-    data: branchInfo = {},
-    isFetching,
-    error,
-  } = useQuery({
+  const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', branchID],
     queryFn: () => fsGetBranch(branchID),
   });
