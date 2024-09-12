@@ -60,6 +60,8 @@ function SelectedTableInfoCard({ tableInfo }) {
     },
   });
 
+  console.log(error);
+
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title cant be empty !!'),
   });
@@ -68,7 +70,7 @@ function SelectedTableInfoCard({ tableInfo }) {
     () => ({
       menuID: tableInfo?.menuID || '',
       isActive: tableInfo?.isActive,
-      note: tableInfo?.note,
+      note: tableInfo?.note || '',
       title: tableInfo?.title,
       mealAlwaysAvailable: !!tableInfo?.mealAlwaysAvailable,
     }),
