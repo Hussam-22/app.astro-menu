@@ -6,18 +6,22 @@ import {
   Card,
   Table,
   Button,
-  TableBody,
   Container,
+  TableBody,
+  Typography,
   TableContainer,
   TablePagination,
 } from '@mui/material';
 
+import Label from 'src/components/label';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import MealTableRow from 'src/sections/meal/list/MealTableRow';
 import MealTableToolbar from 'src/sections/meal/list/MealTableToolbar';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
@@ -45,12 +49,18 @@ function MealListView() {
     useTable({
       defaultOrderBy: 'title',
     });
-  const { themeStretch } = useSettingsContext();
   const router = useRouter();
+  const { themeStretch } = useSettingsContext();
   const { fsGetAllMeals, fsGetMealLabels } = useAuthContext();
   const [filterName, setFilterName] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const { maxAllowedMeals } = useGetProductInfo();
 
-  const { data: allMeals = [], failureCount } = useQuery({
+  const {
+    data: allMeals = [],
+    failureCount,
+    isLoading,
+  } = useQuery({
     queryKey: [`meals`],
     queryFn: () => fsGetAllMeals(),
   });
@@ -77,6 +87,14 @@ function MealListView() {
 
   const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
 
+  const handleAddNewMeal = () => {
+    if (allMeals?.length >= maxAllowedMeals) {
+      setIsOpen(true);
+    } else {
+      router.push(paths.dashboard.meal.new);
+    }
+  };
+
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -91,7 +109,7 @@ function MealListView() {
           <Button
             variant="contained"
             startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() => router.push(paths.dashboard.meal.new)}
+            onClick={handleAddNewMeal}
           >
             New Meal
           </Button>
@@ -159,6 +177,19 @@ function MealListView() {
           />
         </Box>
       </Card>
+      <ConfirmDialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        closeText="Close"
+        title="Max Allowed Meals Reached !"
+        content={
+          <Typography>
+            You have reached your plan max allowed meals of{' '}
+            <Label color="info"> {`${maxAllowedMeals}`}</Label> , please upgrade your plan or delete
+            some meals to add new ones.
+          </Typography>
+        }
+      />
     </Container>
   );
 }

@@ -11,6 +11,7 @@ import { LoadingButton } from '@mui/lab';
 // @mui
 import { Card, Stack, MenuItem, InputAdornment } from '@mui/material';
 
+import Label from 'src/components/label';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
@@ -151,8 +152,13 @@ export default function StaffsNewEditForm({ staffInfo }) {
             <RHFSelect name="branchID" label="Branch">
               <MenuItem value={null} />
               {branchesList.map((branch) => (
-                <MenuItem key={branch.docID} value={branch.docID}>
-                  {branch.title}
+                <MenuItem key={branch.docID} value={branch.docID} disabled={!branch.isActive}>
+                  {branch.title}{' '}
+                  {!branch.isActive && (
+                    <Label color="error" sx={{ ml: 1 }}>
+                      Disabled
+                    </Label>
+                  )}
                 </MenuItem>
               ))}
             </RHFSelect>

@@ -11,6 +11,7 @@ export function useGetProductInfo() {
   const isMenuOnly = metadata.isMenuOnly === 'true';
   const allowPoS = metadata.pos === 'true';
   const branches = +metadata.branches;
+  const meals = metadata.meals === 'unlimited' ? 'unlimited' : +metadata.meals;
   const languages = +metadata.languages;
   const maxTables = +metadata.tables;
   const { version } = metadata;
@@ -63,5 +64,6 @@ export function useGetProductInfo() {
     statusName: statusName(),
     role: status === 'active' || status === 'trialing' ? 'full' : 'deny',
     maxTranslationsLanguages,
+    maxAllowedMeals: meals,
   };
 }

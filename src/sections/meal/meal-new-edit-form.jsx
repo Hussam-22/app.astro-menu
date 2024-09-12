@@ -11,24 +11,27 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import {
   Box,
   Card,
+  Alert,
   Stack,
-  Dialog,
   Button,
+  Dialog,
   Divider,
   useTheme,
+  AlertTitle,
   Typography,
   DialogTitle,
   DialogContent,
 } from '@mui/material';
 
-import Label from 'src/components/label';
 import { paths } from 'src/routes/paths';
+import Label from 'src/components/label';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
-import { fData } from 'src/utils/format-number';
 import { useAuthContext } from 'src/auth/hooks';
+import { fData } from 'src/utils/format-number';
 import { delay } from 'src/utils/promise-delay';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import MealPortionAdd from 'src/sections/meal/meal-portion-add';
 import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
 import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components/hook-form';
@@ -41,10 +44,17 @@ function MealNewEditForm({ mealInfo }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { fsAddNewMeal, fsDeleteMeal, fsGetMealLabels, fsUpdateMeal, fsRemoveMealFromAllSections } =
-    useAuthContext();
+  const {
+    fsAddNewMeal,
+    fsDeleteMeal,
+    fsGetMealLabels,
+    fsUpdateMeal,
+    fsRemoveMealFromAllSections,
+    fsGetAllMeals,
+  } = useAuthContext();
   const [selectedMealLabels, setSelectedMealLabels] = useState([]);
   const queryClient = useQueryClient();
+  const { maxAllowedMeals } = useGetProductInfo();
 
   const onClose = () => setIsOpen(false);
 
@@ -52,6 +62,15 @@ function MealNewEditForm({ mealInfo }) {
     queryKey: ['meal-labels'],
     queryFn: () => fsGetMealLabels(),
   });
+
+  const { data: allMeals = [], isLoading } = useQuery({
+    queryKey: [`meals`],
+    queryFn: () => fsGetAllMeals(),
+  });
+
+  const activeMealsLength = !isLoading && allMeals?.filter((meal) => meal.isActive)?.length;
+
+  console.log(activeMealsLength >= maxAllowedMeals);
 
   const NewMealSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -151,12 +170,10 @@ function MealNewEditForm({ mealInfo }) {
 
       if (!mealInfo?.docID) {
         enqueueSnackbar('Meal Saved successfully!');
-      } else {
-        if (mutationReturnValue === 'DELETE') enqueueSnackbar('Meal Deleted successfully!');
-        if (mutationReturnValue !== 'DELETE') {
-          queryClient.invalidateQueries(['meal', mealInfo.docID]);
-          enqueueSnackbar('Meal Updated successfully!');
-        }
+      } else if (mutationReturnValue !== 'DELETE') {
+        enqueueSnackbar('Meal Deleted successfully!');
+        queryClient.invalidateQueries(['meals']);
+        queryClient.invalidateQueries(['meal', mealInfo.docID]);
       }
     },
   });
@@ -165,7 +182,7 @@ function MealNewEditForm({ mealInfo }) {
     if (mealInfo?.docID) {
       mutate(async () => {
         await delay(1000);
-        fsUpdateMeal(
+        await fsUpdateMeal(
           {
             ...data,
             translation: dirtyFields.title || dirtyFields.description ? '' : mealInfo.translation,
@@ -192,7 +209,7 @@ function MealNewEditForm({ mealInfo }) {
   const handleDeleteMeal = () => {
     mutate(async () => {
       await delay(1000);
-      fsDeleteMeal(mealInfo.docID);
+      await fsDeleteMeal(mealInfo.docID);
       return 'DELETE';
     });
     setTimeout(() => {
@@ -205,13 +222,32 @@ function MealNewEditForm({ mealInfo }) {
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
           <Grid xs={12}>
-            <Stack>
+            {maxAllowedMeals !== 'unlimited' &&
+              activeMealsLength >= maxAllowedMeals &&
+              !mealInfo?.isActive && (
+                <Alert severity="warning" variant="outlined" sx={{ width: 1 }}>
+                  <AlertTitle>Attention</AlertTitle>
+                  <Typography>
+                    You have reached your plan max allowed <Label color="success">Active</Label>{' '}
+                    meals of <Label color="info"> {`${maxAllowedMeals}`}</Label> , Please contact
+                    our sales team on{' '}
+                    <Box component="span" sx={{ fontWeight: 600 }}>
+                      hello@astro-menu.com{' '}
+                    </Box>
+                    to include more meals to your plan.
+                  </Typography>
+                  <Typography color="secondary">
+                    If you wish to enable this meal, please disable other meal first.
+                  </Typography>
+                </Alert>
+              )}
+            <Stack sx={{ mt: 2 }}>
               <LoadingButton
                 type="submit"
                 color="success"
                 variant="contained"
                 loading={isPending}
-                disabled={!isDirty}
+                disabled={!isDirty || (activeMealsLength >= maxAllowedMeals && !mealInfo?.isActive)}
                 sx={{ alignSelf: 'self-end' }}
               >
                 {mealInfo?.docID ? 'Update Meal' : 'Add Meal'}
