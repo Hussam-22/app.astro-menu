@@ -35,7 +35,7 @@ export default function MealPortionAdd() {
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Stack direction="column" sx={{ maxWidth: '70%' }}>
           <Typography variant="h4">Portions</Typography>
-          <Typography variant="caption" color="primary">
+          <Typography variant="body2" color="primary">
             Set base prices for the meal, then flexibly adjust those prices for each menu, allowing
             the same meal to have different costs across different menus.
           </Typography>

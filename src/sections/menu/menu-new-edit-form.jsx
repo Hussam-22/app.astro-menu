@@ -9,10 +9,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, Typography } from '@mui/material';
 
-import { paths } from 'src/routes/paths';
 import Label from 'src/components/label';
+import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 MenuNewEditForm.propTypes = {
@@ -24,14 +25,14 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { fsUpdateMenu, fsDeleteMenu, fsGetAllMenus } = useAuthContext();
+  const { isMenuOnly } = useGetProductInfo();
   const queryClient = useQueryClient();
 
   const NewUserSchema = Yup.object().shape({
     title: Yup.string().required('Menu title is required'),
-    mostOrderedMeals: Yup.number().max(
-      10,
-      'Number of most ordered meals must be less than or equal to 10'
-    ),
+    mostOrderedMeals:
+      isMenuOnly &&
+      Yup.number().max(10, 'Number of most ordered meals must be less than or equal to 10'),
   });
 
   const {
@@ -60,6 +61,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
   });
 
   const {
+    reset,
     handleSubmit,
     formState: { dirtyFields },
     watch,
@@ -85,6 +87,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
 
   const onSubmit = async (data) => {
     mutate(() => fsUpdateMenu(data));
+    reset(data);
     enqueueSnackbar('Update success!');
   };
 
@@ -118,23 +121,25 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
             spacing={1}
             divider={<Divider sx={{ borderStyle: 'dashed' }} />}
           >
-            <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
-              <Stack direction="column" sx={{ flexGrow: 1 }}>
-                <Typography sx={{ fontWeight: 500 }}>Most Ordered Meals</Typography>
-                <Typography variant="caption">
-                  {` - Show the number of "most ordered meals" in the menu, max is 10`}
-                </Typography>
-                <Typography variant="caption">
-                  - Set to 0 (Zero) to hide the most ordered meals section
-                </Typography>
+            {!isMenuOnly && (
+              <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+                <Stack direction="column" sx={{ flexGrow: 1 }}>
+                  <Typography sx={{ fontWeight: 500 }}>Most Ordered Meals</Typography>
+                  <Typography variant="body2">
+                    {` - Show the number of "most ordered meals" in the menu, max is 10`}
+                  </Typography>
+                  <Typography variant="body2">
+                    - Set to 0 (Zero) to hide the most ordered meals section
+                  </Typography>
+                </Stack>
+                <RHFTextField
+                  name="mostOrderedMeals"
+                  label="# of Meals"
+                  type="number"
+                  sx={{ flexShrink: 1, width: '10%' }}
+                />
               </Stack>
-              <RHFTextField
-                name="mostOrderedMeals"
-                label="# of Meals"
-                type="number"
-                sx={{ flexShrink: 1, width: '10%' }}
-              />
-            </Stack>
+            )}
 
             <Stack direction="row" spacing={3}>
               <Stack direction="column">
@@ -142,7 +147,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
                   Delete Menu
                 </Typography>
                 {menusList.length === 1 && (
-                  <Typography variant="caption">
+                  <Typography variant="body2">
                     The system must have at least 1 menu, &nbsp;
                     <Label variant="soft" color="primary">
                       {menuInfo.title}

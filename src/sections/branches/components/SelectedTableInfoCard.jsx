@@ -194,7 +194,7 @@ function SelectedTableInfoCard({ tableInfo }) {
                             sx={{ m: 0 }}
                           />
                         </Stack>
-                        <Typography variant="caption">
+                        <Typography variant="body2">
                           Decide the behavior of the meals visibility if they should be always
                           visible regardless of their status (In case they are unavailable)
                         </Typography>
@@ -217,7 +217,7 @@ function SelectedTableInfoCard({ tableInfo }) {
                         />
                       </Stack>
 
-                      <Typography variant="caption">
+                      <Typography variant="body2">
                         Active or Not Active (Disabled), if disabled the QR will not be accessible
                         by customers
                       </Typography>
