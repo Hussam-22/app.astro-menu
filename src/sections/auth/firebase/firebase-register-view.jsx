@@ -1,20 +1,21 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import { Box, Card } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Box, Card, MenuItem } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import Logo from 'src/components/logo';
+import Image from 'src/components/image';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -26,18 +27,21 @@ import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
-
-const DESCRIPTION = `'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.'`;
+import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
 export default function FirebaseRegisterView() {
-  const { fsCreateBusinessProfile } = useAuthContext();
+  const { fsCreateBusinessProfile, fsGetProducts } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState('');
-  const [open, setOpen] = useState(false);
+  const [open, _] = useState(false);
   const password = useBoolean();
   const router = useRouter();
+
+  const { data: productsData, isLoading } = useQuery({
+    queryKey: ['products'],
+    queryFn: fsGetProducts,
+  });
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
@@ -45,9 +49,6 @@ export default function FirebaseRegisterView() {
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
     businessName: Yup.string().required('Plan is required'),
-    // languages: Yup.array()
-    //   .min(1, 'Choose at least one option')
-    //   .max(3, 'max 3 translation languages allowed in the trial plan'),
   });
 
   const defaultValues = {
@@ -56,7 +57,7 @@ export default function FirebaseRegisterView() {
     email: '',
     password: '',
     businessName: '',
-    // languages: [],
+    plan: 'free',
   };
 
   const methods = useForm({
@@ -93,6 +94,22 @@ export default function FirebaseRegisterView() {
   const renderForm = (
     <Stack spacing={1.5} sx={{ p: 2 }}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+
+      {!isLoading && (
+        <RHFSelect name="plan" label="Select your Plan">
+          {productsData
+            .filter((product) => product.active)
+            .map((product) => (
+              <MenuItem key={product.id} value={product.id}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Image src={product.images[0]} sx={{ width: 22, height: 22 }} />
+                  {product.name}
+                </Stack>
+              </MenuItem>
+            ))}
+        </RHFSelect>
+      )}
+
       <RHFTextField name="businessName" label="Business Name" />
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -116,13 +133,6 @@ export default function FirebaseRegisterView() {
           ),
         }}
       />
-      {/* <RHFMultiSelect
-        chip
-        checkbox
-        name="languages"
-        label="Menu Target Languages"
-        options={TRANSLATION_LANGUAGES.filter((option) => option.value !== values.defaultLanguage)}
-      /> */}
 
       <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
         <Typography>No Credit Card Required</Typography>
@@ -142,14 +152,16 @@ export default function FirebaseRegisterView() {
 
   return (
     <Card sx={{ pt: 2, width: { xs: 'auto', sm: '40dvw' } }}>
-      <Logo sx={{ mx: 4 }} />
-      <Typography variant="h6" color="secondary" sx={{ textAlign: 'left', px: 3 }}>
-        Create your{' '}
-        <Box component="span" sx={{ color: 'primary.main' }}>
-          Astro-Menu
-        </Box>{' '}
-        account
-      </Typography>
+      <Stack direction="row" justifyContent="center" spacing={1}>
+        <Logo />
+        <Typography variant="h6" color="secondary">
+          Create your{' '}
+          <Box component="span" sx={{ color: 'primary.main' }}>
+            Astro-Menu
+          </Box>{' '}
+          account
+        </Typography>
+      </Stack>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         {renderForm}
       </FormProvider>

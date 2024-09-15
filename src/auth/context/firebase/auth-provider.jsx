@@ -692,8 +692,6 @@ export function AuthProvider({ children }) {
 
       querySnapshot.forEach((doc) => dataArr.push(doc.data()));
 
-      console.log(dataArr);
-
       return dataArr;
     } catch (error) {
       throw error;
