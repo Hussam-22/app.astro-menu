@@ -15,6 +15,7 @@
 - All Notifications should be in the same place (Bottom center)
 /- Prevent Refreshing the page when user pulls down the page
 - show error messages such as "user already in use" in registration form
+- when user register, the login page does not redirect to the dashboard
 
 ? QR Menu
 - How item will look without image or description
@@ -23,9 +24,10 @@
 - check what happens if a meal gets deleted while its in cart
 /- changing meal status causing the qr-menu to reset back to default language
 /- Add scroll to "add meal" drawer when the meal is too long to fit the screen, caused by long description or too many portions
-- QR #0 - the QR Menu Only, should not have active listener to menu changes (this to reduce number of  firestore reads)
+- QR #0 - the QR Menu Only, should not have active listener to menu changes (this to reduce number of firestore reads)
 - QR Menu only should show everything in the menu, no "Out of Stock" or "Not Available" meals should be shown, meal is either enabled or disabled
 /- fix menu-sections drawer gets duplicated when disabling section from "Menu > Meals and Sections" in the dashboard
+- when analytics is not part of the plan, dont calculate the analytics
 
 ? Staff Dashboard
 /- either add "search bar" or "filter meals" drawer, or both

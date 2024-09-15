@@ -25,18 +25,10 @@ import { useAuthContext } from 'src/auth/hooks';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-import { LANGUAGE_CODES } from 'src/locales/languageCodes';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 const DESCRIPTION = `'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.'`;
-
-const TRANSLATION_LANGUAGES = Object.entries(LANGUAGE_CODES)
-  .map(([key, value]) => ({
-    value: key,
-    label: `${value.name} - ${value.value}`,
-  }))
-  .sort((a, b) => a.label.localeCompare(b.label));
 
 // ----------------------------------------------------------------------
 
@@ -81,7 +73,7 @@ export default function FirebaseRegisterView() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
-    onSuccess: () => setOpen(true),
+    // onSuccess: () => setOpen(true),
   });
 
   const onSubmit = handleSubmit(async (formData) => {
@@ -89,7 +81,6 @@ export default function FirebaseRegisterView() {
       mutate(() =>
         fsCreateBusinessProfile({
           ...formData,
-          description: DESCRIPTION,
         })
       );
     } catch (error) {

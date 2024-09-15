@@ -42,7 +42,7 @@ import {
 } from 'firebase/firestore';
 
 import { FIREBASE_API } from 'src/config-global';
-import { stripeCreateCustomer } from 'src/stripe/functions';
+import { stripeCreateBusiness } from 'src/stripe/functions';
 import {
   DEFAULT_MEALS,
   DEFAULT_MENUS,
@@ -338,69 +338,21 @@ export function AuthProvider({ children }) {
   const fsCreateBusinessProfile = useCallback(
     async (data) => {
       try {
-        // 1- REGISTER OWNER
-        const { email, password, firstName, lastName, ...businessProfileInfo } = data;
+        const { email, password, firstName, lastName, businessName } = data;
 
-        // const ownerID = 'U9zbloA4S9XjMmU1HOXv6YKbZLj1';
-        // const subscriptionId = 'sub_1PuWRvRoHLqbtaTlyyhXi9bz';
-        // const stripeCustomerID = 'cus_Qm4b5iRnPPW9fP';
-        // const businessProfileID = 'tkGL7IvNr2bzMatV5JHT';
-
-        // 1- Create a stripe customer and add a trial subscription 'Menu Master'
-        // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
-
+        // 1- create owner account on firebase
         const ownerID = await register?.(email, password, firstName, lastName);
 
-        // 2- CREATE BUSINESS PROFILE
-        const newDocRef = doc(collection(DB, `businessProfiles`));
-
-        const stripeData = await stripeCreateCustomer(
+        // 2- create business profile and system defaults on server
+        const stripeCreateBusinessData = await stripeCreateBusiness(
+          ownerID,
           email,
           `${firstName} ${lastName}`,
-          newDocRef.id,
-          ownerID
+          businessName,
+          true
         );
-        const { customerId: stripeCustomerID, subscriptionId } = stripeData;
 
-        await setDoc(newDocRef, {
-          ...businessProfileInfo,
-          // stripeCustomerID,
-          // subscriptionId,
-          defaultLanguage: 'en',
-          docID: newDocRef.id,
-          ownerID,
-          users: [],
-          isActive: true,
-          createdOn: new Date(),
-          logo: await fsGetImgDownloadUrl('_mock', `business_logo_800x800.webp`),
-          // default Languages
-          languages: ['ar', 'fr', 'es'],
-          translationEditUsage: {
-            count: 0,
-            maxCount: 3,
-          },
-        });
-
-        const businessProfileID = newDocRef.id;
-
-        await fbTranslateBranchDesc({
-          title: businessProfileInfo.businessName,
-          desc: businessProfileInfo.description,
-          businessProfileID,
-          newLang: businessProfileInfo.languages,
-          toRemoveLang: [],
-        });
-
-        // 3- Update Assign Business-Profile to User
-        const userProfile = doc(collection(DB, 'users'), ownerID);
-        await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
-
-        // 4- Create Default Data
-        await createDefaults({
-          ...businessProfileInfo,
-          businessProfileID,
-          languages: ['ar', 'fr', 'es'],
-        });
+        console.log(stripeCreateBusinessData);
       } catch (error) {
         console.log(error);
       }
@@ -1816,7 +1768,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-
   // -------------------------- QR Menu - Cart -----------------------------------
   const fsInitiateNewOrder = useCallback(async (payload) => {
     const { tableID, menuID, staffID, businessProfileID, branchID, initiatedBy } = payload;

@@ -21,6 +21,7 @@ export const stripeCreateCustomer = async (
   name,
   businessProfileID,
   ownerID,
+
   useLocalUrl = false
 ) => {
   const url = `${useLocalUrl ? LOCAL_URL : LIVE_URL}/create-customer`;
@@ -85,6 +86,40 @@ export const stripeCreateCheckoutSession = async (items, useLocalUrl = false) =>
   try {
     const response = await axios.post(url, body, { headers });
     window.location = response.data.session.url;
+  } catch (error) {
+    if (error.response) {
+      // Server responded with a status other than 200 range
+      console.error('Server error:', error.response.data);
+    } else if (error.request) {
+      // Request was made but no response received
+      console.error('No response received:', error.request);
+    } else {
+      // Something else happened while setting up the request
+      console.error('Error:', error.message);
+    }
+    throw error;
+  }
+};
+export const stripeCreateBusiness = async (
+  ownerID,
+  email,
+  name,
+  businessName,
+  useLocalUrl = false
+) => {
+  const url = `${useLocalUrl ? LOCAL_URL : LIVE_URL}/create-business`;
+  const body = {
+    ownerID,
+    email,
+    name,
+    businessName,
+  };
+
+  try {
+    console.log(headers);
+
+    const response = await axios.post(url, body, { headers });
+    return response.data;
   } catch (error) {
     if (error.response) {
       // Server responded with a status other than 200 range

@@ -65,6 +65,8 @@ function MealListView() {
     queryFn: () => fsGetAllMeals(),
   });
 
+  console.log(allMeals);
+
   const { data: mealLabelsList = [] } = useQuery({
     queryKey: ['meal-labels'],
     queryFn: () => fsGetMealLabels(),
