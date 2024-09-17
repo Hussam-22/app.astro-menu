@@ -18,7 +18,6 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
-import { RouterLink } from 'src/routes/components';
 import { useSettingsContext } from 'src/components/settings';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
@@ -96,11 +95,12 @@ function BranchListView() {
   const isNotFound = (!dataFiltered.length && !!filterName) || (!isLoading && !dataFiltered.length);
 
   const handleAddNewBranch = () => {
-    if (branchesData?.length >= maxBranchesAllowed) {
-      setIsOpen(true);
-    } else {
-      router.push(paths.dashboard.branches.new);
-    }
+    router.push(paths.dashboard.branches.new);
+    // if (branchesData?.length >= maxBranchesAllowed) {
+    //   setIsOpen(true);
+    // } else {
+    //   router.push(paths.dashboard.branches.new);
+    // }
   };
 
   return (
@@ -114,7 +114,7 @@ function BranchListView() {
           },
         ]}
         action={
-          <Button component={RouterLink} onClick={handleAddNewBranch} variant="contained">
+          <Button onClick={handleAddNewBranch} variant="contained">
             New Branch
           </Button>
         }

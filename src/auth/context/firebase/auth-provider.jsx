@@ -803,6 +803,9 @@ export function AuthProvider({ children }) {
       });
 
       await Promise.allSettled(toUpdate);
+
+      const branchRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}`);
+      await updateDoc(branchRef, { menuID });
     },
     [state]
   );

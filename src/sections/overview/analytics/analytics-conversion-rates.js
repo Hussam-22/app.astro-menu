@@ -29,7 +29,7 @@ export default function AnalyticsConversionRates({ title, subheader, chart, acti
     plotOptions: {
       bar: {
         horizontal: true,
-        barHeight: '7%',
+        barHeight: '50%',
         borderRadius: 2,
       },
     },
