@@ -11,8 +11,10 @@ export default function MealPortionAdd() {
   const {
     control,
     setValue,
-    formState: { errors },
+    formState: { errors, dirtyFields, isDirty },
   } = useFormContext();
+
+  console.log(dirtyFields, isDirty);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -66,9 +68,6 @@ export default function MealPortionAdd() {
                   type="number"
                   name={`portions[${index}].price`}
                   label="Price"
-                  onChange={(event) =>
-                    setValue(`portions[${index}].price`, Number(event.target.value))
-                  }
                   sx={{ maxWidth: { md: 125 } }}
                 />
 

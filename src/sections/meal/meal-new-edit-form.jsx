@@ -41,6 +41,7 @@ MealNewEditForm.propTypes = { mealInfo: PropTypes.object };
 function MealNewEditForm({ mealInfo }) {
   const theme = useTheme();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -53,7 +54,6 @@ function MealNewEditForm({ mealInfo }) {
     fsGetAllMeals,
   } = useAuthContext();
   const [selectedMealLabels, setSelectedMealLabels] = useState([]);
-  const queryClient = useQueryClient();
   const { maxAllowedMeals } = useGetProductInfo();
 
   const onClose = () => setIsOpen(false);
@@ -69,8 +69,6 @@ function MealNewEditForm({ mealInfo }) {
   });
 
   const activeMealsLength = !isLoading && allMeals?.filter((meal) => meal.isActive)?.length;
-
-  console.log(activeMealsLength >= maxAllowedMeals);
 
   const NewMealSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -109,7 +107,11 @@ function MealNewEditForm({ mealInfo }) {
     formState: { isDirty, dirtyFields, errors },
   } = methods;
 
+  console.log(dirtyFields);
+
   const values = watch();
+
+  console.log(values);
 
   useEffect(() => {
     if (mealInfo) {
