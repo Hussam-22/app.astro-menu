@@ -77,8 +77,6 @@ function MenuListView() {
     queryFn: () => fsGetAllMenus(),
   });
 
-  console.log(data);
-
   useEffect(() => {
     if (data?.length !== 0) {
       setTableData(data);

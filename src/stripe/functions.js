@@ -33,8 +33,6 @@ export const stripeCreateCustomer = async (
   };
 
   try {
-    console.log(headers);
-
     const response = await axios.post(url, body, { headers });
     return response.data;
   } catch (error) {
@@ -118,8 +116,6 @@ export const stripeCreateBusiness = async (
   };
 
   try {
-    console.log(headers);
-
     const response = await axios.post(url, body, { headers });
     return response.data;
   } catch (error) {

@@ -18,8 +18,6 @@ function MealsAndSections() {
     queryFn: () => fsGetSections(menuID),
   });
 
-  console.log(menuSections);
-
   const { data: allMeals = [] } = useQuery({
     queryKey: [`meals`],
     queryFn: () => fsGetAllMeals(),

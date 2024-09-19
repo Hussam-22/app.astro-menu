@@ -35,8 +35,6 @@ function MenuNewDialog({ isOpen, onClose }) {
     },
   });
 
-  console.log(isPending);
-
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose}>
       <DialogTitle>Add New Menu</DialogTitle>

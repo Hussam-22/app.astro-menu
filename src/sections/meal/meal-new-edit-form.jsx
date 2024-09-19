@@ -107,11 +107,7 @@ function MealNewEditForm({ mealInfo }) {
     formState: { isDirty, dirtyFields, errors },
   } = methods;
 
-  console.log(dirtyFields);
-
   const values = watch();
-
-  console.log(values);
 
   useEffect(() => {
     if (mealInfo) {

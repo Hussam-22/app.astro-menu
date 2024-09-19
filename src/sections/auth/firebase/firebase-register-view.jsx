@@ -26,24 +26,27 @@ import { useAuthContext } from 'src/auth/hooks';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import BuildingProfileDialog from 'src/sections/auth/firebase/components/building-profile-dialog';
 
 // ----------------------------------------------------------------------
 
 export default function FirebaseRegisterView() {
   const { fsCreateBusinessProfile, fsGetProducts } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState('');
-  const [open, _] = useState(false);
+  const [open, setOpen] = useState(false);
   const password = useBoolean();
   const router = useRouter();
+
+  const onClose = () => {
+    setOpen(false);
+    router.push(paths.auth.firebase.login);
+  };
 
   const { data: productsData, isLoading } = useQuery({
     queryKey: ['products'],
     queryFn: fsGetProducts,
   });
-
-  console.log(productsData);
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
@@ -77,16 +80,16 @@ export default function FirebaseRegisterView() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
-    // onSuccess: () => setOpen(true),
   });
 
   const onSubmit = handleSubmit(async (formData) => {
     try {
-      mutate(() =>
+      mutate(() => {
+        setOpen(true);
         fsCreateBusinessProfile({
           ...formData,
-        })
-      );
+        });
+      });
     } catch (error) {
       console.error(error);
       reset();
@@ -192,15 +195,7 @@ export default function FirebaseRegisterView() {
         </Stack>
       </Stack>
 
-      <ConfirmDialog
-        open={open}
-        onClose={() => {
-          router.push(paths.auth.firebase.login);
-        }}
-        title="Your account have successfully created"
-        content="Please check your email to verify your account"
-        closeText="Close"
-      />
+      <BuildingProfileDialog open={open} onClose={onClose} />
     </Card>
   );
 }

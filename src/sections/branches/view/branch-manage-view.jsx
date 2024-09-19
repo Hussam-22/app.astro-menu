@@ -28,8 +28,6 @@ function BranchManageView() {
     queryFn: () => fsGetBranch(branchID),
   });
 
-  console.log(branchInfo);
-
   const TABS = [
     {
       value: 'Branch Info',

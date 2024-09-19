@@ -234,9 +234,7 @@ export function AuthProvider({ children }) {
   const fsDeleteImage = useCallback(async (bucketPath, imgID) => {
     const storageRef = ref(STORAGE, `gs://${bucketPath}${imgID}`);
     deleteObject(storageRef)
-      .then(() => {
-        console.log('Image deleted successfully');
-      })
+      .then(() => {})
       .catch((error) => {
         console.error('Error deleting image:', error);
       });
@@ -260,10 +258,7 @@ export function AuthProvider({ children }) {
 
       uploadTask.on(
         'state_changed',
-        (snapshot) => {
-          const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          // console.log(`${percent}% done`);
-        },
+        (snapshot) => {},
         (error) => {
           reject(error);
         },
@@ -352,8 +347,6 @@ export function AuthProvider({ children }) {
           plan,
           true
         );
-
-        console.log(stripeCreateBusinessData);
       } catch (error) {
         console.log(error);
       }
@@ -409,16 +402,9 @@ export function AuthProvider({ children }) {
           const uploadTask = uploadBytesResumable(imageRef, logo);
           uploadTask.on(
             'state_changed',
-            (snapshot) => {
-              console.log(snapshot);
-            },
-            (error) => {
-              console.log(error);
-            },
-            () => {
-              console.log('UPLOADED');
-              // queryClient.invalidateQueries(['businessProfile', businessProfileID]);
-            }
+            (snapshot) => {},
+            (error) => {},
+            () => {}
           );
         }
 
@@ -1028,15 +1014,9 @@ export function AuthProvider({ children }) {
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
           'state_changed',
-          (snapshot) => {
-            console.log(snapshot);
-          },
-          (error) => {
-            console.log(error);
-          },
-          () => {
-            console.log('UPLOADED');
-          }
+          (snapshot) => {},
+          (error) => {},
+          () => {}
         );
       }
 
@@ -1497,9 +1477,7 @@ export function AuthProvider({ children }) {
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
           'state_changed',
-          (snapshot) => {
-            console.log(snapshot);
-          },
+          (snapshot) => {},
           (error) => {},
           () => {}
         );

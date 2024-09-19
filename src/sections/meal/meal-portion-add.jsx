@@ -14,8 +14,6 @@ export default function MealPortionAdd() {
     formState: { errors, dirtyFields, isDirty },
   } = useFormContext();
 
-  console.log(dirtyFields, isDirty);
-
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'portions',

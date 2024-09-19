@@ -60,8 +60,6 @@ function SelectedTableInfoCard({ tableInfo }) {
     },
   });
 
-  console.log(error);
-
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title cant be empty !!'),
   });

@@ -26,7 +26,6 @@ function SubscriptionInfo() {
 
   const { isPending, mutate } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
-    onSuccess: (data) => console.log(data),
   });
 
   const startDate = fDate(new Date(subscriptionInfo.current_period_start * 1000));
