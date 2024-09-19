@@ -338,7 +338,7 @@ export function AuthProvider({ children }) {
   const fsCreateBusinessProfile = useCallback(
     async (data) => {
       try {
-        const { email, password, firstName, lastName, businessName } = data;
+        const { email, password, firstName, lastName, businessName, plan } = data;
 
         // 1- create owner account on firebase
         const ownerID = await register?.(email, password, firstName, lastName);
@@ -349,6 +349,7 @@ export function AuthProvider({ children }) {
           email,
           `${firstName} ${lastName}`,
           businessName,
+          plan,
           true
         );
 

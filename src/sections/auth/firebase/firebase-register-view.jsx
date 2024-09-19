@@ -43,12 +43,15 @@ export default function FirebaseRegisterView() {
     queryFn: fsGetProducts,
   });
 
+  console.log(productsData);
+
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
     lastName: Yup.string().required('Last name required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
     businessName: Yup.string().required('Plan is required'),
+    plan: Yup.string().required('Plan is required'),
   });
 
   const defaultValues = {
@@ -57,7 +60,7 @@ export default function FirebaseRegisterView() {
     email: '',
     password: '',
     businessName: '',
-    plan: 'free',
+    plan: '',
   };
 
   const methods = useForm({
@@ -97,10 +100,11 @@ export default function FirebaseRegisterView() {
 
       {!isLoading && (
         <RHFSelect name="plan" label="Select your Plan">
+          <MenuItem value="" />
           {productsData
             .filter((product) => product.active)
             .map((product) => (
-              <MenuItem key={product.id} value={product.id}>
+              <MenuItem key={product.id} value={product.default_price}>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Image src={product.images[0]} sx={{ width: 22, height: 22 }} />
                   {product.name}

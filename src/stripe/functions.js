@@ -105,6 +105,7 @@ export const stripeCreateBusiness = async (
   email,
   name,
   businessName,
+  plan,
   useLocalUrl = false
 ) => {
   const url = `${useLocalUrl ? LOCAL_URL : LIVE_URL}/create-business`;
@@ -113,6 +114,7 @@ export const stripeCreateBusiness = async (
     email,
     name,
     businessName,
+    plan,
   };
 
   try {
