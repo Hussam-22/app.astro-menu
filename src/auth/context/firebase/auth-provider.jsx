@@ -771,6 +771,25 @@ export function AuthProvider({ children }) {
     },
     []
   );
+  const fsGetDisplayTableInfo = useCallback(
+    async (branchID, businessProfileID = state.user.businessProfileID) => {
+      try {
+        const docRef = query(
+          collectionGroup(DB, 'tables'),
+          where('businessProfileID', '==', businessProfileID),
+          where('branchID', '==', branchID),
+          where('index', '==', 0)
+        );
+        const querySnapshot = await getDocs(docRef);
+        const dataArr = [];
+        querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+        return dataArr[0];
+      } catch (error) {
+        throw error;
+      }
+    },
+    [state]
+  );
   const fsChangeMenuForAllTables = useCallback(
     async (branchID, menuID, businessProfileID = state.user.businessProfileID) => {
       const docsRef = query(
@@ -823,7 +842,7 @@ export function AuthProvider({ children }) {
       const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
         const tablesArray = [];
         querySnapshot.forEach((doc) => {
-          if (doc.exists()) {
+          if (doc.exists() && doc.data().index !== 0) {
             tablesArray.push(doc.data());
           }
         });
@@ -2080,6 +2099,7 @@ export function AuthProvider({ children }) {
       fsChangeMenuForAllTables,
       fsGetTableOrdersByPeriod,
       fsGetTableInfo,
+      fsGetDisplayTableInfo,
       branchTables,
       // ---- ORDERS ----
       fsInitiateNewOrder,
@@ -2173,6 +2193,7 @@ export function AuthProvider({ children }) {
       fsGetBranchTablesSnapshot,
       fsUpdateBranchTable,
       fsGetTableInfo,
+      fsGetDisplayTableInfo,
       fsChangeMenuForAllTables,
       branchTables,
       // ---- ORDERS ----

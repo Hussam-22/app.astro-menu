@@ -95,12 +95,12 @@ function BranchListView() {
   const isNotFound = (!dataFiltered.length && !!filterName) || (!isLoading && !dataFiltered.length);
 
   const handleAddNewBranch = () => {
-    router.push(paths.dashboard.branches.new);
-    // if (branchesData?.length >= maxBranchesAllowed) {
-    //   setIsOpen(true);
-    // } else {
-    //   router.push(paths.dashboard.branches.new);
-    // }
+    // router.push(paths.dashboard.branches.new);
+    if (branchesData?.length >= maxBranchesAllowed) {
+      setIsOpen(true);
+    } else {
+      router.push(paths.dashboard.branches.new);
+    }
   };
 
   return (

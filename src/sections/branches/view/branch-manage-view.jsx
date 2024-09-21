@@ -11,6 +11,7 @@ import StaffLink from 'src/sections/branches/staff-link';
 import { useSettingsContext } from 'src/components/settings';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
 import QRManagement from 'src/sections/branches/QR-Management';
+import DisplayQRCode from 'src/sections/branches/display-qr-code';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import BranchStatistics from 'src/sections/branches/BranchStatistics';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
@@ -35,8 +36,13 @@ function BranchManageView() {
       component: branchInfo?.docID && <BranchNewEditForm branchInfo={branchInfo} />,
     },
     branchInfo.isActive && {
-      value: 'QR Management',
+      value: 'Display QR Code',
       icon: <Iconify icon="clarity:qr-code-line" width={20} height={20} />,
+      component: <DisplayQRCode branchInfo={branchInfo} />,
+    },
+    branchInfo.isActive && {
+      value: 'Tables QR Codes',
+      icon: <Iconify icon="mdi:table-chair" width={20} height={20} />,
       component: <QRManagement branchInfo={branchInfo} />,
     },
     allowAnalytics &&

@@ -11,8 +11,8 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Box, Card, MenuItem } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
+import { Box, Card, Button, MenuItem } from '@mui/material';
 
 import Logo from 'src/components/logo';
 import Image from 'src/components/image';
@@ -26,6 +26,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { stripeGetProduct } from 'src/stripe/functions';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import BuildingProfileDialog from 'src/sections/auth/firebase/components/building-profile-dialog';
 
@@ -47,6 +48,8 @@ export default function FirebaseRegisterView() {
     queryKey: ['products'],
     queryFn: fsGetProducts,
   });
+
+  console.log(productsData);
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
@@ -82,12 +85,17 @@ export default function FirebaseRegisterView() {
     mutationFn: (mutateFn) => mutateFn(),
   });
 
+  const values = watch();
+
   const onSubmit = handleSubmit(async (formData) => {
     try {
       mutate(() => {
         setOpen(true);
+        const product = productsData.find((item) => item.id === formData.plan);
         fsCreateBusinessProfile({
           ...formData,
+          plan: product.default_price,
+          productID: product.id,
         });
       });
     } catch (error) {
@@ -96,6 +104,8 @@ export default function FirebaseRegisterView() {
       setErrorMsg(typeof error === 'string' ? error : error.message);
     }
   });
+
+  const getProduct = async () => stripeGetProduct(values.plan, true);
 
   const renderForm = (
     <Stack spacing={1.5} sx={{ p: 2 }}>
@@ -107,7 +117,7 @@ export default function FirebaseRegisterView() {
           {productsData
             .filter((product) => product.active)
             .map((product) => (
-              <MenuItem key={product.id} value={product.default_price}>
+              <MenuItem key={product.id} value={product.id}>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Image src={product.images[0]} sx={{ width: 22, height: 22 }} />
                   {product.name}
@@ -159,6 +169,9 @@ export default function FirebaseRegisterView() {
 
   return (
     <Card sx={{ pt: 2, width: { xs: 'auto', sm: '40dvw' } }}>
+      <Button variant="contained" onClick={getProduct}>
+        Get Product
+      </Button>
       <Stack direction="row" justifyContent="center" spacing={1}>
         <Logo />
         <Typography variant="h6" color="secondary">
