@@ -22,7 +22,7 @@ function BranchManageView() {
   const { themeStretch } = useSettingsContext();
   const { fsGetBranch, businessProfile } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
-  const { allowAnalytics, allowPoS } = useGetProductInfo();
+  const { allowAnalytics, allowPoS, isMenuOnly } = useGetProductInfo();
 
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', branchID],
@@ -40,11 +40,12 @@ function BranchManageView() {
       icon: <Iconify icon="clarity:qr-code-line" width={20} height={20} />,
       component: <DisplayQRCode branchInfo={branchInfo} />,
     },
-    branchInfo.isActive && {
-      value: 'Tables QR Codes',
-      icon: <Iconify icon="mdi:table-chair" width={20} height={20} />,
-      component: <QRManagement branchInfo={branchInfo} />,
-    },
+    !isMenuOnly &&
+      branchInfo.isActive && {
+        value: 'Tables QR Codes',
+        icon: <Iconify icon="mdi:table-chair" width={20} height={20} />,
+        component: <QRManagement branchInfo={branchInfo} />,
+      },
     allowAnalytics &&
       branchInfo.isActive && {
         value: 'Statistics',
@@ -63,9 +64,7 @@ function BranchManageView() {
         ),
         component: <StaffLink />,
       },
-  ]
-    .filter((tab) => tab)
-    .splice(0, businessProfile?.planInfo?.at(-1)?.isMenuOnly ? 2 : 4);
+  ].filter(Boolean);
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -77,7 +76,7 @@ function BranchManageView() {
           { name: branchInfo?.title || '' },
         ]}
         action={
-          <Typography variant="caption" sx={{ color: theme.palette.grey[600] }}>
+          <Typography variant="body2" sx={{ color: theme.palette.grey[600] }}>
             ID: {branchID}
           </Typography>
         }

@@ -11,8 +11,8 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Box, Card, MenuItem } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Box, Card, Button, MenuItem } from '@mui/material';
 
 import Logo from 'src/components/logo';
 import Image from 'src/components/image';
@@ -26,7 +26,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-import { stripeGetProduct } from 'src/stripe/functions';
+import { LoadingScreen } from 'src/components/loading-screen';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import BuildingProfileDialog from 'src/sections/auth/firebase/components/building-profile-dialog';
 
@@ -48,8 +48,6 @@ export default function FirebaseRegisterView() {
     queryKey: ['products'],
     queryFn: fsGetProducts,
   });
-
-  console.log(productsData);
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
@@ -85,12 +83,9 @@ export default function FirebaseRegisterView() {
     mutationFn: (mutateFn) => mutateFn(),
   });
 
-  const values = watch();
-
   const onSubmit = handleSubmit(async (formData) => {
     try {
       mutate(() => {
-        setOpen(true);
         const product = productsData.find((item) => item.id === formData.plan);
         fsCreateBusinessProfile({
           ...formData,
@@ -98,6 +93,7 @@ export default function FirebaseRegisterView() {
           productID: product.id,
         });
       });
+      setOpen(true);
     } catch (error) {
       console.error(error);
       reset();
@@ -105,15 +101,13 @@ export default function FirebaseRegisterView() {
     }
   });
 
-  const getProduct = async () => stripeGetProduct(values.plan, true);
-
   const renderForm = (
     <Stack spacing={1.5} sx={{ p: 2 }}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
       {!isLoading && (
         <RHFSelect name="plan" label="Select your Plan">
-          <MenuItem value="" />
+          <MenuItem value="">-- Select your plan --</MenuItem>
           {productsData
             .filter((product) => product.active)
             .map((product) => (
@@ -151,9 +145,17 @@ export default function FirebaseRegisterView() {
         }}
       />
 
-      <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
-        <Typography>No Credit Card Required</Typography>
+      <Stack
+        direction={{ sm: 'row', xs: 'column' }}
+        justifyContent="flex-end"
+        alignItems="center"
+        spacing={2}
+      >
+        <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
+          14 Days free trial / No Credit Card Required
+        </Typography>
         <LoadingButton
+          fullWidth
           color="primary"
           size="large"
           type="submit"
@@ -167,11 +169,10 @@ export default function FirebaseRegisterView() {
     </Stack>
   );
 
+  if (isLoading) return <LoadingScreen />;
+
   return (
-    <Card sx={{ pt: 2, width: { xs: 'auto', sm: '40dvw' } }}>
-      <Button variant="contained" onClick={getProduct}>
-        Get Product
-      </Button>
+    <Card sx={{ pt: 2, maxWidth: { xs: 'auto', sm: '70vw', md: '50vw' } }}>
       <Stack direction="row" justifyContent="center" spacing={1}>
         <Logo />
         <Typography variant="h6" color="secondary">
@@ -186,8 +187,9 @@ export default function FirebaseRegisterView() {
         {renderForm}
       </FormProvider>
       <Stack
-        direction="row"
-        justifyContent="space-between"
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent={{ xs: 'center', sm: 'space-between' }}
+        alignItems="center"
         sx={{ p: 2, bgcolor: 'grey.100', mt: 1 }}
       >
         <Stack direction="row" spacing={0.5} alignItems="center">

@@ -333,18 +333,19 @@ export function AuthProvider({ children }) {
   const fsCreateBusinessProfile = useCallback(
     async (data) => {
       try {
-        const { email, password, firstName, lastName, businessName, plan } = data;
+        const { email, password, firstName, lastName, businessName, plan, productID } = data;
 
         // 1- create owner account on firebase
         const ownerID = await register?.(email, password, firstName, lastName);
 
         // 2- create business profile and system defaults on server
-        const stripeCreateBusinessData = await stripeCreateBusiness(
+        await stripeCreateBusiness(
           ownerID,
           email,
           `${firstName} ${lastName}`,
           businessName,
           plan,
+          productID,
           true
         );
       } catch (error) {

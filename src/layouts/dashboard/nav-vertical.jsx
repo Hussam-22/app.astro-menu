@@ -8,13 +8,14 @@ import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 import { Button, Divider, Typography } from '@mui/material';
 
+import Image from 'src/components/image';
 // components
 import SvgColor from 'src/components/svg-color';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
-import { useRouter, usePathname } from 'src/routes/hook';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useRouter, usePathname } from 'src/routes/hook';
 // hooks
 import { NavSectionVertical } from 'src/components/nav-section';
 
@@ -33,6 +34,8 @@ export default function NavVertical({ openNav, onCloseNav }) {
   const { enqueueSnackbar } = useSnackbar();
   const { logout, businessProfile } = useAuthContext();
   const navData = useNavData();
+
+  console.log(businessProfile);
 
   const handleLogout = async () => {
     try {
@@ -73,12 +76,14 @@ export default function NavVertical({ openNav, onCloseNav }) {
           <Typography sx={{ fontWeight: 600 }}>
             Welcome back, {businessProfile.ownerInfo.displayName}
           </Typography>
-          <Typography variant="body2" sx={{ color: 'text.disabled' }}>
-            {businessProfile.email}
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.disabled' }}>
-            {businessProfile.businessName}
-          </Typography>
+          <Typography variant="body2">{businessProfile.businessName}</Typography>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Typography variant="body2">On {businessProfile.productInfo.name} Plan</Typography>
+            <Image
+              src={businessProfile.subscriptionInfo.product_details.images[0]}
+              sx={{ width: 22, height: 22 }}
+            />
+          </Stack>
         </Stack>
       </Stack>
 

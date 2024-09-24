@@ -129,17 +129,31 @@ function StaffLink() {
                   ),
                 }}
               />
-              <Stack direction="column">
-                <Typography variant="caption" sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                  LastLogin:
-                </Typography>
-                {staff?.lastLogIn?.seconds ? (
-                  <Typography variant="caption">{`${new Date(
-                    staff.lastLogIn.seconds * 1000
-                  ).toDateString()}`}</Typography>
-                ) : (
-                  ''
-                )}
+              <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography
+                    variant="caption"
+                    sx={{ fontWeight: theme.typography.fontWeightBold }}
+                  >
+                    Pass Code:
+                  </Typography>
+                  <Typography>{staff?.passCode}</Typography>
+                </Stack>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography
+                    variant="caption"
+                    sx={{ fontWeight: theme.typography.fontWeightBold }}
+                  >
+                    LastLogin:
+                  </Typography>
+                  {staff?.lastLogIn?.seconds ? (
+                    <Typography>{`${new Date(
+                      staff.lastLogIn.seconds * 1000
+                    ).toDateString()}`}</Typography>
+                  ) : (
+                    ''
+                  )}
+                </Stack>
               </Stack>
             </Stack>
             <Divider sx={{ borderStyle: 'dashed', mt: 1, mb: 2 }} />

@@ -46,14 +46,6 @@ function SubscriptionInfo() {
   };
 
   const openPortalSession = async () => stripeCreatePortalSession(ownerInfo.email);
-  // const createCustomerHandler = async () =>
-  //   stripeCreateCustomer(
-  //     'info@astro-menu.com',
-  //     'Astro-Menu',
-  //     'Kj7HSk3AA58POoLZmjs22',
-  //     '123456789',
-  //     true
-  //   );
 
   return (
     <>
@@ -62,7 +54,7 @@ function SubscriptionInfo() {
       </LoadingButton> */}
       <Card sx={{ mb: 2 }}>
         <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center" p={3}>
-          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+          <Typography>
             Use the{' '}
             <Box component="span" sx={{ color: 'primary.main' }}>
               Subscription Portal
@@ -73,7 +65,7 @@ function SubscriptionInfo() {
           <LoadingButton
             variant="contained"
             color="secondary"
-            startIcon={<Iconify icon="akar-icons:gear" />}
+            startIcon={<Iconify icon="clarity:dollar-solid" />}
             onClick={() => mutate(openPortalSession)}
             loading={isPending}
             sx={{ whiteSpace: 'nowrap', px: 5, minWidth: '25%' }}
@@ -172,7 +164,6 @@ function SubscriptionInfo() {
                 value={metadata?.socialLinks === 'true' ? 'Included' : 'Not Included'}
                 title="Social Links"
               />
-              <FeatureItem value={`${metadata?.otherLinks}`} title="Other Links" />
             </Stack>
 
             <Link

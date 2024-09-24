@@ -4,8 +4,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
+import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -30,7 +31,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function FirebaseLoginView() {
-  const { login, loginWithGoogle, loginWithGithub, loginWithTwitter, user } = useAuthContext();
+  const { login, loginWithGoogle, user } = useAuthContext();
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
   const searchParams = useSearchParams();
@@ -62,7 +63,8 @@ export default function FirebaseLoginView() {
     try {
       await login?.(data.email, data.password);
 
-      router.push(returnTo || PATH_AFTER_LOGIN);
+      // router.push(returnTo || PATH_AFTER_LOGIN);
+      router.replace(`../${PATH_AFTER_LOGIN}`);
     } catch (error) {
       console.error(error);
       reset();
@@ -73,20 +75,6 @@ export default function FirebaseLoginView() {
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handleGithubLogin = async () => {
-    try {
-      await loginWithGithub?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handleTwitterLogin = async () => {
-    try {
-      await loginWithTwitter?.();
     } catch (error) {
       console.error(error);
     }
@@ -166,19 +154,14 @@ export default function FirebaseLoginView() {
         OR
       </Divider>
 
-      <Stack direction="row" justifyContent="center" spacing={2}>
-        <IconButton onClick={handleGoogleLogin}>
-          <Iconify icon="eva:google-fill" color="#DF3E30" />
-        </IconButton>
-
-        <IconButton color="inherit" onClick={handleGithubLogin}>
-          <Iconify icon="eva:github-fill" />
-        </IconButton>
-
-        <IconButton onClick={handleTwitterLogin}>
-          <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
-        </IconButton>
-      </Stack>
+      <Button
+        endIcon={<Iconify icon="eva:google-fill" color="#DF3E30" />}
+        onClick={handleGoogleLogin}
+        fullWidth
+        variant="outlined"
+      >
+        Login with Google
+      </Button>
     </div>
   );
 

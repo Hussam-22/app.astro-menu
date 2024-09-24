@@ -55,6 +55,8 @@ export default function BranchNewEditForm({ branchInfo }) {
     queryFn: fsGetAllBranches,
   });
 
+  console.log(branchInfo);
+
   const activeBranchesLength = branchesData?.filter((branch) => branch.isActive)?.length || 0;
 
   const { data, isLoading } = useSWR(`https://restcountries.com/v3.1/all`, fetcher);
