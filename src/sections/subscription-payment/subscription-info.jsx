@@ -52,43 +52,21 @@ function SubscriptionInfo() {
       {/* <LoadingButton variant="contained" onClick={createCustomerHandler}>
         Create Customer
       </LoadingButton> */}
-      <Card sx={{ mb: 2 }}>
-        <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center" p={3}>
-          <Typography>
-            Use the{' '}
-            <Box component="span" sx={{ color: 'primary.main' }}>
-              Subscription Portal
-            </Box>{' '}
-            to Upgrade/Downgrade your Plan, Download payment Invoices, Update your Payment Info or
-            Cancel your Subscription
-          </Typography>
-          <LoadingButton
-            variant="contained"
-            color="secondary"
-            startIcon={<Iconify icon="clarity:dollar-solid" />}
-            onClick={() => mutate(openPortalSession)}
-            loading={isPending}
-            sx={{ whiteSpace: 'nowrap', px: 5, minWidth: '25%' }}
-          >
-            Open Subscription Portal
-          </LoadingButton>
-        </Stack>
-      </Card>
 
       <Card sx={{ p: 3, position: 'relative' }}>
         <Stack
           spacing={3}
-          direction="row"
+          direction={{ xs: 'column', sm: 'row' }}
           justifyContent="space-between"
           alignItems="center"
           divider={<Divider flexItem orientation="vertical" sx={{ borderStyle: 'dashed' }} />}
         >
           <Stack
-            direction="column"
+            direction={{ xs: 'row', sm: 'column' }}
             spacing={1}
             justifyContent="center"
             alignItems="center"
-            sx={{ maxWidth: '18%' }}
+            sx={{ maxWidth: { sm: '25%' } }}
           >
             <Stack direction="column" spacing={0} justifyContent="center" alignItems="center">
               <Typography variant="overline" sx={{ color: 'grey.400' }}>
@@ -102,7 +80,7 @@ function SubscriptionInfo() {
             </Stack>
             <Image
               src={subscriptionInfo.product_details.images[0]}
-              sx={{ borderRadius: 1, mx: 2, width: '60%' }}
+              sx={{ borderRadius: 1, mx: 2, width: { xs: '20%', sm: '60%' } }}
             />
           </Stack>
 
@@ -171,7 +149,7 @@ function SubscriptionInfo() {
               target="_blank"
               underline="always"
               color="primary"
-              sx={{ typography: 'body2', textAlign: 'right' }}
+              sx={{ typography: 'body2', textAlign: { xs: 'center', sm: 'right' } }}
             >
               Click here to learn more about each feature
             </Link>
@@ -179,17 +157,49 @@ function SubscriptionInfo() {
         </Stack>
       </Card>
 
+      <Card sx={{ mt: 2 }}>
+        <Stack
+          direction={{ sm: 'row', xs: 'column' }}
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="center"
+          p={3}
+        >
+          <Typography>
+            Use the{' '}
+            <Box component="span" sx={{ color: 'primary.main' }}>
+              Subscription Portal
+            </Box>{' '}
+            to Upgrade/Downgrade your Plan, Download payment Invoices, Update your Payment Info or
+            Cancel your Subscription
+          </Typography>
+          <LoadingButton
+            variant="contained"
+            color="secondary"
+            startIcon={<Iconify icon="clarity:dollar-solid" />}
+            onClick={() => mutate(openPortalSession)}
+            loading={isPending}
+            sx={{ whiteSpace: 'nowrap', px: 5, minWidth: '25%' }}
+          >
+            Open Subscription Portal
+          </LoadingButton>
+        </Stack>
+      </Card>
+
       <Card sx={{ p: 3, mt: 2 }}>
         <Typography variant="h5">Business is Thriving ?</Typography>
-        <Box sx={{ display: 'grid', gridTemplateColumns: '3fr 1fr' }}>
+        <Stack spacing={1}>
           <Typography>
             If you want a more tailored plan to fit your business, please contact our team to help
             you with your requirements.
           </Typography>
-          <Link href="https://astro-menu.com/contact-us" sx={{ textAlign: 'center' }}>
+          <Link
+            href="https://astro-menu.com/contact-us"
+            sx={{ textAlign: 'left', textDecoration: 'underline' }}
+          >
             Contact Us
           </Link>
-        </Box>
+        </Stack>
       </Card>
     </>
   );
@@ -225,7 +235,13 @@ FeatureItem.propTypes = {
 };
 function FeatureItem({ value, title }) {
   return (
-    <Box sx={{ display: 'grid', gridTemplateColumns: '0.3fr 1fr' }}>
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: '0.5fr 1fr',
+        alignItems: 'center',
+      }}
+    >
       <Typography sx={{ fontWeight: 600 }}>{title}: </Typography>
       <Typography sx={{ textTransform: 'capitalize' }}>{value}</Typography>
     </Box>
