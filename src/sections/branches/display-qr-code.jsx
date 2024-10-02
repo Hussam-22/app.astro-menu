@@ -126,7 +126,8 @@ function DisplayQRCode() {
           <Grid xs={12}>
             <Alert severity="warning" variant="outlined" sx={{ width: 1, mt: 2 }}>
               <AlertTitle>Attention</AlertTitle>
-              {`The "Display QR" code is intended to display the menu only, with the "Order Summary (Cart)" hidden from the customer view. Use it on your social media or at your front entrance or wherever you need to showcase your menu. Avoid placing it on customer tables. If you plan to have waitstaff take orders without allowing customers to order themselves, it’s recommended to disable "Self Order" in the branch settings and use the other QR codes for table management and statistics tracking.`}
+              {`The "Display QR" code is intended to display the menu only, with the "Cart" disabled for customers view. Use it on your social media or at your front entrance or wherever you need to showcase your menu. Avoid placing it on customer tables. 
+              If you plan to have waitstaff take orders without allowing customers to order themselves, it’s recommended to disable "Self Order" in the branch settings and use the "Tables QR Codes" for table management and statistics tracking.`}
             </Alert>
           </Grid>
 
