@@ -89,6 +89,11 @@ export function useNavData() {
             icon: ICONS.subscription,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
+          {
+            title: t('Customers'),
+            path: paths.dashboard.customers.root,
+            icon: ICONS.subscription,
+          },
         ].filter((item) => (isMenuOnly ? item.title !== 'staffs' : true)),
       },
     ],

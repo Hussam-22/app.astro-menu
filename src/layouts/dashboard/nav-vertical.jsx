@@ -35,8 +35,6 @@ export default function NavVertical({ openNav, onCloseNav }) {
   const { logout, businessProfile } = useAuthContext();
   const navData = useNavData();
 
-  console.log(businessProfile);
-
   const handleLogout = async () => {
     try {
       await logout();

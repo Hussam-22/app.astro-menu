@@ -23,6 +23,10 @@ MealLabelTableRow.propTypes = {
 };
 
 export default function MealLabelTableRow({ row }) {
+
+  console.log(row);
+  
+
   const { title, isActive } = row;
   const { fsUpdateMealLabel, fsDeleteMealLabel } = useAuthContext();
   const queryClient = useQueryClient();
