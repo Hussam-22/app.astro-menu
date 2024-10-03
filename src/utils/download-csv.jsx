@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
+import SvgColor from 'src/components/svg-color';
 
 const DownloadCSV = () => {
   const { fsGetCustomers, fsGetAllBranches } = useAuthContext();
@@ -35,8 +36,6 @@ const DownloadCSV = () => {
   };
 
   const mutateData = mutateDataFn(customersList);
-
-  console.log(mutateData);
 
   // ----------------------------------------------------------------------------
   const convertToCSV = (objArray) => {
@@ -73,8 +72,8 @@ const DownloadCSV = () => {
   };
 
   return (
-    <Button variant="contained" onClick={downloadCSV}>
-      Download CSV
+    <Button variant="contained" onClick={downloadCSV} startIcon={<SvgColor src='/assets/icons/navbar/ic_csv.svg' />}>
+      Export Customers List
     </Button>
   );
 };

@@ -78,8 +78,6 @@ function CustomersView() {
 
   const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
 
-  const handleExportCustomers = () => {};
-
   return (
     <>
       <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -92,7 +90,7 @@ function CustomersView() {
               name: 'Customers List',
             },
           ]}
-          action={<DownloadCSV data={customersList} name="customers-list" />}
+          action={customersList.length !== 0 && <DownloadCSV data={customersList} name="customers-list" />}
         />
 
         <Card>

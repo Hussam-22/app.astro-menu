@@ -25,6 +25,7 @@ const ICONS = {
   label: icon('ic_label'),
   subscription: icon('ic_subscription'),
   translation: icon('ic_translation'),
+  customersEmails: icon('ic_customer-email'),
 };
 
 // ----------------------------------------------------------------------
@@ -71,9 +72,9 @@ export function useNavData() {
             icon: ICONS.staffs,
           },
           {
-            title: t('customers'),
+            title: t('customers emails'),
             path: paths.dashboard.customers.root,
-            icon: ICONS.subscription,
+            icon: ICONS.customersEmails,
           },
           {
             title: t('Translation Settings'),
@@ -95,7 +96,7 @@ export function useNavData() {
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
         ].filter((item) =>
-          isMenuOnly ? item.title !== 'staffs' && item.title !== 'customers' : true
+          isMenuOnly ? item.title !== 'staffs' && item.title !== 'customers email' : true
         ),
       },
     ],

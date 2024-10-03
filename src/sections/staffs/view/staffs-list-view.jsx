@@ -20,11 +20,9 @@ import Iconify from 'src/components/iconify';
 // redux
 import { useAuthContext } from 'src/auth/hooks';
 // sections
-import { RoleBasedGuard } from 'src/auth/guard';
 import Scrollbar from 'src/components/scrollbar';
 // hooks
 import { useSettingsContext } from 'src/components/settings';
-import { useGetProductInfo } from 'src/hooks/use-get-product';
 import TableToolbar from 'src/sections/staffs/list/TableToolbar';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import TableDataRows from 'src/sections/staffs/list/TableDataRows';

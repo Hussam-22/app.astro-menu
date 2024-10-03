@@ -51,8 +51,8 @@ export default function CustomersTableRow({ row, branchesData }) {
       </TableCell>
 
       <TableCell align="center">
-        <IconButton onClick={onDeleteHandler}>
-          <Iconify icon="tabler:trash" sx={{ color: 'error.main', width: 24, height: 24 }} />
+        <IconButton onClick={onDeleteHandler} sx={{p:0, m:0}}>
+          <Iconify icon="tabler:trash" sx={{ color: 'error.main', width: 21, height: 21 }} />
         </IconButton>
       </TableCell>
     </TableRow>
