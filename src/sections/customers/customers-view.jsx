@@ -49,7 +49,7 @@ function CustomersView() {
   const [isOpen, setIsOpen] = useState(false);
   const { page, order, orderBy, rowsPerPage, setPage, onSort, onChangePage, onChangeRowsPerPage } =
     useTable({
-      defaultOrderBy: 'title',
+      defaultOrderBy: 'visits',
     });
 
   const onClose = () => setIsOpen(false);
