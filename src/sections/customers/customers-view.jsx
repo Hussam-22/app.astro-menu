@@ -6,7 +6,6 @@ import {
   Card,
   Table,
   Dialog,
-  Button,
   Container,
   TableBody,
   DialogTitle,
@@ -16,14 +15,14 @@ import {
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
-import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import DownloadCSV from 'src/utils/download-csv';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import TableToolbar from 'src/components/table/table-toolbar';
 import CustomersTableRow from 'src/sections/customers/customers-table-row';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import {
   useTable,
   emptyRows,
@@ -79,6 +78,8 @@ function CustomersView() {
 
   const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
 
+  const handleExportCustomers = () => {};
+
   return (
     <>
       <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -91,15 +92,7 @@ function CustomersView() {
               name: 'Customers List',
             },
           ]}
-          action={
-            <Button
-              variant="contained"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-              onClick={() => setIsOpen(true)}
-            >
-              New Customer
-            </Button>
-          }
+          action={<DownloadCSV data={customersList} name="customers-list" />}
         />
 
         <Card>
