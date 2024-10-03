@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-shadow */
 import PropTypes from 'prop-types';
+import { faker } from '@faker-js/faker';
 import { initializeApp } from 'firebase/app';
 import { useQueryClient } from '@tanstack/react-query';
 import { getFunctions, httpsCallable } from 'firebase/functions';
@@ -2073,6 +2074,24 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsBatchAddCustomers = useCallback(async () => {
+    const batch = writeBatch(DB);
+
+    for (let index = 0; index < 100; index += 1) {
+      const newDocRef = doc(
+        collection(DB, `/businessProfiles/${state.user.businessProfileID}/customers`)
+      );
+      batch.set(newDocRef, {
+        docID: newDocRef.id,
+        email: faker.internet.email(),
+        lastOrder: new Date(),
+        lastVisitBranchID: '2EKctRFUaA06pGIvAT2D',
+        totalVisits: index + 1,
+      });
+    }
+
+    await batch.commit();
+  }, [state]);
   // ----------------------------------------------------------------------------
 
   const memoizedValue = useMemo(
@@ -2179,6 +2198,7 @@ export function AuthProvider({ children }) {
       // --- Customers ---
       fsGetCustomers,
       fsDeleteCustomer,
+      fsBatchAddCustomers,
     }),
     [
       state.isAuthenticated,
@@ -2276,6 +2296,7 @@ export function AuthProvider({ children }) {
       // --- Customers ---
       fsGetCustomers,
       fsDeleteCustomer,
+      fsBatchAddCustomers,
     ]
   );
 

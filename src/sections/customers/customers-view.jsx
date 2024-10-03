@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
+import { LoadingButton } from '@mui/lab';
 import {
   Box,
   Card,
@@ -16,8 +17,8 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { useAuthContext } from 'src/auth/hooks';
-import DownloadCSV from 'src/utils/download-csv';
 import Scrollbar from 'src/components/scrollbar';
+import DownloadCSV from 'src/utils/download-csv';
 import { useSettingsContext } from 'src/components/settings';
 import TableToolbar from 'src/components/table/table-toolbar';
 import CustomersTableRow from 'src/sections/customers/customers-table-row';
@@ -44,7 +45,7 @@ const TABLE_HEAD = [
 
 function CustomersView() {
   const { themeStretch } = useSettingsContext();
-  const { fsGetCustomers, fsGetAllBranches } = useAuthContext();
+  const { fsGetCustomers, fsGetAllBranches, fsBatchAddCustomers } = useAuthContext();
   const [filterName, setFilterName] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const { page, order, orderBy, rowsPerPage, setPage, onSort, onChangePage, onChangeRowsPerPage } =
@@ -78,8 +79,19 @@ function CustomersView() {
 
   const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
 
+  const {
+    mutate,
+    isPending,
+    error: mutateError,
+  } = useMutation({ mutationFn: fsBatchAddCustomers });
+
+  console.log(mutateError);
+
   return (
     <>
+      <LoadingButton loading={isPending} onClick={() => mutate()} variant="contained">
+        Batch Add Customers
+      </LoadingButton>
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
           heading="Customers List"
@@ -90,7 +102,9 @@ function CustomersView() {
               name: 'Customers List',
             },
           ]}
-          action={customersList.length !== 0 && <DownloadCSV data={customersList} name="customers-list" />}
+          action={
+            customersList.length !== 0 && <DownloadCSV data={customersList} name="customers-list" />
+          }
         />
 
         <Card>
