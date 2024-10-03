@@ -18,12 +18,12 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
-import { useSettingsContext } from 'src/components/settings';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useSettingsContext } from 'src/components/settings';
+import TableToolbar from 'src/components/table/table-toolbar';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
-import MenusTableToolbar from 'src/sections/menu/list/menu-table-toolbar';
-import BranchTableRow from 'src/sections/branches/components/table/branch-table-row';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
+import BranchTableRow from 'src/sections/branches/components/table/branch-table-row';
 import {
   useTable,
   emptyRows,
@@ -121,7 +121,7 @@ function BranchListView() {
       />
 
       <Card>
-        <MenusTableToolbar filterName={filterName} onFilterName={handleFilterName} />
+        <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
         <Scrollbar>
           <TableContainer sx={{ minWidth: 960, position: 'relative' }}>

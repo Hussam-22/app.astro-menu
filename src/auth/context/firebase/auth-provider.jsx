@@ -2048,22 +2048,32 @@ export function AuthProvider({ children }) {
     [state]
   );
   // -------------------- CUSTOMERS ----------------------------------------
- const fsGetCustomers = useCallback(async () => {
-  const customersRef = collection(DB,'businessProfiles',state.user.businessProfileID,'customers');
-  const docsQuery = query(customersRef);
-  const querySnapshot = await getDocs(docsQuery); 
-  const customers = [];
-  querySnapshot.forEach((doc) => {
-    customers.push(doc.data());
-  });
-  return customers;
- },[state])
- const fsDeleteCustomer = useCallback(async (customerID) => {
-  const docRef = doc(DB, `/businessProfiles/${state.user.businessProfileID}/customers/${customerID}`);
-  await deleteDoc(docRef);
- },[state])
+  const fsGetCustomers = useCallback(async () => {
+    const customersRef = collection(
+      DB,
+      'businessProfiles',
+      state.user.businessProfileID,
+      'customers'
+    );
+    const docsQuery = query(customersRef);
+    const querySnapshot = await getDocs(docsQuery);
+    const customers = [];
+    querySnapshot.forEach((doc) => {
+      customers.push(doc.data());
+    });
+    return customers;
+  }, [state]);
+  const fsDeleteCustomer = useCallback(
+    async (customerID) => {
+      const docRef = doc(
+        DB,
+        `/businessProfiles/${state.user.businessProfileID}/customers/${customerID}`
+      );
+      await deleteDoc(docRef);
+    },
+    [state]
+  );
   // ----------------------------------------------------------------------------
-  
 
   const memoizedValue = useMemo(
     () => ({
@@ -2168,7 +2178,7 @@ export function AuthProvider({ children }) {
       fsDeleteStaff,
       // --- Customers ---
       fsGetCustomers,
-      fsDeleteCustomer
+      fsDeleteCustomer,
     }),
     [
       state.isAuthenticated,
@@ -2265,7 +2275,7 @@ export function AuthProvider({ children }) {
       fsDeleteStaff,
       // --- Customers ---
       fsGetCustomers,
-      fsDeleteCustomer
+      fsDeleteCustomer,
     ]
   );
 

@@ -21,10 +21,10 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
-import MealTableToolbar from 'src/sections/meal/list/MealTableToolbar';
+import TableToolbar from 'src/components/table/table-toolbar';
 import MealLabelTableRow from 'src/sections/meal-labels/MealLabelTableRow';
-import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
+import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
 import {
   useTable,
   emptyRows,
@@ -100,7 +100,7 @@ function MealLabelsView() {
         />
 
         <Card>
-          <MealTableToolbar filterName={filterName} onFilterName={handleFilterName} />
+          <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 960, position: 'relative' }}>

@@ -18,9 +18,9 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
+import TableToolbar from 'src/components/table/table-toolbar';
 import MenuNewDialog from 'src/sections/menu/menu-new-dialog';
 import MenusTableRow from 'src/sections/menu/list/menu-table-row';
-import MenusTableToolbar from 'src/sections/menu/list/menu-table-toolbar';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import {
   useTable,
@@ -127,7 +127,7 @@ function MenuListView() {
       />
 
       <Card>
-        <MenusTableToolbar filterName={filterName} onFilterName={handleFilterName} />
+        <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
         <Scrollbar>
           <TableContainer sx={{ minWidth: 960, position: 'relative' }}>

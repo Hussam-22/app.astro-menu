@@ -6,12 +6,12 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-MenusTableToolbar.propTypes = {
+TableToolbar.propTypes = {
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
 };
 
-export default function MenusTableToolbar({ filterName, onFilterName }) {
+export default function TableToolbar({ filterName, onFilterName }) {
   return (
     <Stack
       direction="row"
@@ -22,7 +22,7 @@ export default function MenusTableToolbar({ filterName, onFilterName }) {
       <TextField
         value={filterName}
         onChange={(event) => onFilterName(event.target.value)}
-        placeholder="Search menu..."
+        placeholder="Search..."
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">

@@ -16,15 +16,14 @@ import {
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
-import MealTableToolbar from 'src/sections/meal/list/MealTableToolbar';
+import TableToolbar from 'src/components/table/table-toolbar';
 import CustomersTableRow from 'src/sections/customers/customers-table-row';
-import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
+import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
 import {
   useTable,
   emptyRows,
@@ -46,7 +45,7 @@ const TABLE_HEAD = [
 
 function CustomersView() {
   const { themeStretch } = useSettingsContext();
-  const { fsGetCustomers,fsGetAllBranches } = useAuthContext();
+  const { fsGetCustomers, fsGetAllBranches } = useAuthContext();
   const [filterName, setFilterName] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const { page, order, orderBy, rowsPerPage, setPage, onSort, onChangePage, onChangeRowsPerPage } =
@@ -64,14 +63,14 @@ function CustomersView() {
   const { data: branchesData, isLoading } = useQuery({
     queryKey: ['branches'],
     queryFn: fsGetAllBranches,
-    enabled:customersList.length > 0,
+    enabled: customersList.length > 0,
   });
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
     setPage(0);
   };
-  
+
   const dataFiltered = applySortFilter({
     customersList,
     comparator: getComparator(order, orderBy),
@@ -104,7 +103,7 @@ function CustomersView() {
         />
 
         <Card>
-          <MealTableToolbar filterName={filterName} onFilterName={handleFilterName} />
+          <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
@@ -120,14 +119,10 @@ function CustomersView() {
                 <TableBody>
                   {(customersList.length === 0 ? [...Array(rowsPerPage)] : dataFiltered)
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .sort((a, b) => a.title.localeCompare(b.title))
+                    .sort((a, b) => new Date(b.lastOrder?.seconds) - new Date(a.lastOrder?.seconds))
                     .map((row, index) =>
-                      row && branchesData && branchesData?.length !==0 ?  (
-                        <CustomersTableRow
-                          key={row.docID}
-                          row={row}
-                          branchesData={branchesData}
-                        />
+                      row && branchesData && branchesData?.length !== 0 ? (
+                        <CustomersTableRow key={row.docID} row={row} branchesData={branchesData} />
                       ) : (
                         !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
                       )
@@ -186,7 +181,7 @@ function applySortFilter({ customersList, comparator, filterName }) {
 
   if (filterName) {
     customersList = customersList.filter(
-      (item) => item.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (item) => item.email.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 
