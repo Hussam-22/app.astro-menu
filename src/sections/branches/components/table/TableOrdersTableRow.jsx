@@ -76,6 +76,7 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
       <TableCell>{closingTime !== '' && fDateTime(new Date(closingTime.seconds * 1000))}</TableCell>
       <TableCell>
         {closingTime !== '' &&
+          initiationTime !== '' &&
           fDistance(new Date(initiationTime.seconds * 1000), new Date(closingTime.seconds * 1000))}
       </TableCell>
       <TableCell>

@@ -947,6 +947,42 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsGetOrdersByFilter = useCallback(
+    async ({ branchID, period, status }) => {
+      const endTime = new Date();
+      const startTime = new Date(endTime.getTime() - period * 60 * 60 * 1000);
+
+      let docRef = query(
+        collection(
+          DB,
+          'businessProfiles',
+          state.user.businessProfileID,
+          'branches',
+          branchID,
+          'orders'
+        ),
+        where('branchID', '==', branchID),
+        where('closingTime', '>=', startTime),
+        where('closingTime', '<=', endTime)
+      );
+
+      if (status === 'cancelled') {
+        docRef = query(docRef, where('isCanceled', '==', true));
+      }
+
+      if (status === 'paid') {
+        docRef = query(docRef, where('isPaid', '==', true));
+      }
+
+      const totalCount = await getCountFromServer(docRef);
+
+      const querySnapshot = await getDocs(docRef);
+      const dataArr = [];
+      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+      return { data: dataArr, count: totalCount.data().count };
+    },
+    [state]
+  );
   // ----------------------- Branches ----------------------------
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
@@ -2144,6 +2180,7 @@ export function AuthProvider({ children }) {
       fsUpdateBranchTable,
       fsChangeMenuForAllTables,
       fsGetTableOrdersByPeriod,
+      fsGetOrdersByFilter,
       fsGetTableInfo,
       fsGetDisplayTableInfo,
       branchTables,
@@ -2252,6 +2289,7 @@ export function AuthProvider({ children }) {
       orderSnapShot,
       activeOrders,
       fsGetTableOrdersByPeriod,
+      fsGetOrdersByFilter,
       // ---- MENU SECTIONS ----
       fsAddSection,
       fsUpdateSection,

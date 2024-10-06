@@ -1,38 +1,10 @@
-import { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-
-import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Card,
-  Table,
-  Dialog,
-  Container,
-  TableBody,
-  DialogTitle,
-  DialogContent,
-  TableContainer,
-  TablePagination,
-} from '@mui/material';
+import { Container } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
-import { useAuthContext } from 'src/auth/hooks';
-import Scrollbar from 'src/components/scrollbar';
 import DownloadCSV from 'src/utils/download-csv';
 import { useSettingsContext } from 'src/components/settings';
-import TableToolbar from 'src/components/table/table-toolbar';
-import CustomersTableRow from 'src/sections/customers/customers-table-row';
-import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
+import OrdersListTable from 'src/sections/customers/table/orders-tables';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
-import {
-  useTable,
-  emptyRows,
-  TableNoData,
-  TableSkeleton,
-  getComparator,
-  TableEmptyRows,
-  TableHeadCustom,
-} from 'src/components/table';
 
 const TABLE_HEAD = [
   { id: 'customerEmail', label: 'Customer Email', align: 'left', width: '30%' },
@@ -45,148 +17,23 @@ const TABLE_HEAD = [
 
 function CustomersView() {
   const { themeStretch } = useSettingsContext();
-  const { fsGetCustomers, fsGetAllBranches, fsBatchAddCustomers } = useAuthContext();
-  const [filterName, setFilterName] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-  const { page, order, orderBy, rowsPerPage, setPage, onSort, onChangePage, onChangeRowsPerPage } =
-    useTable({
-      defaultOrderBy: 'visits',
-    });
-
-  const onClose = () => setIsOpen(false);
-
-  const { data: customersList = [], error } = useQuery({
-    queryKey: ['customers'],
-    queryFn: fsGetCustomers,
-  });
-
-  const { data: branchesData, isLoading } = useQuery({
-    queryKey: ['branches'],
-    queryFn: fsGetAllBranches,
-    enabled: customersList.length > 0,
-  });
-
-  const handleFilterName = (filteredName) => {
-    setFilterName(filteredName);
-    setPage(0);
-  };
-
-  const dataFiltered = applySortFilter({
-    customersList,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
-
-  const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
-
-  const { mutate, isPending } = useMutation({ mutationFn: fsBatchAddCustomers });
 
   return (
-    <>
-      <LoadingButton loading={isPending} onClick={() => mutate()} variant="contained">
-        Batch Add Customers
-      </LoadingButton>
-      <Container maxWidth={themeStretch ? false : 'lg'}>
-        <CustomBreadcrumbs
-          heading="Customers List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Customers', href: paths.dashboard.meal.list },
-            {
-              name: 'Customers List',
-            },
-          ]}
-          action={
-            customersList.length !== 0 && <DownloadCSV data={customersList} name="customers-list" />
-          }
-        />
+    <Container maxWidth={themeStretch ? false : 'lg'}>
+      <CustomBreadcrumbs
+        heading="Orders List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Customers', href: paths.dashboard.meal.list },
+          {
+            name: 'Orders List',
+          },
+        ]}
+        action={<DownloadCSV name="Orders-list" />}
+      />
 
-        <Card>
-          <TableToolbar
-            filterName={filterName}
-            onFilterName={handleFilterName}
-            text="List shows latest 100 customers"
-          />
-
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
-              <Table size="small">
-                <TableHeadCustom
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={customersList.length}
-                  onSort={onSort}
-                />
-
-                <TableBody>
-                  {(customersList.length === 0 ? [...Array(rowsPerPage)] : dataFiltered)
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .sort((a, b) => new Date(b.lastOrder?.seconds) - new Date(a.lastOrder?.seconds))
-                    .map((row, index) =>
-                      row && branchesData && branchesData?.length !== 0 ? (
-                        <CustomersTableRow key={row.docID} row={row} branchesData={branchesData} />
-                      ) : (
-                        !isNotFound && <TableSkeleton key={index} sx={{ height: 60 }} />
-                      )
-                    )}
-
-                  <TableEmptyRows
-                    height={60}
-                    emptyRows={emptyRows(page, rowsPerPage, customersList.length)}
-                  />
-
-                  <TableNoData isNotFound={isNotFound} />
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Scrollbar>
-
-          <Box sx={{ position: 'relative' }}>
-            <TablePagination
-              rowsPerPageOptions={[25, 50, 100]}
-              component="div"
-              count={dataFiltered.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={onChangePage}
-              onRowsPerPageChange={onChangeRowsPerPage}
-            />
-          </Box>
-        </Card>
-      </Container>
-
-      {isOpen && (
-        <Dialog fullWidth maxWidth="md" open={isOpen} onClose={onClose}>
-          <DialogTitle sx={{ pb: 2 }}>Add New Meal Label</DialogTitle>
-
-          <DialogContent>
-            <MealLabelNewEditForm onClose={onClose} />
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+      <OrdersListTable />
+    </Container>
   );
 }
 export default CustomersView;
-// CustomersView.propTypes = { tables: PropTypes.array };
-
-function applySortFilter({ customersList, comparator, filterName }) {
-  const stabilizedThis = customersList?.map((el, index) => [el, index]) || [];
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  customersList = stabilizedThis.map((el) => el[0]);
-
-  if (filterName) {
-    customersList = customersList.filter(
-      (item) => item.email.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
-  }
-
-  return customersList;
-}
