@@ -274,15 +274,21 @@ function AddStaffDropDown({ staffsList, branchID }) {
   const { fsUpdateStaffInfo } = useAuthContext();
   const queryClient = useQueryClient();
 
+  console.log(staffsList);
+
   const availableStaffs = staffsList
     .filter(
       (staff) => staff.branchID === '' || staff.branchID === undefined || staff.branchID === null
     )
-    .map((staff) => ({ label: staff.fullname, value: staff.docID }));
+    .map((staff) => ({
+      label: staff.fullname,
+      value: staff.docID,
+      icon: `/assets/icons/staff/${staff.type}-icon.svg`,
+    }));
 
-  const { mutate, isPending, error } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (staffID) => fsUpdateStaffInfo({ branchID, isLoggedIn: false }, staffID),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['staffs', branchID] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['staffs'] }),
   });
 
   const NewUserSchema = Yup.object().shape({
