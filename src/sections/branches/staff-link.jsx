@@ -274,8 +274,6 @@ function AddStaffDropDown({ staffsList, branchID }) {
   const { fsUpdateStaffInfo } = useAuthContext();
   const queryClient = useQueryClient();
 
-  console.log(staffsList);
-
   const availableStaffs = staffsList
     .filter(
       (staff) => staff.branchID === '' || staff.branchID === undefined || staff.branchID === null
@@ -313,8 +311,6 @@ function AddStaffDropDown({ staffsList, branchID }) {
     handleSubmit,
     formState: { isDirty },
   } = methods;
-
-  console.log(watch());
 
   const onSubmit = async (formData) => {
     formData.staffIDs.forEach((staffID) => mutate(staffID));
