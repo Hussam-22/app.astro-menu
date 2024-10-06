@@ -79,13 +79,7 @@ function CustomersView() {
 
   const isNotFound = (!dataFiltered.length && !!filterName) || !dataFiltered.length;
 
-  const {
-    mutate,
-    isPending,
-    error: mutateError,
-  } = useMutation({ mutationFn: fsBatchAddCustomers });
-
-  console.log(mutateError);
+  const { mutate, isPending } = useMutation({ mutationFn: fsBatchAddCustomers });
 
   return (
     <>
@@ -108,7 +102,11 @@ function CustomersView() {
         />
 
         <Card>
-          <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
+          <TableToolbar
+            filterName={filterName}
+            onFilterName={handleFilterName}
+            text="List shows latest 100 customers"
+          />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 960, position: 'relative' }}>

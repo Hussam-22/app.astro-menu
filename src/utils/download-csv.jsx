@@ -72,8 +72,12 @@ const DownloadCSV = () => {
   };
 
   return (
-    <Button variant="contained" onClick={downloadCSV} startIcon={<SvgColor src='/assets/icons/navbar/ic_csv.svg' />}>
-      Export Customers List
+    <Button
+      variant="contained"
+      onClick={downloadCSV}
+      startIcon={<SvgColor src="/assets/icons/navbar/ic_csv.svg" />}
+    >
+      Export All List
     </Button>
   );
 };

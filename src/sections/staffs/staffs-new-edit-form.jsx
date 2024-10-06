@@ -42,7 +42,7 @@ export default function StaffsNewEditForm({ staffInfo }) {
 
   const NewUserSchema = Yup.object().shape({
     fullname: Yup.string().required('Full Name is required'),
-    branchID: Yup.string().required('Branch is required'),
+    // branchID: Yup.string().required('Branch is required'),
   });
 
   const defaultValues = useMemo(
@@ -99,7 +99,7 @@ export default function StaffsNewEditForm({ staffInfo }) {
   const handleDeleteStaff = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     fsDeleteStaff(staffInfo?.docID);
-    queryClient.invalidateQueries({ queryKey: ['staffs'], exact: true });
+    queryClient.invalidateQueries({ queryKey: ['staffs'] });
     router.push(paths.dashboard.staffs.list);
   };
 
@@ -150,7 +150,7 @@ export default function StaffsNewEditForm({ staffInfo }) {
 
           {!isLoading && (
             <RHFSelect name="branchID" label="Branch">
-              <MenuItem value={null} />
+              <MenuItem value="">NO-BRANCH</MenuItem>
               {branchesList.map((branch) => (
                 <MenuItem key={branch.docID} value={branch.docID} disabled={!branch.isActive}>
                   {branch.title}{' '}

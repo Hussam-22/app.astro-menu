@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { Stack, TextField, InputAdornment } from '@mui/material';
+import { Stack, TextField, Typography, InputAdornment } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 
@@ -8,10 +8,11 @@ import Iconify from 'src/components/iconify';
 
 TableToolbar.propTypes = {
   filterName: PropTypes.string,
+  text: PropTypes.string,
   onFilterName: PropTypes.func,
 };
 
-export default function TableToolbar({ filterName, onFilterName }) {
+export default function TableToolbar({ filterName, onFilterName, text }) {
   return (
     <Stack
       direction="row"
@@ -34,6 +35,11 @@ export default function TableToolbar({ filterName, onFilterName }) {
           ),
         }}
       />
+      {text && (
+        <Typography variant="body2" sx={{ color: 'info.main' }}>
+          {text}
+        </Typography>
+      )}
     </Stack>
   );
 }
