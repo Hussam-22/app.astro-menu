@@ -77,7 +77,7 @@ const DownloadCSV = () => {
       onClick={downloadCSV}
       startIcon={<SvgColor src="/assets/icons/navbar/ic_csv.svg" />}
     >
-      Export All List
+      Export All Emails
     </Button>
   );
 };

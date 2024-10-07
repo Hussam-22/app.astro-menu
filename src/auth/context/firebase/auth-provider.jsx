@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-shadow */
 import PropTypes from 'prop-types';
-import { faker } from '@faker-js/faker';
 import { initializeApp } from 'firebase/app';
 import { useQueryClient } from '@tanstack/react-query';
 import { getFunctions, httpsCallable } from 'firebase/functions';
@@ -2119,7 +2118,7 @@ export function AuthProvider({ children }) {
       );
       batch.set(newDocRef, {
         docID: newDocRef.id,
-        email: faker.internet.email(),
+        // email: faker.internet.email(),
         lastOrder: new Date(),
         lastVisitBranchID: '2EKctRFUaA06pGIvAT2D',
         totalVisits: index + 1,

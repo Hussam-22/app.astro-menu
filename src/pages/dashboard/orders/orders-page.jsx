@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import CustomersView from 'src/sections/customers/customers-view';
+import OrdersView from 'src/sections/orders/orders-view';
 
 function CustomersPage() {
   return (
@@ -8,7 +8,7 @@ function CustomersPage() {
       <Helmet>
         <title>Customers</title>
       </Helmet>
-      <CustomersView />
+      <OrdersView />
     </>
   );
 }

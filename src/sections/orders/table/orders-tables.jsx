@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Box, Card, Table, TableBody, TableContainer, TablePagination } from '@mui/material';
 
 import Scrollbar from 'src/components/scrollbar';
-import TableToolbarOrders from 'src/sections/customers/table/orders-table-toolbar';
+import TableToolbarOrders from 'src/sections/orders/table/orders-table-toolbar';
 import TableOrdersTableRow from 'src/sections/branches/components/table/TableOrdersTableRow';
 import ShowOrderDetailsDialog from 'src/sections/branches/components/dialogs/ShowOrderDetailsDialog';
 import {
@@ -35,9 +35,7 @@ const TABLE_HEAD = [
 
 export default function OrdersListTable() {
   const [dialogState, setDialogState] = useState({ isOpen: false, orderInfo: {} });
-  const [tableData, setOrdersData] = useState([]);
-
-  console.log(tableData);
+  const [tableData, setOrdersData] = useState({ data: [], loading: false });
 
   const {
     dense,
@@ -63,11 +61,11 @@ export default function OrdersListTable() {
   };
 
   const dataFiltered = applySortFilter({
-    tableData,
+    tableData: tableData.data,
     comparator: getComparator(order, orderBy),
   });
 
-  const isNotFound = !tableData?.length;
+  const isNotFound = !tableData.data?.length;
 
   const denseHeight = 56;
 
@@ -93,8 +91,8 @@ export default function OrdersListTable() {
             />
 
             <TableBody>
-              {tableData?.length === 0 && <TableSkeleton />}
-              {!tableData?.length !== 0 &&
+              {tableData.loading && <TableSkeleton />}
+              {!tableData.loading &&
                 dataFiltered
                   .sort(
                     (a, b) =>

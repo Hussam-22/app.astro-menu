@@ -31,26 +31,19 @@ export default function TableToolbarOrders({ getData }) {
     queryFn: fsGetAllBranches,
   });
 
-  const {
-    data: searchResults,
-    isLoading: isSearchingLoading,
-    isFetched,
-    error,
-  } = useQuery({
+  const { data: searchResults, isLoading: isSearchingLoading } = useQuery({
     queryKey: ['searchOrders', searchFilters],
     queryFn: () => fsGetOrdersByFilter(searchFilters),
     enabled: search,
   });
 
-  console.log(error);
-
   useEffect(() => {
-    if (isFetched) {
-      getData(searchResults?.data || []);
+    if (search && !isSearchingLoading) {
+      getData({ data: searchResults?.data || [], loading: false });
       setSearch(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFetched]);
+  }, [search, isSearchingLoading]);
 
   const onFilterChange = (filter, value) => {
     setSearchFilters((state) => ({ ...state, [filter]: value }));
@@ -59,7 +52,13 @@ export default function TableToolbarOrders({ getData }) {
   if (branchIsLoading) return <div>Loading...</div>;
 
   return (
-    <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
+    <Stack
+      direction="row"
+      alignItems="center"
+      justifyContent="flex-start"
+      spacing={1}
+      sx={{ mb: 1 }}
+    >
       {/* ------ BRANCH ------ */}
       <Select
         value={searchFilters.branchID}
