@@ -25,7 +25,7 @@ const ICONS = {
   label: icon('ic_label'),
   subscription: icon('ic_subscription'),
   translation: icon('ic_translation'),
-  orders: icon('ic_customer-email'),
+  orders: icon('ic_order'),
 };
 
 // ----------------------------------------------------------------------
