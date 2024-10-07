@@ -37,6 +37,8 @@ export default function OrdersListTable() {
   const [dialogState, setDialogState] = useState({ isOpen: false, orderInfo: {} });
   const [tableData, setOrdersData] = useState({ data: [], loading: false });
 
+  console.log(tableData);
+
   const {
     dense,
     page,

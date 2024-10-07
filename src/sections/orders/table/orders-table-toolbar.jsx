@@ -20,6 +20,7 @@ const PERIOD = [1, 8, 24];
 export default function TableToolbarOrders({ getData }) {
   const { fsGetOrdersByFilter, fsGetAllBranches } = useAuthContext();
   const [search, setSearch] = useState(false);
+  const [resultsCount, setResultsCount] = useState(0);
   const [searchFilters, setSearchFilters] = useState({
     branchID: 0,
     period: PERIOD[0],
@@ -35,18 +36,22 @@ export default function TableToolbarOrders({ getData }) {
     queryKey: ['searchOrders', searchFilters],
     queryFn: () => fsGetOrdersByFilter(searchFilters),
     enabled: search,
+    staleTime: 0, // Ensure data is considered stale immediately
+    cacheTime: 0, // Disable caching
   });
 
   useEffect(() => {
-    if (search && !isSearchingLoading) {
+    if (searchResults?.count !== resultsCount) {
       getData({ data: searchResults?.data || [], loading: false });
+      setResultsCount(searchResults?.count);
       setSearch(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, isSearchingLoading]);
+  }, [searchResults?.count]);
 
   const onFilterChange = (filter, value) => {
     setSearchFilters((state) => ({ ...state, [filter]: value }));
+    setSearch(false);
   };
 
   if (branchIsLoading) return <div>Loading...</div>;
@@ -104,6 +109,7 @@ export default function TableToolbarOrders({ getData }) {
         ))}
       </Select>
       <LoadingButton
+        loading={isSearchingLoading}
         size="large"
         variant="soft"
         color="primary"
