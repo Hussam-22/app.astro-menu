@@ -62,7 +62,7 @@ export default function TableToolbarOrders({ getData }) {
       alignItems="center"
       justifyContent="flex-start"
       spacing={1}
-      sx={{ mb: 1 }}
+      sx={{ mb: 1, bgcolor: 'grey.100', borderRadius: 1, p: 1 }}
     >
       {/* ------ BRANCH ------ */}
       <Select
@@ -98,7 +98,9 @@ export default function TableToolbarOrders({ getData }) {
         value={searchFilters.period}
         variant="outlined"
         onChange={(e) => onFilterChange('period', e.target.value)}
-        sx={{ minWidth: 200 }}
+        sx={{
+          minWidth: 200,
+        }}
         disabled={searchFilters.branchID === 0}
       >
         <MenuItem value={PERIOD[0]}>{`Last ${PERIOD[0]} Hour`}</MenuItem>

@@ -23,18 +23,18 @@ const TABLE_HEAD = [
   { id: 'duration', label: 'Duration', align: 'left', width: '15%' },
   { id: 'totalBill', label: 'Amount', align: 'left', width: '15%' },
   { id: 'meals', label: 'Meals', align: 'left', width: '10%' },
-  { id: 'staff', label: 'Waiter/ess', align: 'left', width: '20%' },
+  { id: 'staff', label: 'Waitstaff', align: 'left', width: '20%' },
   { id: 'statusName', label: 'Status', align: 'left' },
 ];
 // ----------------------------------------------------------------------
-// OrdersListTable.propTypes = {
+// SearchMultipleOrders.propTypes = {
 //   branchID: PropTypes.string,
 //   startTime: PropTypes.string,
 //   endTime: PropTypes.string,
 //   status: PropTypes.string,
 // };
 
-export default function OrdersListTable() {
+export default function SearchMultipleOrders() {
   const [orderDrawer, setOrderDrawer] = useState({ isOpen: false, orderInfo: {} });
   const [tableData, setOrdersData] = useState({ data: [], loading: false });
 

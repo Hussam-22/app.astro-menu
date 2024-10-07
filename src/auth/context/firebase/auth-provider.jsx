@@ -983,6 +983,20 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsGetOrderByID = useCallback(
+    async (orderID, branchID) => {
+      console.log(orderID, branchID);
+
+      const docRef = doc(
+        DB,
+        `/businessProfiles/${state.user.businessProfileID}/branches/${branchID}/orders/${orderID}`
+      );
+      const docSnap = await getDoc(docRef);
+      return docSnap.data();
+    },
+
+    [state]
+  );
   // ----------------------- Branches ----------------------------
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
@@ -2181,6 +2195,7 @@ export function AuthProvider({ children }) {
       fsChangeMenuForAllTables,
       fsGetTableOrdersByPeriod,
       fsGetOrdersByFilter,
+      fsGetOrderByID,
       fsGetTableInfo,
       fsGetDisplayTableInfo,
       branchTables,
@@ -2290,6 +2305,7 @@ export function AuthProvider({ children }) {
       activeOrders,
       fsGetTableOrdersByPeriod,
       fsGetOrdersByFilter,
+      fsGetOrderByID,
       // ---- MENU SECTIONS ----
       fsAddSection,
       fsUpdateSection,
