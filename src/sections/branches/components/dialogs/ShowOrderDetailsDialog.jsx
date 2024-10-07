@@ -19,7 +19,6 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { fDateTime } from 'src/utils/format-time';
-import getCartTotal from 'src/utils/getCartTotal';
 
 ShowOrderDetailsDialog.propTypes = {
   onClose: PropTypes.func,
@@ -28,7 +27,7 @@ ShowOrderDetailsDialog.propTypes = {
 };
 
 function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
-  const { cart, closingTime, docID, initiationTime } = orderInfo;
+  const { cart, closingTime, docID, initiationTime, customerEmail, totalBill } = orderInfo;
   const theme = useTheme();
   const { fsGetAllMeals, fsGetBranch } = useAuthContext();
 
@@ -52,8 +51,6 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
       [],
     [allMeals, orderInfo.cart]
   );
-
-  const calculatedTotalBill = getCartTotal(cart, branchInfo.taxValue);
 
   const orderDate =
     typeof closingTime === 'string'
@@ -88,25 +85,26 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
             position: 'absolute',
             right: 18,
             top: 18,
-            color: theme.palette.grey[500],
+            color: 'common.black',
+            bgcolor: 'grey.500',
+            p: 0.15,
+            m: 0,
           }}
         >
           <Iconify icon="material-symbols:close" />
         </IconButton>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Stack direction="column">
-            <Typography
-              variant="caption"
-              component="div"
-              sx={{ color: theme.palette.text.disabled }}
-            >
+            <Typography variant="body2" component="div">
               {docID}
             </Typography>
+
+            {customerEmail && <Typography>{customerEmail}</Typography>}
+          </Stack>
+          <Stack direction="column" alignItems="flex-end" spacing={1}>
             <Typography variant="caption" component="div">
               {fDateTime(orderDate)}
             </Typography>
-          </Stack>
-          <Stack direction="column" alignItems="flex-end">
             <Label variant="filled" color={orderStatus()[1]} sx={{ textTransform: 'capitalize' }}>
               {orderStatus()[0]}
             </Label>
@@ -180,7 +178,7 @@ function ShowOrderDetailsDialog({ isOpen, onClose, orderInfo }) {
         </Scrollbar>
         <Stack direction="row" justifyContent="flex-end" alignItems="center" sx={{ py: 2, px: 1 }}>
           <Typography variant="h6">
-            Total Bill : {calculatedTotalBill} {branchInfo?.currency}
+            Total Bill : {totalBill} {branchInfo?.currency}
           </Typography>
         </Stack>
       </DialogContent>

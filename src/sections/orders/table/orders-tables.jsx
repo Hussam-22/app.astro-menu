@@ -4,8 +4,8 @@ import { Box, Card, Table, TableBody, TableContainer, TablePagination } from '@m
 
 import Scrollbar from 'src/components/scrollbar';
 import TableToolbarOrders from 'src/sections/orders/table/orders-table-toolbar';
+import OrderDetailsDrawer from 'src/sections/orders/drawers/order-details-drawer';
 import TableOrdersTableRow from 'src/sections/branches/components/table/TableOrdersTableRow';
-import ShowOrderDetailsDialog from 'src/sections/branches/components/dialogs/ShowOrderDetailsDialog';
 import {
   useTable,
   emptyRows,
@@ -22,6 +22,7 @@ const TABLE_HEAD = [
   { id: 'closingTime', label: 'Closed At', align: 'left', width: '20%' },
   { id: 'duration', label: 'Duration', align: 'left', width: '15%' },
   { id: 'totalBill', label: 'Amount', align: 'left', width: '15%' },
+  { id: 'meals', label: 'Meals', align: 'left', width: '10%' },
   { id: 'staff', label: 'Waiter/ess', align: 'left', width: '20%' },
   { id: 'statusName', label: 'Status', align: 'left' },
 ];
@@ -34,10 +35,8 @@ const TABLE_HEAD = [
 // };
 
 export default function OrdersListTable() {
-  const [dialogState, setDialogState] = useState({ isOpen: false, orderInfo: {} });
+  const [orderDrawer, setOrderDrawer] = useState({ isOpen: false, orderInfo: {} });
   const [tableData, setOrdersData] = useState({ data: [], loading: false });
-
-  console.log(tableData);
 
   const {
     dense,
@@ -56,10 +55,10 @@ export default function OrdersListTable() {
 
   const getData = (data) => setOrdersData(data);
 
-  const onDialogClose = () => setDialogState({ isOpen: false, orderInfo: {} });
+  const onDialogClose = () => setOrderDrawer({ isOpen: false, orderInfo: {} });
 
   const handleViewRow = (orderInfo) => {
-    setDialogState({ isOpen: true, orderInfo });
+    setOrderDrawer({ isOpen: true, orderInfo });
   };
 
   const dataFiltered = applySortFilter({
@@ -107,7 +106,7 @@ export default function OrdersListTable() {
                       key={row.docID}
                       row={row}
                       onOrderClick={() => handleViewRow(row)}
-                      branchID={tableData?.branchID}
+                      branchID={row?.branchID}
                     />
                   ))}
 
@@ -133,13 +132,11 @@ export default function OrdersListTable() {
           onRowsPerPageChange={onChangeRowsPerPage}
         />
       </Box>
-      {dialogState.isOpen && (
-        <ShowOrderDetailsDialog
-          isOpen={dialogState.isOpen}
-          onClose={onDialogClose}
-          orderInfo={dialogState.orderInfo}
-        />
-      )}
+      <OrderDetailsDrawer
+        isOpen={orderDrawer.isOpen}
+        onClose={onDialogClose}
+        orderInfo={orderDrawer.orderInfo}
+      />
     </Card>
   );
 }
