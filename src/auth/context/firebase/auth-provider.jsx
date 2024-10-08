@@ -2100,19 +2100,23 @@ export function AuthProvider({ children }) {
   );
   // -------------------- CUSTOMERS ----------------------------------------
   const fsGetCustomers = useCallback(async () => {
-    const customersRef = collection(
-      DB,
-      'businessProfiles',
-      state.user.businessProfileID,
-      'customers'
-    );
-    const docsQuery = query(customersRef);
-    const querySnapshot = await getDocs(docsQuery);
-    const customers = [];
-    querySnapshot.forEach((doc) => {
-      customers.push(doc.data());
-    });
-    return customers;
+    try {
+      const customersRef = collection(
+        DB,
+        'businessProfiles',
+        state.user.businessProfileID,
+        'customers'
+      );
+      const docsQuery = query(customersRef);
+      const querySnapshot = await getDocs(docsQuery);
+      const customers = [];
+      querySnapshot.forEach((doc) => {
+        customers.push(doc.data());
+      });
+      return customers;
+    } catch (error) {
+      throw error;
+    }
   }, [state]);
   const fsDeleteCustomer = useCallback(
     async (customerID) => {

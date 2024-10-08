@@ -17,6 +17,7 @@
 - show error messages such as "user already in use" in registration form
 - when user register, the login page does not redirect to the dashboard
 ! email and print for order or anything 
+- find a way to download customers emails in cost-effective way.
 
 ? QR Menu
 - How item will look without image or description

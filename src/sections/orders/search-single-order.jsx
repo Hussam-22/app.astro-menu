@@ -64,7 +64,7 @@ function SearchSingleOrder() {
     <Card sx={{ p: 1 }}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Stack direction="row" spacing={2} sx={{ py: 2 }}>
-          <RHFSelect name="branchID" label="Branch">
+          <RHFSelect name="branchID" label="Branch" sx={{ width: '30%' }}>
             <MenuItem value={0}>Select Branch</MenuItem>
             {branchesData?.map((branch) => (
               <MenuItem key={branch.docID} value={branch.docID}>
@@ -73,18 +73,17 @@ function SearchSingleOrder() {
             ))}
           </RHFSelect>
 
-          <RHFTextField name="orderID" label="Order OD" />
-          <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
-            <LoadingButton
-              variant="soft"
-              color="primary"
-              size="large"
-              type="submit"
-              loading={isPending}
-            >
-              Search
-            </LoadingButton>
-          </Stack>
+          <RHFTextField name="orderID" label="Order ID (Case Sensitive)" />
+          <LoadingButton
+            variant="soft"
+            color="primary"
+            size="large"
+            type="submit"
+            loading={isPending}
+            sx={{ width: '20%' }}
+          >
+            Search
+          </LoadingButton>
         </Stack>
       </FormProvider>
 

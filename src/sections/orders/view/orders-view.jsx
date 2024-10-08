@@ -4,7 +4,6 @@ import { Box, Tab, Tabs, Divider, useTheme, Container } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
-import DownloadCSV from 'src/utils/download-csv';
 import { useSettingsContext } from 'src/components/settings';
 import SearchSingleOrder from 'src/sections/orders/search-single-order';
 import SearchMultipleOrders from 'src/sections/orders/search-multiple-orders';
@@ -38,7 +37,7 @@ function OrdersView() {
             name: 'Orders List',
           },
         ]}
-        action={<DownloadCSV name="customers-emails-list" />}
+        // action={<DownloadCSV name="customers-emails-list" />}
       />
 
       <Tabs
