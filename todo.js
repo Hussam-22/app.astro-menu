@@ -16,11 +16,11 @@
 /- Prevent Refreshing the page when user pulls down the page
 - show error messages such as "user already in use" in registration form
 - when user register, the login page does not redirect to the dashboard
-! email and print for order or anything 
+/- Print or generate PDF for orders bill --> print is not feasible to avoid misuse
+/- Email orders bill to customer - Done
 - find a way to download customers emails in cost-effective way.
 
 ? QR Menu
-- How item will look without image or description
 - test back button that will close modal on ios and different browsers
 /- Add Search meal by name field (Think about it) -- Not feasible
 - check what happens if a meal gets deleted while its in cart

@@ -85,8 +85,6 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo = {} }) {
         </Label>
       </Stack>
 
-      {customerEmail && <Typography>{customerEmail}</Typography>}
-
       <Box>
         <Scrollbar sx={{ maxHeight: 300, my: 1 }}>
           <Box

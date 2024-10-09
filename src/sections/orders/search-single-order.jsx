@@ -65,7 +65,7 @@ function SearchSingleOrder() {
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Stack direction="row" spacing={2} sx={{ py: 2 }}>
           <RHFSelect name="branchID" label="Branch" sx={{ width: '30%' }}>
-            <MenuItem value={0}>Select Branch</MenuItem>
+            <MenuItem value="">Select Branch</MenuItem>
             {branchesData?.map((branch) => (
               <MenuItem key={branch.docID} value={branch.docID}>
                 {branch.title}
