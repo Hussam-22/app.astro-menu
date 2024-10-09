@@ -4,10 +4,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Link from '@mui/material/Link';
-import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // @mui
@@ -31,7 +29,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function FirebaseLoginView() {
-  const { login, loginWithGoogle, user } = useAuthContext();
+  const { login } = useAuthContext();
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
   const searchParams = useSearchParams();
@@ -72,19 +70,19 @@ export default function FirebaseLoginView() {
     }
   });
 
-  const handleGoogleLogin = async () => {
-    try {
-      await loginWithGoogle?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     await loginWithGoogle?.();
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
       <Typography variant="h4">Sign in to Astro-Menu</Typography>
 
-      <Stack direction="row" spacing={0.5}>
+      <Stack direction="row" spacing={0.5} alignItems="center">
         <Typography variant="body2">New user?</Typography>
 
         <Link component={RouterLink} href={paths.auth.firebase.register} variant="subtitle2">
@@ -139,31 +137,31 @@ export default function FirebaseLoginView() {
     </Stack>
   );
 
-  const renderLoginOption = (
-    <div>
-      <Divider
-        sx={{
-          my: 2.5,
-          typography: 'overline',
-          color: 'text.disabled',
-          '&::before, ::after': {
-            borderTopStyle: 'dashed',
-          },
-        }}
-      >
-        OR
-      </Divider>
+  // const renderLoginOption = (
+  //   <div>
+  //     <Divider
+  //       sx={{
+  //         my: 2.5,
+  //         typography: 'overline',
+  //         color: 'text.disabled',
+  //         '&::before, ::after': {
+  //           borderTopStyle: 'dashed',
+  //         },
+  //       }}
+  //     >
+  //       OR
+  //     </Divider>
 
-      <Button
-        endIcon={<Iconify icon="eva:google-fill" color="#DF3E30" />}
-        onClick={handleGoogleLogin}
-        fullWidth
-        variant="outlined"
-      >
-        Login with Google
-      </Button>
-    </div>
-  );
+  //     <Button
+  //       endIcon={<Iconify icon="eva:google-fill" color="#DF3E30" />}
+  //       onClick={handleGoogleLogin}
+  //       fullWidth
+  //       variant="outlined"
+  //     >
+  //       Login with Google
+  //     </Button>
+  //   </div>
+  // );
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -171,7 +169,7 @@ export default function FirebaseLoginView() {
 
       {renderForm}
 
-      {renderLoginOption}
+      {/* {renderLoginOption} */}
     </FormProvider>
   );
 }

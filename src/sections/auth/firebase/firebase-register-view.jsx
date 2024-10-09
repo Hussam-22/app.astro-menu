@@ -7,14 +7,13 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Box, Card, MenuItem } from '@mui/material';
+import { Box, Divider, MenuItem } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import Logo from 'src/components/logo';
 import Image from 'src/components/image';
 // routes
 import { paths } from 'src/routes/paths';
@@ -50,17 +49,19 @@ export default function FirebaseRegisterView() {
   });
 
   const RegisterSchema = Yup.object().shape({
-    firstName: Yup.string().required('First name required'),
-    lastName: Yup.string().required('Last name required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    // firstName: Yup.string().required('First name required'),
+    // lastName: Yup.string().required('Last name required'),
+    email: Yup.string()
+      .required('Business Email is required')
+      .email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
     businessName: Yup.string().required('Plan is required'),
     plan: Yup.string().required('Plan is required'),
   });
 
   const defaultValues = {
-    firstName: '',
-    lastName: '',
+    // firstName: '',
+    // lastName: '',
     email: '',
     password: '',
     businessName: '',
@@ -102,7 +103,7 @@ export default function FirebaseRegisterView() {
   });
 
   const renderForm = (
-    <Stack spacing={1.5} sx={{ p: 2 }}>
+    <Stack spacing={1.5} sx={{ py: 2 }}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
       {!isLoading && (
@@ -123,12 +124,12 @@ export default function FirebaseRegisterView() {
 
       <RHFTextField name="businessName" label="Business Name" />
 
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+      {/* <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
         <RHFTextField name="firstName" label="First name" />
         <RHFTextField name="lastName" label="Last name" />
-      </Stack>
+      </Stack> */}
 
-      <RHFTextField name="email" label="Email address" />
+      <RHFTextField name="email" label="Business Email address" />
 
       <RHFTextField
         name="password"
@@ -151,11 +152,19 @@ export default function FirebaseRegisterView() {
         alignItems="center"
         spacing={2}
       >
-        <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
-          14 Days free trial / No Credit Card Required
-        </Typography>
+        <Stack
+          direction={{ xs: 'row', sm: 'column' }}
+          sx={{ textAlign: { xs: 'center', sm: 'right' } }}
+          spacing={1}
+        >
+          <Typography variant="body2" sx={{ whiteSpace: 'nowrap', fontWeight: 600 }}>
+            14 Days free trial
+          </Typography>
+          <Typography variant="body2" sx={{ whiteSpace: 'nowrap', fontWeight: 600 }}>
+            No Credit Card Required
+          </Typography>
+        </Stack>
         <LoadingButton
-          fullWidth
           color="primary"
           size="large"
           type="submit"
@@ -172,10 +181,9 @@ export default function FirebaseRegisterView() {
   if (isLoading) return <LoadingScreen />;
 
   return (
-    <Card sx={{ pt: 2, maxWidth: { xs: 'auto', sm: '70vw', md: '50vw' } }}>
-      <Stack direction="row" justifyContent="center" spacing={1}>
-        <Logo />
-        <Typography variant="h6" color="secondary">
+    <>
+      <Stack direction="row" justifyContent="left" spacing={1}>
+        <Typography variant="h4" color="secondary">
           Create your{' '}
           <Box component="span" sx={{ color: 'primary.main' }}>
             Astro-Menu
@@ -186,11 +194,12 @@ export default function FirebaseRegisterView() {
       <FormProvider methods={methods} onSubmit={onSubmit}>
         {renderForm}
       </FormProvider>
+      <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         justifyContent={{ xs: 'center', sm: 'space-between' }}
         alignItems="center"
-        sx={{ p: 2, bgcolor: 'grey.100', mt: 1 }}
+        sx={{ p: 2, bgcolor: 'grey.100', borderRadius: 2 }}
       >
         <Stack direction="row" spacing={0.5} alignItems="center">
           <Typography variant="body2"> Already have an account? </Typography>
@@ -211,6 +220,6 @@ export default function FirebaseRegisterView() {
       </Stack>
 
       <BuildingProfileDialog open={open} onClose={onClose} />
-    </Card>
+    </>
   );
 }

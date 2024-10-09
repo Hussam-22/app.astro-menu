@@ -345,8 +345,7 @@ export function AuthProvider({ children }) {
           `${firstName} ${lastName}`,
           businessName,
           plan,
-          productID,
-          true
+          productID
         );
       } catch (error) {
         console.log(error);
