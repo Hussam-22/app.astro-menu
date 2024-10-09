@@ -13,8 +13,6 @@ function MealsAndSections() {
   const { id: menuID } = useParams();
   const { fsGetAllMeals, fsGetSections, menuSections } = useAuthContext();
 
-  console.log(menuSections);
-
   const { data: sectionsUnsubscribe = () => {}, error } = useQuery({
     queryKey: ['sections', menuID],
     queryFn: () => fsGetSections(menuID),

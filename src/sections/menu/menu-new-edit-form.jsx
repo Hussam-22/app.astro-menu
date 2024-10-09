@@ -108,7 +108,12 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
         <Card sx={{ p: 3 }}>
           <Stack direction="column" spacing={2}>
             <RHFTextField name="title" label="Menu Title" />
-            <RHFTextField name="description" label="Menu Description" multiline rows={3} />
+            <RHFTextField
+              name="description"
+              label="Menu note (Shows to Admin only)"
+              multiline
+              rows={3}
+            />
           </Stack>
         </Card>
 

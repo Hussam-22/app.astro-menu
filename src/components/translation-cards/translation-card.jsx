@@ -25,7 +25,7 @@ export default function TranslationCard({
     <Card>
       <CardHeader
         title={`${LANGUAGE_CODES[languageKey]?.value} (${LANGUAGE_CODES[languageKey]?.name})`}
-        sx={{ color: 'primary.main' }}
+        sx={{ color: 'secondary.main' }}
       />
       <Stack direction="column" spacing={3} sx={{ p: 2 }}>
         {showTitleField && (
