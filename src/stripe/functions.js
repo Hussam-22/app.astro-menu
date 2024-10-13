@@ -101,7 +101,6 @@ export const stripeCreateCheckoutSession = async (items, useLocalUrl = false) =>
 export const stripeCreateBusiness = async (
   ownerID,
   email,
-  name,
   businessName,
   plan,
   productID,
@@ -111,7 +110,6 @@ export const stripeCreateBusiness = async (
   const body = {
     ownerID,
     email,
-    name,
     businessName,
     plan,
     productID,
@@ -124,14 +122,11 @@ export const stripeCreateBusiness = async (
     if (error.response) {
       // Server responded with a status other than 200 range
       console.error('Server error:', error.response.data);
-    } else if (error.request) {
-      // Request was made but no response received
-      console.error('No response received:', error.request);
-    } else {
-      // Something else happened while setting up the request
-      console.error('Error:', error.message);
+      throw new Error(error.response.data);
     }
-    throw error;
+    // Something else happened while setting up the request
+    console.error('Error:', error.message);
+    return error.message;
   }
 };
 

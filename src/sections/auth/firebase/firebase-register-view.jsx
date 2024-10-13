@@ -20,11 +20,12 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // components
 import Iconify from 'src/components/iconify';
+import { delay } from 'src/utils/promise-delay';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
-import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { RouterLink } from 'src/routes/components';
 import { LoadingScreen } from 'src/components/loading-screen';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import BuildingProfileDialog from 'src/sections/auth/firebase/components/building-profile-dialog';
@@ -37,6 +38,8 @@ export default function FirebaseRegisterView() {
   const [open, setOpen] = useState(false);
   const password = useBoolean();
   const router = useRouter();
+
+  console.log(errorMsg);
 
   const onClose = () => {
     setOpen(false);
@@ -86,19 +89,19 @@ export default function FirebaseRegisterView() {
 
   const onSubmit = handleSubmit(async (formData) => {
     try {
-      mutate(() => {
+      mutate(async () => {
+        await delay(500);
         const product = productsData.find((item) => item.id === formData.plan);
-        fsCreateBusinessProfile({
+        await fsCreateBusinessProfile({
           ...formData,
           plan: product.default_price,
           productID: product.id,
         });
       });
-      setOpen(true);
+      // setOpen(true);
     } catch (error) {
-      console.error(error);
       reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
+      setErrorMsg(error);
     }
   });
 
@@ -155,7 +158,7 @@ export default function FirebaseRegisterView() {
         <Stack
           direction={{ xs: 'row', sm: 'column' }}
           sx={{ textAlign: { xs: 'center', sm: 'right' } }}
-          spacing={1}
+          spacing={0}
         >
           <Typography variant="body2" sx={{ whiteSpace: 'nowrap', fontWeight: 600 }}>
             14 Days free trial

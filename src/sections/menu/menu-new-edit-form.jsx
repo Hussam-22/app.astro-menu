@@ -14,7 +14,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
-import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 
 MenuNewEditForm.propTypes = {
   menuInfo: PropTypes.object,
@@ -51,6 +51,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
       description: menuInfo?.description || '',
       mostOrderedMeals: menuInfo?.mostOrderedMeals || 0,
       newMenuID: '',
+      isDefault: !!menuInfo?.isDefault,
     }),
     [menuInfo]
   );
@@ -68,6 +69,8 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
   } = methods;
 
   const values = watch();
+
+  console.log(values);
 
   const {
     isPending,
@@ -100,7 +103,12 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
           color="success"
           loading={isPending}
           sx={{ alignSelf: 'flex-end' }}
-          disabled={!dirtyFields.title && !dirtyFields.description && !dirtyFields.mostOrderedMeals}
+          disabled={
+            !dirtyFields.title &&
+            !dirtyFields.description &&
+            !dirtyFields.mostOrderedMeals &&
+            !dirtyFields.isDefault
+          }
         >
           Update Menu
         </LoadingButton>
@@ -126,6 +134,16 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
             spacing={1}
             divider={<Divider sx={{ borderStyle: 'dashed' }} />}
           >
+            <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+              <Stack direction="column" sx={{ flexGrow: 1 }}>
+                <Typography sx={{ fontWeight: 500 }}>Default Menu</Typography>
+                <Typography variant="body2">
+                  Set this menu as the default menu for all new branches tables
+                </Typography>
+              </Stack>
+              <RHFSwitch name="isDefault" />
+            </Stack>
+
             {!isMenuOnly && (
               <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
                 <Stack direction="column" sx={{ flexGrow: 1 }}>

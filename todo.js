@@ -1,4 +1,10 @@
 /* 
+
+# Ground Roles
+- When a customer wants to have a tailored plan, create one for them on stripe and assign it to them
+- "free" plan, make sure to have a "free" plan on stripe
+- If you ever decided to alter the original plans, create a new plan on stripe and assign it to the new users, keep existing users on the old plan
+
 # TODO List
 
 ? System
@@ -19,6 +25,7 @@
 /- Print or generate PDF for orders bill --> print is not feasible to avoid misuse
 /- Email orders bill to customer - Done
 - find a way to download customers emails in cost-effective way.
+
 
 ? QR Menu
 - test back button that will close modal on ios and different browsers

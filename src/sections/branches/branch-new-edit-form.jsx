@@ -117,6 +117,7 @@ export default function BranchNewEditForm({ branchInfo }) {
       number: branchInfo?.number || '',
       skipKitchen: !!branchInfo?.skipKitchen,
       showCallWaiterBtn: !!branchInfo?.showCallWaiterBtn,
+      dense: !!branchInfo?.dense,
 
       socialLinks: {
         facebook: branchInfo?.socialLinks?.facebook || '',
@@ -313,6 +314,13 @@ export default function BranchNewEditForm({ branchInfo }) {
                       <Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />
                     }
                   >
+                    <SettingSwitch
+                      title="Dense Menu"
+                      description="Dense menu will hide meal description and reduce image size, useful for large menus"
+                      label={values.dense ? `Dense` : `Cozy`}
+                      name="dense"
+                      isDanger={false}
+                    />
                     {allowPoS && (
                       <>
                         <SettingSwitch

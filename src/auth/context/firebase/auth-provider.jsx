@@ -158,22 +158,26 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = useCallback(async (email, password, displayName) => {
-    const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
-    await sendEmailVerification(newUser.user);
+    try {
+      const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
+      await sendEmailVerification(newUser.user);
 
-    const userProfile = doc(collection(DB, 'users'), newUser.user?.uid);
+      const userProfile = doc(collection(DB, 'users'), newUser.user?.uid);
 
-    await setDoc(userProfile, {
-      uid: newUser.user?.uid,
-      displayName,
-      email,
-      role: 'owner',
-      password,
-      isActive: true,
-      lastLogin: new Date(),
-    });
+      await setDoc(userProfile, {
+        uid: newUser.user?.uid,
+        displayName,
+        email,
+        role: 'owner',
+        password,
+        isActive: true,
+        lastLogin: new Date(),
+      });
 
-    return newUser.user?.uid;
+      return newUser.user?.uid;
+    } catch (error) {
+      return error;
+    }
   }, []);
   const logout = useCallback(async () => {
     await signOut(AUTH);
@@ -333,22 +337,15 @@ export function AuthProvider({ children }) {
   const fsCreateBusinessProfile = useCallback(
     async (data) => {
       try {
-        const { email, password, firstName, lastName, businessName, plan, productID } = data;
+        const { email, password, businessName, plan, productID } = data;
 
         // 1- create owner account on firebase
-        const ownerID = await register?.(email, password, firstName, lastName);
+        const ownerID = await register?.(email, password, businessName);
 
         // 2- create business profile and system defaults on server
-        await stripeCreateBusiness(
-          ownerID,
-          email,
-          `${firstName} ${lastName}`,
-          businessName,
-          plan,
-          productID
-        );
+        await stripeCreateBusiness(ownerID, email, businessName, plan, productID, true);
       } catch (error) {
-        console.log(error);
+        throw new Error(error);
       }
     },
     [state]
