@@ -47,7 +47,7 @@ function SelectedTableInfoCard({ tableInfo }) {
   });
 
   const validationSchema = Yup.object().shape({
-    title: Yup.string().required('Title cant be empty !!'),
+    // title: Yup.string().required('Title cant be empty !!'),
   });
 
   const defaultValues = useMemo(
@@ -55,7 +55,7 @@ function SelectedTableInfoCard({ tableInfo }) {
       menuID: tableInfo?.menuID || '',
       isActive: tableInfo?.isActive,
       note: tableInfo?.note || '',
-      title: tableInfo?.title,
+      // title: tableInfo?.title,
       mealAlwaysAvailable: !!tableInfo?.mealAlwaysAvailable,
     }),
     [tableInfo]
@@ -120,9 +120,9 @@ function SelectedTableInfoCard({ tableInfo }) {
                   sx={{ m: 0 }}
                 />
               </Stack>
-              <Stack direction="column" spacing={2}>
+              {/* <Stack direction="column" spacing={2}>
                 <RHFTextField name="title" label="QR Nickname (Shows on Customers Menu)" />
-              </Stack>
+              </Stack> */}
               <RHFTextField
                 name="note"
                 label="Note (Shows on Waiter Staff Dashboard Only)"
@@ -147,12 +147,12 @@ function SelectedTableInfoCard({ tableInfo }) {
         </Card>
       </Grid>
       <Grid xs={12} sm={4}>
-        <Card sx={{ p: 3, height: '100%' }}>
+        <Card sx={{ p: 1, height: '100%' }}>
           <Box
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              gap: 1.5,
+              gap: 0,
               alignItems: 'center',
               mt: 2,
             }}

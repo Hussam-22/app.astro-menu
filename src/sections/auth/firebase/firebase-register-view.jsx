@@ -90,15 +90,15 @@ export default function FirebaseRegisterView() {
   const onSubmit = handleSubmit(async (formData) => {
     try {
       mutate(async () => {
-        await delay(500);
+        await delay(1000);
         const product = productsData.find((item) => item.id === formData.plan);
-        await fsCreateBusinessProfile({
+        fsCreateBusinessProfile({
           ...formData,
           plan: product.default_price,
           productID: product.id,
         });
       });
-      // setOpen(true);
+      setOpen(true);
     } catch (error) {
       reset();
       setErrorMsg(error);

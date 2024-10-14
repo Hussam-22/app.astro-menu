@@ -38,8 +38,6 @@ export default function SearchMultipleOrders() {
   const [orderDrawer, setOrderDrawer] = useState({ isOpen: false, orderInfo: {} });
   const [tableData, setOrdersData] = useState({ data: [], loading: false });
 
-  console.log(tableData);
-
   const {
     dense,
     page,

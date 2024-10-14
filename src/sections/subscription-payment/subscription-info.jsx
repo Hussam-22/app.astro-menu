@@ -186,7 +186,7 @@ function SubscriptionInfo() {
         </Stack>
       </Card>
 
-      <Card sx={{ p: 3, mt: 2 }}>
+      <Card sx={{ p: 2, mt: 2, bgcolor: 'primary.main', color: 'common.white' }}>
         <Typography variant="h5">Business is Thriving ?</Typography>
         <Stack spacing={1}>
           <Typography>
@@ -195,7 +195,9 @@ function SubscriptionInfo() {
           </Typography>
           <Link
             href="https://astro-menu.com/contact-us"
-            sx={{ textAlign: 'left', textDecoration: 'underline' }}
+            sx={{ textAlign: 'left', textDecoration: 'underline', color: 'common.white' }}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Contact Us
           </Link>

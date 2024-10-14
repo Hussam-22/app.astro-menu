@@ -7,7 +7,6 @@ import { Stack, Divider, useTheme } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import TablesCard from 'src/sections/branches/components/TablesCard';
-import OrdersListCard from 'src/sections/branches/components/OrdersListCard';
 import SelectedTableInfoCard from 'src/sections/branches/components/SelectedTableInfoCard';
 import StatisticsOverviewCard from 'src/sections/branches/components/StatisticsOverviewCard';
 
@@ -49,8 +48,6 @@ function QRManagement() {
       {selectedTable && selectedTable.index !== 0 && (
         <Divider sx={{ borderStyle: 'dashed', borderColor: theme.palette.divider }} />
       )}
-
-      {selectedTable && selectedTable.index !== 0 && <OrdersListCard tableInfo={selectedTable} />}
     </Stack>
   );
 }

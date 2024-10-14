@@ -8,14 +8,15 @@ import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 import { Button, Divider, Typography } from '@mui/material';
 
+import Logo from 'src/components/logo';
 import Image from 'src/components/image';
 // components
 import SvgColor from 'src/components/svg-color';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
+import { useRouter, usePathname } from 'src/routes/hook';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
-import { useRouter, usePathname } from 'src/routes/hook';
 // hooks
 import { NavSectionVertical } from 'src/components/nav-section';
 
@@ -71,10 +72,10 @@ export default function NavVertical({ openNav, onCloseNav }) {
         sx={{ mt: 2, ml: 3 }}
       >
         <Stack direction="column">
-          <Typography sx={{ fontWeight: 600 }}>
+          <Logo />
+          <Typography sx={{ fontWeight: 600, mt: 1 }}>
             Welcome back, {businessProfile.ownerInfo.displayName}
           </Typography>
-          <Typography variant="body2">{businessProfile.businessName}</Typography>
           <Stack direction="row" spacing={1} alignItems="center">
             <Typography variant="body2">On {businessProfile.productInfo.name} Plan</Typography>
             <Image

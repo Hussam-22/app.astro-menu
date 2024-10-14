@@ -70,8 +70,6 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
 
   const values = watch();
 
-  console.log(values);
-
   const {
     isPending,
     mutate,
