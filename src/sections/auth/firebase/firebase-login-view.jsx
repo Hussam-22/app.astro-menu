@@ -4,10 +4,10 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Link from '@mui/material/Link';
-import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import IconButton from '@mui/material/IconButton';
+import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -61,12 +61,30 @@ export default function FirebaseLoginView() {
     try {
       await login?.(data.email, data.password);
 
-      // router.push(returnTo || PATH_AFTER_LOGIN);
-      router.replace(`../${PATH_AFTER_LOGIN}`);
+      router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
-      console.error(error);
+      console.log(error.message);
       reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
+      if (error.message === 'Email not verified')
+        setErrorMsg('Email not verified. Please verify your email.');
+
+      if (error.code === 'auth/user-not-found')
+        setErrorMsg('User not found. Please check your email and password.');
+
+      if (error.code === 'auth/wrong-password')
+        setErrorMsg('Wrong password. Please check your email and password.');
+
+      if (error.code === 'auth/too-many-requests')
+        setErrorMsg('Too many requests. Please try again later.');
+
+      if (error.code === 'auth/user-disabled')
+        setErrorMsg('User is disabled. Please contact support.');
+
+      if (error.code === 'auth/invalid-email')
+        setErrorMsg('Invalid email. Please check your email and password.');
+
+      if (error.code === 'auth/network-request-failed')
+        setErrorMsg('Network request failed. Please check your internet connection.');
     }
   });
 

@@ -154,7 +154,14 @@ export function AuthProvider({ children }) {
 
   // LOGIN
   const login = useCallback(async (email, password) => {
-    await signInWithEmailAndPassword(AUTH, email, password);
+    try {
+      const response = await signInWithEmailAndPassword(AUTH, email, password);
+      if (!response.user.emailVerified) {
+        throw new Error('Email not verified');
+      }
+    } catch (error) {
+      throw error;
+    }
   }, []);
 
   const register = useCallback(async (email, password, displayName) => {
@@ -169,14 +176,14 @@ export function AuthProvider({ children }) {
         displayName,
         email,
         role: 'owner',
-        password,
         isActive: true,
         lastLogin: new Date(),
       });
 
       return newUser.user?.uid;
     } catch (error) {
-      return error;
+      // Re-throw the original error to propagate it
+      throw error;
     }
   }, []);
   const logout = useCallback(async () => {
@@ -339,13 +346,14 @@ export function AuthProvider({ children }) {
       try {
         const { email, password, businessName, plan, productID } = data;
 
-        // 1- create owner account on firebase
+        // 1- Create owner account on Firebase
         const ownerID = await register?.(email, password, businessName);
 
-        // 2- create business profile and system defaults on server
+        // 2- Create business profile and system defaults on the server
         await stripeCreateBusiness(ownerID, email, businessName, plan, productID, true);
       } catch (error) {
-        throw new Error(error);
+        // Re-throw the error to propagate it
+        throw error;
       }
     },
     [state]

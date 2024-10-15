@@ -27,6 +27,7 @@ import {
 import { DOMAINS } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 import FormProvider, { RHFSwitch, RHFSelect } from 'src/components/hook-form';
 import StatisticsOverviewCard from 'src/sections/branches/components/StatisticsOverviewCard';
 
@@ -37,7 +38,10 @@ function DisplayQRCode() {
   const theme = useTheme();
   const { id: branchID } = useParams();
   const { fsGetDisplayTableInfo, user, fsGetAllMenus, fsUpdateBranchTable } = useAuthContext();
+  const { isMenuOnly } = useGetProductInfo();
   const queryClient = useQueryClient();
+
+  console.log(isMenuOnly);
 
   const {
     data: tableInfo,
@@ -122,14 +126,16 @@ function DisplayQRCode() {
       <Box>
         <StatisticsOverviewCard tableInfo={tableInfo} month={month} year={year} />
 
-        <Grid container spacing={2}>
-          <Grid xs={12}>
-            <Alert severity="warning" variant="outlined" sx={{ width: 1, mt: 2 }}>
-              <AlertTitle>Attention</AlertTitle>
-              {`The "Display QR" code is intended to display the menu only, with the "Cart" disabled for customers view. Use it on your social media or at your front entrance or wherever you need to showcase your menu. Avoid placing it on customer tables. 
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          {!isMenuOnly && (
+            <Grid xs={12}>
+              <Alert severity="warning" variant="outlined" sx={{ width: 1 }}>
+                <AlertTitle>Attention</AlertTitle>
+                {`The "Display QR" code is intended to display the menu only, with the "Cart" disabled for customers view. Use it on your social media or at your front entrance or wherever you need to showcase your menu. Avoid placing it on customer tables. 
               If you plan to have waitstaff take orders without allowing customers to order themselves, it’s recommended to disable "Self Order" in the branch settings and use the "Tables QR Codes" for table management and statistics tracking.`}
-            </Alert>
-          </Grid>
+              </Alert>
+            </Grid>
+          )}
 
           <Grid xs={12} sm={8}>
             <Card sx={{ p: 3, height: 1 }}>

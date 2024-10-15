@@ -20,7 +20,6 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // components
 import Iconify from 'src/components/iconify';
-import { delay } from 'src/utils/promise-delay';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
 // hooks
@@ -80,30 +79,32 @@ export default function FirebaseRegisterView() {
     watch,
     reset,
     handleSubmit,
-    formState: { isDirty },
+    formState: { isDirty, errors },
   } = methods;
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (mutateFn) => mutateFn(),
+  const {
+    mutate,
+    isPending,
+    error: fbError, // Firebase error
+    isError,
+  } = useMutation({
+    mutationFn: async (formValues) => {
+      const product = productsData.find((item) => item.id === formValues.plan);
+      await fsCreateBusinessProfile({
+        ...formValues,
+        plan: product.default_price,
+        productID: product.id,
+      });
+    },
+    onSuccess: () => setOpen(true),
+    onError: (error) => {
+      console.log(error.message);
+
+      setErrorMsg(error?.message || error || 'Something went wrong');
+    },
   });
 
-  const onSubmit = handleSubmit(async (formData) => {
-    try {
-      mutate(async () => {
-        await delay(1000);
-        const product = productsData.find((item) => item.id === formData.plan);
-        fsCreateBusinessProfile({
-          ...formData,
-          plan: product.default_price,
-          productID: product.id,
-        });
-      });
-      setOpen(true);
-    } catch (error) {
-      reset();
-      setErrorMsg(error);
-    }
-  });
+  const onSubmit = handleSubmit(async (formData) => mutate(formData));
 
   const renderForm = (
     <Stack spacing={1.5} sx={{ py: 2 }}>

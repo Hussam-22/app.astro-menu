@@ -33,7 +33,7 @@ export const AUTH0_API = {
 export const MAPBOX_API = import.meta.env.VITE_MAPBOX_API;
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
-export const PATH_AFTER_LOGIN = paths.dashboard.branches.list; // as '/dashboard'
+export const PATH_AFTER_LOGIN = paths.dashboard.meal.list; // as '/dashboard'
 
 // STRIPE
 export const STRIPE = {
