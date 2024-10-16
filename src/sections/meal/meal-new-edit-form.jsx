@@ -41,6 +41,7 @@ MealNewEditForm.propTypes = { mealInfo: PropTypes.object };
 function MealNewEditForm({ mealInfo }) {
   const theme = useTheme();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -53,7 +54,6 @@ function MealNewEditForm({ mealInfo }) {
     fsGetAllMeals,
   } = useAuthContext();
   const [selectedMealLabels, setSelectedMealLabels] = useState([]);
-  const queryClient = useQueryClient();
   const { maxAllowedMeals } = useGetProductInfo();
 
   const onClose = () => setIsOpen(false);
@@ -69,8 +69,6 @@ function MealNewEditForm({ mealInfo }) {
   });
 
   const activeMealsLength = !isLoading && allMeals?.filter((meal) => meal.isActive)?.length;
-
-  console.log(activeMealsLength >= maxAllowedMeals);
 
   const NewMealSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -355,7 +353,9 @@ function MealNewEditForm({ mealInfo }) {
                     alignItems="center"
                     sx={{ px: 1 }}
                   >
-                    <Typography sx={{ fontWeight: 500 }}>{`Show "New" Label on Meal`}</Typography>
+                    <Typography
+                      sx={{ fontWeight: 500 }}
+                    >{`Show "New" Label on the Meal Image`}</Typography>
                     <RHFSwitch name="isNew" label="New" labelPlacement="start" />
                   </Stack>
 
@@ -368,7 +368,7 @@ function MealNewEditForm({ mealInfo }) {
                   >
                     <Stack direction="column">
                       <Typography sx={{ fontWeight: 500 }}>Meal Status</Typography>
-                      <Typography variant="caption">
+                      <Typography variant="body2">
                         Disabling a meal will remove it from all menus where it appears, providing a
                         quick and efficient way to hide the meal across all menus without the need
                         to manually remove it from each one. You can easily re-enable the meal at
@@ -398,7 +398,7 @@ function MealNewEditForm({ mealInfo }) {
                         >
                           Delete Meal
                         </Typography>
-                        <Typography variant="caption">
+                        <Typography variant="body2">
                           Deleting the meal will completely remove it from the system, all menus and
                           all its statistics will be gone. This action cannot be undone.
                         </Typography>

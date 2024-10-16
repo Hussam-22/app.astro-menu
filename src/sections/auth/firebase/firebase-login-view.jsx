@@ -6,9 +6,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -30,7 +29,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function FirebaseLoginView() {
-  const { login, loginWithGoogle, loginWithGithub, loginWithTwitter, user } = useAuthContext();
+  const { login } = useAuthContext();
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
   const searchParams = useSearchParams();
@@ -64,39 +63,44 @@ export default function FirebaseLoginView() {
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
-      console.error(error);
+      console.log(error.message);
       reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
+      if (error.message === 'Email not verified')
+        setErrorMsg('Email not verified. Please verify your email.');
+
+      if (error.code === 'auth/user-not-found')
+        setErrorMsg('User not found. Please check your email and password.');
+
+      if (error.code === 'auth/wrong-password')
+        setErrorMsg('Wrong password. Please check your email and password.');
+
+      if (error.code === 'auth/too-many-requests')
+        setErrorMsg('Too many requests. Please try again later.');
+
+      if (error.code === 'auth/user-disabled')
+        setErrorMsg('User is disabled. Please contact support.');
+
+      if (error.code === 'auth/invalid-email')
+        setErrorMsg('Invalid email. Please check your email and password.');
+
+      if (error.code === 'auth/network-request-failed')
+        setErrorMsg('Network request failed. Please check your internet connection.');
     }
   });
 
-  const handleGoogleLogin = async () => {
-    try {
-      await loginWithGoogle?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handleGithubLogin = async () => {
-    try {
-      await loginWithGithub?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handleTwitterLogin = async () => {
-    try {
-      await loginWithTwitter?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     await loginWithGoogle?.();
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
       <Typography variant="h4">Sign in to Astro-Menu</Typography>
 
-      <Stack direction="row" spacing={0.5}>
+      <Stack direction="row" spacing={0.5} alignItems="center">
         <Typography variant="body2">New user?</Typography>
 
         <Link component={RouterLink} href={paths.auth.firebase.register} variant="subtitle2">
@@ -151,36 +155,31 @@ export default function FirebaseLoginView() {
     </Stack>
   );
 
-  const renderLoginOption = (
-    <div>
-      <Divider
-        sx={{
-          my: 2.5,
-          typography: 'overline',
-          color: 'text.disabled',
-          '&::before, ::after': {
-            borderTopStyle: 'dashed',
-          },
-        }}
-      >
-        OR
-      </Divider>
+  // const renderLoginOption = (
+  //   <div>
+  //     <Divider
+  //       sx={{
+  //         my: 2.5,
+  //         typography: 'overline',
+  //         color: 'text.disabled',
+  //         '&::before, ::after': {
+  //           borderTopStyle: 'dashed',
+  //         },
+  //       }}
+  //     >
+  //       OR
+  //     </Divider>
 
-      <Stack direction="row" justifyContent="center" spacing={2}>
-        <IconButton onClick={handleGoogleLogin}>
-          <Iconify icon="eva:google-fill" color="#DF3E30" />
-        </IconButton>
-
-        <IconButton color="inherit" onClick={handleGithubLogin}>
-          <Iconify icon="eva:github-fill" />
-        </IconButton>
-
-        <IconButton onClick={handleTwitterLogin}>
-          <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
-        </IconButton>
-      </Stack>
-    </div>
-  );
+  //     <Button
+  //       endIcon={<Iconify icon="eva:google-fill" color="#DF3E30" />}
+  //       onClick={handleGoogleLogin}
+  //       fullWidth
+  //       variant="outlined"
+  //     >
+  //       Login with Google
+  //     </Button>
+  //   </div>
+  // );
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -188,7 +187,7 @@ export default function FirebaseLoginView() {
 
       {renderForm}
 
-      {renderLoginOption}
+      {/* {renderLoginOption} */}
     </FormProvider>
   );
 }

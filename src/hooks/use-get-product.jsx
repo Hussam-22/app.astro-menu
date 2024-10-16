@@ -7,9 +7,9 @@ export function useGetProductInfo() {
 
   const { status } = businessProfile.subscriptionInfo;
 
-  const allowAnalytics = metadata.analytics === 'true';
   const isMenuOnly = metadata.isMenuOnly === 'true';
-  const allowPoS = metadata.pos === 'true';
+  const allowAnalytics = metadata.analytics === 'true' && !isMenuOnly;
+  const allowPoS = metadata.pos === 'true' && !isMenuOnly;
   const branches = +metadata.branches;
   const meals = metadata.meals === 'unlimited' ? 'unlimited' : +metadata.meals;
   const languages = +metadata.languages;

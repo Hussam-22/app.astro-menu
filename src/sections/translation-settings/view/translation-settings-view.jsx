@@ -19,8 +19,6 @@ function TranslationSettingsView() {
     queryFn: () => fsGetBusinessProfile(businessProfile.docID),
   });
 
-  console.log(businessProfileInfo?.docID);
-
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs

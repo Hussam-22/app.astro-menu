@@ -25,6 +25,7 @@ const ICONS = {
   label: icon('ic_label'),
   subscription: icon('ic_subscription'),
   translation: icon('ic_translation'),
+  orders: icon('ic_order'),
 };
 
 // ----------------------------------------------------------------------
@@ -71,6 +72,11 @@ export function useNavData() {
             icon: ICONS.staffs,
           },
           {
+            title: t('orders'),
+            path: paths.dashboard.orders.root,
+            icon: ICONS.orders,
+          },
+          {
             title: t('Translation Settings'),
             path: paths.dashboard.translationSettings.manage,
             icon: ICONS.translation,
@@ -89,7 +95,9 @@ export function useNavData() {
             icon: ICONS.subscription,
             // children: [{ title: t('list'), path: paths.dashboard.branches.list }],
           },
-        ].filter((item) => (isMenuOnly ? item.title !== 'staffs' : true)),
+        ].filter((item) =>
+          isMenuOnly ? item.title !== 'staffs' && item.title !== 'orders' : true
+        ),
       },
     ],
     [isMenuOnly, t]

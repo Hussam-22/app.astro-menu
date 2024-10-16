@@ -5,7 +5,6 @@ import { Link, TableRow, TableCell, ListItemText } from '@mui/material';
 
 import Label from 'src/components/label';
 import { useAuthContext } from 'src/auth/hooks';
-import getCartTotal from 'src/utils/getCartTotal';
 import { fDateTime, fDistance } from 'src/utils/format-time';
 // ----------------------------------------------------------------------
 
@@ -56,8 +55,6 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
     return ['In Progress', 'default'];
   };
 
-  const calculatedTotalBill = getCartTotal(cart, branchInfo.taxValue);
-
   return (
     <TableRow hover>
       <TableCell>
@@ -76,21 +73,23 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
       <TableCell>{closingTime !== '' && fDateTime(new Date(closingTime.seconds * 1000))}</TableCell>
       <TableCell>
         {closingTime !== '' &&
+          initiationTime !== '' &&
           fDistance(new Date(initiationTime.seconds * 1000), new Date(closingTime.seconds * 1000))}
       </TableCell>
       <TableCell>
         <ListItemText
-          primary={`${calculatedTotalBill || 0} 
+          primary={`${totalBill || 0} 
             ${branchInfo.currency}`}
           secondary={menuInfo?.title}
           primaryTypographyProps={{
-            typography: 'body2',
+            typography: 'caption',
             color: orderStatus()[0] === 'Paid' ? 'success.main' : 'text.disabled',
           }}
-          secondaryTypographyProps={{ typography: 'caption', color: 'text.disabled' }}
+          secondaryTypographyProps={{ typography: 'body2', color: 'text.disabled' }}
         />
       </TableCell>
 
+      <TableCell align="left">{cart.length} </TableCell>
       <TableCell align="left">{staffInfo?.fullname || 'Self Order'} </TableCell>
       <TableCell align="left">
         <Label variant="soft" color={orderStatus()[1]} sx={{ textTransform: 'capitalize' }}>

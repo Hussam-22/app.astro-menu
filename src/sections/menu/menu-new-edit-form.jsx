@@ -9,11 +9,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, Typography } from '@mui/material';
 
-import { paths } from 'src/routes/paths';
 import Label from 'src/components/label';
+import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
-import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
+import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 
 MenuNewEditForm.propTypes = {
   menuInfo: PropTypes.object,
@@ -24,14 +25,14 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { fsUpdateMenu, fsDeleteMenu, fsGetAllMenus } = useAuthContext();
+  const { isMenuOnly } = useGetProductInfo();
   const queryClient = useQueryClient();
 
   const NewUserSchema = Yup.object().shape({
     title: Yup.string().required('Menu title is required'),
-    mostOrderedMeals: Yup.number().max(
-      10,
-      'Number of most ordered meals must be less than or equal to 10'
-    ),
+    mostOrderedMeals:
+      isMenuOnly &&
+      Yup.number().max(10, 'Number of most ordered meals must be less than or equal to 10'),
   });
 
   const {
@@ -50,6 +51,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
       description: menuInfo?.description || '',
       mostOrderedMeals: menuInfo?.mostOrderedMeals || 0,
       newMenuID: '',
+      isDefault: !!menuInfo?.isDefault,
     }),
     [menuInfo]
   );
@@ -60,6 +62,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
   });
 
   const {
+    reset,
     handleSubmit,
     formState: { dirtyFields },
     watch,
@@ -85,6 +88,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
 
   const onSubmit = async (data) => {
     mutate(() => fsUpdateMenu(data));
+    reset(data);
     enqueueSnackbar('Update success!');
   };
 
@@ -97,7 +101,12 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
           color="success"
           loading={isPending}
           sx={{ alignSelf: 'flex-end' }}
-          disabled={!dirtyFields.title && !dirtyFields.description && !dirtyFields.mostOrderedMeals}
+          disabled={
+            !dirtyFields.title &&
+            !dirtyFields.description &&
+            !dirtyFields.mostOrderedMeals &&
+            !dirtyFields.isDefault
+          }
         >
           Update Menu
         </LoadingButton>
@@ -105,7 +114,12 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
         <Card sx={{ p: 3 }}>
           <Stack direction="column" spacing={2}>
             <RHFTextField name="title" label="Menu Title" />
-            <RHFTextField name="description" label="Menu Description" multiline rows={3} />
+            <RHFTextField
+              name="description"
+              label="Menu note (Shows to Admin only)"
+              multiline
+              rows={3}
+            />
           </Stack>
         </Card>
 
@@ -120,21 +134,33 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
           >
             <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
               <Stack direction="column" sx={{ flexGrow: 1 }}>
-                <Typography sx={{ fontWeight: 500 }}>Most Ordered Meals</Typography>
-                <Typography variant="caption">
-                  {` - Show the number of "most ordered meals" in the menu, max is 10`}
-                </Typography>
-                <Typography variant="caption">
-                  - Set to 0 (Zero) to hide the most ordered meals section
+                <Typography sx={{ fontWeight: 500 }}>Default Menu</Typography>
+                <Typography variant="body2">
+                  Set this menu as the default menu for all new branches tables
                 </Typography>
               </Stack>
-              <RHFTextField
-                name="mostOrderedMeals"
-                label="# of Meals"
-                type="number"
-                sx={{ flexShrink: 1, width: '10%' }}
-              />
+              <RHFSwitch name="isDefault" />
             </Stack>
+
+            {!isMenuOnly && (
+              <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+                <Stack direction="column" sx={{ flexGrow: 1 }}>
+                  <Typography sx={{ fontWeight: 500 }}>Most Ordered Meals</Typography>
+                  <Typography variant="body2">
+                    {` - Show the number of "most ordered meals" in the menu, max is 10`}
+                  </Typography>
+                  <Typography variant="body2">
+                    - Set to 0 (Zero) to hide the most ordered meals section
+                  </Typography>
+                </Stack>
+                <RHFTextField
+                  name="mostOrderedMeals"
+                  label="# of Meals"
+                  type="number"
+                  sx={{ flexShrink: 1, width: '10%' }}
+                />
+              </Stack>
+            )}
 
             <Stack direction="row" spacing={3}>
               <Stack direction="column">
@@ -142,7 +168,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
                   Delete Menu
                 </Typography>
                 {menusList.length === 1 && (
-                  <Typography variant="caption">
+                  <Typography variant="body2">
                     The system must have at least 1 menu, &nbsp;
                     <Label variant="soft" color="primary">
                       {menuInfo.title}

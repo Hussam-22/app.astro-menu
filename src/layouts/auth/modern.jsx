@@ -21,13 +21,14 @@ export default function AuthModernLayout({ children, image }) {
         width: 1,
         mx: 'auto',
         maxWidth: 580,
-        px: { xs: 2, md: 8 },
+        px: { xs: 2, md: 4 },
+        bgcolor: { md: 'background.paper' },
       }}
     >
       <Logo
         sx={{
           mt: { xs: 2, md: 8 },
-          mb: { xs: 2, md: 2 },
+          mb: 2,
         }}
       />
 
@@ -37,7 +38,6 @@ export default function AuthModernLayout({ children, image }) {
           px: { xs: 3, md: 0 },
           boxShadow: { md: 'none' },
           overflow: { md: 'unset' },
-          bgcolor: { md: 'background.default' },
         }}
       >
         {children}
@@ -71,18 +71,19 @@ export default function AuthModernLayout({ children, image }) {
       sx={{
         minHeight: '100vh',
         position: 'relative',
-        '&:before': {
-          width: 1,
-          height: 1,
-          zIndex: -1,
-          content: "''",
-          position: 'absolute',
-          backgroundSize: 'cover',
-          opacity: { xs: 0.24, md: 0 },
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center center',
-          backgroundImage: 'url(/assets/background/overlay_4.jpg)',
-        },
+        bgcolor: { md: 'background.paper' },
+        // '&:before': {
+        //   width: 1,
+        //   height: 1,
+        //   zIndex: -1,
+        //   content: "''",
+        //   position: 'absolute',
+        //   backgroundSize: 'cover',
+        //   opacity: { xs: 0.24, md: 0 },
+        //   backgroundRepeat: 'no-repeat',
+        //   backgroundPosition: 'center center',
+        //   backgroundImage: 'url(/assets/background/overlay_4.jpg)',
+        // },
       }}
     >
       {renderContent}

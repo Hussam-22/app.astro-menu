@@ -18,8 +18,8 @@ TablesCard.propTypes = {
 
 function TablesCard({ tables, onTableClick, selectedTableID }) {
   const theme = useTheme();
+  const { isMenuOnly } = useGetProductInfo();
   const [isOpen, setIsOpen] = useState(false);
-  const { isMenuOnly, maxTables } = useGetProductInfo();
 
   const onClose = () => setIsOpen(false);
 

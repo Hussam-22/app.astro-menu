@@ -45,7 +45,7 @@ function BusinessProfileTranslation({ businessProfileInfo, isFetching = false })
           <TranslationCard
             languageKey={key}
             key={key}
-            showTitleField
+            showTitleField={false}
             reduxSlice="branch"
             data={businessProfileInfo}
           />

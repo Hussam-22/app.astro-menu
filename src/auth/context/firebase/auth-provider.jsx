@@ -42,7 +42,7 @@ import {
 } from 'firebase/firestore';
 
 import { FIREBASE_API } from 'src/config-global';
-import { stripeCreateCustomer } from 'src/stripe/functions';
+import { stripeCreateBusiness } from 'src/stripe/functions';
 import {
   DEFAULT_MEALS,
   DEFAULT_MENUS,
@@ -154,26 +154,37 @@ export function AuthProvider({ children }) {
 
   // LOGIN
   const login = useCallback(async (email, password) => {
-    await signInWithEmailAndPassword(AUTH, email, password);
+    try {
+      const response = await signInWithEmailAndPassword(AUTH, email, password);
+      if (!response.user.emailVerified) {
+        throw new Error('Email not verified');
+      }
+    } catch (error) {
+      throw error;
+    }
   }, []);
 
   const register = useCallback(async (email, password, displayName) => {
-    const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
-    await sendEmailVerification(newUser.user);
+    try {
+      const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
+      await sendEmailVerification(newUser.user);
 
-    const userProfile = doc(collection(DB, 'users'), newUser.user?.uid);
+      const userProfile = doc(collection(DB, 'users'), newUser.user?.uid);
 
-    await setDoc(userProfile, {
-      uid: newUser.user?.uid,
-      displayName,
-      email,
-      role: 'owner',
-      password,
-      isActive: true,
-      lastLogin: new Date(),
-    });
+      await setDoc(userProfile, {
+        uid: newUser.user?.uid,
+        displayName,
+        email,
+        role: 'owner',
+        isActive: true,
+        lastLogin: new Date(),
+      });
 
-    return newUser.user?.uid;
+      return newUser.user?.uid;
+    } catch (error) {
+      // Re-throw the original error to propagate it
+      throw error;
+    }
   }, []);
   const logout = useCallback(async () => {
     await signOut(AUTH);
@@ -234,9 +245,7 @@ export function AuthProvider({ children }) {
   const fsDeleteImage = useCallback(async (bucketPath, imgID) => {
     const storageRef = ref(STORAGE, `gs://${bucketPath}${imgID}`);
     deleteObject(storageRef)
-      .then(() => {
-        console.log('Image deleted successfully');
-      })
+      .then(() => {})
       .catch((error) => {
         console.error('Error deleting image:', error);
       });
@@ -260,10 +269,7 @@ export function AuthProvider({ children }) {
 
       uploadTask.on(
         'state_changed',
-        (snapshot) => {
-          const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          // console.log(`${percent}% done`);
-        },
+        (snapshot) => {},
         (error) => {
           reject(error);
         },
@@ -338,71 +344,16 @@ export function AuthProvider({ children }) {
   const fsCreateBusinessProfile = useCallback(
     async (data) => {
       try {
-        // 1- REGISTER OWNER
-        const { email, password, firstName, lastName, ...businessProfileInfo } = data;
+        const { email, password, businessName, plan, productID } = data;
 
-        // const ownerID = 'U9zbloA4S9XjMmU1HOXv6YKbZLj1';
-        // const subscriptionId = 'sub_1PuWRvRoHLqbtaTlyyhXi9bz';
-        // const stripeCustomerID = 'cus_Qm4b5iRnPPW9fP';
-        // const businessProfileID = 'tkGL7IvNr2bzMatV5JHT';
+        // 1- Create owner account on Firebase
+        const ownerID = await register?.(email, password, businessName);
 
-        // 1- Create a stripe customer and add a trial subscription 'Menu Master'
-        // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
-
-        const ownerID = await register?.(email, password, firstName, lastName);
-
-        // 2- CREATE BUSINESS PROFILE
-        const newDocRef = doc(collection(DB, `businessProfiles`));
-
-        const stripeData = await stripeCreateCustomer(
-          email,
-          `${firstName} ${lastName}`,
-          newDocRef.id,
-          ownerID
-        );
-        const { customerId: stripeCustomerID, subscriptionId } = stripeData;
-
-        await setDoc(newDocRef, {
-          ...businessProfileInfo,
-          // stripeCustomerID,
-          // subscriptionId,
-          defaultLanguage: 'en',
-          docID: newDocRef.id,
-          ownerID,
-          users: [],
-          isActive: true,
-          createdOn: new Date(),
-          logo: await fsGetImgDownloadUrl('_mock', `business_logo_800x800.webp`),
-          // default Languages
-          languages: ['ar', 'fr', 'es'],
-          translationEditUsage: {
-            count: 0,
-            maxCount: 3,
-          },
-        });
-
-        const businessProfileID = newDocRef.id;
-
-        await fbTranslateBranchDesc({
-          title: businessProfileInfo.businessName,
-          desc: businessProfileInfo.description,
-          businessProfileID,
-          newLang: businessProfileInfo.languages,
-          toRemoveLang: [],
-        });
-
-        // 3- Update Assign Business-Profile to User
-        const userProfile = doc(collection(DB, 'users'), ownerID);
-        await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
-
-        // 4- Create Default Data
-        await createDefaults({
-          ...businessProfileInfo,
-          businessProfileID,
-          languages: ['ar', 'fr', 'es'],
-        });
+        // 2- Create business profile and system defaults on the server
+        await stripeCreateBusiness(ownerID, email, businessName, plan, productID, true);
       } catch (error) {
-        console.log(error);
+        // Re-throw the error to propagate it
+        throw error;
       }
     },
     [state]
@@ -456,16 +407,9 @@ export function AuthProvider({ children }) {
           const uploadTask = uploadBytesResumable(imageRef, logo);
           uploadTask.on(
             'state_changed',
-            (snapshot) => {
-              console.log(snapshot);
-            },
-            (error) => {
-              console.log(error);
-            },
-            () => {
-              console.log('UPLOADED');
-              // queryClient.invalidateQueries(['businessProfile', businessProfileID]);
-            }
+            (snapshot) => {},
+            (error) => {},
+            () => {}
           );
         }
 
@@ -740,8 +684,6 @@ export function AuthProvider({ children }) {
 
       querySnapshot.forEach((doc) => dataArr.push(doc.data()));
 
-      console.log(dataArr);
-
       return dataArr;
     } catch (error) {
       throw error;
@@ -834,6 +776,25 @@ export function AuthProvider({ children }) {
     },
     []
   );
+  const fsGetDisplayTableInfo = useCallback(
+    async (branchID, businessProfileID = state.user.businessProfileID) => {
+      try {
+        const docRef = query(
+          collectionGroup(DB, 'tables'),
+          where('businessProfileID', '==', businessProfileID),
+          where('branchID', '==', branchID),
+          where('index', '==', 0)
+        );
+        const querySnapshot = await getDocs(docRef);
+        const dataArr = [];
+        querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+        return dataArr[0];
+      } catch (error) {
+        throw error;
+      }
+    },
+    [state]
+  );
   const fsChangeMenuForAllTables = useCallback(
     async (branchID, menuID, businessProfileID = state.user.businessProfileID) => {
       const docsRef = query(
@@ -853,6 +814,9 @@ export function AuthProvider({ children }) {
       });
 
       await Promise.allSettled(toUpdate);
+
+      const branchRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}`);
+      await updateDoc(branchRef, { menuID });
     },
     [state]
   );
@@ -883,7 +847,7 @@ export function AuthProvider({ children }) {
       const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
         const tablesArray = [];
         querySnapshot.forEach((doc) => {
-          if (doc.exists()) {
+          if (doc.exists() && doc.data().index !== 0) {
             tablesArray.push(doc.data());
           }
         });
@@ -986,6 +950,57 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsGetOrdersByFilter = useCallback(
+    async ({ branchID, period, status }) => {
+      const endTime = new Date();
+      const startTime = new Date(endTime.getTime() - period * 60 * 60 * 1000);
+
+      let docRef = query(
+        collection(
+          DB,
+          'businessProfiles',
+          state.user.businessProfileID,
+          'branches',
+          branchID,
+          'orders'
+        ),
+        where('branchID', '==', branchID),
+        where('closingTime', '>=', startTime),
+        where('closingTime', '<=', endTime)
+      );
+
+      if (status === 'cancelled') {
+        docRef = query(docRef, where('isCanceled', '==', true));
+      }
+
+      if (status === 'paid') {
+        docRef = query(docRef, where('isPaid', '==', true));
+      }
+
+      const totalCount = await getCountFromServer(docRef);
+
+      const querySnapshot = await getDocs(docRef);
+      const dataArr = [];
+      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+
+      return { data: dataArr, count: totalCount.data().count };
+    },
+    [state]
+  );
+  const fsGetOrderByID = useCallback(
+    async (orderID, branchID) => {
+      console.log(orderID, branchID);
+
+      const docRef = doc(
+        DB,
+        `/businessProfiles/${state.user.businessProfileID}/branches/${branchID}/orders/${orderID}`
+      );
+      const docSnap = await getDoc(docRef);
+      return docSnap.data();
+    },
+
+    [state]
+  );
   // ----------------------- Branches ----------------------------
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
@@ -1074,15 +1089,9 @@ export function AuthProvider({ children }) {
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
           'state_changed',
-          (snapshot) => {
-            console.log(snapshot);
-          },
-          (error) => {
-            console.log(error);
-          },
-          () => {
-            console.log('UPLOADED');
-          }
+          (snapshot) => {},
+          (error) => {},
+          () => {}
         );
       }
 
@@ -1543,9 +1552,7 @@ export function AuthProvider({ children }) {
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
           'state_changed',
-          (snapshot) => {
-            console.log(snapshot);
-          },
+          (snapshot) => {},
           (error) => {},
           () => {}
         );
@@ -2095,7 +2102,55 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  // ------------------------------------------------------------
+  // -------------------- CUSTOMERS ----------------------------------------
+  const fsGetCustomers = useCallback(async () => {
+    try {
+      const customersRef = collection(
+        DB,
+        'businessProfiles',
+        state.user.businessProfileID,
+        'customers'
+      );
+      const docsQuery = query(customersRef);
+      const querySnapshot = await getDocs(docsQuery);
+      const customers = [];
+      querySnapshot.forEach((doc) => {
+        customers.push(doc.data());
+      });
+      return customers;
+    } catch (error) {
+      throw error;
+    }
+  }, [state]);
+  const fsDeleteCustomer = useCallback(
+    async (customerID) => {
+      const docRef = doc(
+        DB,
+        `/businessProfiles/${state.user.businessProfileID}/customers/${customerID}`
+      );
+      await deleteDoc(docRef);
+    },
+    [state]
+  );
+  const fsBatchAddCustomers = useCallback(async () => {
+    const batch = writeBatch(DB);
+
+    for (let index = 0; index < 100; index += 1) {
+      const newDocRef = doc(
+        collection(DB, `/businessProfiles/${state.user.businessProfileID}/customers`)
+      );
+      batch.set(newDocRef, {
+        docID: newDocRef.id,
+        // email: faker.internet.email(),
+        lastOrder: new Date(),
+        lastVisitBranchID: '2EKctRFUaA06pGIvAT2D',
+        totalVisits: index + 1,
+      });
+    }
+
+    await batch.commit();
+  }, [state]);
+  // ----------------------------------------------------------------------------
 
   const memoizedValue = useMemo(
     () => ({
@@ -2147,7 +2202,10 @@ export function AuthProvider({ children }) {
       fsUpdateBranchTable,
       fsChangeMenuForAllTables,
       fsGetTableOrdersByPeriod,
+      fsGetOrdersByFilter,
+      fsGetOrderByID,
       fsGetTableInfo,
+      fsGetDisplayTableInfo,
       branchTables,
       // ---- ORDERS ----
       fsInitiateNewOrder,
@@ -2183,7 +2241,6 @@ export function AuthProvider({ children }) {
       fsAddNewMealLabel,
       fsUpdateMealLabel,
       fsDeleteMealLabel,
-
       // ---- QR Menu ----
       fsConfirmCartOrder,
       fsUpdateScanLog,
@@ -2198,6 +2255,10 @@ export function AuthProvider({ children }) {
       fsGetStaffList,
       fsUpdateStaffInfo,
       fsDeleteStaff,
+      // --- Customers ---
+      fsGetCustomers,
+      fsDeleteCustomer,
+      fsBatchAddCustomers,
     }),
     [
       state.isAuthenticated,
@@ -2241,6 +2302,7 @@ export function AuthProvider({ children }) {
       fsGetBranchTablesSnapshot,
       fsUpdateBranchTable,
       fsGetTableInfo,
+      fsGetDisplayTableInfo,
       fsChangeMenuForAllTables,
       branchTables,
       // ---- ORDERS ----
@@ -2250,6 +2312,8 @@ export function AuthProvider({ children }) {
       orderSnapShot,
       activeOrders,
       fsGetTableOrdersByPeriod,
+      fsGetOrdersByFilter,
+      fsGetOrderByID,
       // ---- MENU SECTIONS ----
       fsAddSection,
       fsUpdateSection,
@@ -2291,6 +2355,10 @@ export function AuthProvider({ children }) {
       fsGetStaffList,
       fsUpdateStaffInfo,
       fsDeleteStaff,
+      // --- Customers ---
+      fsGetCustomers,
+      fsDeleteCustomer,
+      fsBatchAddCustomers,
     ]
   );
 
