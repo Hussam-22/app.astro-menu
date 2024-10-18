@@ -72,10 +72,16 @@ function BranchListView() {
   const [isOpen, setIsOpen] = useState(false);
   const { branches: maxBranchesAllowed } = useGetProductInfo();
 
-  const { data: branchesData, isLoading } = useQuery({
+  const {
+    data: branchesData,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['branches'],
     queryFn: fsGetAllBranches,
   });
+
+  console.log(error);
 
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);

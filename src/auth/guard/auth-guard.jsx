@@ -19,7 +19,7 @@ export default function AuthGuard({ children }) {
   const { authenticated, method } = useAuthContext();
   const [checked, setChecked] = useState(false);
 
-  console.log({ authenticated, checked });
+  // console.log({ authenticated, checked });
 
   const check = useCallback(() => {
     if (!authenticated) {

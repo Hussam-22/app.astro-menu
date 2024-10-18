@@ -41,4 +41,5 @@ export const KEYWORDS = [
   'we hope your visit was delightful and look forward to seeing you again soon.',
   'order summary',
   'meals menu',
+  'language',
 ];

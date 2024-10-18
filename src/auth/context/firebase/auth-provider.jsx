@@ -466,6 +466,13 @@ export function AuthProvider({ children }) {
         });
 
         // 3- Translate Sections
+
+        // 3.1 get all menus
+        // Query all menus under the specific businessProfileID
+        const menusRef = query(collection(DB, `businessProfiles/${businessProfileID}/menus`));
+
+        const menusSnapshot = await getDocs(menusRef);
+
         const sectionsRef = query(
           collectionGroup(DB, 'sections'),
           where('businessProfileID', '==', businessProfileID)
@@ -558,10 +565,7 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsGetSystemTranslations = useCallback(async (languages) => {
-    const docRef = query(
-      collectionGroup(DB, 'system-translations'),
-      where('lang', 'in', languages)
-    );
+    const docRef = query(collection(DB, 'system-translations'), where('lang', 'in', languages));
     const querySnapshot = await getDocs(docRef);
     const translations = [];
     querySnapshot.forEach((doc) => translations.push(doc.data()));
@@ -760,16 +764,12 @@ export function AuthProvider({ children }) {
   const fsGetTableInfo = useCallback(
     async (businessProfileID = state.user.businessProfileID, branchID, tableID) => {
       try {
-        const docRef = query(
-          collectionGroup(DB, 'tables'),
-          where('businessProfileID', '==', businessProfileID),
-          where('branchID', '==', branchID),
-          where('docID', '==', tableID)
+        const tableRef = doc(
+          DB,
+          `/businessProfiles/${businessProfileID}/branches/${branchID}/tables/${tableID}`
         );
-        const querySnapshot = await getDocs(docRef);
-        const dataArr = [];
-        querySnapshot.forEach((doc) => dataArr.push(doc.data()));
-        return dataArr[0];
+        const tableSnap = await getDoc(tableRef);
+        return tableSnap.data();
       } catch (error) {
         throw error;
       }
@@ -780,9 +780,7 @@ export function AuthProvider({ children }) {
     async (branchID, businessProfileID = state.user.businessProfileID) => {
       try {
         const docRef = query(
-          collectionGroup(DB, 'tables'),
-          where('businessProfileID', '==', businessProfileID),
-          where('branchID', '==', branchID),
+          collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`),
           where('index', '==', 0)
         );
         const querySnapshot = await getDocs(docRef);
@@ -798,9 +796,8 @@ export function AuthProvider({ children }) {
   const fsChangeMenuForAllTables = useCallback(
     async (branchID, menuID, businessProfileID = state.user.businessProfileID) => {
       const docsRef = query(
-        collectionGroup(DB, 'tables'),
-        where('businessProfileID', '==', businessProfileID),
-        where('branchID', '==', branchID)
+        collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`),
+        where('index', '>', 0)
       );
       const snapshot = await getDocs(docsRef);
 
@@ -809,7 +806,6 @@ export function AuthProvider({ children }) {
       snapshot.docs.forEach((tableDoc) => {
         const updateTable = async () =>
           toUpdate.push(await fsUpdateBranchTable(branchID, tableDoc.data().docID, { menuID }));
-
         updateTable();
       });
 
@@ -839,9 +835,8 @@ export function AuthProvider({ children }) {
   const fsGetBranchTablesSnapshot = useCallback(
     async (branchID, businessProfileID = state.user.businessProfileID) => {
       const docRef = query(
-        collectionGroup(DB, 'tables'),
-        where('businessProfileID', '==', businessProfileID),
-        where('branchID', '==', branchID)
+        collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`),
+        where('index', '>', 0)
       );
 
       const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
@@ -869,10 +864,8 @@ export function AuthProvider({ children }) {
 
         if (data.menuID) {
           const ordersQuery = query(
-            collectionGroup(DB, 'orders'),
+            collection(DB, `businessProfiles/${businessProfileID}/branches/${branchID}/orders`),
             where('tableID', '==', tableID),
-            where('branchID', '==', branchID),
-            where('businessProfileID', '==', businessProfileID),
             where('isCanceled', '==', false),
             where('isPaid', '==', false),
             where('isReadyToServe', '==', []),
@@ -892,9 +885,7 @@ export function AuthProvider({ children }) {
   const fsGetBranchTablesCount = useCallback(
     async (branchID, businessProfileID = state.user.businessProfileID) => {
       const query_ = query(
-        collectionGroup(DB, 'tables'),
-        where('businessProfileID', '==', businessProfileID),
-        where('branchID', '==', branchID)
+        collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
       );
       const snapshot = await getCountFromServer(query_);
       return snapshot.data().count;
@@ -902,21 +893,31 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateQRsMenuID = useCallback(
-    // this function is used to update all QRs menuID across all branches after deleting their menu
     async (oldMenuID, newMenuID) => {
+      // this function is used to update all QRs menuID across all branches after deleting their menu
       const docRef = query(
-        collectionGroup(DB, 'tables'),
-        where('businessProfileID', '==', state.user.businessProfileID),
-        where('menuID', '==', oldMenuID)
+        collection(DB, `businessProfiles/${state.user.businessProfileID}/branches`)
       );
 
-      const querySnapshot = await getDocs(docRef);
+      const branchesSnapshot = await getDocs(docRef);
+      const branchIDs = [];
+      branchesSnapshot.forEach((branch) => branchIDs.push(branch.data().docID));
 
       const batch = writeBatch(DB);
 
-      querySnapshot.forEach((doc) => {
-        const tableRef = doc.ref;
-        batch.update(tableRef, { menuID: newMenuID });
+      branchIDs.forEach(async (branchID) => {
+        const tablesRef = query(
+          collection(
+            DB,
+            `businessProfiles/${state.user.businessProfileID}/branches/${branchID}/tables`
+          ),
+          where('menuID', '==', oldMenuID)
+        );
+        const querySnapshot = await getDocs(tablesRef);
+        querySnapshot.forEach((doc) => {
+          const tableRef = doc.ref;
+          batch.update(tableRef, { menuID: newMenuID });
+        });
       });
 
       await batch.commit();
@@ -936,9 +937,7 @@ export function AuthProvider({ children }) {
       const endDate = new Date(Date.UTC(targetYear, targetMonth + 1, 0)); // End of the month
 
       const docRef = query(
-        collectionGroup(DB, 'orders'),
-        where('businessProfileID', '==', businessProfileID),
-        where('branchID', '==', branchID),
+        collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/orders`),
         where('tableID', '==', tableID),
         where('initiationTime', '>=', startDate),
         where('initiationTime', '<=', endDate)
@@ -1004,8 +1003,7 @@ export function AuthProvider({ children }) {
   // ----------------------- Branches ----------------------------
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
-      collectionGroup(DB, 'branches'),
-      where('businessProfileID', '==', state.user.businessProfileID),
+      collection(DB, `/businessProfiles/${state.user.businessProfileID}/branches`),
       where('isDeleted', '==', false)
     );
     const querySnapshot = await getDocs(docRef);
@@ -1116,9 +1114,7 @@ export function AuthProvider({ children }) {
         // mute all orders in branch
         const batch = writeBatch(DB);
         const orderRef = query(
-          collectionGroup(DB, 'orders'),
-          where('businessProfileID', '==', businessProfileID),
-          where('branchID', '==', branchData.docID),
+          collection(DB, `/businessProfiles/${businessProfileID}/branches/${docID}/orders`),
           where('isPaid', '==', false),
           where('isCanceled', '==', false),
           where('callWaiter', '==', true)
@@ -1193,8 +1189,7 @@ export function AuthProvider({ children }) {
     async (lang) => {
       const batch = writeBatch(DB);
       const branchesRef = query(
-        collectionGroup(DB, 'branches'),
-        where('businessProfileID', '==', state.user.businessProfileID),
+        collection(DB, `/businessProfiles/${state.user.businessProfileID}/branches`),
         where('isDeleted', '==', false)
       );
 
@@ -1219,8 +1214,7 @@ export function AuthProvider({ children }) {
   const fsGetAllMenus = useCallback(
     async (businessProfileID = state.user.businessProfileID) => {
       const docRef = query(
-        collectionGroup(DB, 'menus'),
-        where('businessProfileID', '==', businessProfileID),
+        collection(DB, `/businessProfiles/${businessProfileID}/menus`),
         where('isDeleted', '==', false)
       );
 
@@ -1312,9 +1306,7 @@ export function AuthProvider({ children }) {
   const fsGetSections = useCallback(
     async (menuID, businessProfileID = state.user.businessProfileID) => {
       const docRef = query(
-        collectionGroup(DB, 'sections'),
-        where('businessProfileID', '==', businessProfileID),
-        where('menuID', '==', menuID)
+        collection(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}/sections`)
       );
 
       const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
@@ -1345,9 +1337,7 @@ export function AuthProvider({ children }) {
 
         // get all sections that order index is above the one is being deleted and reduce it
         const docsRef = query(
-          collectionGroup(DB, 'sections'),
-          where('businessProfileID', '==', businessProfileID),
-          where('menuID', '==', menuID),
+          collection(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}/sections`),
           where('order', '>', orderValue)
         );
         const snapshot = await getDocs(docsRef);
@@ -1377,17 +1367,24 @@ export function AuthProvider({ children }) {
   );
   const fsRemoveMealFromAllSections = useCallback(
     async (mealID, businessProfileID = state?.user?.businessProfileID) => {
-      const docsRef = query(
-        collectionGroup(DB, 'sections'),
-        where('businessProfileID', '==', businessProfileID),
-        where('meals', 'array-contains', mealID)
-      );
-      const snapshot = await getDocs(docsRef);
+      const menusRef = query(collection(DB, `/businessProfiles/${businessProfileID}/menus`));
+      const menusSnapshot = await getDocs(menusRef);
+      const menusIDs = [];
+      menusSnapshot.forEach((menu) => menusIDs.push(menu.docID));
 
       const batch = writeBatch(DB);
-      snapshot.docs.forEach((doc) => {
-        const meals = doc.data().meals.filter((meal) => meal !== mealID);
-        batch.update(doc.ref, { meals });
+
+      menusIDs.forEach(async (menuID) => {
+        const docsRef = query(
+          collection(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}/sections`),
+          where('meals', 'array-contains', mealID)
+        );
+        const snapshot = await getDocs(docsRef);
+
+        snapshot.docs.forEach((doc) => {
+          const meals = doc.data().meals.filter((meal) => meal !== mealID);
+          batch.update(doc.ref, { meals });
+        });
       });
 
       await batch.commit();
@@ -1471,10 +1468,8 @@ export function AuthProvider({ children }) {
   const fsGetSectionMeals = useCallback(
     async (businessProfileID = state.user.businessProfileID, sectionMeals, size = '800x800') => {
       const docRef = query(
-        collectionGroup(DB, 'meals'),
-        where('businessProfileID', '==', businessProfileID),
+        collection(DB, `/businessProfiles/${businessProfileID}/meals/`),
         where('docID', 'in', sectionMeals)
-        // where('isActive', '==', true)
       );
       const querySnapshot = await getDocs(docRef);
       const dataArr = [];
@@ -1612,11 +1607,7 @@ export function AuthProvider({ children }) {
   );
   const fsGetAllMeals = useCallback(
     async (businessProfileID = state.user.businessProfileID) => {
-      const docRef = query(
-        collectionGroup(DB, 'meals'),
-        where('businessProfileID', '==', businessProfileID),
-        where('isDeleted', '==', false)
-      );
+      const docRef = query(collection(DB, `/businessProfiles/${businessProfileID}/meals/`));
       const querySnapshot = await getDocs(docRef);
       const dataArr = [];
       const asyncOperations = [];
@@ -1676,35 +1667,44 @@ export function AuthProvider({ children }) {
   const fsDeleteMeal = useCallback(
     async (mealID) => {
       try {
+        // the mealsQueryArray is used to query for documents in firestore more efficiently as it is an array of mealIDs and firestore cant query for array of objects
+        const menusRef = query(
+          collection(DB, `/businessProfiles/${state.user.businessProfileID}/menus`)
+        );
+        const menusSnapshot = await getDocs(menusRef);
+        const menusIDs = [];
+        menusSnapshot.forEach((menu) => menusIDs.push(menu.data().docID));
+
+        console.log(menusIDs);
+
+        const batch = writeBatch(DB);
+
+        menusIDs.forEach(async (menuID) => {
+          const docsRef = query(
+            collection(
+              DB,
+              `/businessProfiles/${state.user.businessProfileID}/menus/${menuID}/sections`
+            ),
+            where('mealsQueryArray', 'array-contains', mealID)
+          );
+          const snapshot = await getDocs(docsRef);
+
+          snapshot.forEach((doc) => {
+            console.log(doc.data().mealsQueryArray);
+
+            const mealsQueryArray = doc.data().mealsQueryArray.filter((meal) => meal !== mealID);
+            const meals = doc.data().meals.filter((meal) => meal.docID !== mealID);
+            batch.update(doc.ref, { mealsQueryArray, meals });
+          });
+        });
+
+        await batch.commit();
+
+        // delete meal
         const docRef = doc(DB, `/businessProfiles/${state.user.businessProfileID}/meals/`, mealID);
         await deleteDoc(docRef);
 
-        // the mealsQueryArray is used to query for documents in firestore more efficiently as it is an array of mealIDs and firestore cant query for array of objects
-        const docsRef = query(
-          collectionGroup(DB, 'sections'),
-          where('businessProfileID', '==', state.user.businessProfileID),
-          where('mealsQueryArray', 'array-contains', mealID)
-        );
-        const querySnapshot = await getDocs(docsRef);
-        const asyncOperations = [];
-
-        // delete meal from section
-        querySnapshot.forEach((element) => {
-          const asyncOperation = async () => {
-            const { meals, mealsQueryArray } = element.data();
-            const updatedMealsQueryArray = mealsQueryArray.filter((meal) => meal !== mealID);
-            const updatedMeals = meals.filter((meal) => meal.docID !== mealID);
-
-            await updateDoc(element.ref, {
-              meals: [...updatedMeals],
-              mealsQueryArray: [...updatedMealsQueryArray],
-            });
-          };
-          asyncOperations.push(asyncOperation());
-        });
-
-        await Promise.allSettled(asyncOperations);
-
+        // remove meal image from storage
         const bucketPath = `${BUCKET}/${state.user.businessProfileID}/meals/${mealID}/`;
         await fsDeleteImage(bucketPath, `${mealID}_200x200.webp`);
         await fsDeleteImage(bucketPath, `${mealID}_800x800.webp`);
