@@ -66,4 +66,10 @@ export const SOCIAL_ICONS = [
     color: '#000000',
     helperText: 'Adding the Link will show Google Review button in menu "view order" drawer',
   },
+  {
+    value: 'linkTree',
+    name: 'Linktree',
+    icon: 'simple-icons:linktree',
+    color: '#000000',
+  },
 ];

@@ -58,8 +58,8 @@
 - Show Mock image if no image is uploaded
 - Allow Branch Admin to Close Table Order from dashboard -- Close only, no collect payment is allowed
 /- Add "Skip Kitchen" toggle to the branch
-- branch copy qr link not working on tablet
-- tables turnover calculation, add total time to branch document, then divide by total orders to reduce reads
+/- branch copy qr link not working on tablet
+/- tables turnover calculation, add total time to branch document, then divide by total orders to reduce reads
 - for "limit scans" plan, show a message to the user that they have reached their limit
 - for "limit scans" plan, show remaining scans in the dashboard
 - for "limit scans" plan, send an email when the user reaches 80% of their limit

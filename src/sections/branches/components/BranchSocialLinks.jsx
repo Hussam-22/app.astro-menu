@@ -6,6 +6,7 @@ import { Box, Stack, Typography } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import { SOCIAL_ICONS } from 'src/_mock/socials';
 import { RHFTextField } from 'src/components/hook-form';
+import { useGetProductInfo } from 'src/hooks/use-get-product';
 
 function BranchSocialLinks() {
   return (
@@ -45,13 +46,15 @@ SocialLinkItem.propTypes = {
 };
 
 function SocialLinkItem({ name, label, icon, helperText }) {
+  const { isMenuOnly } = useGetProductInfo();
+
   return (
     <Stack direction="row" spacing={1} alignItems="center">
       <Iconify icon={icon} sx={{ width: 32, height: 32, borderRadius: 1 }} />
 
       <Stack direction="column" flexGrow={1}>
         <RHFTextField name={name} label={label} />
-        {helperText && (
+        {helperText && !isMenuOnly && (
           <Typography variant="caption" color="secondary.main">
             *{helperText}
           </Typography>

@@ -174,28 +174,30 @@ function DisplayQRCode() {
                       spacing={1}
                       divider={<Divider sx={{ borderStyle: 'dashed' }} />}
                     >
-                      <Stack direction="column">
-                        <Stack
-                          direction="row"
-                          spacing={2}
-                          justifyContent="space-between"
-                          alignItems="center"
-                        >
-                          <Typography sx={{ fontWeight: 500 }}>Meals Visibility</Typography>
-                          <RHFSwitch
-                            name="mealAlwaysAvailable"
-                            label={`${
-                              values.mealAlwaysAvailable ? 'Always Available' : 'Depended'
-                            }`}
-                            labelPlacement="start"
-                            sx={{ m: 0 }}
-                          />
+                      {!isMenuOnly && (
+                        <Stack direction="column">
+                          <Stack
+                            direction="row"
+                            spacing={2}
+                            justifyContent="space-between"
+                            alignItems="center"
+                          >
+                            <Typography sx={{ fontWeight: 500 }}>Meals Visibility</Typography>
+                            <RHFSwitch
+                              name="mealAlwaysAvailable"
+                              label={`${
+                                values.mealAlwaysAvailable ? 'Always Available' : 'Depended'
+                              }`}
+                              labelPlacement="start"
+                              sx={{ m: 0 }}
+                            />
+                          </Stack>
+                          <Typography variant="body2">
+                            Decide the behavior of the meals visibility if they should be always
+                            visible regardless of their status (In case they are unavailable)
+                          </Typography>
                         </Stack>
-                        <Typography variant="body2">
-                          Decide the behavior of the meals visibility if they should be always
-                          visible regardless of their status (In case they are unavailable)
-                        </Typography>
-                      </Stack>
+                      )}
 
                       <Stack direction="column">
                         <Stack
