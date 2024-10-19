@@ -1,5 +1,4 @@
 /* eslint-disable no-unsafe-optional-chaining */
-import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useTheme } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
@@ -19,37 +18,59 @@ OrderDetailsDrawer.propTypes = {
   orderInfo: PropTypes.object,
 };
 
-function OrderDetailsDrawer({ onClose, isOpen, orderInfo = {} }) {
+function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
   const theme = useTheme();
-  const { fsGetAllMeals, fsGetBranch, fsGetStaffInfo } = useAuthContext();
-  const { cart, closingTime, docID, initiationTime, customerEmail, totalBill, staffID } = orderInfo;
+  const { fsGetAllMeals, fsGetBranch, fsGetStaffInfo, fsGetTableInfo } = useAuthContext();
+  const {
+    cart,
+    closingTime,
+    docID,
+    initiationTime,
+    customerEmail,
+    totalBill,
+    staffID,
+    branchID,
+    businessProfileID,
+    tableID,
+  } = orderInfo;
+
+  console.log(orderInfo);
 
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', orderInfo.branchID],
     queryFn: () => fsGetBranch(orderInfo.branchID),
+    enabled: orderInfo.docID !== undefined,
   });
 
-  const { data: mealsList = [] } = useQuery({
-    queryKey: [`meals`],
-    queryFn: () => fsGetAllMeals(),
-  });
+  // const { data: mealsList = [] } = useQuery({
+  //   queryKey: [`meals`],
+  //   queryFn: () => fsGetAllMeals(),
+  //   enabled: orderInfo.docID !== undefined,
+  // });
 
   const { data: staffInfo = {} } = useQuery({
     queryKey: ['staff', staffID],
     queryFn: () => fsGetStaffInfo(staffID),
-    enabled: staffID !== '' || staffID !== undefined,
+    enabled: (orderInfo.docID !== undefined && staffID !== '') || staffID !== undefined,
   });
 
-  const allMeals = mealsList.filter((meal) =>
-    cart?.some((cartItem) => cartItem.mealID === meal.docID)
-  );
+  const { data: tableInfo = [] } = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: [`table`, branchID, tableID],
+    queryFn: () => fsGetTableInfo(businessProfileID, branchID, tableID),
+    enabled: orderInfo.docID !== undefined,
+  });
 
-  const cartMeals = useMemo(
-    () =>
-      allMeals.filter((meal) => orderInfo.cart.some((portion) => portion.mealID === meal?.docID)) ||
-      [],
-    [allMeals, orderInfo.cart]
-  );
+  // const allMeals = mealsList.filter((meal) =>
+  //   cart?.some((cartItem) => cartItem.mealID === meal.docID)
+  // );
+
+  // const cartMeals = useMemo(
+  //   () =>
+  //     allMeals.filter((meal) => orderInfo.cart.some((portion) => portion.mealID === meal?.docID)) ||
+  //     [],
+  //   [allMeals, orderInfo.cart]
+  // );
 
   const orderDate =
     typeof closingTime === 'string'
@@ -95,45 +116,38 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo = {} }) {
               border: `dashed 1px ${theme.palette.grey[300]}`,
             }}
           >
-            {mealsList.length !== 0 &&
-              cartMeals.length !== 0 &&
-              cartMeals.map((meal) => (
-                <Box key={meal.docID}>
+            {cart?.length !== 0 &&
+              cart?.map((cartMeal) => (
+                <Box key={cartMeal.docID}>
                   <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                    {meal.title}
+                    {cartMeal.title}
                   </Typography>
-                  <Box>
-                    {orderInfo.cart
-                      .filter((cartPortion) => cartPortion.mealID === meal.docID)
-                      .map((portion) => (
-                        <Stack key={portion.id}>
-                          <Stack direction="row" justifyContent="space-between">
-                            <Stack
-                              direction="row"
-                              spacing={1}
-                              sx={{
-                                flexGrow: 1,
-                                textDecorationLine: portion?.price === 0 ? 'line-through' : 'none',
-                                textDecorationColor: theme.palette.error.main,
-                                textDecorationThickness: 2,
-                              }}
-                              alignItems="center"
-                            >
-                              <Typography variant="body2">- {portion.portionSize}</Typography>
-                            </Stack>
+                  <Stack key={cartMeal.id}>
+                    <Stack direction="row" justifyContent="space-between">
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{
+                          flexGrow: 1,
+                          textDecorationLine: cartMeal?.price === 0 ? 'line-through' : 'none',
+                          textDecorationColor: theme.palette.error.main,
+                          textDecorationThickness: 2,
+                        }}
+                        alignItems="center"
+                      >
+                        <Typography variant="body2">- {cartMeal.portionSize}</Typography>
+                      </Stack>
 
-                            <Typography variant="overline" sx={{ alignSelf: 'center', mx: 1 }}>
-                              {portion.price} {branchInfo?.currency}
-                            </Typography>
-                          </Stack>
-                          {portion?.comment && (
-                            <Typography variant="caption" sx={{ ml: 2, color: 'error.main' }}>
-                              *{portion.comment}
-                            </Typography>
-                          )}
-                        </Stack>
-                      ))}
-                  </Box>
+                      <Typography variant="overline" sx={{ alignSelf: 'center', mx: 1 }}>
+                        {cartMeal.price} {branchInfo?.currency}
+                      </Typography>
+                    </Stack>
+                    {cartMeal?.comment && (
+                      <Typography variant="caption" sx={{ ml: 2, color: 'error.main' }}>
+                        *{cartMeal.comment}
+                      </Typography>
+                    )}
+                  </Stack>
 
                   <Divider flexItem sx={{ borderStyle: 'dashed' }} />
                 </Box>
@@ -168,6 +182,10 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo = {} }) {
       <Stack>
         <Typography variant="caption">Waitstaff</Typography>
         <Typography variant="body2">{staffInfo?.fullname || 'Self Order'}</Typography>
+      </Stack>
+      <Stack>
+        <Typography variant="caption">Table #</Typography>
+        <Typography variant="body2">{tableInfo?.index}</Typography>
       </Stack>
       {orderInfo.isCanceled && (
         <Stack>

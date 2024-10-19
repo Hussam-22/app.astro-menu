@@ -135,7 +135,7 @@ export default function SearchMultipleOrders() {
       <OrderDetailsDrawer
         isOpen={orderDrawer.isOpen}
         onClose={onDialogClose}
-        orderInfo={orderDrawer.orderInfo}
+        orderInfo={orderDrawer?.orderInfo || {}}
       />
     </Card>
   );
