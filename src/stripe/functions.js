@@ -137,7 +137,6 @@ export const stripeGetProduct = async (productID, useLocalUrl = false) => {
 
   try {
     const response = await axios.post(url, body, { headers });
-    console.log(response.data);
   } catch (error) {
     if (error.response) {
       // Server responded with a status other than 200 range

@@ -63,7 +63,6 @@ export default function FirebaseLoginView() {
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
-      console.log(error.message);
       reset();
       if (error.message === 'Email not verified')
         setErrorMsg('Email not verified. Please verify your email.');

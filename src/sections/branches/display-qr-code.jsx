@@ -41,8 +41,6 @@ function DisplayQRCode() {
   const { isMenuOnly } = useGetProductInfo();
   const queryClient = useQueryClient();
 
-  console.log(isMenuOnly);
-
   const {
     data: tableInfo,
     error,

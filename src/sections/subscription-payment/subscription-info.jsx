@@ -32,8 +32,6 @@ function SubscriptionInfo() {
   const endDate = fDate(new Date(subscriptionInfo.current_period_end * 1000));
   const remainingDays = fDistance(new Date(), new Date(subscriptionInfo.current_period_end * 1000));
 
-  console.log(subscriptionInfo?.status);
-
   const isTrial = subscriptionInfo?.status === 'trialing';
 
   const trialStart = isTrial && fDate(new Date(subscriptionInfo.trial_start * 1000));

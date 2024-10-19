@@ -34,8 +34,6 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
     tableID,
   } = orderInfo;
 
-  console.log(orderInfo);
-
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', orderInfo.branchID],
     queryFn: () => fsGetBranch(orderInfo.branchID),

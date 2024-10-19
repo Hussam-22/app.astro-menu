@@ -38,8 +38,6 @@ export default function FirebaseRegisterView() {
   const password = useBoolean();
   const router = useRouter();
 
-  console.log(errorMsg);
-
   const onClose = () => {
     setOpen(false);
     router.push(paths.auth.firebase.login);
@@ -98,8 +96,6 @@ export default function FirebaseRegisterView() {
     },
     onSuccess: () => setOpen(true),
     onError: (error) => {
-      console.log(error.message);
-
       setErrorMsg(error?.message || error || 'Something went wrong');
     },
   });

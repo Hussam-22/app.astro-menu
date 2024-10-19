@@ -50,7 +50,7 @@ export default function StaffsNewEditForm({ staffInfo }) {
       fullname: staffInfo?.fullname || '',
       type: staffInfo?.type || 'waiter',
       branchID: staffInfo?.branchID || '',
-      isActive: !!staffInfo?.isActive,
+      isActive: staffInfo?.isActive !== undefined ? staffInfo.isActive : true,
       passCode: staffInfo?.passCode || generatePassCode(),
     }),
     [staffInfo]

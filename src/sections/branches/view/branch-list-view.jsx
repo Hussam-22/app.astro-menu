@@ -81,8 +81,6 @@ function BranchListView() {
     queryFn: fsGetAllBranches,
   });
 
-  console.log(error);
-
   const handleFilterName = (filteredName) => {
     setFilterName(filteredName);
     setPage(0);

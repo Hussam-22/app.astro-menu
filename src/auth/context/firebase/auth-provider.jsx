@@ -37,7 +37,6 @@ import {
   writeBatch,
   onSnapshot,
   getFirestore,
-  collectionGroup,
   getCountFromServer,
 } from 'firebase/firestore';
 
@@ -468,35 +467,35 @@ export function AuthProvider({ children }) {
         // 3.1 get all menus
         // Query all menus under the specific businessProfileID
         const menusRef = query(collection(DB, `businessProfiles/${businessProfileID}/menus`));
-
         const menusSnapshot = await getDocs(menusRef);
 
-        const sectionsRef = query(
-          collectionGroup(DB, 'sections'),
-          where('businessProfileID', '==', businessProfileID)
-        );
+        // 3.2 loop through each menu
+        menusSnapshot.forEach(async (menu) => {
+          // 3.3 get all sections under the specific menu
+          const sectionsRef = query(
+            collection(DB, `businessProfiles/${businessProfileID}/menus/${menu.id}/sections`)
+          );
+          const sectionsSnapshot = await getDocs(sectionsRef);
 
-        const sectionsSnapshot = await getDocs(sectionsRef);
-        sectionsSnapshot.forEach((section) => {
-          const syncOperation = async () => {
-            const { docID, title, businessProfileID, menuID } = section.data();
-            promisesArray.push(
-              await fbTranslate({
-                sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${docID}`,
-                text: title,
-                newLang,
-                toRemoveLang,
-              })
-            );
-          };
-          syncOperation();
+          // 3.4 loop through each section
+          sectionsSnapshot.forEach((section) => {
+            const syncOperation = async () => {
+              const { docID, title } = section.data();
+              promisesArray.push(
+                await fbTranslate({
+                  sectionRef: `/businessProfiles/${businessProfileID}/menus/${menu.id}/sections/${docID}`,
+                  text: title,
+                  newLang,
+                  toRemoveLang,
+                })
+              );
+            };
+            syncOperation();
+          });
         });
 
         // 4- Translate Meals
-        const mealsRef = query(
-          collectionGroup(DB, 'meals'),
-          where('businessProfileID', '==', businessProfileID)
-        );
+        const mealsRef = query(collection(DB, `businessProfiles/${businessProfileID}/meals`));
 
         const mealsSnapshot = await getDocs(mealsRef);
         mealsSnapshot.forEach((meal) => {
@@ -517,8 +516,7 @@ export function AuthProvider({ children }) {
 
         // 5- Translate Labels
         const labelsRef = query(
-          collectionGroup(DB, 'meal-labels'),
-          where('businessProfileID', '==', businessProfileID)
+          collection(DB, `businessProfiles/${businessProfileID}/meal-labels`)
         );
 
         const labelsSnapshot = await getDocs(labelsRef);

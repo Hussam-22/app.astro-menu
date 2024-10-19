@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router';
 
-import { Box } from '@mui/material';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
@@ -23,28 +22,20 @@ export default function RoleBasedGuard({ hasContent, children, sx }) {
   ) {
     return hasContent ? (
       <Container sx={{ textAlign: 'center', ...sx }}>
-        <Box>
-          <Typography variant="h3" paragraph>
-            Permission Denied
-          </Typography>
-        </Box>
-
-        <Box>
-          <Typography sx={{ color: 'text.secondary' }}>
-            You do not have permission to access this page
-          </Typography>
-        </Box>
-
-        <Box>
-          <Image
-            src="/assets/illustrations/no-access.svg"
-            alt="No Access"
-            sx={{
-              height: 260,
-              my: { xs: 5, sm: 10 },
-            }}
-          />
-        </Box>
+        <Typography variant="h3" paragraph>
+          Permission Denied
+        </Typography>
+        <Typography sx={{ color: 'text.secondary' }}>
+          You do not have permission to access this page
+        </Typography>
+        <Image
+          src="/assets/illustrations/no-access.png"
+          alt="No Access"
+          sx={{
+            height: 260,
+            my: 2,
+          }}
+        />
       </Container>
     ) : null;
   }

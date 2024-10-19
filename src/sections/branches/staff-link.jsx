@@ -10,12 +10,14 @@ import { LoadingButton } from '@mui/lab';
 import {
   Box,
   Card,
+  Alert,
   Stack,
   Divider,
   useTheme,
   TextField,
-  Typography,
+  AlertTitle,
   IconButton,
+  Typography,
 } from '@mui/material';
 
 import Image from 'src/components/image';
@@ -91,11 +93,18 @@ function StaffLink() {
         </Stack>
       </Card>
 
+      <Alert severity="info" sx={{ mb: 2 }}>
+        <AlertTitle>Note</AlertTitle>
+        <Typography>
+          For extra layer of protection, each staff has its own dashboard access link
+        </Typography>
+      </Alert>
+
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
         {filteredStaffList.map((staff) => (
           <Card sx={{ p: 3 }} key={staff.docID}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+              <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                 {staff.docID}
               </Typography>
               <Box
