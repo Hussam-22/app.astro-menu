@@ -1690,8 +1690,6 @@ export function AuthProvider({ children }) {
           const snapshot = await getDocs(docsRef);
 
           snapshot.forEach((doc) => {
-            console.log(doc.data().mealsQueryArray);
-
             const mealsQueryArray = doc.data().mealsQueryArray.filter((meal) => meal !== mealID);
             const meals = doc.data().meals.filter((meal) => meal.docID !== mealID);
             batch.update(doc.ref, { mealsQueryArray, meals });
