@@ -69,6 +69,7 @@
 - fix table order details, and use minutes instead of days for duration
 - Branch Statistics tab, calculate start period to start on the business profile subscription date start instead of 2023 for all
 - Fix QR orders that has no "Initial time" or "End time" in the order details
+- add linkTree to Social Media Links
 
 ? Meals
 /- Translate Meal Portions (Not feasible as it will require a lot of work)
