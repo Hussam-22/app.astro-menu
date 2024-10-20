@@ -40,12 +40,6 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
     enabled: orderInfo.docID !== undefined,
   });
 
-  // const { data: mealsList = [] } = useQuery({
-  //   queryKey: [`meals`],
-  //   queryFn: () => fsGetAllMeals(),
-  //   enabled: orderInfo.docID !== undefined,
-  // });
-
   const { data: staffInfo = {} } = useQuery({
     queryKey: ['staff', staffID],
     queryFn: () => fsGetStaffInfo(staffID),
@@ -58,17 +52,6 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
     queryFn: () => fsGetTableInfo(businessProfileID, branchID, tableID),
     enabled: orderInfo.docID !== undefined,
   });
-
-  // const allMeals = mealsList.filter((meal) =>
-  //   cart?.some((cartItem) => cartItem.mealID === meal.docID)
-  // );
-
-  // const cartMeals = useMemo(
-  //   () =>
-  //     allMeals.filter((meal) => orderInfo.cart.some((portion) => portion.mealID === meal?.docID)) ||
-  //     [],
-  //   [allMeals, orderInfo.cart]
-  // );
 
   const orderDate =
     typeof closingTime === 'string'
@@ -116,7 +99,7 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
           >
             {cart?.length !== 0 &&
               cart?.map((cartMeal) => (
-                <Box key={cartMeal.docID}>
+                <Box key={cartMeal.id}>
                   <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
                     {cartMeal.title}
                   </Typography>

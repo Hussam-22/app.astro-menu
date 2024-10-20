@@ -61,19 +61,25 @@ function StaffLink() {
     queryFn: () => fsGetStaffList(),
   });
 
+  const branchStaff = useMemo(
+    () => staffsList.filter((staff) => staff.branchID === branchID),
+    [branchID, staffsList]
+  );
+
   useEffect(() => {
-    if (staffsList.length !== 0)
-      setFilteredStaffList(staffsList.filter((staff) => staff.branchID === branchID));
-  }, [branchID, staffsList]);
+    if (staffsList.length !== 0) setFilteredStaffList(branchStaff);
+  }, [branchStaff, staffsList?.length]);
 
   const onSearchInputChange = (e) => {
+    if (e.target.value === '') setFilteredStaffList(branchStaff);
     if (e.target.value)
       setFilteredStaffList(
-        staffsList.filter((staff) =>
-          staff.fullname.toLowerCase().includes(e.target.value.toLowerCase())
+        staffsList.filter(
+          (staff) =>
+            staff.branchID === branchID &&
+            staff.fullname.toLowerCase().includes(e.target.value.toLowerCase())
         )
       );
-    if (!e.target.value) setFilteredStaffList(staffsList);
   };
 
   return (
