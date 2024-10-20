@@ -1,4 +1,5 @@
 /* eslint-disable no-unsafe-optional-chaining */
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useTheme } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
@@ -22,7 +23,6 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
   const theme = useTheme();
   const { fsGetAllMeals, fsGetBranch, fsGetStaffInfo, fsGetTableInfo } = useAuthContext();
   const {
-    cart,
     closingTime,
     docID,
     initiationTime,
@@ -66,6 +66,10 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
     return ['In Progress', 'default'];
   };
 
+  const uniqueMealsIDs = [...new Set(orderInfo?.cart?.map((cartMeal) => cartMeal.mealID))];
+
+  if (uniqueMealsIDs.length === 0) return null;
+
   return (
     <Drawer
       anchor="right"
@@ -97,42 +101,55 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
               border: `dashed 1px ${theme.palette.grey[300]}`,
             }}
           >
-            {cart?.length !== 0 &&
-              cart?.map((cartMeal) => (
-                <Box key={cartMeal.id}>
-                  <Typography sx={{ fontWeight: theme.typography.fontWeightBold }}>
-                    {cartMeal.title}
-                  </Typography>
-                  <Stack key={cartMeal.id}>
-                    <Stack direction="row" justifyContent="space-between">
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{
-                          flexGrow: 1,
-                          textDecorationLine: cartMeal?.price === 0 ? 'line-through' : 'none',
-                          textDecorationColor: theme.palette.error.main,
-                          textDecorationThickness: 2,
-                        }}
-                        alignItems="center"
-                      >
-                        <Typography variant="body2">- {cartMeal.portionSize}</Typography>
-                      </Stack>
-
-                      <Typography variant="overline" sx={{ alignSelf: 'center', mx: 1 }}>
-                        {cartMeal.price} {branchInfo?.currency}
-                      </Typography>
-                    </Stack>
-                    {cartMeal?.comment && (
-                      <Typography variant="caption" sx={{ ml: 2, color: 'error.main' }}>
-                        *{cartMeal.comment}
-                      </Typography>
-                    )}
+            {uniqueMealsIDs.map((mealID) =>
+              orderInfo.cart.slice(0, 1).map((cart) => (
+                <React.Fragment key={cart.id}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: theme.typography.fontWeightBold }}
+                    >
+                      {cart?.title}
+                    </Typography>
+                    <Box sx={{ color: 'success.main', fontWeight: 700, typography: 'body2' }}>
+                      x
+                      {orderInfo.cart.filter((cartPortion) => cartPortion.mealID === mealID).length}
+                    </Box>
                   </Stack>
+                  <Box sx={{ ml: 1 }}>
+                    {orderInfo.cart
+                      .filter((cartPortion) => cartPortion.mealID === mealID)
+                      .map((portion) => (
+                        <Stack key={portion.id}>
+                          <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            sx={{
+                              textDecorationLine: portion?.price === 0 ? 'line-through' : 'none',
+                              textDecorationColor: theme.palette.error.main,
+                              textDecorationThickness: 2,
+                            }}
+                          >
+                            <Typography variant="body2" sx={{ flexGrow: 1 }}>
+                              - {portion.portionSize}
+                            </Typography>
+                            <Typography variant="body2">
+                              {portion.price} {branchInfo?.currency}
+                            </Typography>
+                          </Stack>
+                          {portion?.comment && (
+                            <Typography variant="caption" sx={{ ml: 2, color: 'error.main' }}>
+                              *{portion.comment}
+                            </Typography>
+                          )}
+                        </Stack>
+                      ))}
+                  </Box>
 
                   <Divider flexItem sx={{ borderStyle: 'dashed' }} />
-                </Box>
-              ))}
+                </React.Fragment>
+              ))
+            )}
           </Box>
         </Scrollbar>
       </Box>
