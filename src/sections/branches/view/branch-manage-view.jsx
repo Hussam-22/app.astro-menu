@@ -11,6 +11,7 @@ import StaffLink from 'src/sections/branches/staff-link';
 import { useSettingsContext } from 'src/components/settings';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
 import QRManagement from 'src/sections/branches/QR-Management';
+import DisplayQRCode from 'src/sections/branches/display-qr-code';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import BranchStatistics from 'src/sections/branches/BranchStatistics';
 import BranchNewEditForm from 'src/sections/branches/branch-new-edit-form';
@@ -21,7 +22,7 @@ function BranchManageView() {
   const { themeStretch } = useSettingsContext();
   const { fsGetBranch, businessProfile } = useAuthContext();
   const [currentTab, setCurrentTab] = useState('Branch Info');
-  const { allowAnalytics, allowPoS } = useGetProductInfo();
+  const { allowAnalytics, allowPoS, isMenuOnly } = useGetProductInfo();
 
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', branchID],
@@ -35,10 +36,16 @@ function BranchManageView() {
       component: branchInfo?.docID && <BranchNewEditForm branchInfo={branchInfo} />,
     },
     branchInfo.isActive && {
-      value: 'QR Management',
+      value: 'Display QR Code',
       icon: <Iconify icon="clarity:qr-code-line" width={20} height={20} />,
-      component: <QRManagement branchInfo={branchInfo} />,
+      component: <DisplayQRCode branchInfo={branchInfo} />,
     },
+    !isMenuOnly &&
+      branchInfo.isActive && {
+        value: 'Tables QR Codes',
+        icon: <Iconify icon="mdi:table-chair" width={20} height={20} />,
+        component: <QRManagement branchInfo={branchInfo} />,
+      },
     allowAnalytics &&
       branchInfo.isActive && {
         value: 'Statistics',
@@ -57,9 +64,7 @@ function BranchManageView() {
         ),
         component: <StaffLink />,
       },
-  ]
-    .filter((tab) => tab)
-    .splice(0, businessProfile?.planInfo?.at(-1)?.isMenuOnly ? 2 : 4);
+  ].filter(Boolean);
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -71,7 +76,7 @@ function BranchManageView() {
           { name: branchInfo?.title || '' },
         ]}
         action={
-          <Typography variant="caption" sx={{ color: theme.palette.grey[600] }}>
+          <Typography variant="body2" sx={{ color: theme.palette.grey[600] }}>
             ID: {branchID}
           </Typography>
         }

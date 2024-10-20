@@ -114,7 +114,7 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
       open={isOpen}
       onClose={() => onClose()}
       PaperProps={{
-        sx: { borderRadius: '25px 0 0 25px', width: '35%' },
+        sx: { borderRadius: '25px 0 0 25px', width: { xs: '85%', sm: '55%', md: '35%' } },
       }}
     >
       <Box sx={{ bgcolor: 'secondary.main', p: 2, mb: 2 }}>
@@ -125,28 +125,34 @@ function EditSectionTitleDrawer({ isOpen, onClose, sectionID }) {
 
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Card sx={{ p: 2, mx: 2 }}>
-          <RHFTextField
-            name="title"
-            label="Section Title"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <LoadingButton
-                    type="submit"
-                    variant="text"
-                    color="success"
-                    loading={isPending}
-                    disabled={!isDirty}
-                  >
-                    Update
-                  </LoadingButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Typography variant="caption">
-            Editing section title will overwrite all translations to match the new section title
-          </Typography>
+          <Stack direction="column" spacing={1}>
+            <RHFTextField
+              name="title"
+              label="Section Title"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <LoadingButton
+                      type="submit"
+                      variant="text"
+                      color="secondary"
+                      loading={isPending}
+                      disabled={!isDirty}
+                    >
+                      Update
+                    </LoadingButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <Typography variant="body2">
+              - Editing section title will overwrite all translations to match the new section title
+            </Typography>
+            <Typography variant="body2" color="primary">
+              - Refresh the page if translations are not updated
+            </Typography>
+          </Stack>
         </Card>
       </FormProvider>
 

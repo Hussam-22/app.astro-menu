@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-import { Box, Tab, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
+import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
@@ -47,7 +47,7 @@ function BusinessProfileManageView() {
           { name: businessProfile?.businessName || '' },
         ]}
         action={
-          <Typography variant="caption" sx={{ color: theme.palette.grey[600] }}>
+          <Typography variant="body2" sx={{ color: theme.palette.grey[600] }}>
             ID: {businessProfile?.docID}
           </Typography>
         }

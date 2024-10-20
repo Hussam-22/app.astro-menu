@@ -45,6 +45,9 @@ const SubscriptionInfoPage = lazy(() =>
   import('src/pages/dashboard/subscription-payment/subscription-info-page')
 );
 
+// CUSTOMERS
+const OrdersPage = lazy(() => import('src/pages/dashboard/orders/orders-page'));
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -110,6 +113,7 @@ export const dashboardRoutes = [
       },
       { path: 'business-profile/manage', element: <BusinessProfileManagePage /> },
       { path: 'subscription-info', element: <SubscriptionInfoPage /> },
+      { path: 'orders', element: <OrdersPage /> },
     ],
   },
 ];

@@ -69,5 +69,8 @@ export const paths = {
     subscription: {
       root: `${ROOTS.DASHBOARD}/subscription-info`,
     },
+    orders: {
+      root: `${ROOTS.DASHBOARD}/orders`,
+    },
   },
 };

@@ -117,6 +117,7 @@ export default function BranchNewEditForm({ branchInfo }) {
       number: branchInfo?.number || '',
       skipKitchen: !!branchInfo?.skipKitchen,
       showCallWaiterBtn: !!branchInfo?.showCallWaiterBtn,
+      dense: !!branchInfo?.dense,
 
       socialLinks: {
         facebook: branchInfo?.socialLinks?.facebook || '',
@@ -130,6 +131,7 @@ export default function BranchNewEditForm({ branchInfo }) {
         googleReview: branchInfo?.socialLinks?.googleReview || '',
         locationMap: branchInfo?.socialLinks?.locationMap || '',
         other: branchInfo?.socialLinks?.other || '',
+        linkTree: branchInfo?.socialLinks?.linkTree || '',
       },
     }),
     [branchInfo]
@@ -302,55 +304,62 @@ export default function BranchNewEditForm({ branchInfo }) {
                   <BranchSocialLinks />
                 </Card>
 
-                {allowPoS && (
-                  <Card sx={{ p: 3 }}>
-                    <Typography variant="h3" sx={{ mb: 1 }}>
-                      Branch Settings
-                    </Typography>
-                    <Stack
-                      direction="column"
-                      spacing={1}
-                      divider={
-                        <Divider
-                          sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }}
+                <Card sx={{ p: 3 }}>
+                  <Typography variant="h3" sx={{ mb: 1 }}>
+                    Branch Settings
+                  </Typography>
+                  <Stack
+                    direction="column"
+                    spacing={1}
+                    divider={
+                      <Divider sx={{ borderColor: theme.palette.divider, borderStyle: 'dashed' }} />
+                    }
+                  >
+                    <SettingSwitch
+                      title="Dense Menu"
+                      description="Dense menu will hide meal description and reduce image size, useful for large menus"
+                      label={values.dense ? `Dense` : `Cozy`}
+                      name="dense"
+                      isDanger={false}
+                    />
+                    {allowPoS && (
+                      <>
+                        <SettingSwitch
+                          title="Skip Kitchen"
+                          description="Skip Kitchen when you want your waiter-staff to be in control of the order process. without waiting for the kitchen to confirm when the order is ready."
+                          label={values.skipKitchen ? `Skip` : `Don't Skip`}
+                          name="skipKitchen"
+                          isDanger={false}
                         />
-                      }
-                    >
-                      <SettingSwitch
-                        title="Skip Kitchen"
-                        description="Skip Kitchen when you want your waiter-staff to be in control of the order process. without waiting for the kitchen to confirm when the order is ready."
-                        label={values.skipKitchen ? `Skip` : `Don't Skip`}
-                        name="skipKitchen"
-                        isDanger={false}
-                      />
 
-                      <SettingSwitch
-                        title="Self-Order"
-                        description="Allow customers to add meals to order without the help of a waiter, waiter will only be needed to confirm the order and collect payment"
-                        label={values.allowSelfOrder ? 'Active' : 'Disabled'}
-                        name="allowSelfOrder"
-                        isDanger={false}
-                      />
+                        <SettingSwitch
+                          title="Self-Order"
+                          description="Allow customers to add meals to order without the help of a waiter, waiter will only be needed to confirm the order and collect payment"
+                          label={values.allowSelfOrder ? 'Active' : 'Disabled'}
+                          name="allowSelfOrder"
+                          isDanger={false}
+                        />
 
-                      <SettingSwitch
-                        title="Show Call Waiter Button"
-                        description="Show Call Waiter Button on the QR Menu"
-                        label={values.showCallWaiterBtn ? 'Show' : 'Hide'}
-                        name="showCallWaiterBtn"
-                        isDanger={false}
-                      />
+                        <SettingSwitch
+                          title="Show Call Waiter Button"
+                          description="Show Call Waiter Button on the QR Menu"
+                          label={values.showCallWaiterBtn ? 'Show' : 'Hide'}
+                          name="showCallWaiterBtn"
+                          isDanger={false}
+                        />
+                      </>
+                    )}
 
-                      <SettingSwitch
-                        title="Branch Status"
-                        description="When branch is inactive, customers cant view menu and waiters cant take
+                    <SettingSwitch
+                      title="Branch Status"
+                      description="When branch is inactive, customers cant view menu and waiters cant take
                         orders"
-                        label={values.isActive ? `Active` : `Disabled`}
-                        name="isActive"
-                        isDanger
-                      />
-                    </Stack>
-                  </Card>
-                )}
+                      label={values.isActive ? `Active` : `Disabled`}
+                      name="isActive"
+                      isDanger
+                    />
+                  </Stack>
+                </Card>
               </Stack>
             </Grid>
           )}

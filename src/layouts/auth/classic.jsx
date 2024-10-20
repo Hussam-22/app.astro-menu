@@ -51,9 +51,7 @@ const METHODS = [
 
 export default function AuthClassicLayout({ children, image, title }) {
   const { method } = useAuthContext();
-
   const theme = useTheme();
-
   const upMd = useResponsive('up', 'md');
 
   const renderLogo = (

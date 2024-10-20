@@ -1,4 +1,10 @@
 /* 
+
+# Ground Roles
+- When a customer wants to have a tailored plan, create one for them on stripe and assign it to them
+- "free" plan, make sure to have a "free" plan on stripe
+- If you ever decided to alter the original plans, create a new plan on stripe and assign it to the new users, keep existing users on the old plan
+
 # TODO List
 
 ? System
@@ -15,17 +21,22 @@
 - All Notifications should be in the same place (Bottom center)
 /- Prevent Refreshing the page when user pulls down the page
 - show error messages such as "user already in use" in registration form
+- when user register, the login page does not redirect to the dashboard
+/- Print or generate PDF for orders bill --> print is not feasible to avoid misuse
+/- Email orders bill to customer - Done
+- find a way to download customers emails in cost-effective way.
+
 
 ? QR Menu
-- How item will look without image or description
 - test back button that will close modal on ios and different browsers
 /- Add Search meal by name field (Think about it) -- Not feasible
 - check what happens if a meal gets deleted while its in cart
 /- changing meal status causing the qr-menu to reset back to default language
 /- Add scroll to "add meal" drawer when the meal is too long to fit the screen, caused by long description or too many portions
-- QR #0 - the QR Menu Only, should not have active listener to menu changes (this to reduce number of  firestore reads)
+- QR #0 - the QR Menu Only, should not have active listener to menu changes (this to reduce number of firestore reads)
 - QR Menu only should show everything in the menu, no "Out of Stock" or "Not Available" meals should be shown, meal is either enabled or disabled
 /- fix menu-sections drawer gets duplicated when disabling section from "Menu > Meals and Sections" in the dashboard
+- when analytics is not part of the plan, dont calculate the analytics
 
 ? Staff Dashboard
 /- either add "search bar" or "filter meals" drawer, or both
@@ -47,8 +58,8 @@
 - Show Mock image if no image is uploaded
 - Allow Branch Admin to Close Table Order from dashboard -- Close only, no collect payment is allowed
 /- Add "Skip Kitchen" toggle to the branch
-- branch copy qr link not working on tablet
-- tables turnover calculation, add total time to branch document, then divide by total orders to reduce reads
+/- branch copy qr link not working on tablet
+/- tables turnover calculation, add total time to branch document, then divide by total orders to reduce reads
 - for "limit scans" plan, show a message to the user that they have reached their limit
 - for "limit scans" plan, show remaining scans in the dashboard
 - for "limit scans" plan, send an email when the user reaches 80% of their limit
@@ -58,6 +69,7 @@
 - fix table order details, and use minutes instead of days for duration
 - Branch Statistics tab, calculate start period to start on the business profile subscription date start instead of 2023 for all
 - Fix QR orders that has no "Initial time" or "End time" in the order details
+- add linkTree to Social Media Links
 
 ? Meals
 /- Translate Meal Portions (Not feasible as it will require a lot of work)

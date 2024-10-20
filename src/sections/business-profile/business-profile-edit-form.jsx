@@ -82,7 +82,6 @@ function BusinessProfileEditForm() {
         dirtyFields.logo
       );
       await delay(1000);
-      console.log(response);
     });
   };
 

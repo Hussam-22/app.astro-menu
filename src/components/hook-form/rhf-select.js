@@ -13,6 +13,8 @@ import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import FormHelperText from '@mui/material/FormHelperText';
 
+import Image from 'src/components/image';
+
 // ----------------------------------------------------------------------
 
 export function RHFSelect({
@@ -136,6 +138,7 @@ export function RHFMultiSelect({
 
               return (
                 <MenuItem key={option.value} value={option.value}>
+                  {option.icon && <Image src={option.icon} sx={{ width: 22, height: 22, mr: 1 }} />}
                   {checkbox && <Checkbox size="small" disableRipple checked={selected} />}
 
                   {option.label}

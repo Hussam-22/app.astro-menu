@@ -1,20 +1,20 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import { Box, Card } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Box, Divider, MenuItem } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import Logo from 'src/components/logo';
+import Image from 'src/components/image';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -22,49 +22,50 @@ import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
-import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
-
-const DESCRIPTION = `'Established in 1950 by Tuscan chef Antonio Rossi, this restaurant has been a beloved downtown landmark, renowned for its authentic Italian cuisine and warm, inviting atmosphere. Now a multi-generational family business, it blends traditional recipes with modern flair, continuing to delight patrons with exceptional dishes sourced from local ingredients.'`;
-
-const TRANSLATION_LANGUAGES = Object.entries(LANGUAGE_CODES)
-  .map(([key, value]) => ({
-    value: key,
-    label: `${value.name} - ${value.value}`,
-  }))
-  .sort((a, b) => a.label.localeCompare(b.label));
+import { RouterLink } from 'src/routes/components';
+import { LoadingScreen } from 'src/components/loading-screen';
+import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import BuildingProfileDialog from 'src/sections/auth/firebase/components/building-profile-dialog';
 
 // ----------------------------------------------------------------------
 
 export default function FirebaseRegisterView() {
-  const { fsCreateBusinessProfile } = useAuthContext();
+  const { fsCreateBusinessProfile, fsGetProducts } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState('');
   const [open, setOpen] = useState(false);
   const password = useBoolean();
   const router = useRouter();
 
+  const onClose = () => {
+    setOpen(false);
+    router.push(paths.auth.firebase.login);
+  };
+
+  const { data: productsData, isLoading } = useQuery({
+    queryKey: ['products'],
+    queryFn: fsGetProducts,
+  });
+
   const RegisterSchema = Yup.object().shape({
-    firstName: Yup.string().required('First name required'),
-    lastName: Yup.string().required('Last name required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    // firstName: Yup.string().required('First name required'),
+    // lastName: Yup.string().required('Last name required'),
+    email: Yup.string()
+      .required('Business Email is required')
+      .email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
     businessName: Yup.string().required('Plan is required'),
-    // languages: Yup.array()
-    //   .min(1, 'Choose at least one option')
-    //   .max(3, 'max 3 translation languages allowed in the trial plan'),
+    plan: Yup.string().required('Plan is required'),
   });
 
   const defaultValues = {
-    firstName: '',
-    lastName: '',
+    // firstName: '',
+    // lastName: '',
     email: '',
     password: '',
     businessName: '',
-    // languages: [],
+    plan: '',
   };
 
   const methods = useForm({
@@ -76,40 +77,59 @@ export default function FirebaseRegisterView() {
     watch,
     reset,
     handleSubmit,
-    formState: { isDirty },
+    formState: { isDirty, errors },
   } = methods;
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (mutateFn) => mutateFn(),
+  const {
+    mutate,
+    isPending,
+    error: fbError, // Firebase error
+    isError,
+  } = useMutation({
+    mutationFn: async (formValues) => {
+      const product = productsData.find((item) => item.id === formValues.plan);
+      await fsCreateBusinessProfile({
+        ...formValues,
+        plan: product.default_price,
+        productID: product.id,
+      });
+    },
     onSuccess: () => setOpen(true),
+    onError: (error) => {
+      setErrorMsg(error?.message || error || 'Something went wrong');
+    },
   });
 
-  const onSubmit = handleSubmit(async (formData) => {
-    try {
-      mutate(() =>
-        fsCreateBusinessProfile({
-          ...formData,
-          description: DESCRIPTION,
-        })
-      );
-    } catch (error) {
-      console.error(error);
-      reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
-    }
-  });
+  const onSubmit = handleSubmit(async (formData) => mutate(formData));
 
   const renderForm = (
-    <Stack spacing={1.5} sx={{ p: 2 }}>
+    <Stack spacing={1.5} sx={{ py: 2 }}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+
+      {!isLoading && (
+        <RHFSelect name="plan" label="Select your Plan">
+          <MenuItem value="">-- Select your plan --</MenuItem>
+          {productsData
+            .filter((product) => product.active)
+            .map((product) => (
+              <MenuItem key={product.id} value={product.id}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Image src={product.images[0]} sx={{ width: 22, height: 22 }} />
+                  {product.name}
+                </Stack>
+              </MenuItem>
+            ))}
+        </RHFSelect>
+      )}
+
       <RHFTextField name="businessName" label="Business Name" />
 
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+      {/* <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
         <RHFTextField name="firstName" label="First name" />
         <RHFTextField name="lastName" label="Last name" />
-      </Stack>
+      </Stack> */}
 
-      <RHFTextField name="email" label="Email address" />
+      <RHFTextField name="email" label="Business Email address" />
 
       <RHFTextField
         name="password"
@@ -125,16 +145,25 @@ export default function FirebaseRegisterView() {
           ),
         }}
       />
-      {/* <RHFMultiSelect
-        chip
-        checkbox
-        name="languages"
-        label="Menu Target Languages"
-        options={TRANSLATION_LANGUAGES.filter((option) => option.value !== values.defaultLanguage)}
-      /> */}
 
-      <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
-        <Typography>No Credit Card Required</Typography>
+      <Stack
+        direction={{ sm: 'row', xs: 'column' }}
+        justifyContent="flex-end"
+        alignItems="center"
+        spacing={2}
+      >
+        <Stack
+          direction={{ xs: 'row', sm: 'column' }}
+          sx={{ textAlign: { xs: 'center', sm: 'right' } }}
+          spacing={0}
+        >
+          <Typography variant="body2" sx={{ whiteSpace: 'nowrap', fontWeight: 600 }}>
+            14 Days free trial
+          </Typography>
+          <Typography variant="body2" sx={{ whiteSpace: 'nowrap', fontWeight: 600 }}>
+            No Credit Card Required
+          </Typography>
+        </Stack>
         <LoadingButton
           color="primary"
           size="large"
@@ -149,23 +178,28 @@ export default function FirebaseRegisterView() {
     </Stack>
   );
 
+  if (isLoading) return <LoadingScreen />;
+
   return (
-    <Card sx={{ pt: 2, width: { xs: 'auto', sm: '40dvw' } }}>
-      <Logo sx={{ mx: 4 }} />
-      <Typography variant="h6" color="secondary" sx={{ textAlign: 'left', px: 3 }}>
-        Create your{' '}
-        <Box component="span" sx={{ color: 'primary.main' }}>
-          Astro-Menu
-        </Box>{' '}
-        account
-      </Typography>
+    <>
+      <Stack direction="row" justifyContent="left" spacing={1}>
+        <Typography variant="h4" color="secondary">
+          Create your{' '}
+          <Box component="span" sx={{ color: 'primary.main' }}>
+            Astro-Menu
+          </Box>{' '}
+          account
+        </Typography>
+      </Stack>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         {renderForm}
       </FormProvider>
+      <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
       <Stack
-        direction="row"
-        justifyContent="space-between"
-        sx={{ p: 2, bgcolor: 'grey.100', mt: 1 }}
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent={{ xs: 'center', sm: 'space-between' }}
+        alignItems="center"
+        sx={{ p: 2, bgcolor: 'grey.100', borderRadius: 2 }}
       >
         <Stack direction="row" spacing={0.5} alignItems="center">
           <Typography variant="body2"> Already have an account? </Typography>
@@ -185,15 +219,7 @@ export default function FirebaseRegisterView() {
         </Stack>
       </Stack>
 
-      <ConfirmDialog
-        open={open}
-        onClose={() => {
-          router.push(paths.auth.firebase.login);
-        }}
-        title="Your account have successfully created"
-        content="Please check your email to verify your account"
-        closeText="Close"
-      />
-    </Card>
+      <BuildingProfileDialog open={open} onClose={onClose} />
+    </>
   );
 }

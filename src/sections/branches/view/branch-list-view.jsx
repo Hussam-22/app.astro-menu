@@ -18,13 +18,12 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
-import { RouterLink } from 'src/routes/components';
-import { useSettingsContext } from 'src/components/settings';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useSettingsContext } from 'src/components/settings';
+import TableToolbar from 'src/components/table/table-toolbar';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
-import MenusTableToolbar from 'src/sections/menu/list/menu-table-toolbar';
-import BranchTableRow from 'src/sections/branches/components/table/branch-table-row';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
+import BranchTableRow from 'src/sections/branches/components/table/branch-table-row';
 import {
   useTable,
   emptyRows,
@@ -73,7 +72,11 @@ function BranchListView() {
   const [isOpen, setIsOpen] = useState(false);
   const { branches: maxBranchesAllowed } = useGetProductInfo();
 
-  const { data: branchesData, isLoading } = useQuery({
+  const {
+    data: branchesData,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['branches'],
     queryFn: fsGetAllBranches,
   });
@@ -96,6 +99,7 @@ function BranchListView() {
   const isNotFound = (!dataFiltered.length && !!filterName) || (!isLoading && !dataFiltered.length);
 
   const handleAddNewBranch = () => {
+    // router.push(paths.dashboard.branches.new);
     if (branchesData?.length >= maxBranchesAllowed) {
       setIsOpen(true);
     } else {
@@ -114,14 +118,14 @@ function BranchListView() {
           },
         ]}
         action={
-          <Button component={RouterLink} onClick={handleAddNewBranch} variant="contained">
+          <Button onClick={handleAddNewBranch} variant="contained">
             New Branch
           </Button>
         }
       />
 
       <Card>
-        <MenusTableToolbar filterName={filterName} onFilterName={handleFilterName} />
+        <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
         <Scrollbar>
           <TableContainer sx={{ minWidth: 960, position: 'relative' }}>

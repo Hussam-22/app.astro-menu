@@ -1,4 +1,4 @@
-import 'react-quill/dist/quill.snow.css';
+// import 'react-quill/dist/quill.snow.css';
 import 'simplebar-react/dist/simplebar.min.css';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 

@@ -176,7 +176,7 @@ export default function TranslationTextField({
                   variant="text"
                   loading={isSubmitting}
                   disabled={!isDirty}
-                  color="success"
+                  color="primary"
                 >
                   <Iconify icon="fluent:save-28-regular" width={20} height={20} />
                 </LoadingButton>

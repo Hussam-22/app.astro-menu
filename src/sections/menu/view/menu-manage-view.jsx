@@ -47,7 +47,7 @@ function MenuManageView() {
           { name: menuInfo?.title || '' },
         ]}
         action={
-          <Typography variant="caption" sx={{ color: theme.palette.grey[600] }}>
+          <Typography variant="body2" sx={{ color: theme.palette.grey[600] }}>
             ID: {menuInfo?.docID}
           </Typography>
         }

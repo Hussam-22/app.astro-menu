@@ -1,17 +1,18 @@
 import PropTypes from 'prop-types';
 
-import { Stack, TextField, InputAdornment } from '@mui/material';
+import { Stack, TextField, Typography, InputAdornment } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-MenusTableToolbar.propTypes = {
+TableToolbar.propTypes = {
   filterName: PropTypes.string,
+  text: PropTypes.string,
   onFilterName: PropTypes.func,
 };
 
-export default function MenusTableToolbar({ filterName, onFilterName }) {
+export default function TableToolbar({ filterName, onFilterName, text }) {
   return (
     <Stack
       direction="row"
@@ -22,7 +23,7 @@ export default function MenusTableToolbar({ filterName, onFilterName }) {
       <TextField
         value={filterName}
         onChange={(event) => onFilterName(event.target.value)}
-        placeholder="Search menu..."
+        placeholder="Search..."
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -34,6 +35,11 @@ export default function MenusTableToolbar({ filterName, onFilterName }) {
           ),
         }}
       />
+      {text && (
+        <Typography variant="body2" sx={{ color: 'info.main' }}>
+          {text}
+        </Typography>
+      )}
     </Stack>
   );
 }

@@ -37,12 +37,11 @@ import {
   writeBatch,
   onSnapshot,
   getFirestore,
-  collectionGroup,
   getCountFromServer,
 } from 'firebase/firestore';
 
 import { FIREBASE_API } from 'src/config-global';
-import { stripeCreateCustomer } from 'src/stripe/functions';
+import { stripeCreateBusiness } from 'src/stripe/functions';
 import {
   DEFAULT_MEALS,
   DEFAULT_MENUS,
@@ -88,8 +87,6 @@ const BUCKET = 'menu-app-b268b';
 
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [orderSnapShot, setOrderSnapShot] = useState({});
-  const [activeOrders, setActiveOrders] = useState([]);
   const [menuSections, setMenuSections] = useState([]);
   const [branchTables, setBranchTables] = useState([]);
   const [branchSnapshot, setBranchSnapshot] = useState({});
@@ -154,26 +151,37 @@ export function AuthProvider({ children }) {
 
   // LOGIN
   const login = useCallback(async (email, password) => {
-    await signInWithEmailAndPassword(AUTH, email, password);
+    try {
+      const response = await signInWithEmailAndPassword(AUTH, email, password);
+      if (!response.user.emailVerified) {
+        throw new Error('Email not verified');
+      }
+    } catch (error) {
+      throw error;
+    }
   }, []);
 
   const register = useCallback(async (email, password, displayName) => {
-    const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
-    await sendEmailVerification(newUser.user);
+    try {
+      const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
+      await sendEmailVerification(newUser.user);
 
-    const userProfile = doc(collection(DB, 'users'), newUser.user?.uid);
+      const userProfile = doc(collection(DB, 'users'), newUser.user?.uid);
 
-    await setDoc(userProfile, {
-      uid: newUser.user?.uid,
-      displayName,
-      email,
-      role: 'owner',
-      password,
-      isActive: true,
-      lastLogin: new Date(),
-    });
+      await setDoc(userProfile, {
+        uid: newUser.user?.uid,
+        displayName,
+        email,
+        role: 'owner',
+        isActive: true,
+        lastLogin: new Date(),
+      });
 
-    return newUser.user?.uid;
+      return newUser.user?.uid;
+    } catch (error) {
+      // Re-throw the original error to propagate it
+      throw error;
+    }
   }, []);
   const logout = useCallback(async () => {
     await signOut(AUTH);
@@ -234,9 +242,7 @@ export function AuthProvider({ children }) {
   const fsDeleteImage = useCallback(async (bucketPath, imgID) => {
     const storageRef = ref(STORAGE, `gs://${bucketPath}${imgID}`);
     deleteObject(storageRef)
-      .then(() => {
-        console.log('Image deleted successfully');
-      })
+      .then(() => {})
       .catch((error) => {
         console.error('Error deleting image:', error);
       });
@@ -260,10 +266,7 @@ export function AuthProvider({ children }) {
 
       uploadTask.on(
         'state_changed',
-        (snapshot) => {
-          const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          // console.log(`${percent}% done`);
-        },
+        (snapshot) => {},
         (error) => {
           reject(error);
         },
@@ -338,71 +341,16 @@ export function AuthProvider({ children }) {
   const fsCreateBusinessProfile = useCallback(
     async (data) => {
       try {
-        // 1- REGISTER OWNER
-        const { email, password, firstName, lastName, ...businessProfileInfo } = data;
+        const { email, password, businessName, plan, productID } = data;
 
-        // const ownerID = 'U9zbloA4S9XjMmU1HOXv6YKbZLj1';
-        // const subscriptionId = 'sub_1PuWRvRoHLqbtaTlyyhXi9bz';
-        // const stripeCustomerID = 'cus_Qm4b5iRnPPW9fP';
-        // const businessProfileID = 'tkGL7IvNr2bzMatV5JHT';
+        // 1- Create owner account on Firebase
+        const ownerID = await register?.(email, password, businessName);
 
-        // 1- Create a stripe customer and add a trial subscription 'Menu Master'
-        // the 'Menu Master' plan is assigned in the backend server function with stripe webhook
-
-        const ownerID = await register?.(email, password, firstName, lastName);
-
-        // 2- CREATE BUSINESS PROFILE
-        const newDocRef = doc(collection(DB, `businessProfiles`));
-
-        const stripeData = await stripeCreateCustomer(
-          email,
-          `${firstName} ${lastName}`,
-          newDocRef.id,
-          ownerID
-        );
-        const { customerId: stripeCustomerID, subscriptionId } = stripeData;
-
-        await setDoc(newDocRef, {
-          ...businessProfileInfo,
-          // stripeCustomerID,
-          // subscriptionId,
-          defaultLanguage: 'en',
-          docID: newDocRef.id,
-          ownerID,
-          users: [],
-          isActive: true,
-          createdOn: new Date(),
-          logo: await fsGetImgDownloadUrl('_mock', `business_logo_800x800.webp`),
-          // default Languages
-          languages: ['ar', 'fr', 'es'],
-          translationEditUsage: {
-            count: 0,
-            maxCount: 3,
-          },
-        });
-
-        const businessProfileID = newDocRef.id;
-
-        await fbTranslateBranchDesc({
-          title: businessProfileInfo.businessName,
-          desc: businessProfileInfo.description,
-          businessProfileID,
-          newLang: businessProfileInfo.languages,
-          toRemoveLang: [],
-        });
-
-        // 3- Update Assign Business-Profile to User
-        const userProfile = doc(collection(DB, 'users'), ownerID);
-        await updateDoc(userProfile, { businessProfileID, stripeCustomerID, subscriptionId });
-
-        // 4- Create Default Data
-        await createDefaults({
-          ...businessProfileInfo,
-          businessProfileID,
-          languages: ['ar', 'fr', 'es'],
-        });
+        // 2- Create business profile and system defaults on the server
+        await stripeCreateBusiness(ownerID, email, businessName, plan, productID, true);
       } catch (error) {
-        console.log(error);
+        // Re-throw the error to propagate it
+        throw error;
       }
     },
     [state]
@@ -456,16 +404,9 @@ export function AuthProvider({ children }) {
           const uploadTask = uploadBytesResumable(imageRef, logo);
           uploadTask.on(
             'state_changed',
-            (snapshot) => {
-              console.log(snapshot);
-            },
-            (error) => {
-              console.log(error);
-            },
-            () => {
-              console.log('UPLOADED');
-              // queryClient.invalidateQueries(['businessProfile', businessProfileID]);
-            }
+            (snapshot) => {},
+            (error) => {},
+            () => {}
           );
         }
 
@@ -522,32 +463,39 @@ export function AuthProvider({ children }) {
         });
 
         // 3- Translate Sections
-        const sectionsRef = query(
-          collectionGroup(DB, 'sections'),
-          where('businessProfileID', '==', businessProfileID)
-        );
 
-        const sectionsSnapshot = await getDocs(sectionsRef);
-        sectionsSnapshot.forEach((section) => {
-          const syncOperation = async () => {
-            const { docID, title, businessProfileID, menuID } = section.data();
-            promisesArray.push(
-              await fbTranslate({
-                sectionRef: `/businessProfiles/${businessProfileID}/menus/${menuID}/sections/${docID}`,
-                text: title,
-                newLang,
-                toRemoveLang,
-              })
-            );
-          };
-          syncOperation();
+        // 3.1 get all menus
+        // Query all menus under the specific businessProfileID
+        const menusRef = query(collection(DB, `businessProfiles/${businessProfileID}/menus`));
+        const menusSnapshot = await getDocs(menusRef);
+
+        // 3.2 loop through each menu
+        menusSnapshot.forEach(async (menu) => {
+          // 3.3 get all sections under the specific menu
+          const sectionsRef = query(
+            collection(DB, `businessProfiles/${businessProfileID}/menus/${menu.id}/sections`)
+          );
+          const sectionsSnapshot = await getDocs(sectionsRef);
+
+          // 3.4 loop through each section
+          sectionsSnapshot.forEach((section) => {
+            const syncOperation = async () => {
+              const { docID, title } = section.data();
+              promisesArray.push(
+                await fbTranslate({
+                  sectionRef: `/businessProfiles/${businessProfileID}/menus/${menu.id}/sections/${docID}`,
+                  text: title,
+                  newLang,
+                  toRemoveLang,
+                })
+              );
+            };
+            syncOperation();
+          });
         });
 
         // 4- Translate Meals
-        const mealsRef = query(
-          collectionGroup(DB, 'meals'),
-          where('businessProfileID', '==', businessProfileID)
-        );
+        const mealsRef = query(collection(DB, `businessProfiles/${businessProfileID}/meals`));
 
         const mealsSnapshot = await getDocs(mealsRef);
         mealsSnapshot.forEach((meal) => {
@@ -568,8 +516,7 @@ export function AuthProvider({ children }) {
 
         // 5- Translate Labels
         const labelsRef = query(
-          collectionGroup(DB, 'meal-labels'),
-          where('businessProfileID', '==', businessProfileID)
+          collection(DB, `businessProfiles/${businessProfileID}/meal-labels`)
         );
 
         const labelsSnapshot = await getDocs(labelsRef);
@@ -614,10 +561,7 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsGetSystemTranslations = useCallback(async (languages) => {
-    const docRef = query(
-      collectionGroup(DB, 'system-translations'),
-      where('lang', 'in', languages)
-    );
+    const docRef = query(collection(DB, 'system-translations'), where('lang', 'in', languages));
     const querySnapshot = await getDocs(docRef);
     const translations = [];
     querySnapshot.forEach((doc) => translations.push(doc.data()));
@@ -740,8 +684,6 @@ export function AuthProvider({ children }) {
 
       querySnapshot.forEach((doc) => dataArr.push(doc.data()));
 
-      console.log(dataArr);
-
       return dataArr;
     } catch (error) {
       throw error;
@@ -818,11 +760,24 @@ export function AuthProvider({ children }) {
   const fsGetTableInfo = useCallback(
     async (businessProfileID = state.user.businessProfileID, branchID, tableID) => {
       try {
+        const tableRef = doc(
+          DB,
+          `/businessProfiles/${businessProfileID}/branches/${branchID}/tables/${tableID}`
+        );
+        const tableSnap = await getDoc(tableRef);
+        return tableSnap.data();
+      } catch (error) {
+        throw error;
+      }
+    },
+    []
+  );
+  const fsGetDisplayTableInfo = useCallback(
+    async (branchID, businessProfileID = state.user.businessProfileID) => {
+      try {
         const docRef = query(
-          collectionGroup(DB, 'tables'),
-          where('businessProfileID', '==', businessProfileID),
-          where('branchID', '==', branchID),
-          where('docID', '==', tableID)
+          collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`),
+          where('index', '==', 0)
         );
         const querySnapshot = await getDocs(docRef);
         const dataArr = [];
@@ -832,14 +787,13 @@ export function AuthProvider({ children }) {
         throw error;
       }
     },
-    []
+    [state]
   );
   const fsChangeMenuForAllTables = useCallback(
     async (branchID, menuID, businessProfileID = state.user.businessProfileID) => {
       const docsRef = query(
-        collectionGroup(DB, 'tables'),
-        where('businessProfileID', '==', businessProfileID),
-        where('branchID', '==', branchID)
+        collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`),
+        where('index', '>', 0)
       );
       const snapshot = await getDocs(docsRef);
 
@@ -848,20 +802,20 @@ export function AuthProvider({ children }) {
       snapshot.docs.forEach((tableDoc) => {
         const updateTable = async () =>
           toUpdate.push(await fsUpdateBranchTable(branchID, tableDoc.data().docID, { menuID }));
-
         updateTable();
       });
 
       await Promise.allSettled(toUpdate);
+
+      const branchRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}`);
+      await updateDoc(branchRef, { menuID });
     },
     [state]
   );
   const fsGetBranchTables = useCallback(
     async (branchID, businessProfileID = state.user.businessProfileID) => {
       const docRef = query(
-        collectionGroup(DB, 'tables'),
-        where('businessProfileID', '==', businessProfileID),
-        where('branchID', '==', branchID)
+        collection(DB, `businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
       );
 
       const querySnapshot = await getDocs(docRef);
@@ -875,15 +829,14 @@ export function AuthProvider({ children }) {
   const fsGetBranchTablesSnapshot = useCallback(
     async (branchID, businessProfileID = state.user.businessProfileID) => {
       const docRef = query(
-        collectionGroup(DB, 'tables'),
-        where('businessProfileID', '==', businessProfileID),
-        where('branchID', '==', branchID)
+        collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`),
+        where('index', '>', 0)
       );
 
       const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
         const tablesArray = [];
         querySnapshot.forEach((doc) => {
-          if (doc.exists()) {
+          if (doc.exists() && doc.data().index !== 0) {
             tablesArray.push(doc.data());
           }
         });
@@ -905,10 +858,8 @@ export function AuthProvider({ children }) {
 
         if (data.menuID) {
           const ordersQuery = query(
-            collectionGroup(DB, 'orders'),
+            collection(DB, `businessProfiles/${businessProfileID}/branches/${branchID}/orders`),
             where('tableID', '==', tableID),
-            where('branchID', '==', branchID),
-            where('businessProfileID', '==', businessProfileID),
             where('isCanceled', '==', false),
             where('isPaid', '==', false),
             where('isReadyToServe', '==', []),
@@ -928,9 +879,7 @@ export function AuthProvider({ children }) {
   const fsGetBranchTablesCount = useCallback(
     async (branchID, businessProfileID = state.user.businessProfileID) => {
       const query_ = query(
-        collectionGroup(DB, 'tables'),
-        where('businessProfileID', '==', businessProfileID),
-        where('branchID', '==', branchID)
+        collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`)
       );
       const snapshot = await getCountFromServer(query_);
       return snapshot.data().count;
@@ -938,21 +887,31 @@ export function AuthProvider({ children }) {
     [state]
   );
   const fsUpdateQRsMenuID = useCallback(
-    // this function is used to update all QRs menuID across all branches after deleting their menu
     async (oldMenuID, newMenuID) => {
+      // this function is used to update all QRs menuID across all branches after deleting their menu
       const docRef = query(
-        collectionGroup(DB, 'tables'),
-        where('businessProfileID', '==', state.user.businessProfileID),
-        where('menuID', '==', oldMenuID)
+        collection(DB, `businessProfiles/${state.user.businessProfileID}/branches`)
       );
 
-      const querySnapshot = await getDocs(docRef);
+      const branchesSnapshot = await getDocs(docRef);
+      const branchIDs = [];
+      branchesSnapshot.forEach((branch) => branchIDs.push(branch.data().docID));
 
       const batch = writeBatch(DB);
 
-      querySnapshot.forEach((doc) => {
-        const tableRef = doc.ref;
-        batch.update(tableRef, { menuID: newMenuID });
+      branchIDs.forEach(async (branchID) => {
+        const tablesRef = query(
+          collection(
+            DB,
+            `businessProfiles/${state.user.businessProfileID}/branches/${branchID}/tables`
+          ),
+          where('menuID', '==', oldMenuID)
+        );
+        const querySnapshot = await getDocs(tablesRef);
+        querySnapshot.forEach((doc) => {
+          const tableRef = doc.ref;
+          batch.update(tableRef, { menuID: newMenuID });
+        });
       });
 
       await batch.commit();
@@ -972,9 +931,7 @@ export function AuthProvider({ children }) {
       const endDate = new Date(Date.UTC(targetYear, targetMonth + 1, 0)); // End of the month
 
       const docRef = query(
-        collectionGroup(DB, 'orders'),
-        where('businessProfileID', '==', businessProfileID),
-        where('branchID', '==', branchID),
+        collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/orders`),
         where('tableID', '==', tableID),
         where('initiationTime', '>=', startDate),
         where('initiationTime', '<=', endDate)
@@ -986,11 +943,61 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+  const fsGetOrdersByFilter = useCallback(
+    async ({ branchID, period, status }) => {
+      const endTime = new Date();
+      const startTime = new Date(endTime.getTime() - period * 60 * 60 * 1000);
+
+      let docRef = query(
+        collection(
+          DB,
+          'businessProfiles',
+          state.user.businessProfileID,
+          'branches',
+          branchID,
+          'orders'
+        ),
+        where('branchID', '==', branchID),
+        where('closingTime', '>=', startTime),
+        where('closingTime', '<=', endTime)
+      );
+
+      if (status === 'cancelled') {
+        docRef = query(docRef, where('isCanceled', '==', true));
+      }
+
+      if (status === 'paid') {
+        docRef = query(docRef, where('isPaid', '==', true));
+      }
+
+      const totalCount = await getCountFromServer(docRef);
+
+      const querySnapshot = await getDocs(docRef);
+      const dataArr = [];
+      querySnapshot.forEach((doc) => dataArr.push(doc.data()));
+
+      return { data: dataArr, count: totalCount.data().count };
+    },
+    [state]
+  );
+  const fsGetOrderByID = useCallback(
+    async (orderID, branchID) => {
+      console.log(orderID, branchID);
+
+      const docRef = doc(
+        DB,
+        `/businessProfiles/${state.user.businessProfileID}/branches/${branchID}/orders/${orderID}`
+      );
+      const docSnap = await getDoc(docRef);
+      return docSnap.data();
+    },
+
+    [state]
+  );
   // ----------------------- Branches ----------------------------
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
-      collectionGroup(DB, 'branches'),
-      where('businessProfileID', '==', state.user.businessProfileID),
+      collection(DB, `/businessProfiles/${state.user.businessProfileID}/branches`),
       where('isDeleted', '==', false)
     );
     const querySnapshot = await getDocs(docRef);
@@ -1074,15 +1081,9 @@ export function AuthProvider({ children }) {
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
           'state_changed',
-          (snapshot) => {
-            console.log(snapshot);
-          },
-          (error) => {
-            console.log(error);
-          },
-          () => {
-            console.log('UPLOADED');
-          }
+          (snapshot) => {},
+          (error) => {},
+          () => {}
         );
       }
 
@@ -1107,9 +1108,7 @@ export function AuthProvider({ children }) {
         // mute all orders in branch
         const batch = writeBatch(DB);
         const orderRef = query(
-          collectionGroup(DB, 'orders'),
-          where('businessProfileID', '==', businessProfileID),
-          where('branchID', '==', branchData.docID),
+          collection(DB, `/businessProfiles/${businessProfileID}/branches/${docID}/orders`),
           where('isPaid', '==', false),
           where('isCanceled', '==', false),
           where('callWaiter', '==', true)
@@ -1184,8 +1183,7 @@ export function AuthProvider({ children }) {
     async (lang) => {
       const batch = writeBatch(DB);
       const branchesRef = query(
-        collectionGroup(DB, 'branches'),
-        where('businessProfileID', '==', state.user.businessProfileID),
+        collection(DB, `/businessProfiles/${state.user.businessProfileID}/branches`),
         where('isDeleted', '==', false)
       );
 
@@ -1210,8 +1208,7 @@ export function AuthProvider({ children }) {
   const fsGetAllMenus = useCallback(
     async (businessProfileID = state.user.businessProfileID) => {
       const docRef = query(
-        collectionGroup(DB, 'menus'),
-        where('businessProfileID', '==', businessProfileID),
+        collection(DB, `/businessProfiles/${businessProfileID}/menus`),
         where('isDeleted', '==', false)
       );
 
@@ -1303,9 +1300,7 @@ export function AuthProvider({ children }) {
   const fsGetSections = useCallback(
     async (menuID, businessProfileID = state.user.businessProfileID) => {
       const docRef = query(
-        collectionGroup(DB, 'sections'),
-        where('businessProfileID', '==', businessProfileID),
-        where('menuID', '==', menuID)
+        collection(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}/sections`)
       );
 
       const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
@@ -1336,9 +1331,7 @@ export function AuthProvider({ children }) {
 
         // get all sections that order index is above the one is being deleted and reduce it
         const docsRef = query(
-          collectionGroup(DB, 'sections'),
-          where('businessProfileID', '==', businessProfileID),
-          where('menuID', '==', menuID),
+          collection(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}/sections`),
           where('order', '>', orderValue)
         );
         const snapshot = await getDocs(docsRef);
@@ -1368,17 +1361,24 @@ export function AuthProvider({ children }) {
   );
   const fsRemoveMealFromAllSections = useCallback(
     async (mealID, businessProfileID = state?.user?.businessProfileID) => {
-      const docsRef = query(
-        collectionGroup(DB, 'sections'),
-        where('businessProfileID', '==', businessProfileID),
-        where('meals', 'array-contains', mealID)
-      );
-      const snapshot = await getDocs(docsRef);
+      const menusRef = query(collection(DB, `/businessProfiles/${businessProfileID}/menus`));
+      const menusSnapshot = await getDocs(menusRef);
+      const menusIDs = [];
+      menusSnapshot.forEach((menu) => menusIDs.push(menu.docID));
 
       const batch = writeBatch(DB);
-      snapshot.docs.forEach((doc) => {
-        const meals = doc.data().meals.filter((meal) => meal !== mealID);
-        batch.update(doc.ref, { meals });
+
+      menusIDs.forEach(async (menuID) => {
+        const docsRef = query(
+          collection(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}/sections`),
+          where('meals', 'array-contains', mealID)
+        );
+        const snapshot = await getDocs(docsRef);
+
+        snapshot.docs.forEach((doc) => {
+          const meals = doc.data().meals.filter((meal) => meal !== mealID);
+          batch.update(doc.ref, { meals });
+        });
       });
 
       await batch.commit();
@@ -1462,10 +1462,8 @@ export function AuthProvider({ children }) {
   const fsGetSectionMeals = useCallback(
     async (businessProfileID = state.user.businessProfileID, sectionMeals, size = '800x800') => {
       const docRef = query(
-        collectionGroup(DB, 'meals'),
-        where('businessProfileID', '==', businessProfileID),
+        collection(DB, `/businessProfiles/${businessProfileID}/meals/`),
         where('docID', 'in', sectionMeals)
-        // where('isActive', '==', true)
       );
       const querySnapshot = await getDocs(docRef);
       const dataArr = [];
@@ -1486,31 +1484,6 @@ export function AuthProvider({ children }) {
       return dataArr;
     },
     []
-  );
-  const fsEmptyMenuSelectedMeals = useCallback(
-    async (menuID) => {
-      const docRef = doc(DB, `/businessProfiles/${state.user.businessProfileID}/menus/${menuID}/`);
-      await updateDoc(docRef, { meals: [] });
-    },
-    [state]
-  );
-  const fsDeleteAllSections = useCallback(
-    async (menuID) => {
-      const docRef = query(
-        collectionGroup(DB, 'sections'),
-        where('userID', '==', state.user.businessProfileID),
-        where('menuID', '==', menuID)
-      );
-      const snapshot = await getDocs(docRef);
-
-      const batch = writeBatch(DB);
-      snapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-      });
-
-      await batch.commit();
-    },
-    [state]
   );
   // ------------------------- Meals --------------------------------
   const fsAddNewMeal = useCallback(
@@ -1543,9 +1516,7 @@ export function AuthProvider({ children }) {
         const uploadTask = uploadBytesResumable(imageRef, imageFile);
         uploadTask.on(
           'state_changed',
-          (snapshot) => {
-            console.log(snapshot);
-          },
+          (snapshot) => {},
           (error) => {},
           () => {}
         );
@@ -1605,11 +1576,7 @@ export function AuthProvider({ children }) {
   );
   const fsGetAllMeals = useCallback(
     async (businessProfileID = state.user.businessProfileID) => {
-      const docRef = query(
-        collectionGroup(DB, 'meals'),
-        where('businessProfileID', '==', businessProfileID),
-        where('isDeleted', '==', false)
-      );
+      const docRef = query(collection(DB, `/businessProfiles/${businessProfileID}/meals/`));
       const querySnapshot = await getDocs(docRef);
       const dataArr = [];
       const asyncOperations = [];
@@ -1669,35 +1636,47 @@ export function AuthProvider({ children }) {
   const fsDeleteMeal = useCallback(
     async (mealID) => {
       try {
+        // Query for the list of menus
+        const menusRef = query(
+          collection(DB, `/businessProfiles/${state.user.businessProfileID}/menus`)
+        );
+        const menusSnapshot = await getDocs(menusRef);
+        const menusIDs = menusSnapshot.docs.map((menu) => menu.data().docID);
+
+        const batch = writeBatch(DB);
+
+        // Use Promise.all to handle async inside array iteration
+        await Promise.all(
+          menusIDs.map(async (menuID) => {
+            const docsRef = query(
+              collection(
+                DB,
+                `/businessProfiles/${state.user.businessProfileID}/menus/${menuID}/sections`
+              ),
+              where('mealsQueryArray', 'array-contains', mealID)
+            );
+            const snapshot = await getDocs(docsRef);
+
+            snapshot.forEach((doc) => {
+              const mealsQueryArray = doc.data().mealsQueryArray.filter((meal) => meal !== mealID);
+              const meals = doc.data().meals.filter((meal) => meal.docID !== mealID);
+
+              console.log({ updatedMeals: meals, OriginalMeals: doc.data().meals });
+
+              // Add updates to the batch
+              batch.update(doc.ref, { mealsQueryArray, meals });
+            });
+          })
+        );
+
+        // Commit the batch updates
+        await batch.commit();
+
+        // Delete the meal document from Firestore
         const docRef = doc(DB, `/businessProfiles/${state.user.businessProfileID}/meals/`, mealID);
         await deleteDoc(docRef);
 
-        // the mealsQueryArray is used to query for documents in firestore more efficiently as it is an array of mealIDs and firestore cant query for array of objects
-        const docsRef = query(
-          collectionGroup(DB, 'sections'),
-          where('businessProfileID', '==', state.user.businessProfileID),
-          where('mealsQueryArray', 'array-contains', mealID)
-        );
-        const querySnapshot = await getDocs(docsRef);
-        const asyncOperations = [];
-
-        // delete meal from section
-        querySnapshot.forEach((element) => {
-          const asyncOperation = async () => {
-            const { meals, mealsQueryArray } = element.data();
-            const updatedMealsQueryArray = mealsQueryArray.filter((meal) => meal !== mealID);
-            const updatedMeals = meals.filter((meal) => meal.docID !== mealID);
-
-            await updateDoc(element.ref, {
-              meals: [...updatedMeals],
-              mealsQueryArray: [...updatedMealsQueryArray],
-            });
-          };
-          asyncOperations.push(asyncOperation());
-        });
-
-        await Promise.allSettled(asyncOperations);
-
+        // Remove meal images from storage
         const bucketPath = `${BUCKET}/${state.user.businessProfileID}/meals/${mealID}/`;
         await fsDeleteImage(bucketPath, `${mealID}_200x200.webp`);
         await fsDeleteImage(bucketPath, `${mealID}_800x800.webp`);
@@ -1711,10 +1690,7 @@ export function AuthProvider({ children }) {
     async (businessProfileID = state.user.businessProfileID) => {
       try {
         const dataArr = [];
-        const docRef = query(
-          collectionGroup(DB, 'meal-labels'),
-          where('businessProfileID', '==', businessProfileID)
-        );
+        const docRef = query(collection(DB, `/businessProfiles/${businessProfileID}/meal-labels/`));
         const querySnapshot = await getDocs(docRef);
         querySnapshot.forEach((doc) => {
           dataArr.push(doc.data());
@@ -1747,8 +1723,7 @@ export function AuthProvider({ children }) {
   const updatedAffectedMeals = useCallback(
     async (mealLabelID) => {
       const mealRef = query(
-        collectionGroup(DB, 'meals'),
-        where('businessProfileID', '==', state.user.businessProfileID),
+        collection(DB, `/businessProfiles/${state.user.businessProfileID}/meals`),
         where('mealLabels', 'array-contains', mealLabelID)
       );
       const querySnapshot = await getDocs(mealRef);
@@ -1803,6 +1778,7 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
+<<<<<<< HEAD
   const fsUpdateMealOrderCount = useCallback(
     async (mealID, businessProfileID = state.user.businessProfileID) => {
       try {
@@ -2004,15 +1980,14 @@ export function AuthProvider({ children }) {
     },
     []
   );
+=======
+>>>>>>> staging
   // ------------------ STAFF ----------------------------------
   const fsGetStaffInfo = useCallback(
     async (staffID, businessProfileID = state.user.businessProfileID) => {
       try {
         const docRef = doc(DB, `/businessProfiles/${businessProfileID}/staff/${staffID}/`);
         const docSnap = await getDoc(docRef);
-
-        if (docSnap.data().isLoggedIn)
-          fsGetStaffLogin(businessProfileID, staffID, docSnap.data().passCode);
 
         return docSnap.data();
       } catch (error) {
@@ -2021,31 +1996,6 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  const fsGetStaffLogin = useCallback(async (businessProfileID, staffID, passCode) => {
-    try {
-      const docRef = query(
-        collectionGroup(DB, 'staff'),
-        where('businessProfileID', '==', businessProfileID),
-        where('docID', '==', staffID),
-        where('passCode', '==', passCode),
-        where('isActive', '==', true)
-      );
-
-      const length = await getCountFromServer(docRef);
-
-      if (length.data().count === 0) throw Error('Nothing was returned!');
-
-      const unsubscribe = onSnapshot(docRef, (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          setStaff(doc.data());
-        });
-      });
-
-      return unsubscribe;
-    } catch (error) {
-      throw error;
-    }
-  }, []);
   const fsUpdateStaffInfo = useCallback(
     async (payload, staffID, businessProfileID = state.user.businessProfileID) => {
       const waiterDocRef = doc(DB, `/businessProfiles/${businessProfileID}/staff/${staffID}`);
@@ -2055,10 +2005,7 @@ export function AuthProvider({ children }) {
   );
   const fsGetStaffList = useCallback(
     async (branchID = '', businessProfileID = state.user.businessProfileID) => {
-      let docRef = query(
-        collectionGroup(DB, 'staff'),
-        where('businessProfileID', '==', businessProfileID)
-      );
+      let docRef = query(collection(DB, `/businessProfiles/${businessProfileID}/staff`));
 
       // Conditionally add branchID to where clause if provided
       if (branchID !== '') {
@@ -2095,7 +2042,55 @@ export function AuthProvider({ children }) {
     },
     [state]
   );
-  // ------------------------------------------------------------
+  // -------------------- CUSTOMERS ----------------------------------------
+  const fsGetCustomers = useCallback(async () => {
+    try {
+      const customersRef = collection(
+        DB,
+        'businessProfiles',
+        state.user.businessProfileID,
+        'customers'
+      );
+      const docsQuery = query(customersRef);
+      const querySnapshot = await getDocs(docsQuery);
+      const customers = [];
+      querySnapshot.forEach((doc) => {
+        customers.push(doc.data());
+      });
+      return customers;
+    } catch (error) {
+      throw error;
+    }
+  }, [state]);
+  const fsDeleteCustomer = useCallback(
+    async (customerID) => {
+      const docRef = doc(
+        DB,
+        `/businessProfiles/${state.user.businessProfileID}/customers/${customerID}`
+      );
+      await deleteDoc(docRef);
+    },
+    [state]
+  );
+  const fsBatchAddCustomers = useCallback(async () => {
+    const batch = writeBatch(DB);
+
+    for (let index = 0; index < 100; index += 1) {
+      const newDocRef = doc(
+        collection(DB, `/businessProfiles/${state.user.businessProfileID}/customers`)
+      );
+      batch.set(newDocRef, {
+        docID: newDocRef.id,
+        // email: faker.internet.email(),
+        lastOrder: new Date(),
+        lastVisitBranchID: '2EKctRFUaA06pGIvAT2D',
+        totalVisits: index + 1,
+      });
+    }
+
+    await batch.commit();
+  }, [state]);
+  // ----------------------------------------------------------------------------
 
   const memoizedValue = useMemo(
     () => ({
@@ -2147,14 +2142,11 @@ export function AuthProvider({ children }) {
       fsUpdateBranchTable,
       fsChangeMenuForAllTables,
       fsGetTableOrdersByPeriod,
+      fsGetOrdersByFilter,
+      fsGetOrderByID,
       fsGetTableInfo,
+      fsGetDisplayTableInfo,
       branchTables,
-      // ---- ORDERS ----
-      fsInitiateNewOrder,
-      fsOrderSnapshot,
-      fsGetActiveOrdersSnapshot,
-      orderSnapShot,
-      activeOrders,
       // ---- MENU SECTIONS ----
       menuSections,
       setMenuSections,
@@ -2183,21 +2175,16 @@ export function AuthProvider({ children }) {
       fsAddNewMealLabel,
       fsUpdateMealLabel,
       fsDeleteMealLabel,
-
-      // ---- QR Menu ----
-      fsConfirmCartOrder,
-      fsUpdateScanLog,
-      fsUpdateCart,
-      fsRemoveMealFromCart,
-      // ---- Waiter ----
-      fsGetStaffLogin,
+      // ---- Wait Staff ----
       fsGetStaffInfo,
-      fsUpdateOrderStatus,
-      fsOrderIsPaid,
       fsAddNewStaff,
       fsGetStaffList,
       fsUpdateStaffInfo,
       fsDeleteStaff,
+      // --- Customers ---
+      fsGetCustomers,
+      fsDeleteCustomer,
+      fsBatchAddCustomers,
     }),
     [
       state.isAuthenticated,
@@ -2241,15 +2228,13 @@ export function AuthProvider({ children }) {
       fsGetBranchTablesSnapshot,
       fsUpdateBranchTable,
       fsGetTableInfo,
+      fsGetDisplayTableInfo,
       fsChangeMenuForAllTables,
       branchTables,
       // ---- ORDERS ----
-      fsInitiateNewOrder,
-      fsOrderSnapshot,
-      fsGetActiveOrdersSnapshot,
-      orderSnapShot,
-      activeOrders,
       fsGetTableOrdersByPeriod,
+      fsGetOrdersByFilter,
+      fsGetOrderByID,
       // ---- MENU SECTIONS ----
       fsAddSection,
       fsUpdateSection,
@@ -2276,21 +2261,16 @@ export function AuthProvider({ children }) {
       fsAddNewMealLabel,
       fsUpdateMealLabel,
       fsDeleteMealLabel,
-
-      // ---- QR Menu ----
-      fsConfirmCartOrder,
-      fsUpdateScanLog,
-      fsUpdateCart,
-      fsRemoveMealFromCart,
-      // ---- Waiter ----
-      fsGetStaffLogin,
+      // ---- Wait Staff ----
       fsGetStaffInfo,
-      fsUpdateOrderStatus,
-      fsOrderIsPaid,
       fsAddNewStaff,
       fsGetStaffList,
       fsUpdateStaffInfo,
       fsDeleteStaff,
+      // --- Customers ---
+      fsGetCustomers,
+      fsDeleteCustomer,
+      fsBatchAddCustomers,
     ]
   );
 

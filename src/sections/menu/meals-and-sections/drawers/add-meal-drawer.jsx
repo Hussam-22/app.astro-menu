@@ -77,7 +77,7 @@ function AddMealDrawer({ onClose, isOpen, sectionID, allMeals }) {
         onClose();
       }}
       PaperProps={{
-        sx: { borderRadius: '25px 0 0 25px', width: '25%' },
+        sx: { borderRadius: '25px 0 0 25px', width: { xs: '75%', sm: '45%', md: '25%' } },
       }}
     >
       <Box sx={{ bgcolor: 'secondary.main', p: 2 }}>
