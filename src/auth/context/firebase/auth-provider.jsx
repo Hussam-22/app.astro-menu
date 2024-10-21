@@ -347,7 +347,7 @@ export function AuthProvider({ children }) {
         const ownerID = await register?.(email, password, businessName);
 
         // 2- Create business profile and system defaults on the server
-        await stripeCreateBusiness(ownerID, email, businessName, plan, productID, true);
+        await stripeCreateBusiness(ownerID, email, businessName, plan, productID);
       } catch (error) {
         // Re-throw the error to propagate it
         throw error;
