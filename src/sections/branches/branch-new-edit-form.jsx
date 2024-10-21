@@ -352,14 +352,14 @@ export default function BranchNewEditForm({ branchInfo }) {
                         <SettingSwitch
                           title="Self-Order"
                           description="Allow customers to add meals to order without the help of a waiter, waiter will only be needed to confirm the order and collect payment"
-                          label={values.allowSelfOrder ? 'Active' : 'Disabled'}
+                          label={values.allowSelfOrder ? 'Allow' : 'Disabled'}
                           name="allowSelfOrder"
                           isDanger={false}
                         />
 
                         <SettingSwitch
-                          title="Show Call Waiter Button"
-                          description="Show Call Waiter Button on the QR Menu"
+                          title="Show Call Waiter Bell"
+                          description="Show Call Waiter Bell on the QR Menu"
                           label={values.showCallWaiterBtn ? 'Show' : 'Hide'}
                           name="showCallWaiterBtn"
                           isDanger={false}

@@ -849,6 +849,8 @@ export function AuthProvider({ children }) {
   const fsUpdateBranchTable = useCallback(
     async (branchID, tableID, data, businessProfileID = state.user.businessProfileID) => {
       try {
+        console.log({ branchID, tableID, data });
+
         const docRef = doc(
           DB,
           `/businessProfiles/${businessProfileID}/branches/${branchID}/tables/${tableID}`
@@ -869,6 +871,22 @@ export function AuthProvider({ children }) {
           const orderRef = querySnapshot.docs[0].ref;
           await updateDoc(orderRef, { cart: [], menuID: data.menuID });
         }
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    [state]
+  );
+  const fsUpdateDisplayQR = useCallback(
+    async (branchID, tableID, data, businessProfileID = state.user.businessProfileID) => {
+      console.log(branchID, tableID, data);
+
+      try {
+        const docRef = doc(
+          DB,
+          `/businessProfiles/${businessProfileID}/branches/${branchID}/tables/${tableID}`
+        );
+        await updateDoc(docRef, data);
       } catch (error) {
         throw new Error(error);
       }
@@ -1938,6 +1956,7 @@ export function AuthProvider({ children }) {
       fsGetBranchTables,
       fsGetBranchTablesSnapshot,
       fsUpdateBranchTable,
+      fsUpdateDisplayQR,
       fsChangeMenuForAllTables,
       fsGetTableOrdersByPeriod,
       fsGetOrdersByFilter,
@@ -2025,6 +2044,7 @@ export function AuthProvider({ children }) {
       fsGetBranchTables,
       fsGetBranchTablesSnapshot,
       fsUpdateBranchTable,
+      fsUpdateDisplayQR,
       fsGetTableInfo,
       fsGetDisplayTableInfo,
       fsChangeMenuForAllTables,

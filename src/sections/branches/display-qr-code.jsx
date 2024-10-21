@@ -37,23 +37,23 @@ const year = new Date().getFullYear();
 function DisplayQRCode() {
   const theme = useTheme();
   const { id: branchID } = useParams();
-  const { fsGetDisplayTableInfo, user, fsGetAllMenus, fsUpdateBranchTable } = useAuthContext();
+  const { fsGetDisplayTableInfo, user, fsGetAllMenus, fsUpdateDisplayQR } = useAuthContext();
   const { isMenuOnly } = useGetProductInfo();
   const queryClient = useQueryClient();
 
   const {
-    data: tableInfo,
+    data: tableInfo = {},
     error,
-    isLoading,
+    isFetched,
   } = useQuery({
     queryKey: ['display-qr-code', branchID],
     queryFn: () => fsGetDisplayTableInfo(branchID),
   });
 
-  const { data: menusList = [] } = useQuery({
+  const { data: menusList = [], isFetched: isMenusFetched } = useQuery({
     queryKey: ['menus'],
     queryFn: () => fsGetAllMenus(),
-    enabled: tableInfo !== undefined,
+    enabled: isFetched,
   });
 
   const { mutate, isPending } = useMutation({
@@ -67,7 +67,7 @@ function DisplayQRCode() {
 
   const defaultValues = useMemo(
     () => ({
-      menu: tableInfo?.menuID || '',
+      menuID: tableInfo?.menuID || '',
       isActive: !!tableInfo?.isActive,
       mealAlwaysAvailable: !!tableInfo?.mealAlwaysAvailable,
     }),
@@ -82,7 +82,7 @@ function DisplayQRCode() {
     reset,
     watch,
     handleSubmit,
-    formState: { dirtyFields, isDirty },
+    formState: { isDirty },
   } = methods;
 
   useEffect(() => {
@@ -91,12 +91,10 @@ function DisplayQRCode() {
 
   const values = watch();
 
+  console.log(values);
+
   const onSubmit = async (formData) => {
-    const { menuID, ...dataToUpdate } = formData;
-    if (dirtyFields.menuID)
-      mutate(() => fsUpdateBranchTable(tableInfo.branchID, tableInfo.docID, { ...formData }));
-    if (!dirtyFields.menuID)
-      mutate(() => fsUpdateBranchTable(tableInfo.branchID, tableInfo.docID, { ...dataToUpdate }));
+    mutate(() => fsUpdateDisplayQR(tableInfo.branchID, tableInfo.docID, { ...formData }));
     reset(formData);
   };
 
@@ -154,13 +152,8 @@ function DisplayQRCode() {
                     </LoadingButton>
                   </Stack>
                   <Stack direction="column" spacing={2}>
-                    {menusList?.length !== 0 && menusList !== undefined && (
-                      <RHFSelect
-                        name="menu"
-                        label="Default Menu"
-                        placeholder="Default Menu"
-                        defaultValue={tableInfo?.menuID}
-                      >
+                    {isMenusFetched && (
+                      <RHFSelect name="menuID" label="Menu">
                         {menusList.map((menu) => (
                           <MenuItem key={menu.docID} value={menu.docID}>
                             {menu.title}
