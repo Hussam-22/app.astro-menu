@@ -91,8 +91,6 @@ function DisplayQRCode() {
 
   const values = watch();
 
-  console.log(values);
-
   const onSubmit = async (formData) => {
     mutate(() => fsUpdateDisplayQR(tableInfo.branchID, tableInfo.docID, { ...formData }));
     reset(formData);

@@ -879,8 +879,6 @@ export function AuthProvider({ children }) {
   );
   const fsUpdateDisplayQR = useCallback(
     async (branchID, tableID, data, businessProfileID = state.user.businessProfileID) => {
-      console.log(branchID, tableID, data);
-
       try {
         const docRef = doc(
           DB,
