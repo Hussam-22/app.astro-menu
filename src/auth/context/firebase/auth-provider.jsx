@@ -791,6 +791,8 @@ export function AuthProvider({ children }) {
   );
   const fsChangeMenuForAllTables = useCallback(
     async (branchID, menuID, businessProfileID = state.user.businessProfileID) => {
+      console.log(branchID);
+
       const docsRef = query(
         collection(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}/tables`),
         where('index', '>', 0)
@@ -806,9 +808,6 @@ export function AuthProvider({ children }) {
       });
 
       await Promise.allSettled(toUpdate);
-
-      const branchRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchID}`);
-      await updateDoc(branchRef, { menuID });
     },
     [state]
   );
@@ -1095,6 +1094,7 @@ export function AuthProvider({ children }) {
     async (
       branchData,
       shouldUpdateCover = false,
+      shouldUpdateQRsMenu = false,
       businessProfileID = state.user.businessProfileID
     ) => {
       const docRef = doc(DB, `/businessProfiles/${businessProfileID}/branches/${branchData.docID}`);
@@ -1142,6 +1142,8 @@ export function AuthProvider({ children }) {
           () => {}
         );
       }
+
+      if (shouldUpdateQRsMenu) await fsChangeMenuForAllTables(docID, documentData.menuID);
 
       const updateMealData =
         imageFile && shouldUpdateCover

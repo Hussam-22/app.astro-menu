@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
@@ -7,8 +6,6 @@ import { Box, Card, Stack, Button, Avatar, useTheme } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
 import DownloadAllQRs from 'src/sections/branches/components/DownloadAllQRs';
-
-import ChangeDefaultMenu from './dialogs/ChangeDefaultMenu';
 
 TablesCard.propTypes = {
   tables: PropTypes.array,
@@ -19,9 +16,6 @@ TablesCard.propTypes = {
 function TablesCard({ tables, onTableClick, selectedTableID }) {
   const theme = useTheme();
   const { isMenuOnly } = useGetProductInfo();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const onClose = () => setIsOpen(false);
 
   const downloadAllTableQRImages = () => {
     tables.map((table) => {
@@ -42,13 +36,6 @@ function TablesCard({ tables, onTableClick, selectedTableID }) {
       <Stack direction="column" spacing={1}>
         {!isMenuOnly && (
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, flexWrap: 'wrap' }}>
-            <Button
-              variant="text"
-              startIcon={<Iconify icon="mdi:file-replace-outline" />}
-              onClick={() => setIsOpen(true)}
-            >
-              Change Menu for All QRs
-            </Button>
             <Button
               variant="text"
               startIcon={<Iconify icon="uil:image-download" />}
@@ -96,7 +83,6 @@ function TablesCard({ tables, onTableClick, selectedTableID }) {
               ))}
           </Box>
 
-          {isOpen && <ChangeDefaultMenu isOpen={isOpen} onClose={onClose} />}
           <DownloadAllQRs tables={tables} />
         </Card>
       </Stack>

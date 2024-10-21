@@ -34,6 +34,8 @@ function StaffLink() {
   const { user, fsGetStaffList } = useAuthContext();
   const [filteredStaffList, setFilteredStaffList] = useState([]);
 
+  console.log(filteredStaffList);
+
   const staffUrl = (staffID) =>
     `${DOMAINS.menu}/staff/${user.businessProfileID}/${staffID}/dashboard`;
 
@@ -165,7 +167,7 @@ function StaffLink() {
                   >
                     Pass Code:
                   </Typography>
-                  <Typography>{staff?.passCode}</Typography>
+                  <Typography>{staff?.passCode === 'KAKA-22' ? '' : staff?.passCode}</Typography>
                 </Stack>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography
@@ -206,25 +208,28 @@ function ActionButtons({ staffID, status }) {
 
   const PASSWORD_RESET_TEXT = (
     <Typography variant="h1" sx={{ textAlign: 'center' }}>
-      {[...newPassCode].join('-')}
+      {[...newPassCode]}
     </Typography>
   );
 
-  const onStatusChange = async () => {
+  const logOutStaff = async () =>
     fsUpdateStaffInfo({ isLoggedIn: false }, staffID, user.businessProfileID);
+
+  const onStatusChange = async () => {
+    await logOutStaff();
     fsUpdateStaffInfo({ isActive: !status }, staffID, user.businessProfileID);
   };
 
   const onPassCodeReset = async () => {
     const passCode = generatePassCode();
     setNewPassCode(passCode);
-    fsUpdateStaffInfo({ isLoggedIn: false }, staffID, user.businessProfileID);
+    await logOutStaff();
     fsUpdateStaffInfo({ passCode }, staffID, user.businessProfileID);
     setIsOpen(true);
   };
 
   const onBranchRemove = async () => {
-    fsUpdateStaffInfo({ isLoggedIn: false }, staffID, user.businessProfileID);
+    await logOutStaff();
     fsUpdateStaffInfo({ branchID: '' }, staffID, user.businessProfileID);
   };
 
@@ -232,6 +237,11 @@ function ActionButtons({ staffID, status }) {
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['staffs'] }),
   });
+
+  const handleCloseDialog = () => {
+    queryClient.invalidateQueries({ queryKey: ['staffs'] });
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -276,7 +286,7 @@ function ActionButtons({ staffID, status }) {
         title="New Pass Code is"
         content={PASSWORD_RESET_TEXT}
         open={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={handleCloseDialog}
       />
     </>
   );

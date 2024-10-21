@@ -45,7 +45,8 @@ export default function BranchNewEditForm({ branchInfo }) {
   const theme = useTheme();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const { fsAddNewBranch, fsUpdateBranch, businessProfile, fsGetAllBranches } = useAuthContext();
+  const { fsAddNewBranch, fsUpdateBranch, businessProfile, fsGetAllBranches, fsGetAllMenus } =
+    useAuthContext();
   const queryClient = useQueryClient();
   const { allowPoS, branches: maxAllowedBranches } = useGetProductInfo();
   const [isOpen, setIsOpen] = useState(false);
@@ -53,6 +54,12 @@ export default function BranchNewEditForm({ branchInfo }) {
   const { data: branchesData } = useQuery({
     queryKey: ['branches'],
     queryFn: fsGetAllBranches,
+  });
+
+  const { data: menusList = [], isFetched } = useQuery({
+    queryKey: ['menus'],
+    queryFn: () => fsGetAllMenus(),
+    enabled: !!branchInfo?.docID,
   });
 
   const activeBranchesLength = branchesData?.filter((branch) => branch.isActive)?.length || 0;
@@ -99,12 +106,12 @@ export default function BranchNewEditForm({ branchInfo }) {
     imageFile: Yup.mixed().required('Cover Image is required'),
     defaultLanguage: Yup.string().required('Menu Default Language is required'),
     currency: Yup.string().required('Menu Default Language is required'),
+    menuID: Yup.string().required('Menu is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
       title: branchInfo?.title || '',
-      // description: branchInfo?.description || '',
       wifiPassword: branchInfo?.wifiPassword || '',
       isActive: !!branchInfo?.isActive,
       allowSelfOrder: !!branchInfo?.allowSelfOrder,
@@ -118,6 +125,7 @@ export default function BranchNewEditForm({ branchInfo }) {
       skipKitchen: !!branchInfo?.skipKitchen,
       showCallWaiterBtn: !!branchInfo?.showCallWaiterBtn,
       dense: !!branchInfo?.dense,
+      menuID: branchInfo?.menuID || '',
 
       socialLinks: {
         facebook: branchInfo?.socialLinks?.facebook || '',
@@ -209,7 +217,8 @@ export default function BranchNewEditForm({ branchInfo }) {
             ...formData,
             docID: branchInfo?.docID,
           },
-          dirtyFields.imageFile
+          dirtyFields.imageFile,
+          dirtyFields.menuID
         );
         reset(formData);
       });
@@ -262,7 +271,15 @@ export default function BranchNewEditForm({ branchInfo }) {
                   <Typography variant="h3">Branch Info</Typography>
                 </Stack>
                 <RHFTextField name="title" label="Name" />
-                {/* <RHFTextField name="description" label="About" multiline rows={3} /> */}
+                {isFetched && (
+                  <RHFSelect name="menuID" label="Default Menu (Will not affect Display QR Code)">
+                    {menusList.map((menu) => (
+                      <MenuItem key={menu.docID} value={menu.docID}>
+                        {menu.title}
+                      </MenuItem>
+                    ))}
+                  </RHFSelect>
+                )}
                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
                   <RHFTextField name="wifiPassword" label="Wifi Password" />
                   <RHFTextField name="taxValue" label="Tax %" type="number" />
