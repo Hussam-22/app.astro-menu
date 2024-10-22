@@ -104,7 +104,10 @@ function StaffLink() {
       <Alert severity="warning" sx={{ mb: 2 }}>
         <AlertTitle>Note</AlertTitle>
         <Typography>
-          For extra layer of protection, each staff has its own dashboard access link
+          - For extra layer of protection, each staff has its own dashboard access link
+        </Typography>
+        <Typography>
+          {`- Instead of using waitstaff names, you may name them by devices or roles, like "iPad-1" or "kitchen-1"`}
         </Typography>
       </Alert>
 
