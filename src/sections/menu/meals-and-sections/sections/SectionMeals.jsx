@@ -4,18 +4,19 @@ import { useParams } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
+  Box,
   Card,
   Stack,
-  Button,
-  Avatar,
   Switch,
-  Divider,
+  Avatar,
+  Button,
   Tooltip,
+  Divider,
   useTheme,
   FormGroup,
-  IconButton,
-  CardHeader,
   Typography,
+  CardHeader,
+  IconButton,
   FormControlLabel,
 } from '@mui/material';
 
@@ -234,7 +235,13 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                 />
                 <Stack direction="column" spacing={0.25} sx={{ px: 1, flexGrow: 1 }}>
                   <Typography variant="subtitle2">{meal.title}</Typography>
-                  <Stack direction="row" spacing={2}>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(5, minmax(min-content, 1fr))',
+                      gap: 2,
+                    }}
+                  >
                     {sectionInfo.meals
                       .find((sectionMeal) => sectionMeal.docID === meal.docID)
                       .portions.map((portion, i) => (
@@ -242,7 +249,7 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                           {portion.portionSize} - {portion.price}
                         </Label>
                       ))}
-                  </Stack>
+                  </Box>
                   {!meal.isActive && (
                     <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 1 }}>
                       <Iconify icon="ep:warning-filled" sx={{ color: 'error.main' }} />

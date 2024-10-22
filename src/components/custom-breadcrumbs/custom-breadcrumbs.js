@@ -27,7 +27,7 @@ export default function CustomBreadcrumbs({
 
   return (
     <Box sx={{ borderBottom: `dashed 1px ${theme.palette.divider}`, pb: 1, mb: 2, ...sx }}>
-      <Stack direction="row" alignItems="flex-end">
+      <Stack direction={{ xs: 'column-reverse', sm: 'row' }} alignItems="space-between">
         <Box sx={{ flexGrow: 1 }}>
           {/* HEADING */}
           {heading && (

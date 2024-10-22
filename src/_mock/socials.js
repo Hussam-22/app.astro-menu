@@ -64,7 +64,7 @@ export const SOCIAL_ICONS = [
     name: 'Google Review',
     icon: 'devicon:google',
     color: '#000000',
-    helperText: 'Adding the Link will show Google Review button in menu "view order" drawer',
+    helperText: 'Adding the Link will show Google Review button in the menu',
   },
   {
     value: 'linkTree',

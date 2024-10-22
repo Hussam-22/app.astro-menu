@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Card, Grid, Stack, Typography } from '@mui/material';
+import { Box, Card, Grid, Stack, Typography } from '@mui/material';
 
 import { useParams } from 'src/routes/hook';
 import { useGetBranchInfo } from 'src/hooks/use-get-branch-info';
@@ -37,7 +37,7 @@ function BranchStatistics() {
         <Stack
           direction="row"
           spacing={2}
-          sx={{ pl: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
+          sx={{ justifyContent: 'flex-end', alignItems: 'center' }}
         >
           <Typography variant="h6" color="secondary">
             Change Period
@@ -51,17 +51,33 @@ function BranchStatistics() {
           />
         </Stack>
       </Grid>
-      <SingleStatisticCard title="Total Orders" value={totalOrders} unit="Orders" />
-      <SingleStatisticCard title="Tables Turnover" value={totalTurnoverStr} />
-      <SingleStatisticCard title="Avg Table Turnover" value={averageTurnoverStr} />
-      <SingleStatisticCard title="Total Income" value={totalIncome.toFixed(2)} unit={currency} />
-      <SingleStatisticCard
-        title="Avg Income per Order"
-        value={avgIncomePerOrder.toFixed(2)}
-        unit={currency}
-      />
-      <SingleStatisticCard title="Total Scans" value={totalScans} unit="scans" />
-
+      <Grid item xs={12} md={12}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: 'repeat(2, 1fr)',
+              sm: 'repeat(auto-fit, minmax(175px,1fr))',
+            },
+            gap: 2,
+          }}
+        >
+          <SingleStatisticCard title="Total Orders" value={totalOrders} unit="Orders" />
+          <SingleStatisticCard title="Tables Turnover" value={totalTurnoverStr} />
+          <SingleStatisticCard title="Avg Table Turnover" value={averageTurnoverStr} />
+          <SingleStatisticCard
+            title="Total Income"
+            value={totalIncome.toFixed(2)}
+            unit={currency}
+          />
+          <SingleStatisticCard
+            title="Avg Income per Order"
+            value={avgIncomePerOrder.toFixed(2)}
+            unit={currency}
+          />
+          <SingleStatisticCard title="Total Scans" value={totalScans} unit="scans" />
+        </Box>
+      </Grid>
       <Grid item xs={12} md={6}>
         <ScansUsageLinear month={month} year={year} />
       </Grid>
@@ -91,18 +107,16 @@ SingleStatisticCard.propTypes = {
 
 function SingleStatisticCard({ title, value, unit, note }) {
   return (
-    <Grid item xs={12} md={2}>
-      <Card sx={{ p: 2 }}>
-        <Typography variant="caption">{title}</Typography>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Typography variant="h6" color="secondary">
-            {value}
-          </Typography>
-          <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-            {unit}
-          </Typography>
-        </Stack>
-      </Card>
-    </Grid>
+    <Card sx={{ p: 2 }}>
+      <Typography variant="caption">{title}</Typography>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Typography variant="h6" color="secondary">
+          {value}
+        </Typography>
+        <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+          {unit}
+        </Typography>
+      </Stack>
+    </Card>
   );
 }

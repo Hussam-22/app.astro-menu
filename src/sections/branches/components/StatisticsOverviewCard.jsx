@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@tanstack/react-query';
 
-import { Card, Stack, Divider } from '@mui/material';
+import { Box, Card } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { fShortenNumber } from 'src/utils/format-number';
@@ -67,16 +67,15 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
 
   return (
     <Card sx={{ py: 1 }}>
-      <Stack
-        direction="row"
-        divider={
-          <Divider
-            orientation="horizontal"
-            flexItem
-            sx={{ borderStyle: 'dashed', my: isMobile && 1 }}
-          />
-        }
-        justifyContent="space-evenly"
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: 'repeat(2,1fr)', sm: 'repeat(4,1fr)' },
+          gap: 1,
+          p: 2,
+          justifyItems: 'center',
+          alignItems: 'center',
+        }}
       >
         <OverviewCard
           title="Active Menu"
@@ -106,7 +105,7 @@ function StatisticsOverviewCard({ tableInfo, month, year }) {
           subtitle={totalScans ? fShortenNumber(totalScans) : 0}
           icon="clarity:qr-code-line"
         />
-      </Stack>
+      </Box>
     </Card>
   );
 }

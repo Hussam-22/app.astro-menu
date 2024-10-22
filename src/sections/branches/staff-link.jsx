@@ -87,28 +87,28 @@ function StaffLink() {
   return (
     <>
       <Card sx={{ p: 3, mb: 2 }}>
-        <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%' }}>
+        <Stack direction={{ xs: 'column-reverse', sm: 'row' }} spacing={1} alignItems="center">
           <TextField
             label="Search Staff by Name"
             fullWidth
             onChange={(event) => onSearchInputChange(event)}
-            sx={{ width: '30%' }}
+            sx={{ width: { sm: '30%' } }}
           />
           <Divider orientation="vertical" flexItem sx={{ borderColor: 'grey.400' }} />
-          <Box sx={{ width: '70%' }}>
+          <Box sx={{ width: { sm: '70%' } }}>
             <AddStaffDropDown staffsList={staffsList} branchID={branchID} />
           </Box>
         </Stack>
       </Card>
 
-      <Alert severity="info" sx={{ mb: 2 }}>
+      <Alert severity="warning" sx={{ mb: 2 }}>
         <AlertTitle>Note</AlertTitle>
         <Typography>
           For extra layer of protection, each staff has its own dashboard access link
         </Typography>
       </Alert>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { sm: 'repeat(2,1fr)' }, gap: 2 }}>
         {filteredStaffList.map((staff) => (
           <Card sx={{ p: 3 }} key={staff.docID}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -245,7 +245,7 @@ function ActionButtons({ staffID, status }) {
 
   return (
     <>
-      <Stack direction="row" spacing={1} justifyContent="flex-end">
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="flex-end">
         <LoadingButton
           variant="soft"
           size="small"
@@ -346,7 +346,7 @@ function AddStaffDropDown({ staffsList, branchID }) {
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack direction="row" spacing={1} alignItems="center">
         <RHFMultiSelect
-          sx={{ width: '75%' }}
+          sx={{ width: { sm: '75%', xs: 200 } }}
           disabled={availableStaffs.length === 0}
           chip
           checkbox
@@ -360,7 +360,7 @@ function AddStaffDropDown({ staffsList, branchID }) {
           loading={isPending}
           variant="contained"
           color="secondary"
-          sx={{ width: '25%', minWidth: 'fit-content' }}
+          sx={{ width: { sm: '25%' }, minWidth: 'fit-content' }}
         >
           Add to branch
         </LoadingButton>

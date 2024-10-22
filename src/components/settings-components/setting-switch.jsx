@@ -1,14 +1,18 @@
 import PropTypes from 'prop-types';
 
-import { Stack, useTheme, Typography } from '@mui/material';
+import { Box, Stack, useTheme, Typography } from '@mui/material';
 
 import { RHFSwitch } from 'src/components/hook-form';
 
 function SettingSwitch({ title, description, label, name, isDanger }) {
   const theme = useTheme();
   return (
-    <Stack direction="row" justifyContent="space-between" alignItems="center">
-      <Stack direction="column" spacing={0} sx={{ px: 1, width: '75%' }}>
+    <Stack
+      direction={{ xs: 'column', sm: 'row' }}
+      justifyContent="space-between"
+      alignItems={{ xs: 'start', sm: 'center' }}
+    >
+      <Stack direction="column" spacing={0} sx={{ px: 1, width: { xs: 1, sm: '75%' } }}>
         <Typography
           color={isDanger ? 'error' : 'inherit'}
           sx={{ fontWeight: theme.typography.fontWeightBold }}
@@ -17,7 +21,9 @@ function SettingSwitch({ title, description, label, name, isDanger }) {
         </Typography>
         <Typography variant="body2">{description}</Typography>
       </Stack>
-      <RHFSwitch name={name} labelPlacement="start" label={label} color="success" />
+      <Box sx={{ alignSelf: 'flex-end' }}>
+        <RHFSwitch name={name} labelPlacement="start" label={label} color="success" />
+      </Box>
     </Stack>
   );
 }

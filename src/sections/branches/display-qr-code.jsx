@@ -2,7 +2,6 @@
 import { useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useMemo, useEffect } from 'react';
-import { QRCodeCanvas } from 'qrcode.react';
 import { enqueueSnackbar } from 'notistack';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -13,21 +12,17 @@ import {
   Card,
   Alert,
   Stack,
-  Button,
   Divider,
-  useTheme,
   MenuItem,
-  TextField,
   AlertTitle,
   Typography,
-  IconButton,
   LinearProgress,
 } from '@mui/material';
 
-import { DOMAINS } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
+import QRCodeCard from 'src/sections/branches/components/qr-code-card';
 import FormProvider, { RHFSwitch, RHFSelect } from 'src/components/hook-form';
 import StatisticsOverviewCard from 'src/sections/branches/components/StatisticsOverviewCard';
 
@@ -35,7 +30,6 @@ const month = new Date().getMonth();
 const year = new Date().getFullYear();
 
 function DisplayQRCode() {
-  const theme = useTheme();
   const { id: branchID } = useParams();
   const { fsGetDisplayTableInfo, user, fsGetAllMenus, fsUpdateDisplayQR } = useAuthContext();
   const { isMenuOnly } = useGetProductInfo();
@@ -94,23 +88,6 @@ function DisplayQRCode() {
   const onSubmit = async (formData) => {
     mutate(() => fsUpdateDisplayQR(tableInfo.branchID, tableInfo.docID, { ...formData }));
     reset(formData);
-  };
-
-  const qrURL = `${DOMAINS.menu}/${user.businessProfileID}/${tableInfo?.branchID}/${tableInfo?.docID}/home`;
-
-  const copUrlHandler = () => {
-    navigator.clipboard.writeText(qrURL);
-  };
-
-  const downloadQR = () => {
-    const canvas = document.getElementById(tableInfo.index);
-    const pngUrl = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
-    const downloadLink = document.createElement('a');
-    downloadLink.href = pngUrl;
-    downloadLink.download = `display-only-qr.png`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
   };
 
   if (!tableInfo) return <LinearProgress color="secondary" />;
@@ -216,49 +193,7 @@ function DisplayQRCode() {
             </Card>
           </Grid>
           <Grid xs={12} sm={4}>
-            <Card sx={{ p: 3, height: '100%' }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 1.5,
-                  alignItems: 'center',
-                  mt: 2,
-                }}
-              >
-                <QRCodeCanvas
-                  value={qrURL}
-                  size={200}
-                  id={tableInfo?.index}
-                  style={{
-                    border: `solid 5px ${theme.palette.primary.main}`,
-                    borderRadius: 5,
-                    padding: 10,
-                  }}
-                />
-                <Button
-                  variant="text"
-                  onClick={downloadQR}
-                  startIcon={<Iconify icon="uil:image-download" />}
-                >
-                  Download QR
-                </Button>
-                <TextField
-                  name="URL"
-                  value={qrURL}
-                  size="small"
-                  fullWidth
-                  aria-readonly
-                  InputProps={{
-                    endAdornment: (
-                      <IconButton size="small" sx={{ p: 0, m: 0 }} onClick={copUrlHandler}>
-                        <Iconify icon="mdi:clipboard-multiple-outline" />
-                      </IconButton>
-                    ),
-                  }}
-                />
-              </Box>
-            </Card>
+            <QRCodeCard tableInfo={tableInfo} />
           </Grid>
         </Grid>
       </Box>

@@ -50,12 +50,12 @@ function SocialLinkItem({ name, label, icon, helperText }) {
 
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      <Iconify icon={icon} sx={{ width: 32, height: 32, borderRadius: 1 }} />
+      <Iconify icon={icon} sx={{ width: 32, height: 32 }} />
 
       <Stack direction="column" flexGrow={1}>
         <RHFTextField name={name} label={label} />
         {helperText && !isMenuOnly && (
-          <Typography variant="caption" color="secondary.main">
+          <Typography variant="caption" color="secondary.main" sx={{ pl: 1 }}>
             *{helperText}
           </Typography>
         )}

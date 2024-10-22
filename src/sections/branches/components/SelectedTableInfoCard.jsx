@@ -4,26 +4,17 @@ import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useMemo, useEffect } from 'react';
-import { QRCodeCanvas } from 'qrcode.react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import {
-  Box,
-  Card,
-  Stack,
-  Button,
-  useTheme,
-  TextField,
-  IconButton,
-  Typography,
-} from '@mui/material';
+import { Card, Stack, useTheme, Typography } from '@mui/material';
 
 import { DOMAINS } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import QRCodeCard from 'src/sections/branches/components/qr-code-card';
 import FormProvider, { RHFSwitch, RHFTextField } from 'src/components/hook-form';
 
 SelectedTableInfoCard.propTypes = {
@@ -120,9 +111,6 @@ function SelectedTableInfoCard({ tableInfo }) {
                   sx={{ m: 0 }}
                 />
               </Stack>
-              {/* <Stack direction="column" spacing={2}>
-                <RHFTextField name="title" label="QR Nickname (Shows on Customers Menu)" />
-              </Stack> */}
               <RHFTextField
                 name="note"
                 label="Note (Shows on Waiter Staff Dashboard Only)"
@@ -147,49 +135,7 @@ function SelectedTableInfoCard({ tableInfo }) {
         </Card>
       </Grid>
       <Grid xs={12} sm={4}>
-        <Card sx={{ p: 1, height: '100%' }}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 0,
-              alignItems: 'center',
-              mt: 2,
-            }}
-          >
-            <QRCodeCanvas
-              value={qrURL}
-              size={200}
-              id={tableInfo?.index}
-              style={{
-                border: `solid 5px ${theme.palette.primary.main}`,
-                borderRadius: 5,
-                padding: 10,
-              }}
-            />
-            <Button
-              variant="text"
-              onClick={downloadQR}
-              startIcon={<Iconify icon="uil:image-download" />}
-            >
-              Download QR
-            </Button>
-            <TextField
-              name="URL"
-              value={qrURL}
-              size="small"
-              fullWidth
-              aria-readonly
-              InputProps={{
-                endAdornment: (
-                  <IconButton size="small" sx={{ p: 0, m: 0 }} onClick={copUrlHandler}>
-                    <Iconify icon="mdi:clipboard-multiple-outline" />
-                  </IconButton>
-                ),
-              }}
-            />
-          </Box>
-        </Card>
+        <QRCodeCard tableInfo={tableInfo} />
       </Grid>
     </Grid>
   );

@@ -35,24 +35,21 @@ function TablesCard({ tables, onTableClick, selectedTableID }) {
     <Grid xs={12}>
       <Stack direction="column" spacing={1}>
         {!isMenuOnly && (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, flexWrap: 'wrap' }}>
-            <Button
-              variant="text"
-              startIcon={<Iconify icon="uil:image-download" />}
-              onClick={downloadAllTableQRImages}
-            >
-              Download All QR Images
-            </Button>
-          </Box>
+          <Button
+            variant="text"
+            startIcon={<Iconify icon="uil:image-download" />}
+            onClick={downloadAllTableQRImages}
+            sx={{ alignSelf: 'flex-end' }}
+          >
+            Download All QR Images
+          </Button>
         )}
         <Card sx={{ p: 2 }}>
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '10px 20px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(32px, 1fr))',
+              gap: 1,
             }}
           >
             {[...tables]

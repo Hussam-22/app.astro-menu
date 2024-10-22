@@ -36,26 +36,35 @@ export default function TablesOccupation({ branchID, month, year }) {
     .slice(0, 10);
 
   const contentToRender = (
-    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 1, p: 3 }}>
-      {tablesScansUsage.map((table) => {
-        if (!table?.statisticsSummary?.scans?.[year]?.[month]) return null;
-        return (
-          <Box
-            key={table.docID}
-            sx={{ border: `dashed 1px ${theme.palette.divider}`, borderRadius: 1, p: 1 }}
-          >
-            <Typography>Table# {table.index}</Typography>
-            <Stack direction="row" spacing={1}>
-              <Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
-                Total Scans:
-              </Typography>
-              <Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
-                {table?.statisticsSummary?.scans?.[year]?.[month] || 0}
-              </Typography>
-            </Stack>
-          </Box>
-        );
-      })}
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit,minmax(100px,1fr))',
+        gap: 1,
+        p: 3,
+      }}
+    >
+      {tablesScansUsage
+        .filter((table) => table.index !== 0)
+        .map((table) => {
+          if (!table?.statisticsSummary?.scans?.[year]?.[month]) return null;
+          return (
+            <Box
+              key={table.docID}
+              sx={{ border: `dashed 1px ${theme.palette.divider}`, borderRadius: 1, p: 1 }}
+            >
+              <Typography>Table# {table.index}</Typography>
+              <Stack direction="row" spacing={1}>
+                <Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
+                  Total Scans:
+                </Typography>
+                <Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
+                  {table?.statisticsSummary?.scans?.[year]?.[month] || 0}
+                </Typography>
+              </Stack>
+            </Box>
+          );
+        })}
     </Box>
   );
 

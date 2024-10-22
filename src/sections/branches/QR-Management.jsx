@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { Stack, Divider, useTheme } from '@mui/material';
+import { Stack, useTheme } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import TablesCard from 'src/sections/branches/components/TablesCard';
@@ -44,10 +44,6 @@ function QRManagement() {
       )}
 
       {selectedTable && <SelectedTableInfoCard tableInfo={selectedTable} />}
-
-      {selectedTable && selectedTable.index !== 0 && (
-        <Divider sx={{ borderStyle: 'dashed', borderColor: theme.palette.divider }} />
-      )}
     </Stack>
   );
 }
