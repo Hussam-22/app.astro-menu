@@ -81,12 +81,12 @@ export const typography = {
   body1: {
     fontWeight: 300,
     lineHeight: 1.5,
-    fontSize: pxToRem(14),
+    fontSize: pxToRem(16),
   },
   body2: {
     fontWeight: 300,
     lineHeight: 22 / 14,
-    fontSize: pxToRem(12),
+    fontSize: pxToRem(14),
   },
   caption: {
     lineHeight: 1.5,

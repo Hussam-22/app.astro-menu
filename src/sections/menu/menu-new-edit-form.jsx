@@ -14,7 +14,8 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
-import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
+import SettingSwitch from 'src/components/settings-components/setting-switch';
+import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 MenuNewEditForm.propTypes = {
   menuInfo: PropTypes.object,
@@ -41,7 +42,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
     error,
   } = useQuery({
     queryKey: ['menus'],
-    queryFn: fsGetAllMenus,
+    queryFn: () => fsGetAllMenus(),
   });
 
   const defaultValues = useMemo(
@@ -51,7 +52,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
       description: menuInfo?.description || '',
       mostOrderedMeals: menuInfo?.mostOrderedMeals || 0,
       newMenuID: '',
-      isDefault: !!menuInfo?.isDefault,
+      isDefault: menuInfo?.isDefault ? menuInfo.isDefault : false,
     }),
     [menuInfo]
   );
@@ -132,20 +133,23 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
             spacing={1}
             divider={<Divider sx={{ borderStyle: 'dashed' }} />}
           >
-            <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
-              <Stack direction="column" sx={{ flexGrow: 1 }}>
-                <Typography sx={{ fontWeight: 500 }}>Default Menu</Typography>
-                <Typography variant="body2">
-                  Set this menu as the default menu for all new branches tables
-                </Typography>
-              </Stack>
-              <RHFSwitch name="isDefault" />
-            </Stack>
+            <SettingSwitch
+              title="Default Menu"
+              description="Set this menu as the default menu for all new branches tables"
+              label="Default Menu"
+              name="isDefault"
+              isDanger={false}
+            />
 
             {!isMenuOnly && (
-              <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={2}
+                alignItems="center"
+                justifyContent="space-between"
+              >
                 <Stack direction="column" sx={{ flexGrow: 1 }}>
-                  <Typography sx={{ fontWeight: 500 }}>Most Ordered Meals</Typography>
+                  <Typography sx={{ fontWeight: 600 }}>Most Ordered Meals</Typography>
                   <Typography variant="body2">
                     {` - Show the number of "most ordered meals" in the menu, max is 10`}
                   </Typography>
@@ -157,12 +161,12 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
                   name="mostOrderedMeals"
                   label="# of Meals"
                   type="number"
-                  sx={{ flexShrink: 1, width: '10%' }}
+                  sx={{ flexShrink: 1, width: { sm: '10%' } }}
                 />
               </Stack>
             )}
 
-            <Stack direction="row" spacing={3}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
               <Stack direction="column">
                 <Typography color="error" sx={{ fontWeight: 700 }}>
                   Delete Menu
@@ -177,7 +181,7 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
                   </Typography>
                 )}
                 {menusList.length !== 1 && (
-                  <Typography variant="caption">
+                  <Typography variant="body2">
                     {`You need to specify the 'Revert to Menu' to delete this menu, QRs across all
                   branches using `}
                     <Label variant="soft" color="primary">
@@ -187,13 +191,17 @@ export default function MenuNewEditForm({ menuInfo, onClose }) {
                   </Typography>
                 )}
               </Stack>
-              <Stack direction="column" spacing={2} alignSelf="flex-end" sx={{ flexGrow: 1 }}>
+              <Stack
+                direction="row"
+                spacing={2}
+                alignSelf="flex-end"
+                sx={{ flexGrow: 1, width: { xs: '100%', sm: '50%' } }}
+              >
                 {menusList.length !== 0 && menusList.length > 1 && (
                   <RHFSelect
                     name="newMenuID"
                     label="Revert to Menu"
                     sx={{ bgcolor: 'common.white', borderRadius: 1 }}
-                    size="small"
                   >
                     <MenuItem value="" />
                     {menusList

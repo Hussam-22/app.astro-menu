@@ -904,6 +904,7 @@ export function AuthProvider({ children }) {
   const fsUpdateQRsMenuID = useCallback(
     async (oldMenuID, newMenuID) => {
       // this function is used to update all QRs menuID across all branches after deleting their menu
+
       const docRef = query(
         collection(DB, `businessProfiles/${state.user.businessProfileID}/branches`)
       );
@@ -914,7 +915,14 @@ export function AuthProvider({ children }) {
 
       const batch = writeBatch(DB);
 
-      branchIDs.forEach(async (branchID) => {
+      // Collect all promises for updating tables
+      const updatePromises = branchIDs.map(async (branchID) => {
+        const branchRef = doc(
+          DB,
+          `businessProfiles/${state.user.businessProfileID}/branches/${branchID}`
+        );
+        batch.update(branchRef, { menuID: newMenuID });
+
         const tablesRef = query(
           collection(
             DB,
@@ -929,6 +937,10 @@ export function AuthProvider({ children }) {
         });
       });
 
+      // Wait for all update promises to complete
+      await Promise.all(updatePromises);
+
+      // Commit the batch
       await batch.commit();
     },
     [state]

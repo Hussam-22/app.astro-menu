@@ -9,7 +9,6 @@ import Drawer from '@mui/material/Drawer';
 import { Button, Divider, Typography } from '@mui/material';
 
 import Logo from 'src/components/logo';
-import Image from 'src/components/image';
 // components
 import SvgColor from 'src/components/svg-color';
 import { useAuthContext } from 'src/auth/hooks';
@@ -56,6 +55,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
   const renderContent = (
     <Scrollbar
       sx={{
+        pb: 3,
         height: 1,
         '& .simplebar-content': {
           height: 1,
@@ -73,35 +73,29 @@ export default function NavVertical({ openNav, onCloseNav }) {
       >
         <Stack direction="column">
           <Logo />
-          <Typography sx={{ fontWeight: 600, mt: 1 }}>
-            Welcome back, {businessProfile.ownerInfo.displayName}
+          <Typography variant="overline" sx={{ mt: 1, color: 'text.disabled', fontWeight: 400 }}>
+            Welcome back
           </Typography>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography variant="body2">On {businessProfile.productInfo.name} Plan</Typography>
-            <Image
-              src={businessProfile.subscriptionInfo.product_details.images[0]}
-              sx={{ width: 22, height: 22 }}
-            />
-          </Stack>
+          <Typography sx={{ fontWeight: 600 }}>{businessProfile.ownerInfo.displayName}</Typography>
         </Stack>
       </Stack>
 
-      <Divider sx={{ borderStyle: 'dashed', my: 1 }} />
+      <Divider sx={{ borderStyle: 'dashed', mb: 1 }} />
 
       <NavSectionVertical data={navData} />
 
       <Divider sx={{ borderStyle: 'dashed', my: 2 }} />
-
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={handleLogout}
-        sx={{ mx: 2, my: 2 }}
-        endIcon={<SvgColor src="/assets/icons/system/logout.svg" />}
-      >
-        Log Out
-      </Button>
-      <Divider sx={{ borderStyle: 'dashed', my: 2 }} />
+      <Box sx={{ mx: 2, mb: 2 }}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleLogout}
+          endIcon={<SvgColor src="/assets/icons/system/logout.svg" />}
+          fullWidth
+        >
+          Log Out
+        </Button>
+      </Box>
 
       <Box
         sx={{

@@ -12,7 +12,7 @@ function SettingSwitch({ title, description, label, name, isDanger }) {
       justifyContent="space-between"
       alignItems={{ xs: 'start', sm: 'center' }}
     >
-      <Stack direction="column" spacing={0} sx={{ px: 1, width: { xs: 1, sm: '75%' } }}>
+      <Stack direction="column" spacing={0} sx={{ pr: 1, width: { xs: 1, sm: '75%' } }}>
         <Typography
           color={isDanger ? 'error' : 'inherit'}
           sx={{ fontWeight: theme.typography.fontWeightBold }}

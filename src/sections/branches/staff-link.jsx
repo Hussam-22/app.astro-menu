@@ -9,21 +9,24 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { LoadingButton } from '@mui/lab';
 import {
   Box,
+  Link,
   Card,
-  Alert,
   Stack,
+  Alert,
   Divider,
   useTheme,
   TextField,
-  AlertTitle,
-  IconButton,
   Typography,
+  IconButton,
+  AlertTitle,
 } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
 import Image from 'src/components/image';
 import { DOMAINS } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
+import { RouterLink } from 'src/routes/components';
 import generatePassCode from 'src/utils/generate-passcode';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import FormProvider, { RHFMultiSelect } from 'src/components/hook-form';
@@ -84,22 +87,38 @@ function StaffLink() {
       );
   };
 
+  const noStaffCard = (
+    <Card sx={{ p: 3, mb: 2, textAlign: 'center' }}>
+      <Link
+        component={RouterLink}
+        href={paths.dashboard.staffs.new}
+        sx={{ textDecoration: 'underline' }}
+      >
+        No Staff ?, Add New Staff From Here
+      </Link>
+    </Card>
+  );
+
+  const searchAddStaff = (
+    <Card sx={{ p: 3, mb: 2 }}>
+      <Stack direction={{ xs: 'column-reverse', sm: 'row' }} spacing={1} alignItems="center">
+        <TextField
+          label="Search Staff by Name"
+          fullWidth
+          onChange={(event) => onSearchInputChange(event)}
+          sx={{ width: { sm: '30%' } }}
+        />
+        <Divider orientation="vertical" flexItem sx={{ borderColor: 'grey.400' }} />
+        <Box sx={{ width: { sm: '70%' } }}>
+          <AddStaffDropDown staffsList={staffsList} branchID={branchID} />
+        </Box>
+      </Stack>
+    </Card>
+  );
+
   return (
     <>
-      <Card sx={{ p: 3, mb: 2 }}>
-        <Stack direction={{ xs: 'column-reverse', sm: 'row' }} spacing={1} alignItems="center">
-          <TextField
-            label="Search Staff by Name"
-            fullWidth
-            onChange={(event) => onSearchInputChange(event)}
-            sx={{ width: { sm: '30%' } }}
-          />
-          <Divider orientation="vertical" flexItem sx={{ borderColor: 'grey.400' }} />
-          <Box sx={{ width: { sm: '70%' } }}>
-            <AddStaffDropDown staffsList={staffsList} branchID={branchID} />
-          </Box>
-        </Stack>
-      </Card>
+      {staffsList.length === 0 ? noStaffCard : searchAddStaff}
 
       <Alert severity="warning" sx={{ mb: 2 }}>
         <AlertTitle>Note</AlertTitle>
