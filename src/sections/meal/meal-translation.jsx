@@ -5,8 +5,8 @@ import { Box, Card, Grid, Stack, Tooltip, CardHeader, IconButton, Typography } f
 
 import Iconify from 'src/components/iconify';
 import { LANGUAGE_CODES } from 'src/locales/languageCodes';
-import DialogEditTitle from 'src/components/translation-cards/DialogEditTitle';
 import TranslationCard from 'src/components/translation-cards/translation-card';
+import EditMealTitleDescDrawer from 'src/sections/meal/drawer/edit-meal-title-desc-drawer';
 import TranslationCardSkeleton from 'src/components/translation-cards/translation-skeleton';
 
 MealTranslation.propTypes = { mealInfo: PropTypes.object, isFetching: PropTypes.bool };
@@ -49,9 +49,11 @@ export default function MealTranslation({ mealInfo, isFetching }) {
         </Stack>
       </Grid>
 
-      {isOpenModal && (
+      <EditMealTitleDescDrawer isOpen={isOpenModal} onClose={closeModal} mealInfo={mealInfo} />
+
+      {/* {isOpenModal && (
         <DialogEditTitle isOpen={isOpenModal} onClose={closeModal} data={mealInfo} showTitle />
-      )}
+      )} */}
     </Grid>
   );
 }

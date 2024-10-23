@@ -11,14 +11,15 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import {
   Box,
   Card,
-  Alert,
   Stack,
-  Button,
+  Alert,
   Dialog,
+  Button,
+  Tooltip,
   Divider,
   useTheme,
-  AlertTitle,
   Typography,
+  AlertTitle,
   DialogTitle,
   DialogContent,
 } from '@mui/material';
@@ -27,14 +28,15 @@ import { paths } from 'src/routes/paths';
 import Label from 'src/components/label';
 import { useRouter } from 'src/routes/hook';
 import Iconify from 'src/components/iconify';
-import { useAuthContext } from 'src/auth/hooks';
 import { fData } from 'src/utils/format-number';
 import { delay } from 'src/utils/promise-delay';
+import { useAuthContext } from 'src/auth/hooks';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useGetProductInfo } from 'src/hooks/use-get-product';
 import MealPortionAdd from 'src/sections/meal/meal-portion-add';
+import SettingSwitch from 'src/components/settings-components/setting-switch';
+import FormProvider, { RHFUpload, RHFTextField } from 'src/components/hook-form';
 import MealLabelNewEditForm from 'src/sections/meal-labels/meal-label-new-edit-form';
-import FormProvider, { RHFSwitch, RHFUpload, RHFTextField } from 'src/components/hook-form';
 
 MealNewEditForm.propTypes = { mealInfo: PropTypes.object };
 
@@ -276,29 +278,36 @@ function MealNewEditForm({ mealInfo }) {
           <Grid xs={12}>
             <Stack spacing={3}>
               <Card sx={{ p: 3 }}>
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{ mb: 2 }}
+                <Typography variant="h4" sx={{ display: 'inline-block' }}>
+                  Meal Labels
+                </Typography>
+                <Tooltip
+                  disableFocusListener
+                  title={
+                    <Typography>
+                      {`Empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
+                    </Typography>
+                  }
                 >
-                  <Typography variant="h4">Meal Labels</Typography>
+                  <Iconify icon="flat-color-icons:info" width={20} height={20} />
+                </Tooltip>
+                {/* <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <Button
                     onClick={() => setIsOpen(true)}
                     variant="contained"
                     color="inherit"
                     startIcon={<Iconify icon="eva:plus-fill" />}
                   >
-                    Add New Meal Label
+                    New Meal Label
                   </Button>
-                </Stack>
+                </Stack> */}
 
                 <Box
                   sx={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
                     gap: 1,
-                    mt: 3,
+                    mt: 1,
                     mb: 1.5,
                   }}
                 >
@@ -330,10 +339,6 @@ function MealNewEditForm({ mealInfo }) {
                     {errors?.mealLabels?.message}
                   </Typography>
                 )}
-                <Divider sx={{ mb: 1, border: `dashed 1px ${theme.palette.divider}` }} />
-                <Typography variant="body2">
-                  {`Empower customers to efficiently search for dishes based on specific criteria. Customers have the flexibility to search for meals labeled with specific attributes. For instance, a customer can easily find all meals labeled as "Vegan" or explore a combination of labels, such as searching for meals labeled as both "Vegan" and "Spicy." This functionality enhances the search experience, allowing users to quickly discover meals that align with their preferences and dietary choices.`}
-                </Typography>
               </Card>
 
               <MealPortionAdd />
@@ -347,44 +352,26 @@ function MealNewEditForm({ mealInfo }) {
                   spacing={1}
                   divider={<Divider sx={{ borderStyle: 'dashed' }} />}
                 >
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    sx={{ px: 1 }}
-                  >
-                    <Typography
-                      sx={{ fontWeight: 500 }}
-                    >{`Show "New" Label on the Meal Image`}</Typography>
-                    <RHFSwitch name="isNew" label="New" labelPlacement="start" />
-                  </Stack>
+                  <SettingSwitch
+                    title='Show "New" Label'
+                    description={`Show "New" Label on the Meal Imag`}
+                    name="isNew"
+                    label={values.isNew ? 'Show' : 'Hide'}
+                  />
 
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    sx={{ px: 1 }}
-                    spacing={3}
-                  >
-                    <Stack direction="column">
-                      <Typography sx={{ fontWeight: 500 }}>Meal Status</Typography>
-                      <Typography variant="body2">
-                        Disabling a meal will remove it from all menus where it appears, providing a
+                  <SettingSwitch
+                    title="Meal Status"
+                    description={`Disabling a meal will remove it from all menus where it appears, providing a
                         quick and efficient way to hide the meal across all menus without the need
                         to manually remove it from each one. You can easily re-enable the meal at
-                        any time to make it visible again.
-                      </Typography>
-                    </Stack>
-                    <RHFSwitch
-                      name="isActive"
-                      label={values.isActive ? 'Active' : 'Disabled'}
-                      labelPlacement="start"
-                    />
-                  </Stack>
+                        any time to make it visible again.`}
+                    name="isActive"
+                    label={values.isActive ? 'Active' : 'Disabled'}
+                  />
 
                   {mealInfo?.docID && (
                     <Stack
-                      direction="row"
+                      direction={{ xs: 'column', sm: 'row' }}
                       justifyContent="space-between"
                       alignItems="center"
                       sx={{
@@ -407,7 +394,7 @@ function MealNewEditForm({ mealInfo }) {
                         variant="contained"
                         onClick={() => setIsDeleteDialogOpen(true)}
                         color="error"
-                        sx={{ whiteSpace: 'nowrap' }}
+                        sx={{ whiteSpace: 'nowrap', alignSelf: { xs: 'flex-end', sm: 'center' } }}
                       >
                         Delete Meal
                       </Button>

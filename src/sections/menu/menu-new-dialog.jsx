@@ -4,9 +4,15 @@ import { useSnackbar } from 'notistack';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
-import { Dialog, TextField, IconButton, DialogTitle, DialogContent } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  TextField,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+} from '@mui/material';
 
-import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { delay } from 'src/utils/promise-delay';
 
@@ -38,29 +44,26 @@ function MenuNewDialog({ isOpen, onClose }) {
   return (
     <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose}>
       <DialogTitle>Add New Menu</DialogTitle>
-      <IconButton onClick={onClose} sx={{ position: 'absolute', top: 20, right: 20 }}>
-        <Iconify icon="carbon:close-filled" />
-      </IconButton>
-      <DialogContent sx={{ pb: 2, px: 2 }}>
+      <DialogContent>
         <TextField
           onChange={(e) => setInputValue(e.target.value)}
           fullWidth
           label="Menu Title"
-          InputProps={{
-            endAdornment: (
-              <LoadingButton
-                loading={isPending}
-                variant="contained"
-                color="success"
-                onClick={mutate}
-                disabled={inputValue.trim() === ''}
-              >
-                Add
-              </LoadingButton>
-            ),
-          }}
+          sx={{ mt: 2 }}
         />
       </DialogContent>
+      <DialogActions>
+        <LoadingButton
+          loading={isPending}
+          variant="contained"
+          color="secondary"
+          onClick={mutate}
+          disabled={inputValue.trim() === ''}
+        >
+          Add
+        </LoadingButton>
+        <Button onClick={onClose}>Close</Button>
+      </DialogActions>
     </Dialog>
   );
 }

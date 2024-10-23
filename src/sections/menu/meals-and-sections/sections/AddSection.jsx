@@ -46,7 +46,7 @@ function AddSection({ sections }) {
       enqueueSnackbar('Section Add Successfully !!');
       reset();
       window.scrollTo({
-        top: document.body.scrollHeight,
+        top: document.documentElement.scrollHeight,
         behavior: 'smooth',
       });
     },

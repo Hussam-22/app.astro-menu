@@ -5,9 +5,8 @@ import {
   Box,
   Card,
   Table,
-  Button,
-  Container,
   TableBody,
+  Container,
   Typography,
   TableContainer,
   TablePagination,
@@ -117,11 +116,7 @@ function BranchListView() {
             name: 'Branches List',
           },
         ]}
-        action={
-          <Button onClick={handleAddNewBranch} variant="contained">
-            New Branch
-          </Button>
-        }
+        action={!isLoading && handleAddNewBranch}
       />
 
       <Card>
@@ -181,7 +176,7 @@ function BranchListView() {
         open={isOpen}
         onClose={() => setIsOpen(false)}
         closeText="Close"
-        title="Max Allowed Branched Reached !"
+        title="Max Branches Reached !"
         content={
           <Typography>
             You have reached your plan max allowed branches of{' '}

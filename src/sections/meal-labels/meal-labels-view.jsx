@@ -6,9 +6,8 @@ import {
   Card,
   Table,
   Dialog,
-  Button,
-  Container,
   TableBody,
+  Container,
   DialogTitle,
   DialogContent,
   TableContainer,
@@ -17,7 +16,6 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
@@ -36,7 +34,7 @@ import {
 } from 'src/components/table';
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Meal', align: 'center', width: '85%' },
+  { id: 'title', label: 'Meal', align: 'center', width: 'auto' },
   { id: 'actionButtons', label: '', align: 'center', width: '20%' },
 ];
 // ----------------------------------------------------------------------
@@ -88,15 +86,7 @@ function MealLabelsView() {
               name: 'Meal Labels List',
             },
           ]}
-          action={
-            <Button
-              variant="contained"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-              onClick={() => setIsOpen(true)}
-            >
-              New Meal Label
-            </Button>
-          }
+          action={() => setIsOpen(true)}
         />
 
         <Card>
@@ -155,15 +145,13 @@ function MealLabelsView() {
         </Card>
       </Container>
 
-      {isOpen && (
-        <Dialog fullWidth maxWidth="md" open={isOpen} onClose={onClose}>
-          <DialogTitle sx={{ pb: 2 }}>Add New Meal Label</DialogTitle>
+      <Dialog fullWidth maxWidth="md" open={isOpen} onClose={onClose}>
+        <DialogTitle sx={{ pb: 2 }}>Add New Meal Label</DialogTitle>
 
-          <DialogContent>
-            <MealLabelNewEditForm onClose={onClose} />
-          </DialogContent>
-        </Dialog>
-      )}
+        <DialogContent>
+          <MealLabelNewEditForm onClose={onClose} />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

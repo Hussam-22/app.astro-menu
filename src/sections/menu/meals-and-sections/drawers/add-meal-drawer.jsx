@@ -97,8 +97,8 @@ function AddMealDrawer({ onClose, isOpen, sectionID, allMeals }) {
 
       {filteredMeals.length === 0 && (
         <Stack spacing={2} alignItems="center" justifyContent="center" sx={{ p: 2 }}>
-          <Image src="/assets/illustrations/dashboard/cutlery-fork.svg" width={140} />
-          <Typography variant="overline" sx={{ textAlign: 'center' }}>
+          <Image src="/assets/illustrations/dashboard/cutlery-fork.svg" width={100} />
+          <Typography variant="body2" sx={{ textAlign: 'center' }}>
             All Meals are selected by other sections or your search returned nothing
           </Typography>
         </Stack>

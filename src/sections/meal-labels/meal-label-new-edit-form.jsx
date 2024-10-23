@@ -73,12 +73,12 @@ export default function MealLabelNewEditForm({ onClose, mealID }) {
       <Stack direction="column" spacing={2} sx={{ py: 2 }}>
         <RHFTextField name="title" label="Meal Label Title" />
         <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
-          <Button variant="outlined" color="inherit" onClick={onClose}>
-            Close
-          </Button>
-          <LoadingButton variant="contained" color="success" type="submit" loading={isPending}>
+          <LoadingButton variant="contained" color="secondary" type="submit" loading={isPending}>
             Add
           </LoadingButton>
+          <Button variant="soft" onClick={onClose}>
+            Close
+          </Button>
         </Stack>
       </Stack>
     </FormProvider>

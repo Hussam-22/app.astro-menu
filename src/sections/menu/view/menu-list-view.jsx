@@ -5,7 +5,6 @@ import {
   Box,
   Card,
   Table,
-  Button,
   TableBody,
   Container,
   TableContainer,
@@ -14,7 +13,6 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
@@ -115,15 +113,7 @@ function MenuListView() {
             name: 'Menus List',
           },
         ]}
-        action={
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={onNewMenu}
-          >
-            New Menu
-          </Button>
-        }
+        action={onNewMenu}
       />
 
       <Card>
@@ -180,13 +170,11 @@ function MenuListView() {
           />
         </Box>
       </Card>
-      {isDialogOpen && (
-        <MenuNewDialog
-          isOpen={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
-          menuData={menuData}
-        />
-      )}
+      <MenuNewDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        menuData={menuData}
+      />
     </Container>
   );
 }

@@ -4,9 +4,11 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import { useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+import { useTheme, IconButton } from '@mui/material';
+
+import Iconify from 'src/components/iconify';
 
 //
 import LinkItem from './link-item';
@@ -27,14 +29,32 @@ export default function CustomBreadcrumbs({
 
   return (
     <Box sx={{ borderBottom: `dashed 1px ${theme.palette.divider}`, pb: 1, mb: 2, ...sx }}>
-      <Stack direction={{ xs: 'column-reverse', sm: 'row' }} alignItems="space-between">
+      <Stack direction={{ xs: 'column-reverse', sm: 'row' }}>
         <Box sx={{ flexGrow: 1 }}>
           {/* HEADING */}
-          {heading && (
-            <Typography variant="h4" gutterBottom>
-              {heading}
-            </Typography>
-          )}
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            {heading && (
+              <Typography variant="h4" gutterBottom>
+                {heading}
+              </Typography>
+            )}
+            {action && (
+              <Box sx={{ flexShrink: 0 }}>
+                <IconButton
+                  color="secondary"
+                  onClick={action}
+                  disableFocusRipple
+                  disableTouchRipple
+                  disableRipple
+                >
+                  <Typography variant="body2" sx={{ px: 0.5 }}>
+                    Add
+                  </Typography>
+                  <Iconify icon="subway:add" sx={{ width: 24, height: 24 }} />{' '}
+                </IconButton>
+              </Box>
+            )}
+          </Stack>
 
           {/* BREADCRUMBS */}
           {!!links.length && (
@@ -50,8 +70,6 @@ export default function CustomBreadcrumbs({
             </Breadcrumbs>
           )}
         </Box>
-
-        {action && <Box sx={{ flexShrink: 0 }}> {action} </Box>}
       </Stack>
 
       {/* MORE LINK */}
@@ -77,7 +95,7 @@ export default function CustomBreadcrumbs({
 
 CustomBreadcrumbs.propTypes = {
   sx: PropTypes.object,
-  action: PropTypes.node,
+  action: PropTypes.func,
   links: PropTypes.array,
   heading: PropTypes.string,
   moreLink: PropTypes.array,

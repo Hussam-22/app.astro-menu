@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 
-import Button from '@mui/material/Button';
+import { Divider } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -21,9 +22,9 @@ export default function ConfirmDialog({
   return (
     <Dialog fullWidth maxWidth={maxWidth} open={open} onClose={onClose} {...other}>
       <DialogTitle sx={{ pb: 1 }}>{title}</DialogTitle>
-
+      <Divider sx={{ mb: 1, mx: 1, borderStyle: 'dashed' }} />
       {content && <DialogContent> {content} </DialogContent>}
-
+      <Divider sx={{ mt: 1, mx: 1, borderStyle: 'dashed' }} />
       <DialogActions>
         <Button variant="soft" onClick={onClose}>
           {closeText}

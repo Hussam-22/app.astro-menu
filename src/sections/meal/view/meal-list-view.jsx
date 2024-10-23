@@ -5,7 +5,6 @@ import {
   Box,
   Card,
   Table,
-  Button,
   Container,
   TableBody,
   Typography,
@@ -16,7 +15,6 @@ import {
 import Label from 'src/components/label';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
@@ -105,15 +103,7 @@ function MealListView() {
             name: 'Meals List',
           },
         ]}
-        action={
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={handleAddNewMeal}
-          >
-            New Meal
-          </Button>
-        }
+        action={!isLoading && handleAddNewMeal}
       />
 
       <Card>

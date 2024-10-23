@@ -31,9 +31,6 @@ export default function MealLabelTableRow({ row }) {
   const { mutate, isPending } = useMutation({
     mutationFn: (mutateFn) => mutateFn(),
     onSuccess: (mealIDs) => {
-      // const affectedMealsIDs = mealIDs.map((mealID) => `meal-${mealID}`);
-      // const queryKeys = ['meal-labels', 'meals', ...affectedMealsIDs];
-      // queryClient.invalidateQueries(queryKeys);
       queryClient.invalidateQueries(['meal-labels']);
       queryClient.invalidateQueries(['meals']);
       queryClient.invalidateQueries(['meal']);
@@ -50,7 +47,7 @@ export default function MealLabelTableRow({ row }) {
     <TableRow hover>
       <TableCell>
         <Stack direction="column" spacing={1}>
-          <Typography variant="overline">{title}</Typography>
+          <Typography>{title}</Typography>
           {row?.translation && (
             <Stack direction="row" spacing={1}>
               {Object.entries(row.translation).map(([key, value]) => (
