@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { LoadingButton } from '@mui/lab';
-import { Stack, Divider, Tooltip, InputAdornment } from '@mui/material';
+import { Stack, Tooltip } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import { delay } from 'src/utils/promise-delay';
@@ -128,63 +128,54 @@ export default function TranslationTextField({
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <RHFTextField
-        name={field}
-        label={label}
-        multiline
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <Stack
-                direction={direction}
-                divider={
-                  <Divider orientation="vertical" sx={{ width: 2, height: 20 }} variant="middle" />
-                }
-              >
-                <Tooltip title="Reset to default value">
-                  <div>
-                    <LoadingButton
-                      type="reset"
-                      variant="text"
-                      loading={isSubmitting}
-                      onClick={() => reset()}
-                      color="warning"
-                      disabled={!isDirty}
-                    >
-                      <Iconify icon="grommet-icons:power-reset" width={20} height={20} />
-                    </LoadingButton>
-                  </div>
-                </Tooltip>
+      <RHFTextField name={field} label={label} multiline />
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="flex-end"
+        sx={{ mt: 1 }}
+        spacing={0.5}
+      >
+        <Tooltip title="Reset to default value">
+          <div>
+            <LoadingButton
+              type="reset"
+              variant="soft"
+              loading={isSubmitting}
+              onClick={() => reset()}
+              color="warning"
+              disabled={!isDirty}
+            >
+              <Iconify icon="grommet-icons:power-reset" width={20} height={20} />
+            </LoadingButton>
+          </div>
+        </Tooltip>
 
-                <Tooltip title="Reset to Original Translation">
-                  <div>
-                    <LoadingButton
-                      type="button"
-                      variant="text"
-                      loading={isSubmitting}
-                      color="info"
-                      onClick={handleSubmit(resetTranslation)}
-                      disabled={isRestTranslationDirty}
-                    >
-                      <Iconify icon="fa:language" width={20} height={20} />
-                    </LoadingButton>
-                  </div>
-                </Tooltip>
+        <Tooltip title="Reset to Original Translation">
+          <div>
+            <LoadingButton
+              type="button"
+              variant="soft"
+              loading={isSubmitting}
+              color="info"
+              onClick={handleSubmit(resetTranslation)}
+              disabled={isRestTranslationDirty}
+            >
+              <Iconify icon="fa:language" width={20} height={20} />
+            </LoadingButton>
+          </div>
+        </Tooltip>
 
-                <LoadingButton
-                  type="submit"
-                  variant="text"
-                  loading={isSubmitting}
-                  disabled={!isDirty}
-                  color="primary"
-                >
-                  <Iconify icon="fluent:save-28-regular" width={20} height={20} />
-                </LoadingButton>
-              </Stack>
-            </InputAdornment>
-          ),
-        }}
-      />
+        <LoadingButton
+          type="submit"
+          variant="soft"
+          loading={isSubmitting}
+          disabled={!isDirty}
+          color="primary"
+        >
+          <Iconify icon="fluent:save-28-regular" width={20} height={20} />
+        </LoadingButton>
+      </Stack>
     </FormProvider>
   );
 }

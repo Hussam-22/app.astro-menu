@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import { forwardRef } from 'react';
 
 import Link from '@mui/material/Link';
-import { Typography } from '@mui/material';
 // @mui
 import { useTheme } from '@mui/material/styles';
 
@@ -88,9 +87,26 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
   // );
 
   const logo = (
-    <Typography color="secondary" sx={{ fontWeight: 700 }}>
+    <Link
+      href="https://www.astro-menu.com"
+      target="_blank"
+      rel="noopener noreferrer"
+      sx={{
+        fontWeight: 700,
+        bgcolor: 'common.black',
+        color: 'common.white',
+        py: 0.25,
+        px: 1,
+        borderRadius: 0.5,
+        transform: 'scaleY(1.2)', // Stretches the characters vertically
+        display: 'inline-block', // Ensures the text wraps with the background
+        transformOrigin: 'center', // Ensures scaling happens from the center
+        '&:hover': { textDecoration: 'none' },
+        ...sx,
+      }}
+    >
       ASTRO-MENU
-    </Typography>
+    </Link>
   );
 
   if (disabledLink) {

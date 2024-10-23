@@ -101,7 +101,10 @@ function EditPricesDrawer({ onClose, isOpen, mealInfo, sectionInfo }) {
       open={isOpen}
       onClose={() => onClose()}
       PaperProps={{
-        sx: { borderRadius: '25px 0 0 25px', width: { xs: '75%', sm: '45%', md: '25%' } },
+        sx: {
+          borderRadius: '25px 0 0 25px',
+          width: { xs: '75%', sm: '45%', md: '25%' },
+        },
       }}
     >
       <Box sx={{ bgcolor: 'secondary.main', p: 2 }}>
@@ -111,7 +114,7 @@ function EditPricesDrawer({ onClose, isOpen, mealInfo, sectionInfo }) {
       </Box>
 
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Stack direction="column" spacing={3} sx={{ p: 3 }}>
+        <Stack direction="column" spacing={1.5} sx={{ p: 2 }}>
           {menuVersionMealPortions.map((portion, i) => (
             <RHFTextField
               key={portion.portionSize}
@@ -133,7 +136,7 @@ function EditPricesDrawer({ onClose, isOpen, mealInfo, sectionInfo }) {
         </Stack>
       </FormProvider>
 
-      <Typography variant="caption" sx={{ px: 3, py: 1 }}>
+      <Typography variant="body2" sx={{ px: 2, pb: 2 }}>
         {`Updating the prices here does not alter the original prices of the meal, nor does it affect the prices of the same meal listed in another menu. This feature is particularly useful when you want to offer the same meal at different price points across separate menus. For example, if you are running a promotional discount, you can create a special menu that reflects the discounted prices while keeping the original menu with the regular prices unchanged. Additionally, if you have different branches offering the same menus but with different prices, you can manage each branch's pricing independently without affecting the others. This allows for greater flexibility in pricing strategies across different locations.`}
       </Typography>
     </Drawer>

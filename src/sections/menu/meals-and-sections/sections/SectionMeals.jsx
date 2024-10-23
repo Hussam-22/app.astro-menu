@@ -24,6 +24,7 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import { titleCase } from 'src/utils/change-case';
+import { useResponsive } from 'src/hooks/use-responsive';
 import AddMealDrawer from 'src/sections/menu/meals-and-sections/drawers/add-meal-drawer';
 import RemoveMealDialog from 'src/sections/menu/meals-and-sections/dialogs/remove-meal-dialog';
 import EditPricesDrawer from 'src/sections/menu/meals-and-sections/drawers/edit-prices-drawer';
@@ -44,6 +45,7 @@ SectionMeals.propTypes = {
 export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeals, allSections }) {
   const { id: menuID } = useParams();
   const theme = useTheme();
+  const isMobile = useResponsive('down', 'sm');
   const queryClient = useQueryClient();
   const { fsUpdateSection, fsUpdateSectionsOrder } = useAuthContext();
   const [dialogsState, setDialogsState] = useState({
@@ -55,7 +57,6 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
   });
   const [selectedMealInfo, setSelectedMealInfo] = useState(null);
 
-  // TODO: fix this error by using a better way to filter meals
   const sectionMeals = allMeals.filter((meal) =>
     sectionInfo.meals.some((sectionMeal) => sectionMeal.docID === meal.docID)
   );
@@ -113,11 +114,21 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
   return (
     <>
       <Card
-        sx={{ my: 2, border: !sectionInfo.isActive && `dashed 1px ${theme.palette.error.main}` }}
+        sx={{
+          my: 3,
+          border: !sectionInfo.isActive && `dashed 1px ${theme.palette.error.main}`,
+          borderRadius: 3,
+        }}
       >
         <CardHeader
           title={titleCase(sectionInfo.title)}
-          sx={{ backgroundColor: 'background.neutral', py: 1, px: 2 }}
+          sx={{
+            pt: 2,
+            pb: 1,
+            px: 2,
+            borderBottom: `dashed 1px ${theme.palette.grey[200]}`,
+          }}
+          titleTypographyProps={{ sx: { fontWeight: 600 } }}
           action={
             <FormGroup row>
               <FormControlLabel
@@ -198,54 +209,76 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
 
         <Stack spacing={1} sx={{ p: 2 }} divider={<Divider sx={{ borderStyle: 'dashed' }} />}>
           {sectionMeals.length === 0 && (
-            <Stack direction="row" alignItems="center" justifyContent="center">
-              <Typography>Add meals to section</Typography>
-              <IconButton
-                sx={{ color: 'common.alternative' }}
-                size="small"
-                onClick={() => handleDialogIsOpenState('addMeal', true)}
-              >
-                <Iconify icon="mdi:hamburger-plus" width={22} height={22} />
-              </IconButton>
-            </Stack>
+            <IconButton
+              sx={{ color: 'common.alternative' }}
+              size="small"
+              onClick={() => handleDialogIsOpenState('addMeal', true)}
+            >
+              <Typography sx={{ pr: 1 }}>Click here to add meals to section</Typography>{' '}
+              <Iconify icon="mdi:hamburger-plus" width={22} height={22} />
+            </IconButton>
           )}
 
           {sectionMeals
             .sort((a, b) => a.title.localeCompare(b.title))
-            .map((meal, index) => (
+            .map((meal) => (
               <Stack
                 key={meal.docID}
-                direction="row"
-                alignItems="center"
+                direction="column"
                 sx={{ filter: !sectionInfo.isActive ? 'grayscale(1)' : '' }}
                 divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
                 spacing={1}
               >
-                <Avatar
-                  src={meal.cover}
-                  alt={meal.title}
-                  sx={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 0.5,
-                    mr: 1,
-                    filter: `grayscale(${meal.isActive ? 0 : '100'})`,
-                  }}
-                  variant="square"
-                />
-                <Stack direction="column" spacing={0.25} sx={{ px: 1, flexGrow: 1 }}>
-                  <Typography variant="subtitle2">{meal.title}</Typography>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Avatar
+                    src={meal.cover}
+                    alt={meal.title}
+                    sx={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: 0.5,
+                      mr: 1,
+                      filter: `grayscale(${meal.isActive ? 0 : '100'})`,
+                    }}
+                    variant="square"
+                  />
+                  <Stack direction="column" spacing={0.25}>
+                    <Typography variant="h6">{meal.title}</Typography>
+                    <Stack direction="row" spacing={1}>
+                      <Button
+                        variant="soft"
+                        color="success"
+                        size="small"
+                        onClick={() => openEditPricesDrawer(meal)}
+                      >
+                        Edit Prices
+                      </Button>
+                      <Button
+                        variant="soft"
+                        color="error"
+                        size="small"
+                        onClick={() => openDeleteMealDialog(meal)}
+                      >
+                        remove from section
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </Stack>
+                <Stack direction="column" spacing={0.25}>
                   <Box
                     sx={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(5, minmax(min-content, 1fr))',
-                      gap: 2,
+                      gridTemplateColumns: {
+                        xs: 'repeat(2, 1fr)',
+                        sm: 'repeat(4, 1fr)',
+                      },
+                      gap: 1,
                     }}
                   >
                     {sectionInfo.meals
                       .find((sectionMeal) => sectionMeal.docID === meal.docID)
                       .portions.map((portion, i) => (
-                        <Label variant="soft" color="warning" key={`${portion.portionSize}-${i}`}>
+                        <Label variant="soft" key={`${portion.portionSize}-${i}`}>
                           {portion.portionSize} - {portion.price}
                         </Label>
                       ))}
@@ -258,30 +291,6 @@ export default function SectionMeals({ id, isLast, isFirst, sectionInfo, allMeal
                       </Typography>
                     </Stack>
                   )}
-                </Stack>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  sx={{ flexShrink: 1, justifyContent: 'flex-end' }}
-                >
-                  <Button
-                    variant="soft"
-                    color="warning"
-                    size="small"
-                    onClick={() => openEditPricesDrawer(meal)}
-                    startIcon={<Iconify icon="ic:outline-attach-money" />}
-                  >
-                    Edit Prices
-                  </Button>
-                  <Button
-                    variant="soft"
-                    color="error"
-                    size="small"
-                    onClick={() => openDeleteMealDialog(meal)}
-                    startIcon={<Iconify icon="f7:trash" />}
-                  >
-                    Remove Meal
-                  </Button>
                 </Stack>
               </Stack>
             ))}

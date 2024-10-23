@@ -71,11 +71,8 @@ export default function NavVertical({ openNav, onCloseNav }) {
         justifyContent="flex-start"
         sx={{ mt: 2, ml: 3 }}
       >
-        <Stack direction="column">
-          <Logo />
-          <Typography variant="overline" sx={{ mt: 1, color: 'text.disabled', fontWeight: 400 }}>
-            Welcome back
-          </Typography>
+        <Stack direction="column" alignItems="flex-start" spacing={1}>
+          <Logo sx={{ ml: -0.5 }} />
           <Typography sx={{ fontWeight: 600 }}>{businessProfile.ownerInfo.displayName}</Typography>
         </Stack>
       </Stack>
