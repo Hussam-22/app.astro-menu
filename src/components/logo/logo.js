@@ -9,7 +9,7 @@ import { useTheme } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
 
-const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
+const Logo = forwardRef(({ disabledLink = false, small, sx, ...other }, ref) => {
   const theme = useTheme();
 
   const PRIMARY_LIGHT = theme.palette.primary.light;
@@ -97,6 +97,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
         py: 0.25,
         px: 1,
         borderRadius: 0.5,
+        fontSize: small ? '0.65rem' : '1rem',
         transform: 'scaleY(1.2)', // Stretches the characters vertically
         display: 'inline-block', // Ensures the text wraps with the background
         transformOrigin: 'center', // Ensures scaling happens from the center
@@ -122,6 +123,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
 
 Logo.propTypes = {
   disabledLink: PropTypes.bool,
+  small: PropTypes.bool,
   sx: PropTypes.object,
 };
 

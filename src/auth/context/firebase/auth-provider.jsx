@@ -1914,7 +1914,15 @@ export function AuthProvider({ children }) {
 
     await batch.commit();
   }, [state]);
-  // ----------------------------------------------------------------------------
+  // ---------------------- ORDERS ------------------------------------------------------
+  const fsUpdateOrder = useCallback(async (payload) => {
+    const { orderID, toUpdateFields, businessProfileID, branchID } = payload;
+    const docRef = doc(
+      DB,
+      `/businessProfiles/${businessProfileID}/branches/${branchID}/orders/${orderID}`
+    );
+    updateDoc(docRef, toUpdateFields);
+  }, []);
 
   const memoizedValue = useMemo(
     () => ({
@@ -2010,6 +2018,8 @@ export function AuthProvider({ children }) {
       fsGetCustomers,
       fsDeleteCustomer,
       fsBatchAddCustomers,
+      // --- Orders ---
+      fsUpdateOrder,
     }),
     [
       state.isAuthenticated,
@@ -2097,6 +2107,8 @@ export function AuthProvider({ children }) {
       fsGetCustomers,
       fsDeleteCustomer,
       fsBatchAddCustomers,
+      // --- Orders ---
+      fsUpdateOrder,
     ]
   );
 

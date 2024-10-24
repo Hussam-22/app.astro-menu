@@ -36,7 +36,7 @@ const TABLE_HEAD = [
 // };
 
 export default function SearchMultipleOrders() {
-  const [orderDrawer, setOrderDrawer] = useState({ isOpen: false, orderInfo: {} });
+  const [orderDrawer, setOrderDrawer] = useState({ isOpen: false, orderID: '', branchID: '' });
   const [tableData, setOrdersData] = useState({ data: [], loading: false });
 
   const {
@@ -56,10 +56,10 @@ export default function SearchMultipleOrders() {
 
   const getData = (data) => setOrdersData(data);
 
-  const onDialogClose = () => setOrderDrawer({ isOpen: false, orderInfo: {} });
+  const onDialogClose = () => setOrderDrawer({ isOpen: false, orderID: '' });
 
   const handleViewRow = (orderInfo) => {
-    setOrderDrawer({ isOpen: true, orderInfo });
+    setOrderDrawer({ isOpen: true, orderID: orderInfo.docID, branchID: orderInfo.branchID });
   };
 
   const dataFiltered = applySortFilter({
@@ -136,7 +136,8 @@ export default function SearchMultipleOrders() {
       <OrderDetailsDrawer
         isOpen={orderDrawer.isOpen}
         onClose={onDialogClose}
-        orderInfo={orderDrawer?.orderInfo || {}}
+        orderID={orderDrawer?.orderID || ''}
+        branchID={orderDrawer?.branchID || ''}
       />
     </Card>
   );

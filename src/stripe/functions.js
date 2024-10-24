@@ -151,3 +151,37 @@ export const stripeGetProduct = async (productID, useLocalUrl = false) => {
     throw error;
   }
 };
+export const sendInvoiceEmail = async (
+  htmlString,
+  customerEmail,
+  businessName,
+  useLocalUrl = false
+) => {
+  const url = `${useLocalUrl ? LOCAL_URL : LIVE_URL}/send-invoice-email`;
+  const body = {
+    htmlString,
+    customerEmail,
+    businessName,
+  };
+
+  console.log(customerEmail, businessName);
+
+  try {
+    const response = await axios.post(url, body, { headers });
+    console.log(response.data);
+
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      // Server responded with a status other than 200 range
+      console.error('Server error:', error.response.data);
+    } else if (error.request) {
+      // Request was made but no response received
+      console.error('No response received:', error.request);
+    } else {
+      // Something else happened while setting up the request
+      console.error('Error:', error.message);
+    }
+    throw error;
+  }
+};

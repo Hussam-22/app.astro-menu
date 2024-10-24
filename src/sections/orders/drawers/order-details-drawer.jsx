@@ -1,7 +1,8 @@
 /* eslint-disable no-unsafe-optional-chaining */
-import React from 'react';
 import PropTypes from 'prop-types';
+import React, { useRef } from 'react';
 import { useTheme } from '@emotion/react';
+import { useReactToPrint } from 'react-to-print';
 import { useQuery } from '@tanstack/react-query';
 
 import { Box, Stack, Button, Drawer, Divider, Typography, IconButton } from '@mui/material';
@@ -11,47 +12,68 @@ import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { fDistance } from 'src/utils/format-time';
+import OrderPrint from 'src/sections/orders/components/order-print';
+import SendEmailTextBox from 'src/sections/orders/components/send-email-textbox';
 
 // ----------------------------------------------------------------------
 
 OrderDetailsDrawer.propTypes = {
   onClose: PropTypes.func,
   isOpen: PropTypes.bool,
-  orderInfo: PropTypes.object,
+  orderID: PropTypes.string,
+  branchID: PropTypes.string,
 };
 
-function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
+function OrderDetailsDrawer({ onClose, isOpen, orderID, branchID }) {
   const theme = useTheme();
-  const { fsGetAllMeals, fsGetBranch, fsGetStaffInfo, fsGetTableInfo } = useAuthContext();
   const {
-    closingTime,
-    docID,
-    initiationTime,
-    customerEmail,
-    totalBill,
-    staffID,
-    branchID,
-    businessProfileID,
-    tableID,
-  } = orderInfo;
+    fsGetBranch,
+    fsGetStaffInfo,
+    fsGetTableInfo,
+    fsGetOrderByID,
+    businessProfile: { businessName },
+  } = useAuthContext();
+
+  console.log(orderID);
+
+  const printRef = useRef();
+
+  const reactToPrintContent = () => printRef.current;
+
+  const handlePrint = useReactToPrint({
+    documentTitle: 'order-invoice',
+  });
+
+  const {
+    data: orderInfo = {},
+    isLoading,
+    isFetched,
+  } = useQuery({
+    queryKey: ['order', orderID, branchID],
+    queryFn: () => fsGetOrderByID(orderID, branchID),
+    enabled: orderID !== undefined,
+  });
+  console.log(orderInfo);
+
+  const { closingTime, initiationTime, totalBill, staffID, businessProfileID, tableID } = orderInfo;
 
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', orderInfo.branchID],
     queryFn: () => fsGetBranch(orderInfo.branchID),
-    enabled: orderInfo.docID !== undefined,
+    enabled: !!orderInfo?.docID,
   });
 
   const { data: staffInfo = {} } = useQuery({
     queryKey: ['staff', staffID],
     queryFn: () => fsGetStaffInfo(staffID),
-    enabled: (orderInfo.docID !== undefined && staffID !== '') || staffID !== undefined,
+    enabled: (orderInfo?.docID && staffID !== '') || staffID !== undefined,
   });
 
   const { data: tableInfo = [] } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [`table`, branchID, tableID],
     queryFn: () => fsGetTableInfo(businessProfileID, branchID, tableID),
-    enabled: orderInfo.docID !== undefined,
+    enabled: !!orderInfo?.docID,
   });
 
   const orderDate =
@@ -88,10 +110,7 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="body2">{orderInfo.docID}</Typography>
         <Stack direction="row" justifyContent="space-evenly" spacing={1} alignItems="center">
-          <IconButton color="secondary">
-            <Iconify icon="mdi:email-plus" width={20} height={20} />
-          </IconButton>
-          <IconButton color="secondary">
+          <IconButton color="secondary" onClick={() => handlePrint(reactToPrintContent)}>
             <Iconify icon="fluent:print-32-regular" width={20} height={20} />
           </IconButton>
           <Label
@@ -171,10 +190,7 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
       </Typography>
       <Divider flexItem sx={{ borderStyle: 'dashed', my: 1 }} />
 
-      <Stack>
-        <Typography variant="caption">Customer Email</Typography>
-        <Typography variant="body2">{customerEmail || 'Not Provided'}</Typography>
-      </Stack>
+      <SendEmailTextBox orderInfo={orderInfo} branchInfo={branchInfo} sx={{ py: 1 }} />
       <Stack>
         <Typography variant="caption">Order Date Time</Typography>
         <Typography variant="body2">{orderDate.toLocaleString()}</Typography>
@@ -218,6 +234,15 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
         <Button variant="soft" color="secondary" onClick={onClose}>
           Close
         </Button>
+      </Box>
+
+      <Box sx={{ display: 'none' }}>
+        <OrderPrint
+          ref={printRef}
+          orderInfo={orderInfo}
+          branchInfo={branchInfo}
+          businessName={businessName}
+        />
       </Box>
     </Drawer>
   );
