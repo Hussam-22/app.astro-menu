@@ -1019,6 +1019,14 @@ export function AuthProvider({ children }) {
 
     [state]
   );
+  const fsUpdateOrder = useCallback(async (payload) => {
+    const { orderID, toUpdateFields, businessProfileID, branchID } = payload;
+    const docRef = doc(
+      DB,
+      `/businessProfiles/${businessProfileID}/branches/${branchID}/orders/${orderID}`
+    );
+    updateDoc(docRef, toUpdateFields);
+  }, []);
   // ----------------------- Branches ----------------------------
   const fsGetAllBranches = useCallback(async () => {
     const docRef = query(
@@ -1914,15 +1922,6 @@ export function AuthProvider({ children }) {
 
     await batch.commit();
   }, [state]);
-  // ---------------------- ORDERS ------------------------------------------------------
-  const fsUpdateOrder = useCallback(async (payload) => {
-    const { orderID, toUpdateFields, businessProfileID, branchID } = payload;
-    const docRef = doc(
-      DB,
-      `/businessProfiles/${businessProfileID}/branches/${branchID}/orders/${orderID}`
-    );
-    updateDoc(docRef, toUpdateFields);
-  }, []);
 
   const memoizedValue = useMemo(
     () => ({

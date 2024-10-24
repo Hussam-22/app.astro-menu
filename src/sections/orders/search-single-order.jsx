@@ -44,13 +44,11 @@ function SearchSingleOrder() {
   const values = watch();
 
   const { isPending, mutate, data, error } = useMutation({
-    mutationKey: ['order', values.orderID],
     mutationFn: ({ orderID, branchID }) => fsGetOrderByID(orderID, branchID),
     onSuccess: (orderData) => {
       if (orderData) {
-        setOrderInfo(orderData);
         setIsOpen(true);
-        queryClient.setQueryData(['order', orderData.docID], orderData);
+        queryClient.setQueryData(['order', orderData.docID, orderData.branchID], orderData);
       } else {
         enqueueSnackbar('Order not found', { variant: 'error' });
       }
@@ -60,11 +58,12 @@ function SearchSingleOrder() {
   const onSubmit = async (formData) => {
     mutate({ orderID: formData.orderID, branchID: formData.branchID });
   };
+
   return (
     <Card sx={{ p: 1 }}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Stack direction="row" spacing={2} sx={{ py: 2 }}>
-          <RHFSelect name="branchID" label="Branch" sx={{ width: '30%' }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ py: 2 }}>
+          <RHFSelect name="branchID" label="Branch">
             <MenuItem value="">Select Branch</MenuItem>
             {branchesData?.map((branch) => (
               <MenuItem key={branch.docID} value={branch.docID}>
@@ -80,14 +79,18 @@ function SearchSingleOrder() {
             size="large"
             type="submit"
             loading={isPending}
-            sx={{ width: '20%' }}
+            disabled={values.branchID === '' && values.orderID === ''}
           >
             Search
           </LoadingButton>
         </Stack>
       </FormProvider>
 
-      <OrderDetailsDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} orderInfo={orderInfo} />
+      <OrderDetailsDrawer
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        orderID={values.orderID}
+      />
     </Card>
   );
 }

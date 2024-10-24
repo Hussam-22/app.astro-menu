@@ -34,8 +34,6 @@ function OrderDetailsDrawer({ onClose, isOpen, orderID, branchID }) {
     businessProfile: { businessName },
   } = useAuthContext();
 
-  console.log(orderID);
-
   const printRef = useRef();
 
   const reactToPrintContent = () => printRef.current;
@@ -53,8 +51,6 @@ function OrderDetailsDrawer({ onClose, isOpen, orderID, branchID }) {
     queryFn: () => fsGetOrderByID(orderID, branchID),
     enabled: orderID !== undefined,
   });
-  console.log(orderInfo);
-
   const { closingTime, initiationTime, totalBill, staffID, businessProfileID, tableID } = orderInfo;
 
   const { data: branchInfo = {} } = useQuery({
