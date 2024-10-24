@@ -12,7 +12,7 @@ function BranchNewView() {
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         sx={{ mb: 4 }}
-        heading="Branches List"
+        heading="Branches"
         links={[
           { name: 'Dashboard', href: paths.dashboard.branches.root },
           {

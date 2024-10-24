@@ -78,12 +78,12 @@ function MealLabelsView() {
     <>
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Meals List"
+          heading="Meal Labels"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Meals', href: paths.dashboard.meal.list },
             {
-              name: 'Meal Labels List',
+              name: 'Meal Labels',
             },
           ]}
           action={() => setIsOpen(true)}
@@ -93,7 +93,7 @@ function MealLabelsView() {
           <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
+            <TableContainer sx={{ minWidth: 'auto', position: 'relative' }}>
               <Table size="small">
                 <TableHeadCustom
                   order={order}

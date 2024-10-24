@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
+import { Tab, Box, Tabs, Divider, useTheme, Container } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
@@ -50,11 +50,7 @@ function MealManageView() {
           { name: 'Meals', href: paths.dashboard.meal.list },
           { name: mealInfo?.title || '' },
         ]}
-        action={
-          <Typography variant="body2" sx={{ color: theme.palette.grey[600] }}>
-            ID: {mealInfo?.docID}
-          </Typography>
-        }
+        docID={mealInfo?.docID}
       />
       {mealInfo?.docID && (
         <>

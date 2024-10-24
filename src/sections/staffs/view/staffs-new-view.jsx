@@ -17,11 +17,11 @@ function StaffsNewView() {
     <RoleBasedGuard hasContent roles={[role]} sx={{ py: 10 }}>
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Add New Staff"
+          heading="New Waitstaff"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Staffs', href: paths.dashboard.staffs.list },
-            { name: 'Add New Staff' },
+            { name: 'Waitstaff', href: paths.dashboard.staffs.list },
+            { name: 'New Waitstaff' },
           ]}
         />
         <StaffsNewEditForm />

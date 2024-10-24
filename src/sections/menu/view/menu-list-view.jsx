@@ -32,9 +32,9 @@ import {
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Menu Name', align: 'left', width: '40%' },
-  { id: 'mostOrderedMeals', label: 'Most Ordered Meals', align: 'center', width: '15%' },
+  { id: 'mostOrderedMeals', label: 'Most Ordered#', align: 'center', width: '15%' },
   { id: 'lastUpdate', label: 'Last Update', align: 'center', width: '30%' },
-  // { id: 'status', label: 'Status', align: 'center', width: '15%' },
+  { id: 'isDefault', label: 'Default', align: 'center', width: '15%' },
 ];
 
 // ----------------------------------------------------------------------
@@ -106,11 +106,11 @@ function MenuListView() {
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Menus List"
+        heading="Menus"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Menus List',
+            name: 'Menus',
           },
         ]}
         action={onNewMenu}
@@ -120,7 +120,7 @@ function MenuListView() {
         <TableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
         <Scrollbar>
-          <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
+          <TableContainer sx={{ minWidth: 660, position: 'relative' }}>
             <Table size="small">
               <TableHeadCustom
                 disableSelectAllRows

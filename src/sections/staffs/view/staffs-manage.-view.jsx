@@ -1,7 +1,7 @@
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { useTheme, Container, Typography } from '@mui/material';
+import { useTheme, Container } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useAuthContext } from 'src/auth/hooks';
@@ -34,14 +34,10 @@ function StaffsManageView() {
           heading={staffInfo?.fullname || ''}
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Staffs', href: paths.dashboard.staffs.list },
+            { name: 'Waitstaff', href: paths.dashboard.staffs.list },
             { name: staffInfo?.fullname || '' },
           ]}
-          action={
-            <Typography variant="caption" sx={{ color: theme.palette.grey[600] }}>
-              ID: {staffInfo?.docID}
-            </Typography>
-          }
+          docID={staffID}
         />
         <StaffsNewEditForm staffInfo={staffInfo} />
       </Container>

@@ -33,10 +33,10 @@ import {
 } from 'src/components/table';
 
 const TABLE_HEAD = [
-  { id: 'title', label: 'Menu Name', align: 'left', width: '25%' },
+  { id: 'title', label: 'Menu Name', align: 'left', width: '30%' },
   { id: 'totalOrders', label: 'Total Orders', align: 'center', width: '10%' },
   { id: 'totalScans', label: 'Total Scans', align: 'center', width: '10%' },
-  { id: 'totalTurnover', label: 'Total Turnover', align: 'center', width: '15%' },
+  { id: 'totalTurnover', label: 'Total Turnover', align: 'center', width: '10%' },
   { id: 'avgTurnover', label: 'Avg Turnover', align: 'center', width: '10%' },
   { id: 'totalIncome', label: 'Total Income', align: 'center', width: '10%' },
   { id: 'avg', label: 'Avg Income', align: 'center', width: '10%' },
@@ -109,11 +109,11 @@ function BranchListView() {
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Branches List"
+        heading="Branches"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Branches List',
+            name: 'Branches',
           },
         ]}
         action={!isLoading && handleAddNewBranch}

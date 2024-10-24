@@ -18,12 +18,13 @@ import {
 
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
-  { id: 'id', label: 'Order #', align: 'left', width: '15%' },
-  { id: 'closingTime', label: 'Closed At', align: 'left', width: '20%' },
+  { id: 'id', label: 'Order #', align: 'left', width: '10%' },
+  { id: 'closingTime', label: 'Closed At', align: 'left', width: '40%' },
   { id: 'duration', label: 'Duration', align: 'left', width: '15%' },
   { id: 'totalBill', label: 'Amount', align: 'left', width: '15%' },
   { id: 'meals', label: 'Meals', align: 'left', width: '10%' },
   { id: 'staff', label: 'Waitstaff', align: 'left', width: '20%' },
+  { id: 'tableNo', label: 'Table', align: 'center', width: '10%' },
   { id: 'statusName', label: 'Status', align: 'left' },
 ];
 // ----------------------------------------------------------------------

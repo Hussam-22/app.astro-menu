@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link as RouterLink } from 'react-router-dom';
 
 // @mui
 import {
   Box,
   Card,
   Table,
-  Button,
   TableBody,
   Container,
   TableContainer,
@@ -16,7 +14,6 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import Iconify from 'src/components/iconify';
 // redux
 import { useAuthContext } from 'src/auth/hooks';
 // sections
@@ -85,23 +82,14 @@ export default function StaffsListView() {
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Staffs List"
+        heading="Waitstaff"
         links={[
           { name: 'Dashboard', href: paths.dashboard.staffs.root },
           {
-            name: 'Staffs',
+            name: 'Waitstaff',
           },
         ]}
-        action={
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            component={RouterLink}
-            to={paths.dashboard.staffs.new}
-          >
-            New Staff
-          </Button>
-        }
+        action={() => router.push(paths.dashboard.staffs.new)}
       />
 
       <Card sx={{ mt: 4 }}>

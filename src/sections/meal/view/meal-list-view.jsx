@@ -96,11 +96,11 @@ function MealListView() {
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Meals List"
+        heading="Meals"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Meals List',
+            name: 'Meals',
           },
         ]}
         action={!isLoading && handleAddNewMeal}

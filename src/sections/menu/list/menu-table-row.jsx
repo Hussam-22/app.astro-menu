@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 
 import { Box, TableRow, TableCell, ListItemText } from '@mui/material';
 
+import Label from 'src/components/label';
+
 // ----------------------------------------------------------------------
 
 MenusTableRow.propTypes = {
@@ -10,7 +12,7 @@ MenusTableRow.propTypes = {
 };
 
 export default function MenusTableRow({ row, onEditRow }) {
-  const { title, isActive, lastUpdatedAt, docID, mostOrderedMeals = 0 } = row;
+  const { title, isActive, lastUpdatedAt, docID, isDefault, mostOrderedMeals = 0 } = row;
 
   const lastUpdate = new Date(lastUpdatedAt.seconds * 1000).toLocaleString();
 
@@ -35,15 +37,13 @@ export default function MenusTableRow({ row, onEditRow }) {
 
       <TableCell align="center">{mostOrderedMeals}</TableCell>
       <TableCell align="center">{lastUpdate}</TableCell>
-      {/* <TableCell align="center">
-        <Label
-          variant="filled"
-          color={(!isActive && 'error') || (isActive && 'success')}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {isActive ? 'Active' : 'Disabled'}
-        </Label>
-      </TableCell> */}
+      <TableCell align="center">
+        {isDefault && (
+          <Label variant="soft" color="info" sx={{ textTransform: 'capitalize' }}>
+            Default
+          </Label>
+        )}
+      </TableCell>
     </TableRow>
   );
 }

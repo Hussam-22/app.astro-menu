@@ -1009,8 +1009,6 @@ export function AuthProvider({ children }) {
   );
   const fsGetOrderByID = useCallback(
     async (orderID, branchID) => {
-      console.log(orderID, branchID);
-
       const docRef = doc(
         DB,
         `/businessProfiles/${state.user.businessProfileID}/branches/${branchID}/orders/${orderID}`
@@ -1231,7 +1229,7 @@ export function AuthProvider({ children }) {
     async (menuID, businessProfileID = state.user.businessProfileID) => {
       const docRef = doc(DB, `/businessProfiles/${businessProfileID}/menus/${menuID}/`);
       const docSnap = await getDoc(docRef);
-      return docSnap.data();
+      return docSnap.data() === undefined ? null : docSnap.data();
     },
     [state]
   );

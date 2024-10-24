@@ -67,12 +67,12 @@ export function useNavData() {
 
           // Staffs
           {
-            title: t('staffs'),
+            title: t('Waitstaff'),
             path: paths.dashboard.staffs.root,
             icon: ICONS.staffs,
           },
           {
-            title: t('orders'),
+            title: t('orders search'),
             path: paths.dashboard.orders.root,
             icon: ICONS.orders,
           },

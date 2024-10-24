@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { Tab, Box, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
+import { Tab, Box, Tabs, Divider, useTheme, Container } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
@@ -69,17 +69,13 @@ function BranchManageView() {
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={branchInfo?.data?.title || ''}
+        heading={branchInfo?.title || ''}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Branches', href: paths.dashboard.branches.list },
           { name: branchInfo?.title || '' },
         ]}
-        action={
-          <Typography variant="body2" sx={{ color: theme.palette.grey[600] }}>
-            ID: {branchID}
-          </Typography>
-        }
+        docID={branchInfo?.docID}
       />
 
       {branchInfo?.docID && businessProfile.docID && (
@@ -90,7 +86,13 @@ function BranchManageView() {
             scrollButtons="auto"
             value={currentTab}
             onChange={(event, newValue) => setCurrentTab(newValue)}
-            sx={{ bgcolor: theme.palette.background.paper, mt: 2, px: {sm:2}, pb: 1, borderRadius: 1 }}
+            sx={{
+              bgcolor: theme.palette.background.paper,
+              mt: 2,
+              px: { sm: 2 },
+              pb: 1,
+              borderRadius: 1,
+            }}
           >
             {TABS.map((tab) => (
               <Tab

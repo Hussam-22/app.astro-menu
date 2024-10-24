@@ -30,11 +30,11 @@ function OrdersView() {
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Orders List"
+        heading="Orders Search"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Orders List',
+            name: 'Orders Search',
           },
         ]}
         // action={<DownloadCSV name="customers-emails-list" />}

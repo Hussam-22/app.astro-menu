@@ -21,6 +21,7 @@ export default function CustomBreadcrumbs({
   heading,
   moreLink,
   activeLast,
+  docID,
   sx,
   ...other
 }) {
@@ -33,11 +34,18 @@ export default function CustomBreadcrumbs({
         <Box sx={{ flexGrow: 1 }}>
           {/* HEADING */}
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            {heading && (
-              <Typography variant="h4" gutterBottom>
-                {heading}
-              </Typography>
-            )}
+            <Stack direction="column">
+              {docID && (
+                <Typography variant="body3" sx={{ color: theme.palette.grey[600] }}>
+                  {docID}
+                </Typography>
+              )}
+              {heading && (
+                <Typography variant="h4" gutterBottom sx={{ mt: -0.5 }}>
+                  {heading}
+                </Typography>
+              )}
+            </Stack>
             {action && (
               <Box sx={{ flexShrink: 0 }}>
                 <IconButton
@@ -95,9 +103,10 @@ export default function CustomBreadcrumbs({
 
 CustomBreadcrumbs.propTypes = {
   sx: PropTypes.object,
-  action: PropTypes.func,
+  action: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   links: PropTypes.array,
   heading: PropTypes.string,
+  docID: PropTypes.string,
   moreLink: PropTypes.array,
   activeLast: PropTypes.bool,
 };

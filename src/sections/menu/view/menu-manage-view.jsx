@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { Box, Tab, Tabs, Divider, useTheme, Container, Typography } from '@mui/material';
+import { Box, Tab, Tabs, Divider, useTheme, Container } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
@@ -46,11 +46,7 @@ function MenuManageView() {
           { name: 'Menus', href: paths.dashboard.menu.list },
           { name: menuInfo?.title || '' },
         ]}
-        action={
-          <Typography variant="body2" sx={{ color: theme.palette.grey[600] }}>
-            ID: {menuInfo?.docID}
-          </Typography>
-        }
+        docID={menuInfo?.docID}
       />
       {menuInfo?.docID && (
         <>

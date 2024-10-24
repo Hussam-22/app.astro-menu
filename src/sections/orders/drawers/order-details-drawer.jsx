@@ -4,9 +4,10 @@ import PropTypes from 'prop-types';
 import { useTheme } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 
-import { Box, Stack, Button, Drawer, Divider, Typography } from '@mui/material';
+import { Box, Stack, Button, Drawer, Divider, Typography, IconButton } from '@mui/material';
 
 import Label from 'src/components/label';
+import Iconify from 'src/components/iconify';
 import { useAuthContext } from 'src/auth/hooks';
 import Scrollbar from 'src/components/scrollbar';
 import { fDistance } from 'src/utils/format-time';
@@ -76,26 +77,38 @@ function OrderDetailsDrawer({ onClose, isOpen, orderInfo }) {
       open={isOpen}
       onClose={onClose}
       PaperProps={{
-        sx: { borderRadius: '25px 0 0 25px', width: { xs: '35%', sm: '25%' }, p: 3 },
+        sx: {
+          borderRadius: '25px 0 0 25px',
+          width: { xs: '85%', sm: '45%', md: '40%', lg: '35%' },
+          p: 3,
+        },
       }}
     >
       <Typography variant="h5">Order Details</Typography>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="body2">{orderInfo.docID}</Typography>
-        <Label
-          variant="soft"
-          color={orderStatus()[1]}
-          sx={{ textTransform: 'capitalize', fontSize: 18, p: 2 }}
-        >
-          {orderStatus()[0]}
-        </Label>
+        <Stack direction="row" justifyContent="space-evenly" spacing={1} alignItems="center">
+          <IconButton color="secondary">
+            <Iconify icon="mdi:email-plus" width={20} height={20} />
+          </IconButton>
+          <IconButton color="secondary">
+            <Iconify icon="fluent:print-32-regular" width={20} height={20} />
+          </IconButton>
+          <Label
+            variant="soft"
+            color={orderStatus()[1]}
+            sx={{ textTransform: 'capitalize', fontSize: 16, p: 1 }}
+          >
+            {orderStatus()[0]}
+          </Label>
+        </Stack>
       </Stack>
 
       <Box>
         <Scrollbar sx={{ maxHeight: 300, my: 1 }}>
           <Box
             sx={{
-              bgcolor: 'background.paper',
+              bgcolor: 'background.default',
               borderRadius: 1,
               p: 2,
               border: `dashed 1px ${theme.palette.grey[300]}`,

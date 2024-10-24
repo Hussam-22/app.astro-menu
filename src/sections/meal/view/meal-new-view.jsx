@@ -12,7 +12,7 @@ function MealNewView() {
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         sx={{ mb: 4 }}
-        heading="Meals List"
+        heading="Meals"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {

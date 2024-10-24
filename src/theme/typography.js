@@ -88,6 +88,11 @@ export const typography = {
     lineHeight: 22 / 14,
     fontSize: pxToRem(14),
   },
+  body3: {
+    fontWeight: 300,
+    lineHeight: 22 / 12,
+    fontSize: pxToRem(12),
+  },
   caption: {
     lineHeight: 1.5,
     fontSize: pxToRem(12),

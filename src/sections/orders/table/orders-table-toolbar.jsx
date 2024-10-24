@@ -58,8 +58,8 @@ export default function TableToolbarOrders({ getData }) {
 
   return (
     <Stack
-      direction="row"
-      alignItems="center"
+      direction={{ xs: 'column', sm: 'row' }}
+      alignItems={{ xs: 'flex-start', sm: 'center' }}
       justifyContent="flex-start"
       spacing={1}
       sx={{ mb: 1, bgcolor: 'grey.100', borderRadius: 1, p: 1 }}
@@ -69,7 +69,7 @@ export default function TableToolbarOrders({ getData }) {
         value={searchFilters.branchID}
         variant="outlined"
         onChange={(e) => onFilterChange('branchID', e.target.value)}
-        sx={{ minWidth: 200 }}
+        sx={{ minWidth: { xs: 1, sm: 200 } }}
       >
         <MenuItem value={0}>Select Branch</MenuItem>
         {branchesData?.map((branch) => (
@@ -79,54 +79,54 @@ export default function TableToolbarOrders({ getData }) {
         ))}
       </Select>
       {/* ------ STATUS ------ */}
-      <Select
-        value={searchFilters.status}
-        variant="outlined"
-        onChange={(e) => onFilterChange('status', e.target.value)}
-        sx={{ minWidth: 200 }}
-        disabled={searchFilters.branchID === 0}
-      >
-        <MenuItem value={ORDERS_STATUS[0]}>{ORDERS_STATUS[0]}</MenuItem>
-        {ORDERS_STATUS.slice(1)?.map((status) => (
-          <MenuItem key={status} value={status}>
-            {status}
-          </MenuItem>
-        ))}
-      </Select>
-      {/* ------ PERIOD ------ */}
-      <Select
-        value={searchFilters.period}
-        variant="outlined"
-        onChange={(e) => onFilterChange('period', e.target.value)}
-        sx={{
-          minWidth: 200,
-        }}
-        disabled={searchFilters.branchID === 0}
-      >
-        <MenuItem value={PERIOD[0]}>{`Last ${PERIOD[0]} Hour`}</MenuItem>
-        {PERIOD.slice(1)?.map((period) => (
-          <MenuItem key={period} value={period}>
-            {`Last ${period} Hour`}
-          </MenuItem>
-        ))}
-      </Select>
-      <LoadingButton
-        loading={isSearchingLoading}
-        size="large"
-        variant="soft"
-        color="primary"
-        onClick={() => setSearch(true)}
-        disabled={searchFilters.branchID === 0}
-        startIcon={<Iconify icon="line-md:list-3-twotone" />}
-      >
-        Get Orders
-      </LoadingButton>
-      <Typography>Total Orders: </Typography>
-      {isSearchingLoading ? (
-        <CircularProgress size={14} color="secondary" />
-      ) : (
-        searchResults?.count || 0
-      )}
+      <Stack direction="row" spacing={1} width="auto">
+        <Select
+          value={searchFilters.status}
+          variant="outlined"
+          onChange={(e) => onFilterChange('status', e.target.value)}
+          disabled={searchFilters.branchID === 0}
+        >
+          <MenuItem value={ORDERS_STATUS[0]}>{ORDERS_STATUS[0]}</MenuItem>
+          {ORDERS_STATUS.slice(1)?.map((status) => (
+            <MenuItem key={status} value={status}>
+              {status}
+            </MenuItem>
+          ))}
+        </Select>
+        {/* ------ PERIOD ------ */}
+        <Select
+          value={searchFilters.period}
+          variant="outlined"
+          onChange={(e) => onFilterChange('period', e.target.value)}
+          disabled={searchFilters.branchID === 0}
+        >
+          <MenuItem value={PERIOD[0]}>{`Last ${PERIOD[0]} Hour`}</MenuItem>
+          {PERIOD.slice(1)?.map((period) => (
+            <MenuItem key={period} value={period}>
+              {`Last ${period} Hour`}
+            </MenuItem>
+          ))}
+        </Select>
+      </Stack>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <LoadingButton
+          loading={isSearchingLoading}
+          size="large"
+          variant="soft"
+          color="primary"
+          onClick={() => setSearch(true)}
+          disabled={searchFilters.branchID === 0}
+          startIcon={<Iconify icon="line-md:list-3-twotone" />}
+        >
+          Get Orders
+        </LoadingButton>
+        <Typography>Total Orders: </Typography>
+        {isSearchingLoading ? (
+          <CircularProgress size={14} color="secondary" />
+        ) : (
+          searchResults?.count || 0
+        )}
+      </Stack>
     </Stack>
   );
 }

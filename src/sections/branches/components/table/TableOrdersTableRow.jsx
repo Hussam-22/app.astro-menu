@@ -15,7 +15,7 @@ TableOrdersTableRow.propTypes = {
 };
 
 export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
-  const { fsGetMenu, fsGetStaffInfo, fsGetBranch } = useAuthContext();
+  const { fsGetMenu, fsGetStaffInfo, fsGetBranch, fsGetTableInfo } = useAuthContext();
   const {
     docID,
     menuID,
@@ -28,11 +28,14 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
     staffID,
     totalBill,
     initiationTime,
+    tableID,
+    businessProfileID,
   } = row;
 
-  const { data: menuInfo } = useQuery({
+  const { data: menuInfo = {} } = useQuery({
     queryKey: ['menu', menuID],
     queryFn: () => fsGetMenu(menuID),
+    enabled: docID !== undefined,
   });
 
   const { data: staffInfo = {} } = useQuery({
@@ -44,6 +47,14 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
   const { data: branchInfo = {} } = useQuery({
     queryKey: ['branch', branchID],
     queryFn: () => fsGetBranch(branchID),
+    enabled: docID !== undefined,
+  });
+
+  const { data: tableInfo = [] } = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: [`table`, branchID, tableID],
+    queryFn: () => fsGetTableInfo(businessProfileID, branchID, tableID),
+    enabled: docID !== undefined,
   });
 
   const orderStatus = () => {
@@ -91,6 +102,7 @@ export default function TableOrdersTableRow({ row, onOrderClick, branchID }) {
 
       <TableCell align="left">{cart.length} </TableCell>
       <TableCell align="left">{staffInfo?.fullname || 'Self Order'} </TableCell>
+      <TableCell align="center">{tableInfo.index} </TableCell>
       <TableCell align="left">
         <Label variant="soft" color={orderStatus()[1]} sx={{ textTransform: 'capitalize' }}>
           {orderStatus()[0]}
